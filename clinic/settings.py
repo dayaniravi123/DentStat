@@ -114,7 +114,7 @@ STATICFILES_DIRS = [
 ]
 
 # When running collectstatic for production, files will be copied to STATIC_ROOT
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
