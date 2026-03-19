@@ -940,21 +940,26 @@ function updateCLTParams() {
 }
 
 function startCLTSimulation() {
-    if (simState.centralLimit.running) return;
-   
+    if (simState.centralLimit.running) {
+        simState.centralLimit.running = false;
+        clearInterval(simState.centralLimit.intervalId);
+        document.getElementById('clt-start').innerHTML = '<i data-lucide="play" class="w-4 h-4 mr-1"></i> Resume';
+        lucide.createIcons();
+        return;
+    }
+
     simState.centralLimit.running = true;
     document.getElementById('clt-overlay').classList.add('hidden');
     document.getElementById('clt-start').innerHTML = '<i data-lucide="pause" class="w-4 h-4 mr-1"></i> Pause';
     lucide.createIcons();
-   
+
     const speed = parseInt(document.getElementById('clt-speed').value);
-    const interval = 1000 / speed;
-   
+    const interval = Math.max(50, 1000 / speed);
+
     simState.centralLimit.intervalId = setInterval(() => {
         drawSample();
     }, interval);
-   
-    // Animation loop for smooth drawing
+
     animateCLT();
 }
 
@@ -1000,73 +1005,112 @@ function drawCLTHistogram() {
     const ctx = canvas.getContext('2d');
     const w = canvas.width;
     const h = canvas.height;
-   
+    const PAD = { top: 20, right: 20, bottom: 44, left: 48 };
+    const pw = w - PAD.left - PAD.right;
+    const ph = h - PAD.top - PAD.bottom;
+
     ctx.clearRect(0, 0, w, h);
-   
-    // Draw grid
-    ctx.strokeStyle = '#e5e7eb';
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= 10; i++) {
-        const x = (w / 10) * i;
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, h);
-        ctx.stroke();
-    }
-   
+
     // Calculate histogram
     const bins = 30;
     const counts = new Array(bins).fill(0);
     const binWidth = 1 / bins;
-   
     simState.centralLimit.means.forEach(mean => {
         const bin = Math.min(Math.floor(mean / binWidth), bins - 1);
         counts[bin]++;
     });
-   
-    const maxCount = Math.max(...counts, 20);
-   
-    // Draw bars
+    const maxCount = Math.max(...counts, 10);
+
+    // Horizontal grid lines
+    ctx.strokeStyle = '#f0f0f0';
+    ctx.lineWidth = 1;
+    for (let i = 1; i <= 4; i++) {
+        const y = PAD.top + ph - (i / 4) * ph;
+        ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + pw, y); ctx.stroke();
+        ctx.fillStyle = '#9ca3af';
+        ctx.font = '10px Inter,sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(Math.round((i / 4) * maxCount), PAD.left - 5, y + 4);
+    }
+
+    // Axes
+    ctx.strokeStyle = '#d1d5db';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, PAD.top);
+    ctx.lineTo(PAD.left, PAD.top + ph);
+    ctx.lineTo(PAD.left + pw, PAD.top + ph);
+    ctx.stroke();
+
+    // Bars
     counts.forEach((count, i) => {
-        const barHeight = (count / maxCount) * (h - 40);
-        const x = (i / bins) * w;
-        const barWidth = w / bins - 2;
-       
-        const gradient = ctx.createLinearGradient(0, h - barHeight, 0, h);
-        gradient.addColorStop(0, '#0d9488');
-        gradient.addColorStop(1, '#99f6e4');
-       
-        ctx.fillStyle = gradient;
-        ctx.fillRect(x, h - barHeight - 20, Math.max(1, barWidth), barHeight);
+        const barH = (count / maxCount) * ph;
+        const x = PAD.left + (i / bins) * pw;
+        const bw = pw / bins - 1;
+        const grad = ctx.createLinearGradient(0, PAD.top + ph - barH, 0, PAD.top + ph);
+        grad.addColorStop(0, '#0d9488');
+        grad.addColorStop(1, '#ccfbf1');
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, PAD.top + ph - barH, Math.max(1, bw), barH);
     });
-   
-    // Draw normal curve overlay if enough samples
-    if (simState.centralLimit.draws > 50) {
-        ctx.strokeStyle = '#dc2626';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-       
+
+    // X-axis tick labels
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '10px Inter,sans-serif';
+    ctx.textAlign = 'center';
+    for (let i = 0; i <= 5; i++) {
+        const x = PAD.left + (i / 5) * pw;
+        ctx.fillText((i / 5).toFixed(1), x, PAD.top + ph + 14);
+    }
+
+    // Axis labels
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '11px Inter,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Sample Mean', PAD.left + pw / 2, h - 4);
+    ctx.save();
+    ctx.translate(12, PAD.top + ph / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Count', 0, 0);
+    ctx.restore();
+
+    // Normal curve overlay (from 30 samples)
+    if (simState.centralLimit.draws >= 30) {
         const mean = simState.centralLimit.means.reduce((a, b) => a + b, 0) / simState.centralLimit.means.length;
-        const variance = simState.centralLimit.means.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / simState.centralLimit.means.length;
+        const variance = simState.centralLimit.means.reduce((s, v) => s + (v - mean) ** 2, 0) / simState.centralLimit.means.length;
         const std = Math.sqrt(variance);
-       
-        for (let x = 0; x <= w; x += 2) {
-            const val = (x / w);
-            const y = Math.exp(-0.5 * Math.pow((val - mean) / std, 2)) / (std * Math.sqrt(2 * Math.PI));
-            const normalizedY = y * (h - 40) / (maxCount / (w / bins));
-            if (x === 0) ctx.moveTo(x, h - 20 - normalizedY);
-            else ctx.lineTo(x, h - 20 - normalizedY);
+        if (std > 0) {
+            const totalArea = simState.centralLimit.draws * binWidth;
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 2.5;
+            ctx.setLineDash([]);
+            ctx.beginPath();
+            let first = true;
+            for (let px = 0; px <= pw; px += 2) {
+                const val = px / pw;
+                const y = Math.exp(-0.5 * ((val - mean) / std) ** 2) / (std * Math.sqrt(2 * Math.PI));
+                const sy = PAD.top + ph - (y * totalArea / maxCount) * ph;
+                if (first) { ctx.moveTo(PAD.left + px, sy); first = false; }
+                else ctx.lineTo(PAD.left + px, sy);
+            }
+            ctx.stroke();
+
+            // Dashed mean line
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([5, 4]);
+            ctx.beginPath();
+            ctx.moveTo(PAD.left + mean * pw, PAD.top);
+            ctx.lineTo(PAD.left + mean * pw, PAD.top + ph);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Legend
+            ctx.font = '10px Inter,sans-serif';
+            ctx.fillStyle = '#ef4444';
+            ctx.textAlign = 'left';
+            ctx.fillText('▬ Normal curve', PAD.left + 4, PAD.top + 14);
         }
-        ctx.stroke();
-       
-        // Draw mean line
-        ctx.strokeStyle = '#dc2626';
-        ctx.setLineDash([5, 5]);
-        ctx.beginPath();
-        ctx.moveTo(mean * w, 0);
-        ctx.lineTo(mean * w, h);
-        ctx.stroke();
-        ctx.setLineDash([]);
     }
 }
 
@@ -1214,67 +1258,173 @@ function resetLLN() {
 }
 
 // ==================== CONFIDENCE INTERVAL DANCE ====================
+const CI_TOTAL = 100;
+const CI_TRUE_MEAN = 50;
+const CI_SCALE = [15, 85]; // display range
+let ciData = [];
+let ciRunning = false;
+
+function drawCICanvas() {
+    const canvas = document.getElementById('ciDanceCanvas');
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    const W = canvas.width / dpr;
+    const H = canvas.height / dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.scale(dpr, dpr);
+
+    const PAD = { top: 36, right: 20, bottom: 28, left: 20 };
+    const pw = W - PAD.left - PAD.right;
+    const ph = H - PAD.top - PAD.bottom;
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#fafafa';
+    ctx.fillRect(0, 0, W, H);
+
+    // Convert value to x pixel
+    const toX = v => PAD.left + ((v - CI_SCALE[0]) / (CI_SCALE[1] - CI_SCALE[0])) * pw;
+    const tx = toX(CI_TRUE_MEAN);
+
+    // True mean vertical line
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(tx, PAD.top);
+    ctx.lineTo(tx, PAD.top + ph);
+    ctx.stroke();
+
+    // True mean label
+    ctx.fillStyle = '#dc2626';
+    ctx.font = 'bold 11px Inter,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('μ = 50', tx, PAD.top - 18);
+
+    // Legend
+    ctx.font = '10px Inter,sans-serif';
+    ctx.fillStyle = '#3b82f6';
+    ctx.fillRect(PAD.left, 8, 10, 10);
+    ctx.fillStyle = '#374151';
+    ctx.textAlign = 'left';
+    ctx.fillText('Captures μ', PAD.left + 14, 17);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(PAD.left + 110, 8, 10, 10);
+    ctx.fillStyle = '#374151';
+    ctx.fillText('Misses μ', PAD.left + 124, 17);
+
+    // Draw intervals
+    if (ciData.length > 0) {
+        const rowH = Math.max(2.5, ph / CI_TOTAL);
+        ciData.forEach((d, i) => {
+            const y = PAD.top + i * rowH + rowH / 2;
+            const lx = Math.max(PAD.left, toX(d.lower));
+            const ux = Math.min(PAD.left + pw, toX(d.upper));
+            const mx = Math.max(lx + 1, Math.min(ux - 1, toX(d.mean)));
+            const color = d.captures ? '#3b82f6' : '#ef4444';
+
+            ctx.globalAlpha = 0.85;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = rowH > 5 ? 2 : 1.5;
+            ctx.beginPath();
+            ctx.moveTo(lx, y);
+            ctx.lineTo(ux, y);
+            ctx.stroke();
+
+            // End caps
+            const cap = Math.min(rowH * 0.4, 3);
+            ctx.beginPath();
+            ctx.moveTo(lx, y - cap); ctx.lineTo(lx, y + cap); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(ux, y - cap); ctx.lineTo(ux, y + cap); ctx.stroke();
+
+            // Centre dot
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(mx, y, rowH > 5 ? 2.5 : 1.5, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    } else {
+        // Placeholder text
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#9ca3af';
+        ctx.font = '13px Inter,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Click "Run 100 Samples" to see confidence intervals in action', W / 2, H / 2);
+    }
+
+    ctx.globalAlpha = 1;
+
+    // X-axis tick labels
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '10px Inter,sans-serif';
+    ctx.textAlign = 'center';
+    for (let v = 20; v <= 80; v += 10) {
+        const x = toX(v);
+        ctx.fillText(v, x, PAD.top + ph + 16);
+    }
+
+    ctx.restore();
+}
+
+function initCICanvas() {
+    const canvas = document.getElementById('ciDanceCanvas');
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = canvas.offsetWidth * dpr;
+    canvas.height = canvas.offsetHeight * dpr;
+    drawCICanvas();
+}
+
 function startCIDance() {
-    const container = document.getElementById('ci-intervals');
     const btn = document.getElementById('ci-dance-start');
-   
-    if (btn.textContent === 'Stop') {
-        btn.textContent = 'Run 100 Samples';
+
+    if (ciRunning) {
+        ciRunning = false;
         clearInterval(simState.ciInterval);
+        btn.textContent = 'Run 100 Samples';
         return;
     }
-   
+
+    ciData = [];
+    ciRunning = true;
     btn.textContent = 'Stop';
-    container.innerHTML = '';
-   
+    initCICanvas();
+
     let count = 0;
     let captured = 0;
-    const trueMean = 50; // Center
-   
+
     simState.ciInterval = setInterval(() => {
-        for (let i = 0; i < 3; i++) { // Generate 3 at a time
-            if (count >= 100) {
+        for (let i = 0; i < 2; i++) {
+            if (count >= CI_TOTAL) {
                 clearInterval(simState.ciInterval);
-                btn.textContent = 'Run 100 Samples';
+                ciRunning = false;
+                btn.textContent = 'Run Again';
+                drawCICanvas();
                 return;
             }
-           
-            // Simulate sample
-            const sampleMean = trueMean + (Math.random() - 0.5) * 30;
-            const se = 10 + Math.random() * 5;
+            const sampleMean = CI_TRUE_MEAN + (Math.random() - 0.5) * 28;
+            const se = 7 + Math.random() * 6;
             const lower = sampleMean - 1.96 * se;
             const upper = sampleMean + 1.96 * se;
-            const captures = lower <= trueMean && upper >= trueMean;
-           
-            const bar = document.createElement('div');
-            bar.className = `h-6 mb-1 relative flex items-center ${captures ? 'opacity-100' : 'opacity-70'}`;
-           
-            const left = Math.max(0, (lower / 100) * 100);
-            const width = Math.min(100 - left, ((upper - lower) / 100) * 100);
-           
-            bar.innerHTML = `
-                <div class="absolute h-3 rounded-md ${captures ? 'bg-blue-500' : 'bg-red-500'}"
-                     style="left: ${left}%; width: ${width}%;"></div>
-                <div class="absolute w-2 h-2 rounded-full bg-gray-800 transform -translate-x-1/2"
-                     style="left: ${(sampleMean / 100) * 100}%"></div>
-            `;
-           
-            container.appendChild(bar);
-            container.scrollTop = container.scrollHeight;
-           
+            const captures = lower <= CI_TRUE_MEAN && upper >= CI_TRUE_MEAN;
+            ciData.push({ lower, upper, mean: sampleMean, captures });
             if (captures) captured++;
             count++;
         }
-       
+        drawCICanvas();
         document.getElementById('ci-capture-count').textContent = captured;
         document.getElementById('ci-total-count').textContent = count;
-        document.getElementById('ci-percentage').textContent = ((captured / count) * 100).toFixed(1);
-    }, 100);
+        document.getElementById('ci-percentage').textContent = count > 0 ? ((captured / count) * 100).toFixed(1) : '0';
+    }, 120);
 }
 
 function resetCIDance() {
     clearInterval(simState.ciInterval);
-    document.getElementById('ci-intervals').innerHTML = '<div class="text-center text-gray-400 mt-20">Click "Run 100 Samples" to see confidence intervals in action...</div>';
+    ciRunning = false;
+    ciData = [];
+    initCICanvas();
     document.getElementById('ci-capture-count').textContent = '0';
     document.getElementById('ci-total-count').textContent = '0';
     document.getElementById('ci-percentage').textContent = '0';
