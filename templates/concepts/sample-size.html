@@ -1,0 +1,104 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sample Size Basics — DentalStats</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'concepts/css/sample-size.css' %}">
+</head>
+
+<body class="bg-gray-50">
+  <header class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="users" class="w-7 h-7 text-teal-300"></i>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold">Sample Size Basics</h1>
+            <p class="text-gray-200 mt-1">Why “n matters”: stability, precision, and CLT intuition</p>
+          </div>
+        </div>
+        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-teal-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Why sample size is important</h2>
+      <ul class="list-disc pl-5 text-gray-700 space-y-1">
+        <li>Larger samples reduce random noise and make estimates more stable.</li>
+        <li>Precision improves: confidence intervals become narrower.</li>
+        <li>With larger n, sampling distributions become more “normal” (CLT intuition).</li>
+      </ul>
+      <p class="text-sm text-gray-600 mt-3">
+        The “n ≥ 30” idea is a rule of thumb, not a law — skewed/heavy-tail data may need more.
+      </p>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Mini CLT demo (sample means)</h2>
+      <p class="text-gray-700 mb-4">
+        Pick a population shape and sample size <strong>n</strong>. We repeatedly sample and plot the distribution of sample means.
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Population shape</label>
+          <select id="popType" class="w-full px-3 py-2 border rounded-lg">
+            <option value="uniform">Uniform</option>
+            <option value="exponential">Exponential (right-skew)</option>
+            <option value="bimodal">Bimodal</option>
+            <option value="dental">DMFT-like (right-skew)</option>
+          </select>
+
+          <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Sample size n</label>
+          <input id="n" type="range" min="1" max="100" value="30" class="w-full accent-teal-600">
+          <div class="flex justify-between text-xs text-gray-500 mt-1">
+            <span>1</span><span id="nLabel" class="font-bold text-teal-700">30</span><span>100</span>
+          </div>
+
+          <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Draws per run</label>
+          <input id="draws" type="number" value="300" class="w-full px-3 py-2 border rounded-lg">
+
+          <div class="mt-4 flex gap-2">
+            <button id="run" class="flex-1 px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition">Run</button>
+            <button id="reset" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition">Reset</button>
+          </div>
+
+          <div class="mt-4 bg-gray-50 rounded-xl border p-3 text-sm">
+            <div><strong>Draws:</strong> <span id="count">0</span></div>
+            <div><strong>Mean of means:</strong> <span id="mom">-</span></div>
+            <div><strong>SD of means:</strong> <span id="som">-</span></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Distribution of sample means</h3>
+          <div class="h-80"><canvas id="cltChart"></canvas></div>
+          <p class="text-xs text-gray-500 mt-2">As n increases, the sample-mean distribution becomes tighter and more bell-shaped.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Dental context</h2>
+      <p class="text-gray-700">
+        For outcomes like DMFT or plaque scores, skewness is common. If you plan parametric tests,
+        consider transformations or nonparametric alternatives, and plan n accordingly.
+      </p>
+    </section>
+  </main>
+
+  <script src="{% static 'js/script.js' %}"></script>
+  <script src="{% static 'concepts/js/sample-size.js' %}"></script>
+</body>
+</html>

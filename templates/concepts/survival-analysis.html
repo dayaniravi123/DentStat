@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Survival Analysis — DentalStats</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+  </style>
+</head>
+<body class="bg-gray-50">
+  <header class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="clock" class="w-7 h-7 text-red-300"></i>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold">Survival Analysis</h1>
+            <p class="text-gray-200 mt-1">Kaplan–Meier intuition + censored observations</p>
+          </div>
+        </div>
+        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-red-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">What makes “survival” special?</h2>
+      <ul class="list-disc pl-5 text-gray-700 space-y-1">
+        <li>Outcome is <strong>time-to-event</strong> (implant failure time, time to caries recurrence, etc.).</li>
+        <li>Some subjects are <strong>censored</strong> (event not observed by study end).</li>
+        <li>Kaplan–Meier estimates survival as a step function.</li>
+      </ul>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: Kaplan–Meier curve (input table)</h2>
+      <p class="text-gray-700 mb-4">Enter time points, number at risk, and events. This matches your index calculator style.</p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <div class="space-y-3 mb-4">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium text-gray-700 w-28">Time (months)</span>
+              <input id="km-time" class="flex-1 px-3 py-2 border rounded-lg text-sm" value="0,6,12,24,36">
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium text-gray-700 w-28">At risk</span>
+              <input id="km-risk" class="flex-1 px-3 py-2 border rounded-lg text-sm" value="100,95,88,80,75">
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium text-gray-700 w-28">Events</span>
+              <input id="km-events" class="flex-1 px-3 py-2 border rounded-lg text-sm" value="0,5,7,8,5">
+            </div>
+          </div>
+
+          <button id="km-run" class="w-full px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">
+            Generate KM Curve
+          </button>
+
+          <div class="mt-4 bg-indigo-50 border border-indigo-200 rounded-xl p-4 text-sm" id="km-summary">Summary will appear here.</div>
+        </div>
+
+        <div class="bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Kaplan–Meier</h3>
+          <div class="h-80"><canvas id="kmChart"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
+      <p class="text-gray-700">
+        Implant survival is often reported with Kaplan–Meier curves, and groups (e.g., smoker vs non-smoker) can be compared
+        using the log-rank test.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    let chart=null;
+
+    function parseCSV(s){ return s.split(',').map(x=>parseFloat(x.trim())).filter(x=>!Number.isNaN(x)); }
+
+    function run(){
+      const times=parseCSV(document.getElementById('km-time').value);
+      const risk=parseCSV(document.getElementById('km-risk').value);
+      const events=parseCSV(document.getElementById('km-events').value);
+
+      if(times.length!==risk.length || times.length!==events.length || times.length===0){
+        document.getElementById('km-summary').textContent="Please ensure arrays have the same length.";
+        return;
+      }
+
+      let surv=1;
+      const S=[];
+      for(let i=0;i<times.length;i++){
+        if(risk[i]>0){
+          surv *= (1 - events[i]/risk[i]);
+        }
+        S.push(surv*100);
+      }
+
+      document.getElementById('km-summary').innerHTML =
+        `Survival at <strong>${times[times.length-1]}</strong> months: <strong>${S[S.length-1].toFixed(1)}%</strong>`;
+
+      render(times,S);
+    }
+
+    function render(times,S){
+      const ctx=document.getElementById('kmChart').getContext('2d');
+      if(chart) chart.destroy();
+      chart=new Chart(ctx,{
+        type:'line',
+        data:{
+          labels:times.map(t=>`${t} mo`),
+          datasets:[{
+            label:'Survival (%)',
+            data:S,
+            borderColor:'#4f46e5',
+            backgroundColor:'rgba(79,70,229,0.12)',
+            stepped:true,
+            fill:true,
+            pointRadius:3,
+            tension:0
+          }]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          scales:{
+            y:{min:0,max:100,title:{display:true,text:'Survival %'}},
+            x:{title:{display:true,text:'Time'}}
+          }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('km-run').addEventListener('click', run);
+      run();
+    });
+  </script>
+</body>
+</html>

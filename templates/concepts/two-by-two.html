@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>2×2 Tables — DentalStats</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+  </style>
+</head>
+
+<body class="bg-gray-50">
+  <header class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="grid-2x2" class="w-7 h-7 text-teal-300"></i>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold">2×2 Tables</h1>
+            <p class="text-gray-200 mt-1">Diagnostic test accuracy: sensitivity, specificity, PPV, NPV</p>
+          </div>
+        </div>
+        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-blue-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">What is a 2×2 table?</h2>
+      <p class="text-gray-700">
+        A 2×2 table summarizes two binary variables. In diagnostics, one axis is the <strong>true condition</strong>
+        (disease present/absent) and the other is the <strong>test result</strong> (positive/negative).
+      </p>
+      <div class="mt-4 overflow-x-auto">
+        <table class="min-w-[520px] w-full text-sm bg-white border rounded-xl overflow-hidden">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="p-3 border-b"></th>
+              <th class="p-3 border-b text-left">Condition +</th>
+              <th class="p-3 border-b text-left">Condition −</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="p-3 border-b font-medium bg-gray-50">Test +</td>
+              <td class="p-3 border-b">True Positive (TP)</td>
+              <td class="p-3 border-b">False Positive (FP)</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-medium bg-gray-50">Test −</td>
+              <td class="p-3">False Negative (FN)</td>
+              <td class="p-3">True Negative (TN)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive calculator</h2>
+      <p class="text-gray-700 mb-4">
+        Enter TP/FP/FN/TN (e.g., caries detection test vs reference standard) and compute metrics.
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-gray-600">TP</label>
+              <input id="tp" type="number" value="85" class="w-full px-3 py-2 border rounded-lg">
+            </div>
+            <div>
+              <label class="text-xs text-gray-600">FP</label>
+              <input id="fp" type="number" value="15" class="w-full px-3 py-2 border rounded-lg">
+            </div>
+            <div>
+              <label class="text-xs text-gray-600">FN</label>
+              <input id="fn" type="number" value="10" class="w-full px-3 py-2 border rounded-lg">
+            </div>
+            <div>
+              <label class="text-xs text-gray-600">TN</label>
+              <input id="tn" type="number" value="90" class="w-full px-3 py-2 border rounded-lg">
+            </div>
+          </div>
+
+          <button id="calc" class="mt-4 w-full px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+            Calculate
+          </button>
+
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-200">
+              <div class="text-xs text-gray-600">Sensitivity</div>
+              <div class="text-xl font-bold text-blue-700" id="sens">-</div>
+            </div>
+            <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-200">
+              <div class="text-xs text-gray-600">Specificity</div>
+              <div class="text-xl font-bold text-blue-700" id="spec">-</div>
+            </div>
+            <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-200">
+              <div class="text-xs text-gray-600">PPV</div>
+              <div class="text-xl font-bold text-blue-700" id="ppv">-</div>
+            </div>
+            <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-200">
+              <div class="text-xs text-gray-600">NPV</div>
+              <div class="text-xl font-bold text-blue-700" id="npv">-</div>
+            </div>
+          </div>
+
+          <div class="mt-4 bg-gray-50 rounded-xl border p-3 text-sm text-gray-700" id="interpret">
+            Tip: PPV/NPV change with prevalence; sensitivity/specificity are more intrinsic to the test.
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Metric definitions</h3>
+          <ul class="text-sm text-gray-700 space-y-2">
+            <li><strong>Sensitivity</strong> = TP / (TP + FN) — among condition+, how often test is +</li>
+            <li><strong>Specificity</strong> = TN / (TN + FP) — among condition−, how often test is −</li>
+            <li><strong>PPV</strong> = TP / (TP + FP) — among test+, probability condition is present</li>
+            <li><strong>NPV</strong> = TN / (TN + FN) — among test−, probability condition is absent</li>
+          </ul>
+
+          <div class="mt-4">
+            <h3 class="font-semibold text-gray-800 mb-2">Visual: sensitivity & specificity</h3>
+            <div class="h-56"><canvas id="bar"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example (quick interpretation)</h2>
+      <p class="text-gray-700">
+        For a caries detection device, high sensitivity reduces missed lesions (low FN), while high specificity reduces false alarms (low FP).
+        The best balance depends on clinical context and downstream costs of errors.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+
+    let barChart=null;
+
+    function pct(x){ return (x*100).toFixed(1)+'%'; }
+
+    function compute(){
+      const TP=+document.getElementById('tp').value||0;
+      const FP=+document.getElementById('fp').value||0;
+      const FN=+document.getElementById('fn').value||0;
+      const TN=+document.getElementById('tn').value||0;
+
+      const sens = (TP+FN) ? TP/(TP+FN) : 0;
+      const spec = (TN+FP) ? TN/(TN+FP) : 0;
+      const ppv  = (TP+FP) ? TP/(TP+FP) : 0;
+      const npv  = (TN+FN) ? TN/(TN+FN) : 0;
+
+      document.getElementById('sens').textContent=pct(sens);
+      document.getElementById('spec').textContent=pct(spec);
+      document.getElementById('ppv').textContent=pct(ppv);
+      document.getElementById('npv').textContent=pct(npv);
+
+      const prev = (TP+FN+FP+TN) ? (TP+FN)/(TP+FN+FP+TN) : 0;
+      document.getElementById('interpret').innerHTML =
+        `<strong>Prevalence in this sample:</strong> ${pct(prev)}<br>
+         Sens/Spec describe test behavior vs truth; PPV/NPV also depend on prevalence.`;
+
+      renderBars(sens,spec,ppv,npv);
+    }
+
+    function renderBars(sens,spec,ppv,npv){
+      const ctx=document.getElementById('bar').getContext('2d');
+      if(barChart) barChart.destroy();
+      barChart=new Chart(ctx,{
+        type:'bar',
+        data:{
+          labels:['Sensitivity','Specificity','PPV','NPV'],
+          datasets:[{ data:[sens,spec,ppv,npv], backgroundColor:[
+            'rgba(59,130,246,0.75)','rgba(59,130,246,0.55)','rgba(59,130,246,0.45)','rgba(59,130,246,0.35)'
+          ]}]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{display:false}},
+          scales:{ y:{ min:0, max:1, ticks:{ callback:(v)=>Math.round(v*100)+'%' } } }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('calc').addEventListener('click', compute);
+      compute();
+    });
+  </script>
+</body>
+</html>

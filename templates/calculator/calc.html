@@ -1,0 +1,1244 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StatLab — Statistical Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    :root {
+      /* Light theme variables to match index.html */
+      --bg: #f8fafc; /* gray-50 */
+      --surface: #ffffff;
+      --card: #ffffff;
+      --border: #e6e9ef; /* light border */
+      --accent: #0d9488; /* teal-600 */
+      --accent2: #ef4444; /* red-500 */
+      --accent3: #7c3aed; /* purple-600 */
+      --accent4: #10b981; /* green-500 */
+      --text: #0f172a; /* gray-900 */
+      --muted: #6b7280; /* gray-500 */
+      --glow: rgba(13,148,136,0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+   /* No scoped overrides — allow Tailwind utilities to control text colors so the page matches the main site */
+
+    /* Animated grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      padding: 32px 0 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .logo-text {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.4rem;
+      color: var(--text);
+      letter-spacing: -1px;
+    }
+
+    .logo-text span {
+      color: var(--accent);
+    }
+
+    .logo-badge {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      background: var(--accent);
+      color: var(--bg);
+      padding: 3px 8px;
+      border-radius: 3px;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+
+    .header-meta {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      margin-bottom: 32px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 10px 18px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 600;
+    }
+
+    .tab-btn:hover:not(.active) {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    /* Panels */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Main grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover { border-color: rgba(0,229,255,0.25); }
+
+    .card-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title::before {
+      content: '';
+      width: 16px;
+      height: 2px;
+      background: var(--accent);
+      display: inline-block;
+    }
+
+    /* Input area */
+    .input-area {
+      grid-column: 1 / -1;
+    }
+
+    .data-entry-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .data-textarea {
+      flex: 1;
+      min-height: 100px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      resize: vertical;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    .data-textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+
+    .data-textarea::placeholder { color: var(--muted); }
+
+    .input-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 9px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+    }
+    .btn-primary:hover { background: #00bcd4; transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--accent2);
+      border: 1px solid var(--accent2);
+    }
+    .btn-danger:hover { background: var(--accent2); color: white; }
+
+    .separator-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .separator-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .sep-select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      padding: 5px 10px;
+      border-radius: 7px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Data chips display */
+    .data-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+      min-height: 36px;
+      padding: 8px;
+      background: var(--surface);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .chip {
+      background: var(--border);
+      color: var(--text);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: chipIn 0.2s ease;
+    }
+
+    @keyframes chipIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .chip-remove {
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    .chip-remove:hover { color: var(--accent2); }
+
+    /* Results grid */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .stat-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-item::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--item-color, var(--accent));
+      transform: scaleX(0);
+      transition: transform 0.4s ease;
+    }
+
+    .stat-item.reveal::after { transform: scaleX(1); }
+
+    .stat-label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .stat-value {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--item-color, var(--accent));
+      word-break: break-all;
+    }
+
+    .stat-item.loading .stat-value {
+      background: var(--border);
+      border-radius: 4px;
+      color: transparent;
+      animation: shimmer 1s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.4; }
+    }
+
+    /* Quick single calc */
+    .single-calc-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .single-input {
+      flex: 1;
+      min-width: 120px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .single-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+
+    .single-input::placeholder { color: var(--muted); }
+
+    /* Probability section */
+    .prob-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 600px) { .prob-grid { grid-template-columns: 1fr; } }
+
+    .prob-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .prob-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent3);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .prob-result {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent3);
+      margin-top: 12px;
+      min-height: 2rem;
+    }
+
+    /* Chart area */
+    .chart-area {
+      height: 200px;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-top: 16px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 16px 16px;
+      gap: 4px;
+    }
+
+    .bar {
+      flex: 1;
+      background: var(--accent);
+      opacity: 0.7;
+      border-radius: 4px 4px 0 0;
+      transition: height 0.5s cubic-bezier(.34,1.56,.64,1), opacity 0.2s;
+      min-width: 8px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .bar:hover { opacity: 1; }
+
+    .bar-tooltip {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: var(--bg);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      padding: 3px 7px;
+      border-radius: 5px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s;
+    }
+
+    .bar:hover .bar-tooltip { opacity: 1; }
+
+    .chart-empty {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+    }
+
+    /* Notification toast */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--card);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 0.82rem;
+      font-family: 'Space Mono', monospace;
+      color: var(--accent);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* History list */
+    .history-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .history-item:hover { border-color: var(--accent); }
+
+    .history-data { color: var(--muted); }
+    .history-mean { color: var(--accent); }
+
+    /* Formula reference */
+    .formula-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .formula-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .formula-name {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent4);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .formula-expr {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .formula-desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.78rem;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--surface); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card { animation: fadeUp 0.4s ease both; }
+    .card:nth-child(2) { animation-delay: 0.08s; }
+    .card:nth-child(3) { animation-delay: 0.16s; }
+    .card:nth-child(4) { animation-delay: 0.24s; }
+  </style>
+</head>
+<body class="bg-gray-50 smooth-scroll">
+
+  <!-- Navigation (shared with site) -->
+  <nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <div class="flex items-center space-x-3">
+          <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+          <div>
+            <h1 class="text-xl font-bold">DentalStats</h1>
+            <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+          </div>
+        </div>
+        <div class="hidden md:flex space-x-8">
+          <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+          <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+          <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+        </div>
+        <button id="mobile-menu-btn" class="md:hidden">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-8">
+
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('descriptive')">📊 Descriptive</button>
+    <button class="tab-btn" onclick="switchTab('probability')">🎲 Probability</button>
+    <button class="tab-btn" onclick="switchTab('converter')">🔁 Converter</button>
+    <button class="tab-btn" onclick="switchTab('history')">🕘 History</button>
+    <button class="tab-btn" onclick="switchTab('formulas')">📐 Formulas</button>
+  </div>
+
+  <!-- ======= DESCRIPTIVE TAB ======= -->
+  <div id="tab-descriptive" class="tab-panel active">
+    <div class="main-grid">
+
+      <!-- Data Input Card -->
+      <div class="card input-area">
+        <div class="card-title">Data Input</div>
+        <div class="separator-row">
+          <span class="separator-label">Separator:</span>
+          <select class="sep-select" id="separatorSelect">
+            <option value=",">Comma (,)</option>
+            <option value=" ">Space</option>
+            <option value=";">Semicolon (;)</option>
+            <option value="\n">Newline</option>
+          </select>
+          <span class="separator-label">or add one at a time:</span>
+        </div>
+        <div class="data-entry-row">
+          <textarea id="dataInput" class="data-textarea" placeholder="e.g. 12, 45, 67, 23, 89, 34, 56...&#10;Enter numbers separated by comma, space, or newline"></textarea>
+          <div class="input-controls">
+            <button class="btn btn-primary" onclick="parseAndAdd()">Parse</button>
+            <button class="btn btn-secondary" onclick="generateRandom()">Random</button>
+            <button class="btn btn-danger" onclick="clearAll()">Clear</button>
+          </div>
+        </div>
+        <div class="single-calc-row">
+          <input class="single-input" id="singleEntry" type="number" placeholder="Add single value..." onkeydown="if(event.key==='Enter') addSingle()"/>
+          <button class="btn btn-secondary" onclick="addSingle()">+ Add</button>
+        </div>
+        <div class="data-chips" id="dataChips">
+          <span style="color:var(--muted);font-size:0.75rem;font-family:'Space Mono',monospace;padding:4px;">No data yet</span>
+        </div>
+      </div>
+
+      <!-- Results Card -->
+      <div class="card" id="resultsCard" style="grid-column:1/-1;">
+        <div class="card-title">Statistical Results</div>
+        <div id="resultsContent">
+          <div class="empty-state">↑ Enter data above and click Calculate</div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px;width:100%" onclick="calculateStats()">⚡ Calculate All Statistics</button>
+      </div>
+
+      <!-- Chart Card -->
+      <div class="card" style="grid-column:1/-1;">
+        <div class="card-title">Distribution Chart</div>
+        <div class="chart-area" id="chartArea">
+          <div class="chart-empty" id="chartEmpty">Enter data to visualize distribution</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======= PROBABILITY TAB ======= -->
+  <div id="tab-probability" class="tab-panel">
+    <div class="main-grid">
+      <div class="card" style="grid-column:1/-1;">
+        <div class="card-title">Probability Calculators</div>
+        <div class="prob-grid">
+
+          <!-- Normal Distribution -->
+          <div class="prob-card">
+            <div class="prob-title">Normal Distribution (Z-score)</div>
+            <div class="single-calc-row">
+              <input class="single-input" id="normX" type="number" placeholder="Value (x)" />
+              <input class="single-input" id="normMu" type="number" placeholder="Mean (μ)" value="0"/>
+              <input class="single-input" id="normSigma" type="number" placeholder="Std Dev (σ)" value="1"/>
+            </div>
+            <button class="btn btn-primary" onclick="calcNormal()">Calculate Z-score</button>
+            <div class="prob-result" id="normResult">—</div>
+          </div>
+
+          <!-- Binomial -->
+          <div class="prob-card">
+            <div class="prob-title">Binomial Distribution P(X=k)</div>
+            <div class="single-calc-row">
+              <input class="single-input" id="binN" type="number" placeholder="Trials (n)" />
+              <input class="single-input" id="binK" type="number" placeholder="Successes (k)" />
+              <input class="single-input" id="binP" type="number" placeholder="Probability (p)" step="0.01" min="0" max="1"/>
+            </div>
+            <button class="btn btn-primary" onclick="calcBinomial()">Calculate P(X=k)</button>
+            <div class="prob-result" id="binResult">—</div>
+          </div>
+
+          <!-- Poisson -->
+          <div class="prob-card">
+            <div class="prob-title">Poisson Distribution P(X=k)</div>
+            <div class="single-calc-row">
+              <input class="single-input" id="poisLambda" type="number" placeholder="Lambda (λ)" />
+              <input class="single-input" id="poisK" type="number" placeholder="Events (k)" />
+            </div>
+            <button class="btn btn-primary" onclick="calcPoisson()">Calculate P(X=k)</button>
+            <div class="prob-result" id="poisResult">—</div>
+          </div>
+
+          <!-- Combination / Permutation -->
+          <div class="prob-card">
+            <div class="prob-title">Combination & Permutation</div>
+            <div class="single-calc-row">
+              <input class="single-input" id="comboN" type="number" placeholder="n" />
+              <input class="single-input" id="comboR" type="number" placeholder="r" />
+            </div>
+            <div style="display:flex;gap:8px;margin-top:4px">
+              <button class="btn btn-primary" onclick="calcCombo('C')">C(n,r)</button>
+              <button class="btn btn-secondary" onclick="calcCombo('P')">P(n,r)</button>
+            </div>
+            <div class="prob-result" id="comboResult">—</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= CONVERTER TAB ======= -->
+  <div id="tab-converter" class="tab-panel">
+    <div class="main-grid">
+      <div class="card">
+        <div class="card-title">Percentage ↔ Decimal ↔ Fraction</div>
+        <input class="single-input" id="convInput" type="number" step="any" placeholder="Enter value..." style="width:100%;margin-bottom:12px"/>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+          <button class="btn btn-primary" onclick="convertVal('pct')">% → Decimal</button>
+          <button class="btn btn-secondary" onclick="convertVal('dec')">Decimal → %</button>
+          <button class="btn btn-secondary" onclick="convertVal('frac')">→ Fraction</button>
+        </div>
+        <div class="stat-item" id="convResult" style="--item-color:var(--accent4)">
+          <div class="stat-label">Result</div>
+          <div class="stat-value">—</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Logarithm Calculator</div>
+        <div class="single-calc-row" style="flex-direction:column;gap:10px">
+          <input class="single-input" id="logVal" type="number" placeholder="Value" />
+          <input class="single-input" id="logBase" type="number" placeholder="Base (leave empty for ln)" />
+        </div>
+        <button class="btn btn-primary" style="margin-top:10px" onclick="calcLog()">Calculate</button>
+        <div class="stat-item" style="margin-top:14px;--item-color:var(--accent3)" id="logResult">
+          <div class="stat-label">Result</div>
+          <div class="stat-value">—</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Power & Root</div>
+        <div class="single-calc-row">
+          <input class="single-input" id="powBase" type="number" placeholder="Base" />
+          <input class="single-input" id="powExp" type="number" step="any" placeholder="Exponent" />
+        </div>
+        <button class="btn btn-primary" style="margin-top:8px" onclick="calcPow()">Compute</button>
+        <div class="stat-item" style="margin-top:14px;--item-color:var(--accent2)" id="powResult">
+          <div class="stat-label">Result</div>
+          <div class="stat-value">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= HISTORY TAB ======= -->
+  <div id="tab-history" class="tab-panel">
+    <div class="card">
+      <div class="card-title" style="justify-content:space-between;display:flex;width:100%">
+        <span>Calculation History</span>
+        <button class="btn btn-danger" style="font-size:0.7rem;padding:4px 10px" onclick="clearHistory()">Clear All</button>
+      </div>
+      <ul class="history-list" id="historyList">
+        <li style="color:var(--muted);font-family:'Space Mono',monospace;font-size:0.75rem;padding:16px;text-align:center">No history yet</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ======= FORMULAS TAB ======= -->
+  <div id="tab-formulas" class="tab-panel">
+    <div class="card">
+      <div class="card-title">Statistical Formula Reference</div>
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="formula-name">Mean</div>
+          <div class="formula-expr">x̄ = Σxᵢ / n</div>
+          <div class="formula-desc">Sum of all values divided by the count of values.</div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-name">Variance (Sample)</div>
+          <div class="formula-expr">s² = Σ(xᵢ - x̄)² / (n-1)</div>
+          <div class="formula-desc">Average squared deviation from the mean using Bessel's correction.</div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-name">Std Deviation</div>
+          <div class="formula-expr">s = √s²</div>
+          <div class="formula-desc">Square root of variance; measures spread in original units.</div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-name">Z-Score</div>
+          <div class="formula-expr">z = (x - μ) / σ</div>
+          <div class="formula-desc">Number of standard deviations a point is from the mean.</div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-name">IQR</div>
+          <div class="formula-expr">IQR = Q3 - Q1</div>
+          <div class="formula-desc">Interquartile range; robust measure of statistical dispersion.</div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-name">Coeff. of Variation</div>
+          <div class="formula-expr">CV = (s / x̄) × 100</div>
+          <div class="formula-desc">Relative variability expressed as a percentage of the mean.</div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-name">Binomial P(X=k)</div>
+          <div class="formula-expr">C(n,k) · pᵏ · (1-p)ⁿ⁻ᵏ</div>
+          <div class="formula-desc">Probability of exactly k successes in n independent Bernoulli trials.</div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-name">Poisson P(X=k)</div>
+          <div class="formula-expr">(λᵏ · e⁻λ) / k!</div>
+          <div class="formula-desc">Probability of k events in a fixed interval given mean rate λ.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ═══════════════════════════════════════════
+  // State
+  // ═══════════════════════════════════════════
+  let dataSet = [];
+  let history = [];
+
+  const COLORS = ['#00e5ff','#a78bfa','#34d399','#ff6b6b','#fbbf24','#f472b6','#60a5fa','#fb923c'];
+
+  // ═══════════════════════════════════════════
+  // Tabs
+  // ═══════════════════════════════════════════
+  function switchTab(name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`tab-${name}`).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  // ═══════════════════════════════════════════
+  // Data Management
+  // ═══════════════════════════════════════════
+  function parseAndAdd() {
+    const raw = document.getElementById('dataInput').value.trim();
+    const sep = document.getElementById('separatorSelect').value;
+    if (!raw) return showToast('No data to parse!');
+    const parts = raw.split(sep === '\\n' ? /\n/ : sep)
+      .map(s => parseFloat(s.trim()))
+      .filter(n => !isNaN(n));
+    if (parts.length === 0) return showToast('No valid numbers found!');
+    dataSet.push(...parts);
+    document.getElementById('dataInput').value = '';
+    renderChips();
+    updateChart();
+    showToast(`Added ${parts.length} values`);
+  }
+
+  function addSingle() {
+    const val = parseFloat(document.getElementById('singleEntry').value);
+    if (isNaN(val)) return showToast('Enter a valid number!');
+    dataSet.push(val);
+    document.getElementById('singleEntry').value = '';
+    renderChips();
+    updateChart();
+  }
+
+  function removeValue(index) {
+    dataSet.splice(index, 1);
+    renderChips();
+    updateChart();
+  }
+
+  function clearAll() {
+    dataSet = [];
+    renderChips();
+    updateChart();
+    document.getElementById('resultsContent').innerHTML = '<div class="empty-state">↑ Enter data above and click Calculate</div>';
+    showToast('Data cleared');
+  }
+
+  function generateRandom() {
+    const n = Math.floor(Math.random() * 15) + 10;
+    dataSet = Array.from({length: n}, () => Math.round(Math.random() * 100 * 10) / 10);
+    renderChips();
+    updateChart();
+    showToast(`Generated ${n} random values`);
+  }
+
+  function renderChips() {
+    const container = document.getElementById('dataChips');
+    if (dataSet.length === 0) {
+      container.innerHTML = '<span style="color:var(--muted);font-size:0.75rem;font-family:\'Space Mono\',monospace;padding:4px;">No data yet</span>';
+      return;
+    }
+    container.innerHTML = dataSet.map((v, i) =>
+      `<div class="chip">
+        ${v}
+        <span class="chip-remove" onclick="removeValue(${i})">×</span>
+      </div>`
+    ).join('');
+  }
+
+  // ═══════════════════════════════════════════
+  // Statistics Calculation
+  // ═══════════════════════════════════════════
+  async function calculateStats() {
+    if (dataSet.length < 2) return showToast('Need at least 2 values!');
+
+    // Show loading
+    const grid = `<div class="results-grid">${['mean','median','mode','std_dev','variance','min','max','range','q1','q3','iqr','count','sum','cv']
+      .map(k => `<div class="stat-item loading" style="--item-color:${COLORS[Math.floor(Math.random()*COLORS.length)]}"><div class="stat-label">${k}</div><div class="stat-value">loading</div></div>`)
+      .join('')}</div>`;
+    document.getElementById('resultsContent').innerHTML = grid;
+
+    try {
+      const res = await fetch('/api/calculate/', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json', 'X-CSRFToken': getCookie('csrftoken')},
+        body: JSON.stringify({numbers: dataSet, operation: 'all'})
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+      renderResults(data.result);
+      saveHistory(data.result);
+    } catch(e) {
+      // Fallback: compute client-side
+      const r = computeClientSide(dataSet);
+      renderResults(r);
+      saveHistory(r);
+    }
+  }
+
+  function computeClientSide(nums) {
+    const n = nums.length;
+    const sorted = [...nums].sort((a,b)=>a-b);
+    const mean = nums.reduce((s,v) => s+v, 0) / n;
+    const variance = nums.reduce((s,v) => s + Math.pow(v-mean,2), 0) / (n-1);
+    return {
+      count: n, mean: +mean.toFixed(4),
+      median: +(sorted[Math.floor(n/2)]).toFixed(4),
+      min: sorted[0], max: sorted[n-1],
+      range: +(sorted[n-1]-sorted[0]).toFixed(4),
+      sum: +nums.reduce((s,v)=>s+v,0).toFixed(4),
+      variance: +variance.toFixed(4),
+      std_dev: +Math.sqrt(variance).toFixed(4),
+      q1: +percentile(sorted, 25).toFixed(4),
+      q3: +percentile(sorted, 75).toFixed(4),
+      iqr: +(percentile(sorted,75)-percentile(sorted,25)).toFixed(4),
+      cv: +(Math.sqrt(variance)/mean*100).toFixed(2)
+    };
+  }
+
+  function percentile(sorted, p) {
+    const idx = (p/100)*(sorted.length-1);
+    const lo = Math.floor(idx), hi = lo+1;
+    if (hi >= sorted.length) return sorted[lo];
+    return sorted[lo] + (idx-lo)*(sorted[hi]-sorted[lo]);
+  }
+
+  function renderResults(r) {
+    const labels = {
+      count:'Count', mean:'Mean (x̄)', median:'Median', mode:'Mode',
+      sum:'Sum', min:'Minimum', max:'Maximum', range:'Range',
+      variance:'Sample Variance', std_dev:'Std Deviation',
+      pop_variance:'Pop. Variance', pop_std_dev:'Pop. Std Dev',
+      q1:'Q1 (25th)', q3:'Q3 (75th)', iqr:'IQR', cv:'CV (%)'
+    };
+    const html = `<div class="results-grid">${
+      Object.entries(r).map(([k,v],i) => {
+        const color = COLORS[i % COLORS.length];
+        const disp = typeof v === 'number' ? (+v.toFixed(4)).toLocaleString() : v;
+        return `<div class="stat-item" style="--item-color:${color}" id="si-${k}">
+          <div class="stat-label">${labels[k]||k}</div>
+          <div class="stat-value">${disp}</div>
+        </div>`;
+      }).join('')
+    }</div>`;
+    document.getElementById('resultsContent').innerHTML = html;
+    // Animate reveal
+    setTimeout(() => document.querySelectorAll('.stat-item').forEach((el,i) => {
+      setTimeout(() => el.classList.add('reveal'), i*50);
+    }), 50);
+    showToast('Calculations complete!');
+  }
+
+  // ═══════════════════════════════════════════
+  // Chart
+  // ═══════════════════════════════════════════
+  function updateChart() {
+    const area = document.getElementById('chartArea');
+    const empty = document.getElementById('chartEmpty');
+    if (dataSet.length < 2) {
+      area.innerHTML = '<div class="chart-empty" id="chartEmpty">Enter data to visualize distribution</div>';
+      return;
+    }
+    const min = Math.min(...dataSet), max = Math.max(...dataSet);
+    const bins = 12;
+    const step = (max - min) / bins || 1;
+    const counts = Array(bins).fill(0);
+    dataSet.forEach(v => {
+      const idx = Math.min(Math.floor((v-min)/step), bins-1);
+      counts[idx]++;
+    });
+    const maxCount = Math.max(...counts);
+    area.innerHTML = counts.map((c,i) => {
+      const h = maxCount ? (c/maxCount)*90 : 0;
+      const lo = (min+i*step).toFixed(1), hi = (min+(i+1)*step).toFixed(1);
+      const col = COLORS[i % COLORS.length];
+      return `<div class="bar" style="height:${h}%;background:${col}">
+        <div class="bar-tooltip">[${lo}, ${hi}): ${c}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ═══════════════════════════════════════════
+  // Probability
+  // ═══════════════════════════════════════════
+  function calcNormal() {
+    const x = parseFloat(document.getElementById('normX').value);
+    const mu = parseFloat(document.getElementById('normMu').value);
+    const sigma = parseFloat(document.getElementById('normSigma').value);
+    if ([x,mu,sigma].some(isNaN) || sigma === 0) return;
+    const z = (x - mu) / sigma;
+    document.getElementById('normResult').textContent = `z = ${z.toFixed(4)}`;
+  }
+
+  function factorial(n) {
+    if (n <= 1) return 1;
+    let r = 1;
+    for (let i = 2; i <= n; i++) r *= i;
+    return r;
+  }
+
+  function combination(n, k) {
+    return factorial(n) / (factorial(k) * factorial(n-k));
+  }
+
+  function calcBinomial() {
+    const n = parseInt(document.getElementById('binN').value);
+    const k = parseInt(document.getElementById('binK').value);
+    const p = parseFloat(document.getElementById('binP').value);
+    if ([n,k,p].some(isNaN) || p<0 || p>1 || k>n) return;
+    const prob = combination(n,k) * Math.pow(p,k) * Math.pow(1-p, n-k);
+    document.getElementById('binResult').textContent = `P = ${prob.toFixed(6)}`;
+  }
+
+  function calcPoisson() {
+    const lambda = parseFloat(document.getElementById('poisLambda').value);
+    const k = parseInt(document.getElementById('poisK').value);
+    if ([lambda,k].some(isNaN)) return;
+    const prob = (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
+    document.getElementById('poisResult').textContent = `P = ${prob.toFixed(6)}`;
+  }
+
+  function calcCombo(type) {
+    const n = parseInt(document.getElementById('comboN').value);
+    const r = parseInt(document.getElementById('comboR').value);
+    if ([n,r].some(isNaN) || r > n) return;
+    const result = type === 'C' ? combination(n,r) : factorial(n)/factorial(n-r);
+    document.getElementById('comboResult').textContent = `${type}(${n},${r}) = ${result.toLocaleString()}`;
+  }
+
+  // ═══════════════════════════════════════════
+  // Converter
+  // ═══════════════════════════════════════════
+  function convertVal(type) {
+    const v = parseFloat(document.getElementById('convInput').value);
+    if (isNaN(v)) return;
+    let result;
+    if (type === 'pct') result = `${v}% = ${(v/100).toFixed(6)}`;
+    else if (type === 'dec') result = `${v} = ${(v*100).toFixed(4)}%`;
+    else {
+      const gcd = (a,b) => b ? gcd(b, a%b) : a;
+      const denom = 1000000;
+      const num = Math.round(v * denom);
+      const g = gcd(Math.abs(num), denom);
+      result = `≈ ${num/g}/${denom/g}`;
+    }
+    document.querySelector('#convResult .stat-value').textContent = result;
+  }
+
+  function calcLog() {
+    const v = parseFloat(document.getElementById('logVal').value);
+    const base = document.getElementById('logBase').value.trim();
+    if (isNaN(v) || v <= 0) return;
+    const result = base ? Math.log(v)/Math.log(parseFloat(base)) : Math.log(v);
+    document.querySelector('#logResult .stat-value').textContent = result.toFixed(6);
+  }
+
+  function calcPow() {
+    const b = parseFloat(document.getElementById('powBase').value);
+    const e = parseFloat(document.getElementById('powExp').value);
+    if ([b,e].some(isNaN)) return;
+    document.querySelector('#powResult .stat-value').textContent = Math.pow(b,e).toFixed(6);
+  }
+
+  // ═══════════════════════════════════════════
+  // History
+  // ═══════════════════════════════════════════
+  function saveHistory(result) {
+    const entry = {
+      time: new Date().toLocaleTimeString(),
+      data: [...dataSet].slice(0,5).join(', ') + (dataSet.length > 5 ? '...' : ''),
+      n: dataSet.length,
+      mean: result.mean
+    };
+    history.unshift(entry);
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const list = document.getElementById('historyList');
+    if (history.length === 0) {
+      list.innerHTML = '<li style="color:var(--muted);font-family:\'Space Mono\',monospace;font-size:0.75rem;padding:16px;text-align:center">No history yet</li>';
+      return;
+    }
+    list.innerHTML = history.map((h,i) => `
+      <li class="history-item" onclick="loadHistory(${i})">
+        <span class="history-data">[${h.time}] n=${h.n}: ${h.data}</span>
+        <span class="history-mean">x̄=${h.mean}</span>
+      </li>`).join('');
+  }
+
+  function clearHistory() { history = []; renderHistory(); }
+
+  // ═══════════════════════════════════════════
+  // Utilities
+  // ═══════════════════════════════════════════
+  function getCookie(name) {
+    const m = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return m ? m[2] : '';
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+</script>
+
+<!-- Footer (copied from index.html for visual parity) -->
+<footer class="bg-gray-800 text-white py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div>
+        <h3 class="text-lg font-bold mb-4 flex items-center">
+          <i data-lucide="activity" class="w-5 h-5 mr-2"></i>
+          DentalStats
+        </h3>
+        <p class="text-gray-400 text-sm">Empowering dental researchers with interactive statistical tools and educational resources.</p>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3">Quick Links</h4>
+        <ul class="space-y-2 text-sm text-gray-400">
+          <li><a href="#" class="hover:text-white transition">Sample Size Guide</a></li>
+          <li><a href="#" class="hover:text-white transition">Statistical Tests</a></li>
+          <li><a href="#" class="hover:text-white transition">Glossary</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3">Reference</h4>
+        <p class="text-sm text-gray-400">Built for dental professionals following CONSORT and STROBE guidelines.</p>
+      </div>
+    </div>
+    <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-500">
+      <p>&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

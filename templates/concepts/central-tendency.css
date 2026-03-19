@@ -1,0 +1,5 @@
+/* Small page-specific tweaks to match home theme */
+.hero { margin: 8px 0; }
+.lead { margin-bottom: 0; }
+textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; }
+.result-box { margin-top: 8px; }

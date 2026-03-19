@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cox Regression — DentalStats</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+  </style>
+</head>
+<body class="bg-gray-50">
+  <header class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="trending-down" class="w-7 h-7 text-red-300"></i>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold">Cox Regression</h1>
+            <p class="text-gray-200 mt-1">Hazard ratios and the proportional hazards idea</p>
+          </div>
+        </div>
+        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-red-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Model intuition</h2>
+      <div class="mono bg-gray-50 border rounded-xl p-4 text-sm overflow-auto">
+        h(t | X) = h₀(t) * exp(βX)
+        HR = exp(β)
+      </div>
+      <p class="text-gray-700 mt-3">
+        The hazard ratio (HR) compares instantaneous risk of event between groups. HR=1.5 means 50% higher hazard at any time t
+        (if proportional hazards holds).
+      </p>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: what does HR do to survival curves?</h2>
+      <p class="text-gray-700 mb-4">
+        We draw illustrative survival curves from a simple exponential baseline. This is a teaching visualization, not a Cox fit.
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Hazard Ratio (HR)</label>
+          <input id="cx-hr" type="range" min="0.3" max="3.0" step="0.05" value="1.5" class="w-full accent-red-600">
+          <div class="flex justify-between text-xs text-gray-500 mt-1"><span>0.3</span><span id="cx-hr-lbl" class="font-bold text-red-700">1.50</span><span>3.0</span></div>
+
+          <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Baseline event rate</label>
+          <input id="cx-lam" type="range" min="0.01" max="0.20" step="0.01" value="0.06" class="w-full accent-red-600">
+          <div class="flex justify-between text-xs text-gray-500 mt-1"><span>0.01</span><span id="cx-lam-lbl" class="font-bold text-red-700">0.06</span><span>0.20</span></div>
+        </div>
+
+        <div class="lg:col-span-2 bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Survival curves (illustration)</h3>
+          <div class="h-80"><canvas id="cxChart"></canvas></div>
+          <p class="text-xs text-gray-500 mt-2">If HR&gt;1, survival drops faster for the exposed group.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
+      <p class="text-gray-700">
+        Cox regression can model time-to-implant failure with predictors like smoking, diabetes, bone density, and clinician experience,
+        reporting adjusted hazard ratios.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    let chart=null;
+
+    function update(){
+      const hr=parseFloat(document.getElementById('cx-hr').value);
+      const lam=parseFloat(document.getElementById('cx-lam').value);
+      document.getElementById('cx-hr-lbl').textContent=hr.toFixed(2);
+      document.getElementById('cx-lam-lbl').textContent=lam.toFixed(2);
+
+      const t=[], s0=[], s1=[];
+      for(let i=0;i<=60;i++){
+        const time=i; // months
+        t.push(time);
+        // exponential survival S(t)=exp(-lambda*t)
+        s0.push(Math.exp(-lam*time)*100);
+        s1.push(Math.exp(-(lam*hr)*time)*100);
+      }
+      render(t,s0,s1);
+    }
+
+    function render(t,s0,s1){
+      const ctx=document.getElementById('cxChart').getContext('2d');
+      if(chart) chart.destroy();
+      chart=new Chart(ctx,{
+        type:'line',
+        data:{
+          labels:t.map(x=>String(x)),
+          datasets:[
+            {label:'Baseline (HR=1)', data:s0, borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.10)', fill:true, tension:0.25, pointRadius:0},
+            {label:'Exposed (HR applied)', data:s1, borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.10)', fill:true, tension:0.25, pointRadius:0}
+          ]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          scales:{
+            x:{title:{display:true,text:'Time (months)'}},
+            y:{title:{display:true,text:'Survival %'}, min:0, max:100}
+          }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('cx-hr').addEventListener('input', update);
+      document.getElementById('cx-lam').addEventListener('input', update);
+      update();
+    });
+  </script>
+</body>
+</html>

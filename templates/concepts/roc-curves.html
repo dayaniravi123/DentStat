@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ROC Curves — DentalStats</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+  </style>
+</head>
+<body class="bg-gray-50">
+  <header class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="move" class="w-7 h-7 text-red-300"></i>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold">ROC Curves</h1>
+            <p class="text-gray-200 mt-1">Sensitivity vs 1−Specificity across thresholds</p>
+          </div>
+        </div>
+        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-red-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">What ROC shows</h2>
+      <ul class="list-disc pl-5 text-gray-700 space-y-1">
+        <li>Each threshold produces a (FPR, TPR) point.</li>
+        <li>TPR = Sensitivity, FPR = 1 − Specificity.</li>
+        <li>AUC ≈ 0.5 is chance; AUC ≈ 1.0 is excellent separation.</li>
+      </ul>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: generate an ROC curve</h2>
+      <p class="text-gray-700 mb-4">
+        We simulate scores for “disease” and “no disease” groups and sweep thresholds to plot ROC.
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Separation (higher = easier classification)</label>
+          <input id="roc-sep" type="range" min="0" max="3" step="0.1" value="1.2" class="w-full accent-red-600">
+          <div class="flex justify-between text-xs text-gray-500 mt-1"><span>0</span><span id="roc-sep-lbl" class="font-bold text-red-700">1.2</span><span>3</span></div>
+
+          <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Sample size per group</label>
+          <input id="roc-n" type="range" min="50" max="600" step="50" value="200" class="w-full accent-red-600">
+          <div class="flex justify-between text-xs text-gray-500 mt-1"><span>50</span><span id="roc-n-lbl" class="font-bold text-red-700">200</span><span>600</span></div>
+
+          <button id="roc-run" class="mt-4 w-full px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">Resimulate</button>
+
+          <div class="mt-4 bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
+            <div><strong>Approx AUC (demo):</strong> <span id="roc-auc">-</span></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">ROC</h3>
+          <div class="h-80"><canvas id="rocChart"></canvas></div>
+          <p class="text-xs text-gray-500 mt-2">Diagonal line is chance performance.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
+      <p class="text-gray-700">
+        ROC curves help choose thresholds for caries detection scores (from radiographs/AI), balancing missed lesions vs false alarms.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    let chart=null;
+
+    function randn(){
+      let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
+      return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+    }
+
+    function aucTrap(x,y){
+      // x assumed increasing
+      let a=0;
+      for(let i=1;i<x.length;i++){
+        a += (x[i]-x[i-1])*(y[i]+y[i-1])/2;
+      }
+      return a;
+    }
+
+    function simulate(){
+      const sep=parseFloat(document.getElementById('roc-sep').value);
+      const n=parseInt(document.getElementById('roc-n').value);
+      document.getElementById('roc-sep-lbl').textContent=sep.toFixed(1);
+      document.getElementById('roc-n-lbl').textContent=n;
+
+      const neg=[], pos=[];
+      for(let i=0;i<n;i++){
+        neg.push(randn()*1.0 + 0.0);
+        pos.push(randn()*1.0 + sep);
+      }
+
+      // thresholds
+      const all=neg.concat(pos).sort((a,b)=>a-b);
+      const tpr=[], fpr=[];
+      for(let k=0;k<all.length;k+=Math.max(1,Math.floor(all.length/120))){
+        const thr=all[k];
+        let TP=0, FP=0;
+        for(const s of pos) if(s>=thr) TP++;
+        for(const s of neg) if(s>=thr) FP++;
+        tpr.push(TP/pos.length);
+        fpr.push(FP/neg.length);
+      }
+
+      // ensure ends
+      tpr.unshift(1); fpr.unshift(1);
+      tpr.push(0); fpr.push(0);
+
+      // sort by fpr increasing
+      const pairs=fpr.map((x,i)=>({x,y:tpr[i]})).sort((a,b)=>a.x-b.x);
+      const xs=pairs.map(p=>p.x), ys=pairs.map(p=>p.y);
+
+      const auc=aucTrap(xs,ys);
+      document.getElementById('roc-auc').textContent=auc.toFixed(3);
+
+      render(xs,ys);
+    }
+
+    function render(xs,ys){
+      const ctx=document.getElementById('rocChart').getContext('2d');
+      if(chart) chart.destroy();
+
+      chart=new Chart(ctx,{
+        type:'scatter',
+        data:{
+          datasets:[
+            {label:'ROC', data:xs.map((x,i)=>({x,y:ys[i]})), borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.35)', showLine:true, pointRadius:2, tension:0},
+            {label:'Chance', data:[{x:0,y:0},{x:1,y:1}], borderColor:'#94a3b8', borderDash:[6,6], showLine:true, pointRadius:0}
+          ]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          scales:{
+            x:{title:{display:true,text:'False Positive Rate (1−Specificity)'}, min:0, max:1},
+            y:{title:{display:true,text:'True Positive Rate (Sensitivity)'}, min:0, max:1}
+          }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('roc-run').addEventListener('click', simulate);
+      document.getElementById('roc-sep').addEventListener('input', simulate);
+      document.getElementById('roc-n').addEventListener('input', simulate);
+      simulate();
+    });
+  </script>
+</body>
+</html>

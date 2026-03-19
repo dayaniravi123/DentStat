@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chi-Square Test — DentalStats</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+  </style>
+</head>
+<body class="bg-gray-50">
+  <header class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="grid" class="w-7 h-7 text-amber-300"></i>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold">Chi-Square Test</h1>
+            <p class="text-gray-200 mt-1">Testing association between categorical variables</p>
+          </div>
+        </div>
+        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Idea</h2>
+      <p class="text-gray-700">
+        The chi-square test compares <strong>observed</strong> counts to <strong>expected</strong> counts under independence.
+      </p>
+      <div class="mono bg-gray-50 border rounded-xl p-4 mt-4 text-sm">
+        χ² = Σ ( (O − E)² / E ) ,  df = (r−1)(c−1)
+      </div>
+      <p class="text-sm text-gray-600 mt-2">
+        Rule-of-thumb: expected counts should usually be ≥ 5 in most cells; otherwise consider Fisher’s exact test for 2×2 tables.
+      </p>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive 2×2 chi-square (teaching demo)</h2>
+      <p class="text-gray-700 mb-4">Enter a 2×2 table (e.g., treatment vs outcome) and see observed vs expected.</p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <div class="grid grid-cols-3 gap-2 text-center text-sm font-medium mb-2">
+            <div></div>
+            <div class="bg-gray-100 rounded p-1">Outcome +</div>
+            <div class="bg-gray-100 rounded p-1">Outcome −</div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 mb-2">
+            <div class="flex items-center justify-center bg-gray-100 rounded p-1 text-sm font-medium">Treatment</div>
+            <input id="a" type="number" value="40" class="border rounded-lg p-2 text-center">
+            <input id="b" type="number" value="60" class="border rounded-lg p-2 text-center">
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="flex items-center justify-center bg-gray-100 rounded p-1 text-sm font-medium">Control</div>
+            <input id="c" type="number" value="55" class="border rounded-lg p-2 text-center">
+            <input id="d" type="number" value="45" class="border rounded-lg p-2 text-center">
+          </div>
+
+          <button id="cs-run" class="mt-4 w-full px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 transition">
+            Compute χ²
+          </button>
+
+          <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm">
+            <div><strong>χ²:</strong> <span id="chi">-</span></div>
+            <div><strong>df:</strong> <span id="df">1</span></div>
+            <div><strong>Note:</strong> <span class="text-gray-700">This demo doesn’t compute exact p-values. In real work, use software to get p.</span></div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Observed vs expected</h3>
+          <div class="h-80"><canvas id="csChart"></canvas></div>
+          <p class="text-xs text-gray-500 mt-2">Big gaps between observed and expected contribute to χ².</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Dental use</h2>
+      <p class="text-gray-700">
+        Use chi-square for associations like “smoker vs non-smoker” and “periodontitis yes/no,” or “device positive/negative”
+        across groups. Always report the table, effect size (e.g., risk ratio/odds ratio), and CI if possible.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    let chart=null;
+
+    function compute(){
+      const a=+document.getElementById('a').value||0;
+      const b=+document.getElementById('b').value||0;
+      const c=+document.getElementById('c').value||0;
+      const d=+document.getElementById('d').value||0;
+
+      const r1=a+b, r2=c+d, c1=a+c, c2=b+d, n=r1+r2;
+      if(n===0){ return; }
+
+      const ea=r1*c1/n, eb=r1*c2/n, ec=r2*c1/n, ed=r2*c2/n;
+      const chi = (ea?((a-ea)**2/ea):0) + (eb?((b-eb)**2/eb):0) + (ec?((c-ec)**2/ec):0) + (ed?((d-ed)**2/ed):0);
+
+      document.getElementById('chi').textContent = chi.toFixed(3);
+
+      render([a,b,c,d],[ea,eb,ec,ed]);
+    }
+
+    function render(obs, exp){
+      const ctx=document.getElementById('csChart').getContext('2d');
+      if(chart) chart.destroy();
+      chart=new Chart(ctx,{
+        type:'bar',
+        data:{
+          labels:['Treat +','Treat −','Ctrl +','Ctrl −'],
+          datasets:[
+            {label:'Observed', data:obs, backgroundColor:'rgba(245,158,11,0.65)'},
+            {label:'Expected', data:exp, backgroundColor:'rgba(59,130,246,0.35)'}
+          ]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          scales:{ y:{ beginAtZero:true, title:{display:true,text:'Count'} } }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('cs-run').addEventListener('click', compute);
+      compute();
+    });
+  </script>
+</body>
+</html>

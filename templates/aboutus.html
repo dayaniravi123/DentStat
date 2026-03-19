@@ -1,0 +1,182 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us — DentalStats</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0d9488 100%); }
+        .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
+        .team-avatar {
+            width: 96px; height: 96px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; font-weight: 700; color: white;
+            margin: 0 auto 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                    <div>
+                        <h1 class="text-xl font-bold">DentalStats</h1>
+                        <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                    <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                    <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                    <a href="/about" class="text-teal-300 font-semibold">About Us</a>
+                </div>
+                <a href="/" class="text-sm text-white/70 hover:text-white transition border border-white/25 rounded-full px-4 py-1.5">← Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="gradient-bg text-white py-20 text-center px-4">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">About <span class="text-teal-300">DentalStats</span></h1>
+        <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+            A modern, interactive platform built to make biostatistics accessible and intuitive for
+            dental students, clinicians, and researchers.
+        </p>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-4 py-16 space-y-20">
+
+        <!-- Mission -->
+        <section class="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest text-teal-600 mb-2">Our Mission</p>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4 leading-snug">Making statistics<br>intuitive for dentistry</h2>
+                <p class="text-gray-600 leading-relaxed mb-4">
+                    DentalStats was born from a simple frustration: traditional biostatistics education
+                    feels abstract and disconnected from clinical reality. We set out to change that by
+                    grounding every concept in real dental research scenarios — from DMFT distributions
+                    to survival analysis of implants.
+                </p>
+                <p class="text-gray-600 leading-relaxed">
+                    Every visualization, calculator, and lesson is purpose-built to bridge the gap
+                    between statistical theory and evidence-based dental practice.
+                </p>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center card-hover">
+                    <div class="text-3xl font-bold text-teal-600 mb-1">15+</div>
+                    <div class="text-sm text-gray-500">Interactive Modules</div>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center card-hover">
+                    <div class="text-3xl font-bold text-blue-600 mb-1">8+</div>
+                    <div class="text-sm text-gray-500">Statistical Calculators</div>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center card-hover">
+                    <div class="text-3xl font-bold text-purple-600 mb-1">3</div>
+                    <div class="text-sm text-gray-500">Difficulty Levels</div>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center card-hover">
+                    <div class="text-3xl font-bold text-green-600 mb-1">100%</div>
+                    <div class="text-sm text-gray-500">Free to Use</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- What we offer -->
+        <section>
+            <p class="text-xs font-bold uppercase tracking-widest text-teal-600 mb-2 text-center">What We Offer</p>
+            <h2 class="text-3xl font-bold text-gray-800 mb-10 text-center">Everything you need to learn statistics</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-2xl p-7 shadow-sm border border-gray-100 card-hover">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                        <i data-lucide="book-open" class="w-6 h-6 text-blue-600"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">Concept Lessons</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">Scroll-driven, interactive lessons that build your intuition for probability, inference, and regression — all using dental examples.</p>
+                </div>
+                <div class="bg-white rounded-2xl p-7 shadow-sm border border-gray-100 card-hover">
+                    <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center mb-4">
+                        <i data-lucide="calculator" class="w-6 h-6 text-teal-600"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">Clinical Calculators</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">Practical tools for chi-square tests, confidence intervals, sample size planning, and more — ready for your next research project.</p>
+                </div>
+                <div class="bg-white rounded-2xl p-7 shadow-sm border border-gray-100 card-hover">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+                        <i data-lucide="bar-chart-2" class="w-6 h-6 text-purple-600"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-2">Live Visualizations</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">Upload your own data or use built-in datasets to generate publication-ready charts and explore distributions interactively.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team -->
+        <section>
+            <p class="text-xs font-bold uppercase tracking-widest text-teal-600 mb-2 text-center">The Team</p>
+            <h2 class="text-3xl font-bold text-gray-800 mb-10 text-center">Built by dentistry &amp; tech</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center card-hover">
+                    <div class="team-avatar" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">RD</div>
+                    <h3 class="font-bold text-gray-800">Ravi Dayani</h3>
+                    <p class="text-sm text-teal-600 font-medium mb-3">Co-Founder &amp; Lead Developer</p>
+                    <p class="text-sm text-gray-500 leading-relaxed">Passionate about bridging technology and dental education. Leads the development and architecture of the DentalStats platform.</p>
+                </div>
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center card-hover">
+                    <div class="team-avatar" style="background: linear-gradient(135deg, #0d9488, #0f766e);">RV</div>
+                    <h3 class="font-bold text-gray-800">Ridham Varsani</h3>
+                    <p class="text-sm text-teal-600 font-medium mb-3">Co-Founder &amp; Clinical Lead</p>
+                    <p class="text-sm text-gray-500 leading-relaxed">Dental professional driving the clinical direction of the platform, ensuring every concept reflects real-world dental research and practice.</p>
+                </div>
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center card-hover">
+                    <div class="team-avatar" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">MK</div>
+                    <h3 class="font-bold text-gray-800">Manjari Khatri</h3>
+                    <p class="text-sm text-teal-600 font-medium mb-3">Co-Founder &amp; Biostatistics Advisor</p>
+                    <p class="text-sm text-gray-500 leading-relaxed">Ensures every formula, simulation, and visualization is statistically rigorous and aligned with current dental research standards.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section class="bg-white rounded-3xl p-10 shadow-sm border border-gray-100 text-center">
+            <p class="text-xs font-bold uppercase tracking-widest text-teal-600 mb-2">Get In Touch</p>
+            <h2 class="text-3xl font-bold text-gray-800 mb-3">Have a question or suggestion?</h2>
+            <p class="text-gray-500 max-w-xl mx-auto mb-8">
+                We'd love to hear from students, educators, and clinicians. Whether it's a bug report,
+                a feature idea, or a collaboration inquiry — reach out.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="mailto:hello@dentalstats.app"
+                   class="inline-flex items-center gap-2 bg-teal-600 text-white px-7 py-3 rounded-full font-semibold hover:bg-teal-700 transition">
+                    <i data-lucide="mail" class="w-4 h-4"></i>
+                    hello@dentalstats.app
+                </a>
+                <a href="/"
+                   class="inline-flex items-center gap-2 border border-gray-200 text-gray-700 px-7 py-3 rounded-full font-semibold hover:bg-gray-50 transition">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    Back to Platform
+                </a>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 mt-8 py-8 text-center text-sm text-gray-400">
+        &copy; 2025 DentalStats. Built for dental education.
+    </footer>
+
+    <script>lucide.createIcons();</script>
+</body>
+</html>

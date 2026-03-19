@@ -1,0 +1,91 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Regression Analysis — DentalStats Learning</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="bg-gray-50">
+  <div class="max-w-4xl mx-auto py-12 px-4">
+    <a href="/index.html#concepts" class="inline-block mb-6 text-sm text-teal-600">← Back to Concepts</a>
+    <h1 class="text-3xl font-bold mb-4">Regression Models in Dental Research</h1>
+
+    <p class="text-gray-700 mb-4">Regression analysis examines relationships between variables and predicts outcomes. In dental research, regression helps estimate how risk factors such as age, smoking, oral hygiene, or systemic conditions influence oral health outcomes.</p>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Why use regression?</h2>
+    <p class="text-gray-700 mb-4">Regression models answer causal or predictive questions, for example: Does smoking increase the risk of periodontal disease? Does age predict clinical attachment loss? What factors influence implant failure?</p>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Linear Regression</h2>
+    <p class="text-gray-700 mb-3">Use linear regression when the outcome is continuous (e.g., pocket depth, plaque index, salivary biomarker levels).</p>
+    <div class="bg-white border rounded-lg p-4 mb-3">
+      <p class="text-sm text-gray-600">Model form: <code>Y = β₀ + β₁X + ε</code></p>
+      <p class="text-sm text-gray-600 mt-2">Interpretation: β₁ is the change in Y for a one-unit change in X. Example: If β₁ = 0.04 for age predicting CAL, each additional year of age increases attachment loss by 0.04 mm on average.</p>
+    </div>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Multiple Linear Regression</h2>
+    <p class="text-gray-700 mb-3">When multiple predictors are relevant, use multiple linear regression to estimate independent effects while adjusting for confounders.</p>
+    <div class="bg-white border rounded-lg p-4 mb-3">
+      <p class="text-sm text-gray-600">Example: <code>PocketDepth = β₀ + β₁(Age) + β₂(Smoking) + β₃(PlaqueIndex) + ε</code></p>
+      <p class="text-sm text-gray-600 mt-2">This model estimates the effect of each predictor holding the others constant.</p>
+    </div>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Logistic Regression</h2>
+    <p class="text-gray-700 mb-3">Use logistic regression when the outcome is binary (e.g., implant success vs failure, disease present vs absent). The model estimates log-odds and yields odds ratios (OR).</p>
+    <div class="bg-white border rounded-lg p-4 mb-3">
+      <p class="text-sm text-gray-600">Model form: <code>ln(P / (1−P)) = β₀ + β₁X</code></p>
+      <p class="text-sm text-gray-600 mt-2">Interpretation: An OR > 1 indicates higher odds of the outcome per unit increase in the predictor. Example: OR for smoking = 2.5 → smokers have 2.5× the odds of implant failure vs non-smokers.</p>
+    </div>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Model Assumptions</h2>
+    <ul class="list-disc pl-5 text-gray-700 space-y-2 mb-4">
+      <li><strong>Independence:</strong> Observations should be independent (use clustered or multilevel models when they are not).</li>
+      <li><strong>Linearity (for linear regression):</strong> Relationship between predictors and outcome should be linear; otherwise consider transformations or nonlinear models.</li>
+      <li><strong>No multicollinearity:</strong> Predictors should not be highly correlated. Use VIF to detect multicollinearity (rule of thumb: VIF &lt; 10).</li>
+      <li><strong>Adequate sample size:</strong> Small samples produce unstable estimates; for logistic regression follow EPV ≥ 10 (events per predictor).</li>
+    </ul>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Practical guidance</h2>
+    <p class="text-gray-700 mb-3">Check assumptions, report regression coefficients (β) with confidence intervals, and for logistic models report odds ratios (OR) with 95% CIs. Adjust for confounders and consider interaction terms when appropriate.</p>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Applications in dental research</h2>
+    <p class="text-gray-700 mb-3">Common applications include identifying risk factors for periodontal disease, predicting implant outcomes, studying determinants of caries, and evaluating the effect of oral hygiene behaviors while controlling for sociodemographic factors.</p>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Summary</h2>
+    <div class="overflow-auto mb-4">
+      <table class="table-auto w-full text-sm border-collapse">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="px-3 py-2 text-left">Concept</th>
+            <th class="px-3 py-2 text-left">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="px-3 py-2">Linear Regression</td>
+            <td class="px-3 py-2">Used for continuous outcomes</td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="px-3 py-2">Logistic Regression</td>
+            <td class="px-3 py-2">Used for binary outcomes; reports OR</td>
+          </tr>
+          <tr>
+            <td class="px-3 py-2">Multicollinearity / VIF</td>
+            <td class="px-3 py-2">High correlation between predictors; check VIF</td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="px-3 py-2">EPV</td>
+            <td class="px-3 py-2">Events per variable for logistic regression (recommend ≥10)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="text-sm text-gray-600">Regression analysis is essential for dental epidemiology and clinical research, enabling investigators to identify predictors, adjust for confounding, and make evidence-based recommendations.</p>
+
+    <div class="mt-8 text-sm text-gray-500">© DentalStats — educational content</div>
+  </div>
+</body>
+</html>

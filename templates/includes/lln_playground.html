@@ -1,0 +1,66 @@
+<!-- Law of Large Numbers Playground partial -->
+<div class="glass-panel rounded-2xl p-6 shadow-xl mb-8 border-t-4 border-blue-500">
+    <div class="flex justify-between items-start mb-4">
+        <div>
+            <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                <i data-lucide="trending-up" class="w-5 h-5 mr-2 text-blue-600"></i>
+                Law of Large Numbers: Caries Risk Playground
+            </h3>
+            <p class="text-sm text-gray-600 mt-1">Observe how the empirical (observed) rate converges to the true rate as more patients are simulated.</p>
+        </div>
+        <div class="flex space-x-2 items-center">
+            <button id="lln-play" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">Play</button>
+            <button id="lln-reset" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium">Reset</button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="space-y-4 md:col-span-1">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">True Population Caries Prevalence (%)</label>
+                <input type="range" id="lln-true-p" min="5" max="95" value="30" class="w-full accent-blue-600">
+                <div class="flex justify-between items-center mt-1">
+                    <span class="text-xs text-gray-500">5%</span>
+                    <span class="text-lg font-bold text-blue-600" id="lln-true-val">30%</span>
+                    <span class="text-xs text-gray-500">95%</span>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Simulation Speed</label>
+                <input type="range" id="lln-speed" min="1" max="100" value="50" class="w-full accent-blue-600">
+                <div class="flex justify-between items-center mt-1 text-xs text-gray-500"><span>Slow</span><span>Fast</span></div>
+            </div>
+
+            <div class="flex space-x-3 mt-2">
+                <div class="bg-blue-50 rounded-lg p-3 flex-1 text-center">
+                    <p class="text-xs text-gray-600">Total</p>
+                    <p class="text-2xl font-bold text-blue-700" id="lln-total">0</p>
+                </div>
+                <div class="bg-red-50 rounded-lg p-3 flex-1 text-center">
+                    <p class="text-xs text-gray-600">With Caries</p>
+                    <p class="text-2xl font-bold text-red-600" id="lln-caries-count">0</p>
+                </div>
+                <div class="bg-green-50 rounded-lg p-3 flex-1 text-center">
+                    <p class="text-xs text-gray-600">Caries-Free</p>
+                    <p class="text-2xl font-bold text-green-600" id="lln-healthy-count">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:col-span-2 space-y-4">
+            <div class="relative bg-white rounded-lg border p-4 chart-container">
+                <div class="chart-title text-sm font-semibold">Patient Distribution</div>
+                <canvas id="llnScatterCanvas" class="w-full h-48 md:h-56"></canvas>
+                <div class="text-xs text-gray-500 mt-2">Red dots: With caries | Green dots: Caries-free</div>
+            </div>
+
+            <div class="relative bg-white rounded-lg border p-4 chart-container">
+                <div class="chart-title text-sm font-semibold">Observed Rate Distribution</div>
+                <canvas id="llnHistogramCanvas" class="w-full h-44 md:h-52"></canvas>
+                <div class="text-xs text-gray-500 mt-2">Dashed red line = true population prevalence</div>
+            </div>
+        </div>
+    </div>
+</div>
+    

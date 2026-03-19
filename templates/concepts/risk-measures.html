@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Risk Measures — DentalStats</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+  </style>
+</head>
+<body class="bg-gray-50">
+  <header class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="scale" class="w-7 h-7 text-amber-300"></i>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold">Risk Measures</h1>
+            <p class="text-gray-200 mt-1">Relative Risk (RR), Odds Ratio (OR), Risk Difference (RD)</p>
+          </div>
+        </div>
+        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">From a 2×2 table</h2>
+      <div class="mono bg-gray-50 border rounded-xl p-4 text-sm overflow-auto">
+        a = exposed & outcome+; b = exposed & outcome−; c = unexposed & outcome+; d = unexposed & outcome−
+
+        Risk_exposed   = a/(a+b)
+        Risk_unexposed = c/(c+d)
+
+        RR = Risk_exposed / Risk_unexposed
+        RD = Risk_exposed − Risk_unexposed
+        OR = (a/b) / (c/d) = ad/bc
+      </div>
+      <p class="text-sm text-gray-600 mt-2">RR is natural for cohort/RCTs; OR is common in case-control and logistic regression.</p>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive calculator + visualization</h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <div class="grid grid-cols-3 gap-2 text-center text-sm font-medium mb-2">
+            <div></div>
+            <div class="bg-gray-100 rounded p-1">Outcome +</div>
+            <div class="bg-gray-100 rounded p-1">Outcome −</div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 mb-2">
+            <div class="flex items-center justify-center bg-gray-100 rounded p-1 text-sm font-medium">Exposed</div>
+            <input id="rm-a" type="number" value="30" class="border rounded-lg p-2 text-center">
+            <input id="rm-b" type="number" value="70" class="border rounded-lg p-2 text-center">
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="flex items-center justify-center bg-gray-100 rounded p-1 text-sm font-medium">Unexposed</div>
+            <input id="rm-c" type="number" value="15" class="border rounded-lg p-2 text-center">
+            <input id="rm-d" type="number" value="85" class="border rounded-lg p-2 text-center">
+          </div>
+
+          <button id="rm-run" class="mt-4 w-full px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 transition">
+            Compute measures
+          </button>
+
+          <div class="mt-4 grid grid-cols-3 gap-3">
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-center">
+              <div class="text-xs text-gray-600">RR</div>
+              <div class="text-xl font-bold text-amber-800" id="rm-rr">-</div>
+            </div>
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-center">
+              <div class="text-xs text-gray-600">OR</div>
+              <div class="text-xl font-bold text-amber-800" id="rm-or">-</div>
+            </div>
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-center">
+              <div class="text-xs text-gray-600">RD</div>
+              <div class="text-xl font-bold text-amber-800" id="rm-rd">-</div>
+            </div>
+          </div>
+
+          <p class="text-xs text-gray-500 mt-3" id="rm-text"></p>
+        </div>
+
+        <div class="bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Risk comparison</h3>
+          <div class="h-80"><canvas id="rmChart"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
+      <p class="text-gray-700">
+        Example: smoking (exposure) and periodontitis (outcome). RR helps communicate “how many times more likely” the outcome is
+        among smokers (in cohort-like data). Logistic regression reports adjusted ORs.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    let chart=null;
+
+    function compute(){
+      const a=+document.getElementById('rm-a').value||0;
+      const b=+document.getElementById('rm-b').value||0;
+      const c=+document.getElementById('rm-c').value||0;
+      const d=+document.getElementById('rm-d').value||0;
+
+      if(a<=0||b<=0||c<=0||d<=0){
+        document.getElementById('rm-text').textContent="Please enter all cells > 0 (demo requirement).";
+        return;
+      }
+
+      const rE = a/(a+b);
+      const rU = c/(c+d);
+      const rr = rE / rU;
+      const rd = rE - rU;
+      const or = (a*d)/(b*c);
+
+      document.getElementById('rm-rr').textContent=rr.toFixed(2);
+      document.getElementById('rm-or').textContent=or.toFixed(2);
+      document.getElementById('rm-rd').textContent=(rd*100).toFixed(1)+"%";
+
+      const msg = rr>1
+        ? `Exposure is associated with higher risk (RR=${rr.toFixed(2)}). RD=${(rd*100).toFixed(1)} percentage points.`
+        : rr<1
+          ? `Exposure looks protective (RR=${rr.toFixed(2)}). RD=${(rd*100).toFixed(1)} percentage points.`
+          : "No difference (RR≈1).";
+      document.getElementById('rm-text').textContent=msg;
+
+      render(rE,rU);
+    }
+
+    function render(rE,rU){
+      const ctx=document.getElementById('rmChart').getContext('2d');
+      if(chart) chart.destroy();
+      chart=new Chart(ctx,{
+        type:'bar',
+        data:{
+          labels:['Exposed','Unexposed'],
+          datasets:[{label:'Risk', data:[rE,rU], backgroundColor:['rgba(245,158,11,0.7)','rgba(59,130,246,0.45)']}]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          scales:{ y:{ min:0, max:1, ticks:{ callback:(v)=>Math.round(v*100)+'%' }, title:{display:true,text:'Outcome probability'}} }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('rm-run').addEventListener('click', compute);
+      compute();
+    });
+  </script>
+</body>
+</html>

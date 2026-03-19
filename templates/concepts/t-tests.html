@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>t-Tests — DentalStats</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+  </style>
+</head>
+<body class="bg-gray-50">
+  <header class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="activity" class="w-7 h-7 text-amber-300"></i>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold">t-Tests</h1>
+            <p class="text-gray-200 mt-1">Compare means: independent vs paired designs</p>
+          </div>
+        </div>
+        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">When to use</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-1">Independent t-test</h3>
+          <p class="text-sm text-gray-700">Two separate groups (e.g., Treatment A vs B).</p>
+          <p class="text-xs text-gray-500 mt-1">Assumptions: independence, roughly normal residuals, similar variance (or use Welch).</p>
+        </div>
+        <div class="bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-1">Paired t-test</h3>
+          <p class="text-sm text-gray-700">Same subjects before/after (e.g., plaque index baseline vs 6 weeks).</p>
+          <p class="text-xs text-gray-500 mt-1">Uses within-person differences; often more power.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: independent t-statistic (teaching demo)</h2>
+      <p class="text-gray-700 mb-4">Enter group summaries and visualize the mean difference with uncertainty.</p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-700 mb-2">Group 1</h3>
+              <input id="t1-mean" type="number" value="2.8" step="0.1" class="w-full px-3 py-2 border rounded-lg mb-2" placeholder="Mean">
+              <input id="t1-sd" type="number" value="1.2" step="0.1" class="w-full px-3 py-2 border rounded-lg mb-2" placeholder="SD">
+              <input id="t1-n" type="number" value="40" step="1" class="w-full px-3 py-2 border rounded-lg" placeholder="n">
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-gray-700 mb-2">Group 2</h3>
+              <input id="t2-mean" type="number" value="3.4" step="0.1" class="w-full px-3 py-2 border rounded-lg mb-2" placeholder="Mean">
+              <input id="t2-sd" type="number" value="1.3" step="0.1" class="w-full px-3 py-2 border rounded-lg mb-2" placeholder="SD">
+              <input id="t2-n" type="number" value="40" step="1" class="w-full px-3 py-2 border rounded-lg" placeholder="n">
+            </div>
+          </div>
+
+          <button id="t-run" class="mt-4 w-full px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 transition">
+            Compute
+          </button>
+
+          <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm">
+            <div><strong>Mean difference (1−2):</strong> <span id="t-diff">-</span></div>
+            <div><strong>SE:</strong> <span id="t-se">-</span></div>
+            <div><strong>t:</strong> <span id="t-stat">-</span></div>
+            <div class="text-xs text-gray-600 mt-2">This page focuses on intuition. Compute exact p-values in statistical software.</div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Visual summary</h3>
+          <div class="h-80"><canvas id="tChart"></canvas></div>
+          <p class="text-xs text-gray-500 mt-2">Error bars approximate ±1 SE around the mean.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
+      <p class="text-gray-700">
+        Comparing mean probing depth reduction between two treatments is an independent t-test case.
+        Comparing baseline vs follow-up within the same patients is a paired t-test case.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    let chart=null;
+
+    function compute(){
+      const m1=+document.getElementById('t1-mean').value;
+      const s1=+document.getElementById('t1-sd').value;
+      const n1=+document.getElementById('t1-n').value;
+      const m2=+document.getElementById('t2-mean').value;
+      const s2=+document.getElementById('t2-sd').value;
+      const n2=+document.getElementById('t2-n').value;
+
+      if(!m1||!s1||!n1||!m2||!s2||!n2) return;
+
+      const diff=m1-m2;
+      const se=Math.sqrt((s1*s1)/n1 + (s2*s2)/n2);
+      const t=diff/se;
+
+      document.getElementById('t-diff').textContent = diff.toFixed(3);
+      document.getElementById('t-se').textContent = se.toFixed(3);
+      document.getElementById('t-stat').textContent = t.toFixed(3);
+
+      render(m1,se/Math.sqrt(1/n1),m2,se/Math.sqrt(1/n2),s1/Math.sqrt(n1),s2/Math.sqrt(n2));
+      // above line: just to keep visuals stable; we’ll use group SEs:
+      renderBars(m1, s1/Math.sqrt(n1), m2, s2/Math.sqrt(n2));
+    }
+
+    function renderBars(m1,se1,m2,se2){
+      const ctx=document.getElementById('tChart').getContext('2d');
+      if(chart) chart.destroy();
+      chart=new Chart(ctx,{
+        type:'bar',
+        data:{
+          labels:['Group 1','Group 2'],
+          datasets:[{
+            label:'Mean',
+            data:[m1,m2],
+            backgroundColor:['rgba(245,158,11,0.7)','rgba(59,130,246,0.45)']
+          }]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          plugins:{
+            legend:{display:false},
+            tooltip:{callbacks:{label:(ctx)=>`Mean: ${ctx.raw.toFixed(2)}`}}
+          },
+          scales:{ y:{ title:{display:true,text:'Outcome (e.g., plaque index)'} } }
+        },
+        plugins:[{
+          id:'errorBars',
+          afterDatasetsDraw(chart){
+            const {ctx, scales:{y}}=chart;
+            const meta=chart.getDatasetMeta(0);
+            const ses=[se1,se2];
+            ctx.save();
+            ctx.strokeStyle='#111827';
+            ctx.lineWidth=2;
+            meta.data.forEach((bar,i)=>{
+              const x=bar.x;
+              const top=y.getPixelForValue(chart.data.datasets[0].data[i]+ses[i]);
+              const bot=y.getPixelForValue(chart.data.datasets[0].data[i]-ses[i]);
+              ctx.beginPath();
+              ctx.moveTo(x, top); ctx.lineTo(x, bot);
+              ctx.moveTo(x-8, top); ctx.lineTo(x+8, top);
+              ctx.moveTo(x-8, bot); ctx.lineTo(x+8, bot);
+              ctx.stroke();
+            });
+            ctx.restore();
+          }
+        }]
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('t-run').addEventListener('click', compute);
+      compute();
+    });
+  </script>
+</body>
+</html>

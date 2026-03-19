@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Meta-Analysis — DentalStats</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+  </style>
+</head>
+<body class="bg-gray-50">
+  <header class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="layers" class="w-7 h-7 text-red-300"></i>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold">Meta-Analysis</h1>
+            <p class="text-gray-200 mt-1">Pooling evidence across studies + heterogeneity intuition</p>
+          </div>
+        </div>
+        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-red-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Core idea</h2>
+      <p class="text-gray-700">
+        Meta-analysis combines effect estimates from multiple studies to obtain a pooled estimate. Study weights are often based on precision
+        (inverse variance). Random-effects models allow true effects to vary across studies.
+      </p>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: toy forest plot</h2>
+      <p class="text-gray-700 mb-4">
+        Adjust heterogeneity and see how study effects spread. This is a visualization tool (not a full statistical implementation).
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Heterogeneity (spread)</label>
+          <input id="ma-het" type="range" min="0" max="1.5" step="0.05" value="0.5" class="w-full accent-red-600">
+          <div class="flex justify-between text-xs text-gray-500 mt-1"><span>0</span><span id="ma-het-lbl" class="font-bold text-red-700">0.50</span><span>1.5</span></div>
+
+          <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Number of studies</label>
+          <input id="ma-k" type="range" min="3" max="20" step="1" value="8" class="w-full accent-red-600">
+          <div class="flex justify-between text-xs text-gray-500 mt-1"><span>3</span><span id="ma-k-lbl" class="font-bold text-red-700">8</span><span>20</span></div>
+
+          <button id="ma-run" class="mt-4 w-full px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">Resimulate</button>
+
+          <div class="mt-4 bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
+            <div><strong>Pooled (toy) estimate:</strong> <span id="ma-pool">-</span></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Forest-style display</h3>
+          <div class="h-80"><canvas id="maChart"></canvas></div>
+          <p class="text-xs text-gray-500 mt-2">Dots: study effects. Horizontal lines: approximate CIs.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
+      <p class="text-gray-700">
+        Pooling clinical trials on fluoride varnish efficacy, implant survival comparisons, or periodontal therapy outcomes often uses meta-analysis.
+        Always report heterogeneity and evaluate bias (e.g., funnel plots) in real studies.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    let chart=null;
+
+    function randn(){
+      let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
+      return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+    }
+
+    function simulate(){
+      const het=parseFloat(document.getElementById('ma-het').value);
+      const k=parseInt(document.getElementById('ma-k').value);
+      document.getElementById('ma-het-lbl').textContent=het.toFixed(2);
+      document.getElementById('ma-k-lbl').textContent=k;
+
+      const trueEffect=0.4; // e.g., standardized mean difference
+      const studies=[];
+      for(let i=0;i<k;i++){
+        const se=0.12 + Math.random()*0.18; // precision varies
+        const eff=trueEffect + randn()*het + randn()*se;
+        studies.push({eff,se});
+      }
+
+      // toy pooling: inverse-variance fixed effect
+      const w=studies.map(s=>1/(s.se*s.se));
+      const pool=studies.reduce((s,st,i)=>s+st.eff*w[i],0) / w.reduce((s,x)=>s+x,0);
+      document.getElementById('ma-pool').textContent=pool.toFixed(3);
+
+      render(studies,pool);
+    }
+
+    function render(studies,pool){
+      const ctx=document.getElementById('maChart').getContext('2d');
+      if(chart) chart.destroy();
+
+      const ys=studies.map((_,i)=>i+1);
+      const points=studies.map((s,i)=>({x:s.eff,y:ys[i], se:s.se}));
+
+      chart=new Chart(ctx,{
+        type:'scatter',
+        data:{
+          datasets:[
+            {label:'Studies', data:points, backgroundColor:'rgba(239,68,68,0.55)'},
+            {label:'Pooled', data:[{x:pool,y:0}], backgroundColor:'rgba(59,130,246,0.8)'}
+          ]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          scales:{
+            x:{title:{display:true,text:'Effect size'}},
+            y:{
+              title:{display:true,text:'Study'},
+              min:0,
+              max:studies.length+1,
+              ticks:{ callback:(v)=> v===0 ? 'Pooled' : (Number.isInteger(v)?`Study ${v}`:'') }
+            }
+          },
+          plugins:{ legend:{display:false} }
+        },
+        plugins:[{
+          id:'ciLines',
+          afterDatasetsDraw(chart){
+            const {ctx, scales:{x,y}}=chart;
+            ctx.save();
+            ctx.strokeStyle='#111827';
+            ctx.lineWidth=1.5;
+
+            // CI lines for studies
+            const meta=chart.getDatasetMeta(0);
+            meta.data.forEach((pt,i)=>{
+              const s=studies[i];
+              const lo=s.eff - 1.96*s.se;
+              const hi=s.eff + 1.96*s.se;
+              const yPix=pt.y;
+              ctx.beginPath();
+              ctx.moveTo(x.getPixelForValue(lo), yPix);
+              ctx.lineTo(x.getPixelForValue(hi), yPix);
+              ctx.stroke();
+            });
+
+            // pooled line at y=0
+            const lo=pool-0.15, hi=pool+0.15; // toy
+            const y0=y.getPixelForValue(0);
+            ctx.lineWidth=3;
+            ctx.strokeStyle='#2563eb';
+            ctx.beginPath();
+            ctx.moveTo(x.getPixelForValue(lo), y0);
+            ctx.lineTo(x.getPixelForValue(hi), y0);
+            ctx.stroke();
+
+            ctx.restore();
+          }
+        }]
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('ma-run').addEventListener('click', simulate);
+      document.getElementById('ma-het').addEventListener('input', simulate);
+      document.getElementById('ma-k').addEventListener('input', simulate);
+      simulate();
+    });
+  </script>
+</body>
+</html>

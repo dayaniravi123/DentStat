@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ANOVA Basics — DentalStats</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+  </style>
+</head>
+<body class="bg-gray-50">
+  <header class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="bar-chart-2" class="w-7 h-7 text-amber-300"></i>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold">ANOVA Basics</h1>
+            <p class="text-gray-200 mt-1">Compare means across 3+ groups with an F-statistic</p>
+          </div>
+        </div>
+        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Concept</h2>
+      <p class="text-gray-700">
+        ANOVA tests whether <strong>at least one</strong> group mean differs. It compares between-group variability to within-group variability:
+      </p>
+      <div class="mono bg-gray-50 border rounded-xl p-4 mt-4 text-sm overflow-auto">
+        F = MS_between / MS_within
+      </div>
+      <p class="text-sm text-gray-600 mt-2">
+        If ANOVA is significant, you typically follow with post-hoc comparisons (e.g., Tukey) to identify which groups differ.
+      </p>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: simulate 3 treatments</h2>
+      <p class="text-gray-700 mb-4">
+        Adjust group means/spreads and see how separation affects between-group vs within-group variation.
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Group mean separation</label>
+          <input id="a-sep" type="range" min="0" max="3" step="0.1" value="1.0" class="w-full accent-amber-600">
+          <div class="flex justify-between text-xs text-gray-500 mt-1"><span>0</span><span id="a-sep-lbl" class="font-bold text-amber-700">1.0</span><span>3</span></div>
+
+          <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Within-group SD</label>
+          <input id="a-sd" type="range" min="0.2" max="2.5" step="0.1" value="1.0" class="w-full accent-amber-600">
+          <div class="flex justify-between text-xs text-gray-500 mt-1"><span>0.2</span><span id="a-sd-lbl" class="font-bold text-amber-700">1.0</span><span>2.5</span></div>
+
+          <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">n per group</label>
+          <input id="a-n" type="range" min="10" max="120" step="5" value="40" class="w-full accent-amber-600">
+          <div class="flex justify-between text-xs text-gray-500 mt-1"><span>10</span><span id="a-n-lbl" class="font-bold text-amber-700">40</span><span>120</span></div>
+
+          <button id="a-run" class="mt-4 w-full px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 transition">Generate</button>
+
+          <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm">
+            <div><strong>Approx F (demo):</strong> <span id="a-f">-</span></div>
+            <div class="text-xs text-gray-600 mt-1">This page is intuition-focused; real ANOVA uses exact sums of squares and p-values.</div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Group distributions (samples)</h3>
+          <div class="h-80"><canvas id="aChart"></canvas></div>
+          <p class="text-xs text-gray-500 mt-2">When groups overlap heavily, ANOVA is less likely to find differences.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
+      <p class="text-gray-700">
+        Comparing mean caries score across 3 fluoride regimens is classic one-way ANOVA. If significant, use post-hoc testing to see which regimens differ.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+
+    function randn(){
+      let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
+      return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+    }
+    function mean(arr){ return arr.reduce((s,x)=>s+x,0)/arr.length; }
+    function varSample(arr){
+      if(arr.length<2) return 0;
+      const m=mean(arr);
+      return arr.reduce((s,x)=>s+(x-m)*(x-m),0)/(arr.length-1);
+    }
+
+    let chart=null;
+
+    function generate(){
+      const sep=parseFloat(document.getElementById('a-sep').value);
+      const sd=parseFloat(document.getElementById('a-sd').value);
+      const n=parseInt(document.getElementById('a-n').value);
+
+      document.getElementById('a-sep-lbl').textContent=sep.toFixed(1);
+      document.getElementById('a-sd-lbl').textContent=sd.toFixed(1);
+      document.getElementById('a-n-lbl').textContent=n;
+
+      const mus=[3-sep, 3, 3+sep];
+      const groups=mus.map(mu=>{
+        const arr=[];
+        for(let i=0;i<n;i++) arr.push(mu + randn()*sd);
+        return arr;
+      });
+
+      // quick demo-F: between var of group means / pooled within var
+      const means=groups.map(mean);
+      const grand=mean(means);
+      const between = means.reduce((s,m)=>s+(m-grand)*(m-grand),0) / (means.length-1);
+      const within = groups.map(varSample).reduce((s,v)=>s+v,0)/groups.length;
+      const F = within>0 ? between/within : 0;
+      document.getElementById('a-f').textContent=F.toFixed(3);
+
+      render(groups);
+    }
+
+    function render(groups){
+      const ctx=document.getElementById('aChart').getContext('2d');
+      if(chart) chart.destroy();
+
+      // show box-ish via point samples scatter
+      const ds=groups.map((g,i)=>({
+        type:'scatter',
+        label:`Group ${i+1}`,
+        data:g.map((y,idx)=>({x:i+1 + (Math.random()-0.5)*0.15, y})),
+        pointRadius:2,
+        backgroundColor: i===0?'rgba(245,158,11,0.7)':i===1?'rgba(59,130,246,0.45)':'rgba(16,185,129,0.5)'
+      }));
+
+      chart=new Chart(ctx,{
+        data:{datasets:ds},
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          scales:{
+            x:{ title:{display:true,text:'Treatment group'}, min:0.5, max:3.5, ticks:{callback:(v)=> (v===1||v===2||v===3)?`G${v}`:''}},
+            y:{ title:{display:true,text:'Outcome value'} }
+          }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      ['a-sep','a-sd','a-n'].forEach(id=>document.getElementById(id).addEventListener('input', generate));
+      document.getElementById('a-run').addEventListener('click', generate);
+      generate();
+    });
+  </script>
+</body>
+</html>

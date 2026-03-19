@@ -1,0 +1,1360 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Basic Probability — DentalStats</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@300;400;600&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #1e2d40;
+      --blue:   #3b82f6;
+      --teal:   #0d9488;
+      --green:  #22c55e;
+      --red:    #ef4444;
+      --bg:     #f0f4f8;
+      --white:  #ffffff;
+      --border: #e2e8f0;
+      --text:   #334155;
+      --muted:  #64748b;
+      --serif:  'Source Serif 4', Georgia, serif;
+      --sans:   'Source Sans 3', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 56px;
+      background: var(--navy);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,.35);
+    }
+    .nav-left { display: flex; align-items: center; gap: 0.75rem; }
+    .nav-logo  { font-family: var(--serif); font-size: 1.1rem; color: #fff; font-weight: 600; }
+    .nav-sep   { color: rgba(255,255,255,.3); }
+    .nav-chapter { font-size: 0.85rem; color: rgba(255,255,255,.65); }
+    .nav-back {
+      font-size: 0.8rem; color: rgba(255,255,255,.7); text-decoration: none;
+      padding: 0.3rem 0.9rem; border: 1px solid rgba(255,255,255,.25);
+      border-radius: 20px; transition: all .2s;
+    }
+    .nav-back:hover { background: rgba(255,255,255,.1); color: #fff; }
+
+    /* ── LAYOUT ── */
+    .page-wrapper {
+      display: flex;
+      height: calc(100vh - 56px);
+      margin-top: 56px;
+    }
+
+    /* LEFT: scrollable text */
+    .text-panel {
+      width: 42%;
+      min-width: 320px;
+      overflow-y: auto;
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      scroll-behavior: smooth;
+    }
+    .text-panel::-webkit-scrollbar { width: 6px; }
+    .text-panel::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+    /* RIGHT: sticky viz */
+    .viz-panel {
+      flex: 1;
+      position: sticky;
+      top: 56px;
+      height: calc(100vh - 56px);
+      background: var(--bg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── SECTION ── */
+    .section {
+      padding: 3.5rem 2.5rem;
+      min-height: calc(100vh - 56px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .section-tag {
+      font-size: 0.7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 3px;
+      color: var(--blue); margin-bottom: 0.6rem;
+    }
+    .section h2 {
+      font-family: var(--serif);
+      font-size: 2rem; font-weight: 600;
+      color: var(--navy); margin-bottom: 1rem; line-height: 1.25;
+    }
+    .section p {
+      font-size: 0.95rem; line-height: 1.75;
+      color: var(--text); margin-bottom: 0.9rem;
+    }
+    .section p:last-child { margin-bottom: 0; }
+
+    /* Formula */
+    .formula {
+      background: #f8fafc;
+      border-left: 4px solid var(--blue);
+      border-radius: 0 8px 8px 0;
+      padding: 0.9rem 1.25rem;
+      margin: 1.25rem 0;
+      font-family: 'Georgia', serif;
+      font-size: 1.05rem;
+      color: var(--navy);
+    }
+    .formula .sym { color: var(--blue); font-weight: 700; }
+
+    /* ── DRAGGABLE PROBABILITY BARS (Seeing Theory style) ── */
+    .prob-bars-label {
+      font-size: 0.78rem; font-weight: 600; color: var(--muted);
+      margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .prob-bars {
+      display: flex; gap: 6px; align-items: flex-end;
+      height: 100px; user-select: none; margin-bottom: 0.5rem;
+    }
+    .bar-col {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 4px; height: 100%;
+    }
+    .bar-track {
+      flex: 1; width: 100%; background: #e2e8f0;
+      border-radius: 6px; position: relative; cursor: ns-resize; overflow: hidden;
+    }
+    .bar-fill {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: var(--blue); border-radius: 6px;
+      transition: height 0.08s;
+    }
+    .bar-pct  { font-size: 0.68rem; color: var(--muted); }
+    .bar-name { font-size: 0.72rem; color: var(--navy); font-weight: 600; }
+
+    /* Die face bars */
+    .die-bars .bar-fill { background: var(--teal); }
+
+    /* Slider row */
+    .slider-row { margin: 1rem 0; }
+    .slider-row label {
+      display: flex; justify-content: space-between;
+      font-size: 0.82rem; font-weight: 600; color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    .slider-row label span { color: var(--blue); }
+    input[type=range] {
+      width: 100%; accent-color: var(--blue);
+      height: 4px; cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn-row { display: flex; gap: 0.6rem; margin-top: 1.1rem; }
+    .btn {
+      padding: 0.45rem 1.1rem; border: none; border-radius: 6px;
+      font-family: var(--sans); font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: all .18s;
+    }
+    .btn-primary  { background: var(--blue);  color: #fff; }
+    .btn-primary:hover  { background: #2563eb; }
+    .btn-batch    { background: #eff6ff; color: var(--blue); border: 1px solid #bfdbfe; }
+    .btn-batch:hover    { background: #dbeafe; }
+    .btn-reset    { background: #f1f5f9; color: var(--muted); }
+    .btn-reset:hover    { background: #e2e8f0; }
+
+    /* Stats grid */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 1rem; }
+    .stat-box {
+      background: #f8fafc; border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.75rem; text-align: center;
+    }
+    .stat-box .s-label { font-size: 0.68rem; color: var(--muted); margin-bottom: 2px; }
+    .stat-box .s-value { font-size: 1.5rem; font-weight: 700; color: var(--navy); }
+
+    /* Card toggles */
+    .card-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 1rem 0; }
+    .card-toggle {
+      width: 44px; height: 60px; border-radius: 6px;
+      border: 2px solid var(--border);
+      background: #f8fafc; cursor: pointer;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700;
+      transition: all .18s; color: var(--text);
+    }
+    .card-toggle.active {
+      background: var(--blue); border-color: var(--blue);
+      color: white; box-shadow: 0 2px 8px rgba(59,130,246,.35);
+    }
+    .card-toggle .suit { font-size: 1rem; }
+    .card-toggle.red-card { color: #dc2626; }
+    .card-toggle.red-card.active { color: white; background: #dc2626; border-color: #dc2626; }
+
+    /* ── VISUALIZATION SECTIONS ── */
+    .viz-section {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 2rem;
+      opacity: 0; transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+    .viz-section.active { opacity: 1; pointer-events: all; }
+
+    .viz-title {
+      font-family: var(--serif); font-size: 1rem;
+      color: var(--muted); margin-bottom: 1.25rem;
+      text-align: center; letter-spacing: 0.5px;
+    }
+
+    /* ─ VIZ 1: Coin ─ */
+    #coin-viz {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 1.5rem; width: 100%;
+    }
+
+    .coin-display {
+      perspective: 600px;
+    }
+    .coin-inner {
+      width: 110px; height: 110px;
+      position: relative; transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+    }
+    .coin-inner.flipping { animation: coinFlip 0.5s ease; }
+    @keyframes coinFlip {
+      0%   { transform: rotateY(0deg); }
+      50%  { transform: rotateY(900deg); }
+      100% { transform: rotateY(1800deg); }
+    }
+    .coin-face {
+      position: absolute; inset: 0; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; font-weight: 700;
+      box-shadow: 0 6px 20px rgba(0,0,0,.15);
+    }
+    .coin-heads {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+    }
+    .coin-tails {
+      background: linear-gradient(135deg, #64748b, #475569);
+      color: white;
+    }
+
+    .coin-history {
+      display: flex; flex-wrap: wrap; gap: 4px;
+      justify-content: center; max-height: 80px;
+      overflow: hidden; width: 100%; max-width: 280px;
+    }
+    .coin-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      animation: popIn 0.2s ease;
+    }
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .coin-dot.h { background: #f59e0b; }
+    .coin-dot.t { background: #64748b; }
+
+    .coin-stats {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.75rem; width: 100%; max-width: 320px;
+    }
+    .coin-stat { text-align: center; }
+    .coin-stat .cs-val {
+      font-size: 1.6rem; font-weight: 700; color: var(--navy);
+    }
+    .coin-stat .cs-lab {
+      font-size: 0.68rem; color: var(--muted); margin-top: 2px;
+    }
+
+    /* Convergence mini chart */
+
+
+    /* ─ VIZ 2: Die ─ */
+    #die-viz {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 1.2rem; width: 100%;
+    }
+
+    .die-face {
+      width: 100px; height: 100px;
+      background: white; border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.15), 0 0 0 3px #e2e8f0;
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      padding: 14px; gap: 6px;
+      position: relative;
+    }
+    .die-dot {
+      width: 100%; aspect-ratio: 1;
+      border-radius: 50%; background: var(--navy);
+      transition: opacity 0.2s;
+    }
+    .die-dot.empty { background: transparent; }
+
+    .die-rolling { animation: dieShake 0.35s ease; }
+    @keyframes dieShake {
+      0%,100% { transform: rotate(0deg); }
+      25%  { transform: rotate(-8deg) scale(1.05); }
+      75%  { transform: rotate(8deg)  scale(1.05); }
+    }
+
+
+
+    .exp-display {
+      display: flex; gap: 1.5rem; text-align: center;
+    }
+    .exp-val { font-size: 0.85rem; color: var(--muted); }
+    .exp-val strong { display: block; font-size: 1.3rem; color: var(--navy); }
+
+    /* ─ VIZ 3: Cards ─ */
+    #card-viz {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 1.2rem; width: 100%;
+    }
+
+    .drawn-card-display {
+      width: 80px; height: 110px;
+      background: white; border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.15);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; font-size: 1.6rem; font-weight: 700;
+      border: 2px solid var(--border);
+      transition: all 0.3s;
+    }
+    .drawn-card-display .card-suit { font-size: 1rem; }
+    .drawn-card-display.red { color: #dc2626; }
+
+
+
+    /* ── SECTION NAV DOTS ── */
+    .dot-nav {
+      position: fixed; right: 1.2rem; top: 50%;
+      transform: translateY(-50%); z-index: 100;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .dot-nav a {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #cbd5e1; display: block; transition: all .2s;
+      border: 2px solid transparent;
+    }
+    .dot-nav a.active {
+      background: var(--blue); border-color: rgba(59,130,246,.3);
+      box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+    }
+    .dot-nav a:hover { background: var(--blue); transform: scale(1.2); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .page-wrapper { flex-direction: column; height: auto; }
+      .text-panel { width: 100%; min-height: auto; overflow: visible; }
+      .viz-panel { position: relative; top: 0; height: 60vh; width: 100%; }
+      .dot-nav { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <span class="nav-logo">DentalStats</span>
+    <span class="nav-sep">/</span>
+    <span class="nav-chapter">Chapter 1 · Basic Probability</span>
+  </div>
+  <a href="/index.html#concepts" class="nav-back">← Back</a>
+</nav>
+
+<!-- SECTION DOTS -->
+<div class="dot-nav">
+  <a href="#s1" class="active" data-sec="0" title="Chance Events"></a>
+  <a href="#s2" data-sec="1" title="Expectation"></a>
+  <a href="#s3" data-sec="2" title="Variance"></a>
+</div>
+
+<!-- PAGE WRAPPER -->
+<div class="page-wrapper">
+
+  <!-- ═══════════════════ LEFT TEXT PANEL ═══════════════════ -->
+  <div class="text-panel" id="textPanel">
+
+    <!-- SECTION 1: CHANCE EVENTS -->
+    <div class="section" id="s1" data-section="0">
+      <div class="section-tag">Section 1</div>
+      <h2>Chance Events</h2>
+      <p>
+        Probability is a number indicating how likely an event will occur. This number is always
+        between <strong>0</strong> and <strong>1</strong>, where 0 indicates impossibility and 1 indicates certainty.
+      </p>
+      <p>
+        In dentistry, we deal with chance every day. Will this patient develop caries this year?
+        Does a positive screening test truly indicate disease? These are questions of probability.
+      </p>
+      <div class="formula">
+        <span class="sym">0 ≤ P(A) ≤ 1</span>
+        &nbsp;&nbsp;·&nbsp;&nbsp;
+        <span class="sym">P(Aᶜ) = 1 − P(A)</span>
+      </div>
+      <p>
+        Adjust the coin's weight below to set the probability of a patient having active caries.
+        Then flip — observe how repeated trials reveal the underlying probability over time
+        (Law of Large Numbers).
+      </p>
+
+      <!-- Coin weight control -->
+      <div class="slider-row">
+        <label>P(Caries +) <span id="coin-p-label">50%</span></label>
+        <input type="range" id="coin-p" min="5" max="95" value="50">
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="s-label">Caries +</div>
+          <div class="s-value" id="c-heads" style="color:var(--blue)">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="s-label">Caries −</div>
+          <div class="s-value" id="c-tails" style="color:var(--muted)">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="s-label">Total Patients</div>
+          <div class="s-value" id="c-total">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="s-label">Observed P</div>
+          <div class="s-value" id="c-obs" style="font-size:1.1rem">—</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="flipCoin()">Flip</button>
+        <button class="btn btn-batch"   onclick="flipMany()">Flip 100×</button>
+        <button class="btn btn-reset"   onclick="resetCoin()">Reset</button>
+      </div>
+    </div>
+
+    <!-- SECTION 2: EXPECTATION -->
+    <div class="section" id="s2" data-section="1">
+      <div class="section-tag">Section 2</div>
+      <h2>Expectation</h2>
+      <p>
+        The <strong>expected value</strong> (or mean) of a random variable is the long-run average
+        of its outcomes, weighted by their probabilities.
+      </p>
+      <p>
+        In dental research, the DMFT index (Decayed, Missing, Filled Teeth) is a random variable.
+        If we know the distribution of DMFT scores in a population, we can compute the expected
+        DMFT a randomly selected patient will have.
+      </p>
+      <div class="formula">
+        <span class="sym">E[X] = Σ x · P(x)</span>
+      </div>
+      <p>
+        Adjust the probability bars to set the likelihood of each DMFT score (0–5).
+        Then roll the die — watch the running sample mean converge to the true expected value.
+      </p>
+
+      <!-- Die face probability bars -->
+      <div class="prob-bars-label">DMFT Score Distribution</div>
+      <div class="prob-bars die-bars" id="dieBars">
+        <!-- generated by JS -->
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="s-label">True E[X]</div>
+          <div class="s-value" id="d-true" style="color:var(--teal)">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="s-label">Sample Mean</div>
+          <div class="s-value" id="d-sample">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="s-label">Rolls</div>
+          <div class="s-value" id="d-rolls">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="s-label">Last Score</div>
+          <div class="s-value" id="d-last" style="color:var(--teal)">—</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="rollDie()">Roll</button>
+        <button class="btn btn-batch"   onclick="rollMany()">Roll 100×</button>
+        <button class="btn btn-reset"   onclick="resetDie()">Reset</button>
+      </div>
+    </div>
+
+    <!-- SECTION 3: VARIANCE -->
+    <div class="section" id="s3" data-section="2">
+      <div class="section-tag">Section 3</div>
+      <h2>Variance</h2>
+      <p>
+        Variance measures how spread out a distribution is — how much values deviate from
+        the expected value on average. A high variance means outcomes are unpredictable; low
+        variance means they are consistent.
+      </p>
+      <p>
+        In clinical dentistry, treatment outcomes vary: some patients heal quickly, others
+        have complications. Variance helps quantify this spread — essential for informed consent
+        and treatment planning.
+      </p>
+      <div class="formula">
+        <span class="sym">Var(X) = E[(X − E[X])²]</span>
+      </div>
+      <p>
+        Toggle cards to include or exclude them from the deck. Each card represents a
+        treatment outcome score (1–10). Draw cards and watch the running variance converge
+        to the true population variance.
+      </p>
+
+      <!-- Card toggles -->
+      <div class="prob-bars-label">Outcome Deck (click to toggle)</div>
+      <div class="card-grid" id="cardGrid">
+        <!-- generated by JS -->
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="s-label">True Var(X)</div>
+          <div class="s-value" id="v-true" style="color:var(--green)">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="s-label">Running Var</div>
+          <div class="s-value" id="v-sample">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="s-label">Draws</div>
+          <div class="s-value" id="v-draws">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="s-label">Last Draw</div>
+          <div class="s-value" id="v-last" style="color:var(--green)">—</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="drawCard()">Draw</button>
+        <button class="btn btn-batch"   onclick="drawMany()">Draw 100×</button>
+        <button class="btn btn-reset"   onclick="resetCards()">Reset</button>
+      </div>
+    </div>
+
+  </div><!-- /text-panel -->
+
+
+  <!-- ═══════════════════ RIGHT VIZ PANEL ═══════════════════ -->
+  <div class="viz-panel" id="vizPanel">
+
+    <!-- VIZ 1: COIN -->
+    <div class="viz-section active" id="viz1">
+      <div class="viz-title">Simulating Patient Caries Screening</div>
+
+      <div id="coin-viz">
+        <div class="coin-display">
+          <div class="coin-inner" id="coinInner">
+            <div class="coin-face coin-heads" id="coinFace">+</div>
+          </div>
+        </div>
+
+        <div class="coin-history" id="coinHistory"></div>
+
+        <div class="coin-stats">
+          <div class="coin-stat">
+            <div class="cs-val" id="cv-heads" style="color:var(--blue)">0</div>
+            <div class="cs-lab">Caries +</div>
+          </div>
+          <div class="coin-stat">
+            <div class="cs-val" id="cv-pct">0%</div>
+            <div class="cs-lab">Observed P</div>
+          </div>
+          <div class="coin-stat">
+            <div class="cs-val" id="cv-tails" style="color:var(--muted)">0</div>
+            <div class="cs-lab">Caries −</div>
+          </div>
+        </div>
+
+        <canvas id="coinChart" width="520" height="200" style="width:100%;border-radius:10px;background:white;"></canvas>
+      </div>
+    </div>
+
+    <!-- VIZ 2: DIE -->
+    <div class="viz-section" id="viz2">
+      <div class="viz-title">Rolling DMFT Distribution</div>
+
+      <div id="die-viz">
+        <div class="die-face" id="dieFace">
+          <div class="die-dot empty"></div><div class="die-dot empty"></div><div class="die-dot empty"></div>
+          <div class="die-dot empty"></div><div class="die-dot empty"></div><div class="die-dot empty"></div>
+          <div class="die-dot empty"></div><div class="die-dot empty"></div><div class="die-dot empty"></div>
+        </div>
+
+        <div class="exp-display">
+          <div class="exp-val"><strong id="dv-true" style="color:var(--teal)">—</strong>True E[X]</div>
+          <div class="exp-val"><strong id="dv-sample">—</strong>Sample Mean</div>
+          <div class="exp-val"><strong id="dv-rolls">0</strong>Rolls</div>
+        </div>
+
+        <canvas id="dieChart" width="520" height="200" style="width:100%;border-radius:10px;background:white;"></canvas>
+      </div>
+    </div>
+
+    <!-- VIZ 3: CARDS -->
+    <div class="viz-section" id="viz3">
+      <div class="viz-title">Drawing Treatment Outcome Scores</div>
+
+      <div id="card-viz">
+        <div class="drawn-card-display" id="drawnCard">
+          <span style="font-size:2rem; color:#cbd5e1">?</span>
+        </div>
+
+        <div class="exp-display">
+          <div class="exp-val"><strong id="vv-true" style="color:var(--green)">—</strong>True Var(X)</div>
+          <div class="exp-val"><strong id="vv-sample">—</strong>Running Var</div>
+          <div class="exp-val"><strong id="vv-draws">0</strong>Draws</div>
+        </div>
+
+        <canvas id="varChart" width="520" height="200" style="width:100%;border-radius:10px;background:white;"></canvas>
+      </div>
+    </div>
+
+  </div><!-- /viz-panel -->
+
+</div><!-- /page-wrapper -->
+
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════════════════════ */
+const delay = ms => new Promise(r => setTimeout(r, ms));
+
+function drawLine(ctx, x1,y1,x2,y2, color, dash=[]) {
+  ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=2;
+  ctx.setLineDash(dash); ctx.beginPath();
+  ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); ctx.restore();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SCROLL DETECTION → active section
+═══════════════════════════════════════════════════════════ */
+let activeSection = 0;
+
+const vizSections = [
+  document.getElementById('viz1'),
+  document.getElementById('viz2'),
+  document.getElementById('viz3')
+];
+
+const dotLinks = document.querySelectorAll('.dot-nav a');
+
+function setActiveSection(idx) {
+  if (idx === activeSection) return;
+  activeSection = idx;
+  vizSections.forEach((v,i) => v.classList.toggle('active', i===idx));
+  dotLinks.forEach((d,i) => d.classList.toggle('active', i===idx));
+}
+
+const textSections = document.querySelectorAll('.section');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      setActiveSection(+e.target.dataset.section);
+    }
+  });
+}, { root: document.getElementById('textPanel'), threshold: 0.4 });
+
+textSections.forEach(s => observer.observe(s));
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 1 — COIN FLIP
+═══════════════════════════════════════════════════════════ */
+let cHeads = 0, cTails = 0;
+const cHistory = [];
+
+const coinP       = document.getElementById('coin-p');
+const coinPLabel  = document.getElementById('coin-p-label');
+const coinInner   = document.getElementById('coinInner');
+const coinFace    = document.getElementById('coinFace');
+const coinHistory = document.getElementById('coinHistory');
+
+// Coin convergence chart
+// ── HiDPI canvas setup (fixes blurry text on retina screens) ──
+function makeHiDPI(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.width;
+  const h = canvas.height;
+  canvas.width  = w * dpr;
+  canvas.height = h * dpr;
+  const ctx = canvas.getContext('2d', { alpha: false });
+  ctx.scale(dpr, dpr);
+  ctx.imageSmoothingEnabled = false;
+  ctx.textBaseline = 'middle';
+  return ctx;
+}
+
+const coinCtx = makeHiDPI(document.getElementById('coinChart'));
+const coinChartData = { labels:[], obs:[], trueP:[] };
+
+coinP.addEventListener('input', () => {
+  coinPLabel.textContent = coinP.value + '%';
+});
+
+function renderCoinChart() {
+  const W=520, H=200, PL=52, PR=16, PT=18, PB=38;
+  const cW = W-PL-PR, cH = H-PT-PB;
+  const FONT = '500 9px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+
+  coinCtx.clearRect(0,0,W,H);
+  coinCtx.fillStyle='#fff'; coinCtx.fillRect(0,0,W,H);
+
+  const n = coinChartData.labels.length;
+  const xScale = i => PL + (i/Math.max(n-1,1))*cW;
+  const yScale = v => PT + (1-v)*cH;
+
+  // horizontal grid lines + Y labels
+  [0, 0.25, 0.5, 0.75, 1].forEach(v => {
+    const y = Math.round(yScale(v)) + 0.5;
+    coinCtx.strokeStyle = v===0||v===1 ? '#cbd5e1' : '#e2e8f0';
+    coinCtx.lineWidth=1; coinCtx.setLineDash([]);
+    coinCtx.beginPath(); coinCtx.moveTo(PL,y); coinCtx.lineTo(PL+cW,y); coinCtx.stroke();
+    coinCtx.fillStyle='#94a3b8'; coinCtx.font=FONT; coinCtx.textAlign='right';
+    coinCtx.fillText(Math.round(v*100)+'%', PL-6, y);
+  });
+
+  // Y axis line
+  coinCtx.strokeStyle='#94a3b8'; coinCtx.lineWidth=1; coinCtx.setLineDash([]);
+  coinCtx.beginPath(); coinCtx.moveTo(PL,PT); coinCtx.lineTo(PL,PT+cH); coinCtx.stroke();
+
+  // X axis line
+  coinCtx.beginPath(); coinCtx.moveTo(PL,PT+cH); coinCtx.lineTo(PL+cW,PT+cH); coinCtx.stroke();
+
+  if(n<2){ coinCtx.textAlign='left'; return; }
+
+  // X axis labels
+  coinCtx.fillStyle='#94a3b8'; coinCtx.font=FONT; coinCtx.textAlign='center';
+  [0,0.25,0.5,0.75,1].forEach(t=>{
+    const i=Math.round(t*(n-1));
+    if(i<coinChartData.labels.length)
+      coinCtx.fillText(coinChartData.labels[i], xScale(i), PT+cH+14);
+  });
+  coinCtx.textAlign='left';
+
+  // True P — red dashed horizontal
+  const tp = parseInt(coinP.value)/100;
+  drawLine(coinCtx, PL, yScale(tp), PL+cW, yScale(tp), '#ef4444', [6,4]);
+
+  // Observed proportion — gradient fill + blue line
+  coinCtx.save();
+  coinCtx.lineJoin='round'; coinCtx.beginPath();
+  coinChartData.obs.forEach((v,i)=>{
+    i===0 ? coinCtx.moveTo(xScale(i),yScale(v)) : coinCtx.lineTo(xScale(i),yScale(v));
+  });
+  // area fill
+  coinCtx.lineTo(xScale(n-1), PT+cH);
+  coinCtx.lineTo(xScale(0), PT+cH);
+  coinCtx.closePath();
+  const coinGrad = coinCtx.createLinearGradient(0, PT, 0, PT+cH);
+  coinGrad.addColorStop(0, 'rgba(59,130,246,0.18)');
+  coinGrad.addColorStop(1, 'rgba(59,130,246,0)');
+  coinCtx.fillStyle = coinGrad; coinCtx.fill();
+  // line on top
+  coinCtx.beginPath();
+  coinChartData.obs.forEach((v,i)=>{
+    i===0 ? coinCtx.moveTo(xScale(i),yScale(v)) : coinCtx.lineTo(xScale(i),yScale(v));
+  });
+  coinCtx.strokeStyle='#3b82f6'; coinCtx.lineWidth=2.5; coinCtx.setLineDash([]);
+  coinCtx.stroke(); coinCtx.restore();
+
+  // Legend (top-right, white bg to prevent overlap with data line)
+  const lx=PL+cW-130, ly=PT+10;
+  coinCtx.fillStyle='rgba(255,255,255,0.9)';
+  coinCtx.fillRect(lx-4, ly-8, 136, 26);
+  coinCtx.fillStyle='#3b82f6'; coinCtx.fillRect(lx, ly-3, 18, 3);
+  coinCtx.fillStyle='#475569'; coinCtx.font=FONT;
+  coinCtx.fillText('Observed P', lx+22, ly);
+  drawLine(coinCtx,lx,ly+10,lx+18,ly+10,'#ef4444',[5,3]);
+  coinCtx.fillText('True P', lx+22, ly+10);
+}
+
+function updateCoinUI() {
+  const total = cHeads+cTails;
+  ['c-heads','cv-heads'].forEach(id => document.getElementById(id).textContent = cHeads);
+  ['c-tails','cv-tails'].forEach(id => document.getElementById(id).textContent = cTails);
+  ['c-total'].forEach(id => document.getElementById(id).textContent = total);
+  const obs = total ? (cHeads/total*100).toFixed(1)+'%' : '—';
+  document.getElementById('c-obs').textContent = obs;
+  document.getElementById('cv-pct').textContent = total ? (cHeads/total*100).toFixed(1)+'%' : '0%';
+}
+
+function doFlip() {
+  const p = parseInt(coinP.value)/100;
+  const isH = Math.random() < p;
+  if(isH) cHeads++; else cTails++;
+
+  coinFace.textContent = isH ? '+' : '−';
+  coinFace.className = 'coin-face ' + (isH ? 'coin-heads' : 'coin-tails');
+
+  // animate
+  coinInner.classList.remove('flipping');
+  void coinInner.offsetWidth;
+  coinInner.classList.add('flipping');
+  setTimeout(() => coinInner.classList.remove('flipping'), 520);
+
+  // history dot
+  const dot = document.createElement('div');
+  dot.className = 'coin-dot ' + (isH?'h':'t');
+  coinHistory.appendChild(dot);
+  if(coinHistory.children.length > 60) coinHistory.firstChild.remove();
+
+  // chart data
+  const total = cHeads+cTails;
+  coinChartData.labels.push(total);
+  coinChartData.obs.push(cHeads/total);
+  coinChartData.trueP.push(p);
+  if(coinChartData.labels.length > 300) {
+    coinChartData.labels.shift(); coinChartData.obs.shift(); coinChartData.trueP.shift();
+  }
+
+  updateCoinUI();
+  renderCoinChart();
+}
+
+function flipCoin() { doFlip(); }
+
+async function flipMany() {
+  for(let i=0;i<100;i++) { doFlip(); await delay(20); }
+}
+
+function resetCoin() {
+  cHeads=0; cTails=0;
+  coinHistory.innerHTML='';
+  coinFace.textContent='+'; coinFace.className='coin-face coin-heads';
+  coinChartData.labels=[]; coinChartData.obs=[]; coinChartData.trueP=[];
+  updateCoinUI(); renderCoinChart();
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 2 — DIE / EXPECTATION
+═══════════════════════════════════════════════════════════ */
+// Die shows DMFT scores 0-5 (using a 6-sided die)
+// Probabilities are draggable via bars
+
+const DIE_LABELS = ['0','1','2','3','4','5'];
+let dieProbs = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6]; // uniform start
+
+let dRolls = 0, dSum = 0;
+const dHistory = [];
+let dFreq = [0,0,0,0,0,0]; // frequency count per DMFT face
+
+// Build draggable bars
+const dieBarsCont = document.getElementById('dieBars');
+DIE_LABELS.forEach((label, i) => {
+  const col = document.createElement('div');
+  col.className = 'bar-col';
+  col.innerHTML = `
+    <div class="bar-track" data-i="${i}">
+      <div class="bar-fill" style="height:${Math.round(dieProbs[i]*100)}%"></div>
+    </div>
+    <div class="bar-pct" id="dp${i}">${Math.round(dieProbs[i]*100)}%</div>
+    <div class="bar-name">DMFT ${label}</div>
+  `;
+  dieBarsCont.appendChild(col);
+});
+
+// Make bars draggable
+let draggingBar = null;
+dieBarsCont.querySelectorAll('.bar-track').forEach(track => {
+  const onMove = e => {
+    if(draggingBar !== track) return;
+    const rect = track.getBoundingClientRect();
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const pct = Math.min(1, Math.max(0.02, (rect.bottom - clientY) / rect.height));
+    const i = +track.dataset.i;
+    dieProbs[i] = pct;
+    normalizeDieProbs();
+    updateDieBars();
+    updateDieExpected();
+  };
+  track.addEventListener('mousedown',  e => { draggingBar=track; onMove(e); });
+  track.addEventListener('touchstart', e => { draggingBar=track; onMove(e); }, {passive:true});
+  document.addEventListener('mousemove',  onMove);
+  document.addEventListener('touchmove',  onMove, {passive:true});
+  document.addEventListener('mouseup',  () => draggingBar=null);
+  document.addEventListener('touchend', () => draggingBar=null);
+});
+
+function normalizeDieProbs() {
+  const sum = dieProbs.reduce((a,b)=>a+b, 0);
+  dieProbs = dieProbs.map(p => p/sum);
+}
+
+function updateDieBars() {
+  DIE_LABELS.forEach((_, i) => {
+    const fill = dieBarsCont.querySelectorAll('.bar-fill')[i];
+    const pct  = dieBarsCont.querySelectorAll('.bar-pct')[i];
+    fill.style.height = Math.round(dieProbs[i]*100) + '%';
+    pct.textContent   = Math.round(dieProbs[i]*100) + '%';
+  });
+}
+
+function getDieExpected() {
+  return dieProbs.reduce((acc,p,i) => acc + i*p, 0);
+}
+
+function updateDieExpected() {
+  const e = getDieExpected().toFixed(2);
+  document.getElementById('d-true').textContent = e;
+  document.getElementById('dv-true').textContent = e;
+}
+
+updateDieExpected();
+
+// Die face dot layouts (9 slots, which are on/off)
+const DIE_PATTERNS = {
+  0: [0,0,0, 0,0,0, 0,0,0],
+  1: [0,0,0, 0,1,0, 0,0,0],
+  2: [1,0,0, 0,0,0, 0,0,1],
+  3: [1,0,0, 0,1,0, 0,0,1],
+  4: [1,0,1, 0,0,0, 1,0,1],
+  5: [1,0,1, 0,1,0, 1,0,1],
+};
+
+function renderDieFace(val) {
+  const dots = document.getElementById('dieFace').querySelectorAll('.die-dot');
+  const pat = DIE_PATTERNS[val] || DIE_PATTERNS[1];
+  dots.forEach((d,i) => d.className = 'die-dot' + (pat[i] ? '' : ' empty'));
+}
+
+// Die convergence chart
+const dieCtx = makeHiDPI(document.getElementById('dieChart'));
+const dieChartData = { obs:[], trueE:[] };
+
+function renderDieChart() {
+  // Seeing Theory style: FREQUENCY BAR CHART (x=DMFT score, y=proportion)
+  // + teal dashed vertical line at E[X]
+  const W=520, H=200, PL=52, PR=20, PT=18, PB=38;
+  const cW = W-PL-PR, cH = H-PT-PB;
+  const FONT = '500 9px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+
+  dieCtx.clearRect(0,0,W,H);
+  dieCtx.fillStyle='#fff'; dieCtx.fillRect(0,0,W,H);
+
+  const total = dRolls;
+  const props = dFreq.map(f => total ? f/total : 0);
+  const maxProp = Math.max(...props, 1/6 + 0.05);
+  const numBars = 6;
+  const slotW = cW / numBars;
+  const barW  = slotW * 0.6;
+
+  const xCenter = i => PL + (i + 0.5) * slotW;  // center of bar i
+  const yScale  = v => PT + (1 - v/maxProp) * cH;
+
+  // Horizontal grid lines + Y labels
+  [0, 0.25, 0.5, 0.75, 1].forEach(t => {
+    const v = t * maxProp;
+    const y = Math.round(yScale(v)) + 0.5;
+    dieCtx.strokeStyle = t===0||t===1 ? '#cbd5e1' : '#e2e8f0';
+    dieCtx.lineWidth=1; dieCtx.setLineDash([]);
+    dieCtx.beginPath(); dieCtx.moveTo(PL,y); dieCtx.lineTo(PL+cW,y); dieCtx.stroke();
+    dieCtx.fillStyle='#94a3b8'; dieCtx.font=FONT; dieCtx.textAlign='right';
+    dieCtx.fillText((v*100).toFixed(0)+'%', PL-6, y);
+  });
+
+  // Y axis line
+  dieCtx.strokeStyle='#94a3b8'; dieCtx.lineWidth=1; dieCtx.setLineDash([]);
+  dieCtx.beginPath(); dieCtx.moveTo(PL,PT); dieCtx.lineTo(PL,PT+cH); dieCtx.stroke();
+  // X axis line
+  dieCtx.beginPath(); dieCtx.moveTo(PL,PT+cH); dieCtx.lineTo(PL+cW,PT+cH); dieCtx.stroke();
+
+  // Theoretical distribution bars (light gray, rounded top)
+  dieProbs.forEach((p,i) => {
+    const barH = Math.max(p/maxProp * cH, 1);
+    const x = xCenter(i) - barW/2;
+    const y = PT+cH-barH;
+    dieCtx.fillStyle='rgba(203,213,225,0.55)';
+    dieCtx.beginPath();
+    dieCtx.roundRect ? dieCtx.roundRect(x,y,barW,barH,3) : dieCtx.rect(x,y,barW,barH);
+    dieCtx.fill();
+  });
+
+  // Empirical frequency bars (gradient blue, rounded top)
+  props.forEach((p,i) => {
+    if(p===0) return;
+    const barH = p/maxProp * cH;
+    const x = xCenter(i) - barW/2;
+    const y = PT+cH-barH;
+    const grad = dieCtx.createLinearGradient(0,y,0,y+barH);
+    grad.addColorStop(0,'rgba(59,130,246,0.95)');
+    grad.addColorStop(1,'rgba(99,157,255,0.7)');
+    dieCtx.fillStyle=grad;
+    dieCtx.beginPath();
+    dieCtx.roundRect ? dieCtx.roundRect(x,y,barW,barH,3) : dieCtx.rect(x,y,barW,barH);
+    dieCtx.fill();
+    // proportion label above bar — only if enough vertical room
+    if(barH > 16) {
+      dieCtx.fillStyle='#1e40af'; dieCtx.font=FONT; dieCtx.textAlign='center';
+      dieCtx.fillText((p*100).toFixed(0)+'%', xCenter(i), y-5);
+    }
+  });
+
+  // X axis labels (DMFT 0-5)
+  dieCtx.fillStyle='#475569'; dieCtx.font=FONT; dieCtx.textAlign='center';
+  [0,1,2,3,4,5].forEach(i => {
+    dieCtx.fillText(i, xCenter(i), PT+cH+14);
+  });
+  // X axis title
+  dieCtx.fillStyle='#94a3b8'; dieCtx.textAlign='center';
+  dieCtx.fillText('DMFT Score', PL+cW/2, PT+cH+26);
+  dieCtx.textAlign='left';
+
+  // E[X] vertical dashed line (teal) — label inside chart on right side
+  if(total > 0) {
+    const trueE = getDieExpected();
+    const ex = PL + (trueE/5) * cW;
+    drawLine(dieCtx, ex, PT, ex, PT+cH, '#0d9488', [5,4]);
+    // label placed just to the right of the line, inside chart
+    const labelX = ex + 4;
+    const labelY = PT + 14;
+    dieCtx.fillStyle='#0d9488'; dieCtx.font=FONT; dieCtx.textAlign='left';
+    dieCtx.fillText('E[X]='+trueE.toFixed(2), labelX, labelY);
+  }
+
+  // Legend — top-right corner
+  const lx=PL+cW-160, ly=PT+6;
+  dieCtx.fillStyle='rgba(255,255,255,0.92)';
+  dieCtx.fillRect(lx-6, ly-8, 172, 22);
+  dieCtx.fillStyle='rgba(59,130,246,0.85)'; dieCtx.fillRect(lx, ly-3, 12, 8);
+  dieCtx.fillStyle='#475569'; dieCtx.font=FONT;
+  dieCtx.fillText('Observed', lx+16, ly+1);
+  dieCtx.fillStyle='rgba(203,213,225,0.9)'; dieCtx.fillRect(lx+78, ly-3, 12, 8);
+  dieCtx.fillStyle='#475569';
+  dieCtx.fillText('True prob.', lx+94, ly+1);
+}
+
+renderDieFace(0);
+renderDieChart();
+
+function doRoll() {
+  // weighted random from dieProbs
+  const r = Math.random();
+  let cum=0, val=0;
+  for(let i=0;i<6;i++) { cum+=dieProbs[i]; if(r<cum){val=i;break;} }
+
+  dRolls++; dSum+=val; dFreq[val]++;
+  dHistory.push(val);
+  const sampleMean = dSum/dRolls;
+
+  dieChartData.obs.push(sampleMean);
+  dieChartData.trueE.push(getDieExpected());
+  if(dieChartData.obs.length>300) { dieChartData.obs.shift(); dieChartData.trueE.shift(); }
+
+  document.getElementById('d-rolls').textContent  = dRolls;
+  document.getElementById('dv-rolls').textContent  = dRolls;
+  document.getElementById('d-last').textContent   = val;
+  document.getElementById('d-sample').textContent = sampleMean.toFixed(2);
+  document.getElementById('dv-sample').textContent = sampleMean.toFixed(2);
+
+  // animate die
+  const dieFaceEl = document.getElementById('dieFace');
+  dieFaceEl.classList.remove('die-rolling');
+  void dieFaceEl.offsetWidth;
+  dieFaceEl.classList.add('die-rolling');
+  renderDieFace(val);
+  renderDieChart();
+}
+
+function rollDie()  { doRoll(); }
+async function rollMany() { for(let i=0;i<100;i++){doRoll();await delay(20);} }
+
+function resetDie() {
+  dRolls=0; dSum=0; dFreq=[0,0,0,0,0,0]; dieChartData.obs=[]; dieChartData.trueE=[];
+  document.getElementById('d-rolls').textContent='0';
+  document.getElementById('dv-rolls').textContent='0';
+  document.getElementById('d-last').textContent='—';
+  document.getElementById('d-sample').textContent='—';
+  document.getElementById('dv-sample').textContent='—';
+  renderDieFace(0); renderDieChart();
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 3 — CARDS / VARIANCE
+═══════════════════════════════════════════════════════════ */
+const CARD_SUITS = ['♠','♥','♦','♣'];
+const CARD_VALUES = [
+  {val:1,label:'A'},{val:2,label:'2'},{val:3,label:'3'},{val:4,label:'4'},
+  {val:5,label:'5'},{val:6,label:'6'},{val:7,label:'7'},{val:8,label:'8'},
+  {val:9,label:'9'},{val:10,label:'10'}
+];
+
+// Build a small deck: 10 cards (A-10 of Spades, scaled to outcome scores 1-10)
+const deck = CARD_VALUES.map((c,i) => ({
+  val: c.val, label: c.label,
+  suit: CARD_SUITS[i%2],  // alternating black/red
+  red: i%2===1,
+  active: true
+}));
+
+let vDraws=0, vSumX=0, vSumX2=0;
+let vDrawnValues = []; // for dot plot
+
+const cardGrid = document.getElementById('cardGrid');
+
+function buildCardGrid() {
+  cardGrid.innerHTML='';
+  deck.forEach((card,i) => {
+    const el = document.createElement('div');
+    el.className = 'card-toggle' + (card.red?' red-card':'') + (card.active?' active':'');
+    el.innerHTML = `<span class="suit">${card.suit}</span><span>${card.label}</span>`;
+    el.onclick = () => {
+      const activeCount = deck.filter(c=>c.active).length;
+      if(card.active && activeCount<=1) return; // keep at least 1
+      card.active = !card.active;
+      el.classList.toggle('active', card.active);
+      updateCardVariance();
+    };
+    cardGrid.appendChild(el);
+  });
+}
+
+function getActiveDeck() { return deck.filter(c=>c.active); }
+
+function getTrueVariance() {
+  const active = getActiveDeck();
+  if(!active.length) return 0;
+  const mean = active.reduce((a,c)=>a+c.val,0)/active.length;
+  return active.reduce((a,c)=>a+Math.pow(c.val-mean,2),0)/active.length;
+}
+
+function updateCardVariance() {
+  const tv = getTrueVariance().toFixed(2);
+  document.getElementById('v-true').textContent = tv;
+  document.getElementById('vv-true').textContent = tv;
+  renderVarChart();
+}
+
+// Variance chart
+const varCtx  = makeHiDPI(document.getElementById('varChart'));
+const varData  = { sample:[], trueV:[] };
+
+function renderVarChart() {
+  // Seeing Theory style: TOP = dot plot on number line, BOTTOM = variance convergence
+  const W=520, H=200, PL=52, PR=16, FONT='500 9px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+
+  // Split: top dot-plot zone, bottom convergence zone
+  const DOT_TOP=8, DOT_H=62, DOT_BOT=DOT_TOP+DOT_H;
+  const CV_TOP=DOT_BOT+14, CV_BOT=H-28, CV_H=CV_BOT-CV_TOP;
+  const cW = W-PL-PR;
+
+  varCtx.clearRect(0,0,W,H);
+  varCtx.fillStyle='#fff'; varCtx.fillRect(0,0,W,H);
+
+  // Soft background for dot-plot zone
+  varCtx.fillStyle='rgba(248,250,252,0.8)';
+  varCtx.fillRect(PL, DOT_TOP, W-PL-PR, DOT_H);
+
+  // ── DOT PLOT (number line 1–10) ──────────────────────────
+  const active = getActiveDeck();
+  const vals = active.map(c=>c.val);
+  const minVal = vals.length ? Math.min(...vals) : 1;
+  const maxVal = vals.length ? Math.max(...vals) : 10;
+  const dotXScale = v => PL + ((v-minVal)/Math.max(maxVal-minVal,1))*cW;
+  const lineY = DOT_TOP + DOT_H * 0.65;
+
+  // axis line for dot plot
+  varCtx.strokeStyle='#94a3b8'; varCtx.lineWidth=1; varCtx.setLineDash([]);
+  varCtx.beginPath(); varCtx.moveTo(PL,lineY); varCtx.lineTo(PL+cW,lineY); varCtx.stroke();
+
+  // tick marks + labels for each active card value
+  varCtx.fillStyle='#94a3b8'; varCtx.font=FONT; varCtx.textAlign='center';
+  vals.forEach(v => {
+    const x = dotXScale(v);
+    varCtx.beginPath(); varCtx.moveTo(x,lineY-3); varCtx.lineTo(x,lineY+3); varCtx.stroke();
+    varCtx.fillText(v, x, lineY+12);
+  });
+  varCtx.textAlign='left';
+
+  // dot plot section label — left of axis, rotated
+  varCtx.save();
+  varCtx.fillStyle='#94a3b8'; varCtx.font='500 7.5px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'; varCtx.textAlign='center';
+  varCtx.translate(9, lineY - 6);
+  varCtx.rotate(-Math.PI/2);
+  varCtx.fillText('Draws', 0, 0);
+  varCtx.restore();
+
+  // count dots per value (stacking)
+  const dotCounts = {};
+  vDrawnValues.forEach(v => { dotCounts[v]=(dotCounts[v]||0)+1; });
+
+  // draw dots (stacked upward from axis) with white outline for separation
+  const DOT_R = 4, DOT_GAP = 1;
+  const maxDotsPerCol = Math.floor((lineY - DOT_TOP - 4) / (DOT_R*2+DOT_GAP));
+  Object.entries(dotCounts).forEach(([v,cnt]) => {
+    const x = dotXScale(+v);
+    const isRed = deck.find(c=>c.val===+v)?.red;
+    const fillCol  = isRed ? '#ef4444' : '#3b82f6';
+    const visible = Math.min(cnt, maxDotsPerCol);
+    for(let k=0;k<visible;k++){
+      const y = lineY - DOT_R - k*(DOT_R*2+DOT_GAP) - 2;
+      // white outline
+      varCtx.fillStyle='#fff';
+      varCtx.beginPath(); varCtx.arc(x,y,DOT_R+1,0,Math.PI*2); varCtx.fill();
+      // coloured dot
+      varCtx.fillStyle=fillCol;
+      varCtx.beginPath(); varCtx.arc(x,y,DOT_R,0,Math.PI*2); varCtx.fill();
+    }
+    if(cnt>visible){
+      const SMALL='500 7.5px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      const labelY = Math.max(DOT_TOP+7, lineY-DOT_R-visible*(DOT_R*2+DOT_GAP)-9);
+      varCtx.fillStyle='rgba(255,255,255,0.92)';
+      varCtx.fillRect(x-10, labelY-6, 20, 9);
+      varCtx.fillStyle='#64748b'; varCtx.font=SMALL; varCtx.textAlign='center';
+      varCtx.fillText('+'+( cnt-visible), x, labelY);
+      varCtx.textAlign='left';
+    }
+  });
+
+  // ── VARIANCE CONVERGENCE CHART ────────────────────────────
+  const n = varData.sample.length;
+  const trueV = getTrueVariance();
+  const allV = [...varData.sample, trueV];
+  const maxV = Math.max(...allV, 0.5) * 1.15;
+
+  const xScale = i => PL + (i/Math.max(n-1,1))*cW;
+  const yScale = v => CV_TOP + (1-v/maxV)*CV_H;
+
+  // divider line
+  varCtx.strokeStyle='#e2e8f0'; varCtx.lineWidth=1; varCtx.setLineDash([2,2]);
+  varCtx.beginPath(); varCtx.moveTo(PL,DOT_BOT+6); varCtx.lineTo(PL+cW,DOT_BOT+6); varCtx.stroke();
+  varCtx.setLineDash([]);
+
+  // Grid + Y labels
+  [0, 0.5, 1].forEach(t => {
+    const v=t*maxV;
+    const y=Math.round(yScale(v))+0.5;
+    varCtx.strokeStyle='#e2e8f0'; varCtx.lineWidth=1; varCtx.setLineDash([]);
+    varCtx.beginPath(); varCtx.moveTo(PL,y); varCtx.lineTo(PL+cW,y); varCtx.stroke();
+    varCtx.fillStyle='#94a3b8'; varCtx.font=FONT; varCtx.textAlign='right';
+    varCtx.fillText(v.toFixed(1), PL-6, y);
+  });
+
+  // Y axis + X axis
+  varCtx.strokeStyle='#94a3b8'; varCtx.lineWidth=1; varCtx.setLineDash([]);
+  varCtx.beginPath(); varCtx.moveTo(PL,CV_TOP); varCtx.lineTo(PL,CV_BOT); varCtx.stroke();
+  varCtx.beginPath(); varCtx.moveTo(PL,CV_BOT); varCtx.lineTo(PL+cW,CV_BOT); varCtx.stroke();
+
+  // X axis labels
+  if(n>0){
+    varCtx.fillStyle='#94a3b8'; varCtx.font=FONT; varCtx.textAlign='center';
+    [0,0.5,1].forEach(t=>{
+      const i=Math.round(t*Math.max(n-1,0));
+      varCtx.fillText(i, xScale(i), CV_BOT+11);
+    });
+    varCtx.textAlign='left';
+  }
+
+  // True variance — green dashed
+  drawLine(varCtx, PL, yScale(trueV), PL+cW, yScale(trueV), '#22c55e', [6,4]);
+
+  // Running variance — gradient fill + blue line
+  if(n>1){
+    varCtx.save(); varCtx.lineJoin='round'; varCtx.setLineDash([]);
+    varCtx.beginPath();
+    varData.sample.forEach((v,i)=>{
+      i===0 ? varCtx.moveTo(xScale(i),yScale(v)) : varCtx.lineTo(xScale(i),yScale(v));
+    });
+    varCtx.lineTo(xScale(n-1), CV_BOT); varCtx.lineTo(xScale(0), CV_BOT); varCtx.closePath();
+    const vGrad = varCtx.createLinearGradient(0,CV_TOP,0,CV_BOT);
+    vGrad.addColorStop(0,'rgba(59,130,246,0.15)');
+    vGrad.addColorStop(1,'rgba(59,130,246,0)');
+    varCtx.fillStyle=vGrad; varCtx.fill();
+    varCtx.beginPath();
+    varData.sample.forEach((v,i)=>{
+      i===0 ? varCtx.moveTo(xScale(i),yScale(v)) : varCtx.lineTo(xScale(i),yScale(v));
+    });
+    varCtx.strokeStyle='#3b82f6'; varCtx.lineWidth=2.5; varCtx.stroke();
+    varCtx.restore();
+  }
+
+  // Convergence legend — top-right of convergence zone (below dot plot, safe from dots)
+  const lx=PL+cW-148, ly=CV_TOP+6;
+  varCtx.fillStyle='rgba(255,255,255,0.94)';
+  varCtx.fillRect(lx-6, ly-5, 158, 28);
+  varCtx.fillStyle='#3b82f6'; varCtx.fillRect(lx, ly, 18, 3);
+  varCtx.fillStyle='#475569'; varCtx.font=FONT;
+  varCtx.fillText('Running Var(X)', lx+22, ly+3);
+  drawLine(varCtx,lx,ly+13,lx+18,ly+13,'#22c55e',[5,3]);
+  varCtx.fillText('True Var(X)', lx+22, ly+13);
+}
+
+function doDrawCard() {
+  const active = getActiveDeck();
+  if(!active.length) return;
+
+  const card = active[Math.floor(Math.random()*active.length)];
+  vDraws++; vSumX+=card.val; vSumX2+=card.val*card.val;
+  vDrawnValues.push(card.val);
+  if(vDrawnValues.length > 200) vDrawnValues.shift();
+
+  const runMean = vSumX/vDraws;
+  const runVar  = vSumX2/vDraws - runMean*runMean;
+
+  varData.sample.push(runVar);
+  varData.trueV.push(getTrueVariance());
+  if(varData.sample.length>300){varData.sample.shift();varData.trueV.shift();}
+
+  // Update drawn card display
+  const dc = document.getElementById('drawnCard');
+  dc.textContent='';
+  dc.className = 'drawn-card-display' + (card.red?' red':'');
+  const suitEl = document.createElement('span'); suitEl.className='card-suit'; suitEl.textContent=card.suit;
+  const valEl  = document.createElement('span'); valEl.textContent=card.label;
+  dc.appendChild(valEl); dc.appendChild(suitEl);
+
+  document.getElementById('v-draws').textContent  = vDraws;
+  document.getElementById('vv-draws').textContent  = vDraws;
+  document.getElementById('v-last').textContent   = card.val;
+  document.getElementById('vv-sample').textContent = runVar.toFixed(2);
+  document.getElementById('v-sample').textContent  = runVar.toFixed(2);
+
+  renderVarChart();
+}
+
+function drawCard()  { doDrawCard(); }
+async function drawMany() { for(let i=0;i<100;i++){doDrawCard();await delay(20);} }
+
+function resetCards() {
+  vDraws=0; vSumX=0; vSumX2=0; vDrawnValues=[];
+  varData.sample=[]; varData.trueV=[];
+  const dc=document.getElementById('drawnCard');
+  dc.className='drawn-card-display'; dc.innerHTML='<span style="font-size:2rem;color:#cbd5e1">?</span>';
+  ['v-draws','vv-draws'].forEach(id=>document.getElementById(id).textContent='0');
+  ['v-last','v-sample','vv-sample'].forEach(id=>document.getElementById(id).textContent='—');
+  renderVarChart();
+}
+
+// INIT
+buildCardGrid();
+updateCardVariance();
+renderCoinChart();
+renderDieChart();
+</script>
+
+</body>
+</html>

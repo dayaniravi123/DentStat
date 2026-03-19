@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Multiple Regression — DentalStats</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+  </style>
+</head>
+<body class="bg-gray-50">
+  <header class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="git-branch" class="w-7 h-7 text-red-300"></i>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold">Multiple Regression</h1>
+            <p class="text-gray-200 mt-1">Model a continuous outcome while controlling for confounders</p>
+          </div>
+        </div>
+        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-red-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Model</h2>
+      <div class="mono bg-gray-50 border rounded-xl p-4 text-sm overflow-auto">
+        Y = β₀ + β₁X₁ + β₂X₂ + ... + ε
+      </div>
+      <p class="text-gray-700 mt-3">
+        Each β coefficient is the expected change in Y per unit change in that predictor, holding the others constant.
+      </p>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: confounding intuition</h2>
+      <p class="text-gray-700 mb-4">
+        Simulate an outcome (e.g., bone loss) driven by two predictors (age + smoking). Toggle smoking association and see how the simple
+        (unadjusted) relationship between age and outcome can be distorted.
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Smoking confounding strength</label>
+          <input id="mr-conf" type="range" min="0" max="1" step="0.05" value="0.6" class="w-full accent-red-600">
+          <div class="flex justify-between text-xs text-gray-500 mt-1"><span>0</span><span id="mr-conf-lbl" class="font-bold text-red-700">0.60</span><span>1</span></div>
+
+          <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Noise level</label>
+          <input id="mr-noise" type="range" min="0.1" max="2.0" step="0.1" value="0.8" class="w-full accent-red-600">
+          <div class="flex justify-between text-xs text-gray-500 mt-1"><span>0.1</span><span id="mr-noise-lbl" class="font-bold text-red-700">0.8</span><span>2.0</span></div>
+
+          <button id="mr-run" class="mt-4 w-full px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">
+            Resimulate
+          </button>
+
+          <div class="mt-4 bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
+            <div><strong>Takeaway:</strong> adjusted models help isolate effects when predictors correlate.</div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Simulated data (color = smoking)</h3>
+          <div class="h-80"><canvas id="mrChart"></canvas></div>
+          <p class="text-xs text-gray-500 mt-2">Regression is usually done in software; this chart is for intuition.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
+      <p class="text-gray-700">
+        Predict marginal bone loss (mm) from age, smoking, diabetes, and oral hygiene score.
+        Multiple regression helps estimate the smoking effect while accounting for age and comorbidities.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+    let chart=null;
+
+    function randn(){
+      let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
+      return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+    }
+
+    function simulate(){
+      const conf=parseFloat(document.getElementById('mr-conf').value);
+      const noise=parseFloat(document.getElementById('mr-noise').value);
+      document.getElementById('mr-conf-lbl').textContent=conf.toFixed(2);
+      document.getElementById('mr-noise-lbl').textContent=noise.toFixed(1);
+
+      const n=220;
+      const points=[];
+      for(let i=0;i<n;i++){
+        const age = 20 + Math.random()*60; // 20-80
+        // smoking probability depends on age (confounding)
+        const pSmoke = 0.15 + conf*(age-20)/60 * 0.6;
+        const smoke = Math.random() < Math.min(0.95, Math.max(0.05,pSmoke)) ? 1 : 0;
+
+        // true model: outcome depends on age + smoking
+        const y = 0.02*(age-20) + 0.9*smoke + randn()*noise;
+
+        points.push({x:age, y, smoke});
+      }
+      render(points);
+    }
+
+    function render(points){
+      const ctx=document.getElementById('mrChart').getContext('2d');
+      if(chart) chart.destroy();
+
+      const smokers=points.filter(p=>p.smoke===1).map(p=>({x:p.x,y:p.y}));
+      const nons=points.filter(p=>p.smoke===0).map(p=>({x:p.x,y:p.y}));
+
+      chart=new Chart(ctx,{
+        type:'scatter',
+        data:{
+          datasets:[
+            {label:'Non-smoker', data:nons, backgroundColor:'rgba(59,130,246,0.45)'},
+            {label:'Smoker', data:smokers, backgroundColor:'rgba(239,68,68,0.55)'}
+          ]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          scales:{
+            x:{title:{display:true,text:'Age (years)'}, min:20, max:80},
+            y:{title:{display:true,text:'Outcome (e.g., bone loss, mm)'}}
+          }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('mr-run').addEventListener('click', simulate);
+      document.getElementById('mr-conf').addEventListener('input', simulate);
+      document.getElementById('mr-noise').addEventListener('input', simulate);
+      simulate();
+    });
+  </script>
+</body>
+</html>

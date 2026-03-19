@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Confidence Intervals — DentalStats</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+  </style>
+</head>
+
+<body class="bg-gray-50">
+  <header class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="target" class="w-7 h-7 text-teal-300"></i>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold">Confidence Intervals</h1>
+            <p class="text-gray-200 mt-1">Precision of estimates (e.g., prevalence of periodontal disease)</p>
+          </div>
+        </div>
+        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">What does a 95% CI mean?</h2>
+      <p class="text-gray-700">
+        A confidence interval is a range of plausible values for a population parameter.
+        If you repeated the same study many times, about 95% of such intervals would contain the true value.
+      </p>
+      <p class="text-sm text-gray-600 mt-2">
+        Wider CI = less precision; narrower CI = more precision (often from larger sample size).
+      </p>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: CI for a proportion</h2>
+      <p class="text-gray-700 mb-4">Use events and total sample size. This uses a simple normal approximation for teaching.</p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Events (cases)</label>
+          <input id="events" type="number" value="45" class="w-full px-3 py-2 border rounded-lg mb-4">
+
+          <label class="block text-sm font-medium text-gray-700 mb-2">Total (n)</label>
+          <input id="total" type="number" value="200" class="w-full px-3 py-2 border rounded-lg mb-4">
+
+          <button id="calc" class="w-full px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 transition">
+            Calculate CI
+          </button>
+
+          <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4" id="out">
+            <div class="text-sm text-gray-700"><strong>Prevalence:</strong> <span id="p">-</span></div>
+            <div class="text-sm text-gray-700 mt-1"><strong>95% CI:</strong> <span id="ci">-</span></div>
+
+            <div class="mt-3 bg-white rounded-lg border p-2">
+              <div class="relative h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div id="bar" class="absolute h-full bg-amber-500 rounded-full" style="left: 40%; width: 20%;"></div>
+                <div id="point" class="absolute w-0.5 h-full bg-gray-900" style="left: 50%"></div>
+              </div>
+              <div class="flex justify-between text-xs text-gray-500 mt-1">
+                <span id="loLbl">0%</span><span>point</span><span id="hiLbl">0%</span>
+              </div>
+            </div>
+
+            <p class="text-xs text-gray-600 mt-3">
+              Tip: if n is small or p is near 0/1, use Wilson or exact methods in real analyses.
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">CI width vs sample size</h3>
+          <p class="text-sm text-gray-600 mb-3">Fix prevalence and see how CI shrinks as n increases.</p>
+
+          <div class="flex items-center gap-3 mb-3">
+            <label class="text-sm text-gray-700">Assumed prevalence</label>
+            <input id="pfix" type="range" min="5" max="95" value="30" class="flex-1 accent-amber-600">
+            <span class="text-sm font-bold text-amber-700" id="pfixLbl">30%</span>
+          </div>
+
+          <div class="h-72"><canvas id="ciChart"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Dental use cases</h2>
+      <ul class="list-disc pl-5 text-gray-700 space-y-1">
+        <li>Prevalence of periodontal disease in a clinic population</li>
+        <li>Proportion of implant failures at 1 year</li>
+        <li>Proportion of patients with caries after intervention</li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+
+    function calcCI(events,total){
+      const p=events/total;
+      const z=1.96;
+      const se=Math.sqrt((p*(1-p))/total);
+      const lo=clamp01(p - z*se);
+      const hi=clamp01(p + z*se);
+      return {p, lo, hi};
+    }
+
+    function pct(x){ return (x*100).toFixed(1)+'%'; }
+
+    function updateResult(){
+      const events=+document.getElementById('events').value;
+      const total=+document.getElementById('total').value;
+      if(!total || events<0 || events>total){
+        document.getElementById('p').textContent='-';
+        document.getElementById('ci').textContent='-';
+        return;
+      }
+      const {p,lo,hi}=calcCI(events,total);
+      document.getElementById('p').textContent=pct(p);
+      document.getElementById('ci').textContent=`${pct(lo)} – ${pct(hi)}`;
+      document.getElementById('loLbl').textContent=pct(lo);
+      document.getElementById('hiLbl').textContent=pct(hi);
+
+      const left=lo*100;
+      const width=(hi-lo)*100;
+      document.getElementById('bar').style.left=left+'%';
+      document.getElementById('bar').style.width=Math.max(1,width)+'%';
+      document.getElementById('point').style.left=(p*100)+'%';
+    }
+
+    let chart=null;
+
+    function renderCIvsN(){
+      const pfix=+document.getElementById('pfix').value/100;
+      const z=1.96;
+
+      const ns=[20,30,50,80,120,200,400,800];
+      const widths=ns.map(n=>{
+        const se=Math.sqrt((pfix*(1-pfix))/n);
+        const w=2*z*se;
+        return w;
+      });
+
+      const ctx=document.getElementById('ciChart').getContext('2d');
+      if(chart) chart.destroy();
+      chart=new Chart(ctx,{
+        type:'line',
+        data:{ labels:ns.map(n=>String(n)), datasets:[{
+          label:'CI width (approx)',
+          data:widths,
+          borderColor:'#d97706',
+          backgroundColor:'rgba(217,119,6,0.12)',
+          fill:true,
+          tension:0.25,
+          pointRadius:3
+        }]},
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          scales:{
+            x:{ title:{display:true,text:'Sample size (n)'} },
+            y:{ title:{display:true,text:'Width (proportion units)'}, min:0 }
+          }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('calc').addEventListener('click', updateResult);
+      document.getElementById('pfix').addEventListener('input', ()=>{
+        document.getElementById('pfixLbl').textContent=document.getElementById('pfix').value+'%';
+        renderCIvsN();
+      });
+
+      updateResult();
+      document.getElementById('pfixLbl').textContent=document.getElementById('pfix').value+'%';
+      renderCIvsN();
+    });
+  </script>
+</body>
+</html>

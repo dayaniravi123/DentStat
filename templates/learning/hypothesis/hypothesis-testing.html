@@ -1,0 +1,130 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hypothesis Testing — DentalStats Learning</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="bg-gray-50">
+  <div class="max-w-4xl mx-auto py-12 px-4">
+    <a href="/index.html#concepts" class="inline-block mb-6 text-sm text-teal-600">← Back to Concepts</a>
+    <h1 class="text-3xl font-bold mb-4">Hypothesis Testing Framework</h1>
+
+    <p class="text-gray-700 mb-4">Hypothesis testing is a statistical method used to make decisions about a population based on sample data. In dental research it helps determine whether a treatment, intervention, or clinical observation has a real effect or whether the observed result occurred by chance.</p>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Why use hypothesis testing?</h2>
+    <p class="text-gray-700 mb-4">For example, a researcher may ask whether a new fluoride treatment reduces dental caries more effectively than standard treatment. Hypothesis testing provides a structured way to evaluate such questions using sample data.</p>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">The Hypothesis Testing Process</h2>
+    <p class="text-gray-700 mb-4">Hypothesis testing typically follows this sequence of steps:</p>
+
+    <ol class="list-decimal pl-6 space-y-3 text-gray-700">
+      <li>
+        <strong>State the hypotheses</strong>
+        <div class="mt-1 text-sm text-gray-600">
+          <p><strong>Null hypothesis (H<sub>0</sub>)</strong>: the default assumption that there is no effect, difference, or relationship.</p>
+          <p><strong>Alternative hypothesis (H<sub>1</sub> or H<sub>a</sub>)</strong>: the statement that a real effect or difference exists (what the researcher wants to show).</p>
+          <p class="mt-2">Example: Testing whether a new toothpaste reduces plaque more than the standard toothpaste. H<sub>0</sub>: no difference. H<sub>1</sub>: new toothpaste reduces plaque more.</p>
+        </div>
+      </li>
+
+      <li>
+        <strong>Select the significance level (α)</strong>
+        <div class="mt-1 text-sm text-gray-600">α is the probability of making a Type I error (false positive). Common choices: 0.05 (5%), 0.01, or 0.001 for stricter evidence.</div>
+      </li>
+
+      <li>
+        <strong>Calculate the test statistic</strong>
+        <div class="mt-1 text-sm text-gray-600">Compute a statistic from the sample (e.g., t value, χ², F) appropriate for the chosen test (t-test, chi-square, ANOVA, regression).</div>
+      </li>
+
+      <li>
+        <strong>Determine the p-value</strong>
+        <div class="mt-1 text-sm text-gray-600">The p-value is the probability of observing the data (or more extreme) assuming H<sub>0</sub> is true. If p ≤ α, reject H<sub>0</sub>; otherwise fail to reject H<sub>0</sub>.</div>
+      </li>
+
+      <li>
+        <strong>Draw the conclusion</strong>
+        <div class="mt-1 text-sm text-gray-600">Decide whether the evidence is strong enough to reject H<sub>0</sub>. Remember, failing to reject H<sub>0</sub> does not prove H<sub>0</sub> is true; it only indicates insufficient evidence.</div>
+      </li>
+    </ol>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Test statistic examples</h2>
+    <div class="text-sm text-gray-600 mb-4">
+      <ul class="list-disc pl-5">
+        <li><strong>t-test</strong> &ndash; t value (compare means)</li>
+        <li><strong>Chi-square</strong> &ndash; χ² value (categorical associations)</li>
+        <li><strong>ANOVA</strong> &ndash; F value (compare >2 group means)</li>
+        <li><strong>Regression</strong> &ndash; t or F (effect of predictors)</li>
+      </ul>
+    </div>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Interpreting p-values</h2>
+    <p class="text-gray-700 mb-3">Compare p-value to α:</p>
+    <ul class="list-disc pl-5 text-gray-700 mb-4">
+      <li>If p ≤ α &rarr; reject H<sub>0</sub> (evidence supports H<sub>1</sub>).</li>
+      <li>If p &gt; α &rarr; fail to reject H<sub>0</sub> (insufficient evidence).</li>
+    </ul>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Types of errors</h2>
+    <div class="text-sm text-gray-600 mb-4">
+      <p><strong>Type I error (α):</strong> false positive (rejecting a true H<sub>0</sub>). Example: concluding a fluoride varnish prevents caries when it does not.</p>
+      <p class="mt-2"><strong>Type II error (β):</strong> false negative (failing to reject a false H<sub>0</sub>). Example: missing a real benefit of a periodontal therapy due to small sample size or high variability.</p>
+    </div>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Statistical power</h2>
+    <p class="text-gray-700 mb-3">Power = 1 − β is the probability of detecting a true effect. Common targets: 0.80 (80%) or 0.90 (90%). Low power increases the risk of Type II errors.</p>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Practical examples</h2>
+    <div class="text-sm text-gray-700 mb-4">
+      <p>Example 1: A study comparing two periodontal treatments reports p = 0.03 (α = 0.05). Since 0.03 &lt; 0.05, the result is statistically significant and H<sub>0</sub> is rejected.</p>
+      <p class="mt-2">Example 2: A whitening gel study finds p = 0.20 (α = 0.05). Since 0.20 &gt; 0.05, the result is not statistically significant and there is insufficient evidence to claim a treatment effect.</p>
+    </div>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Summary table</h2>
+    <div class="overflow-auto mb-4">
+      <table class="table-auto w-full text-sm border-collapse">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="px-3 py-2 text-left">Concept</th>
+            <th class="px-3 py-2 text-left">Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="px-3 py-2">Null Hypothesis (H<sub>0</sub>)</td>
+            <td class="px-3 py-2">Assumes no effect or difference</td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="px-3 py-2">Alternative Hypothesis (H<sub>1</sub>)</td>
+            <td class="px-3 py-2">Suggests a real effect exists</td>
+          </tr>
+          <tr>
+            <td class="px-3 py-2">Significance level (α)</td>
+            <td class="px-3 py-2">Probability of Type I error (commonly 0.05)</td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="px-3 py-2">p-value</td>
+            <td class="px-3 py-2">Probability results occurred by chance under H<sub>0</sub></td>
+          </tr>
+          <tr>
+            <td class="px-3 py-2">Type I / Type II error</td>
+            <td class="px-3 py-2">False positive / False negative</td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="px-3 py-2">Power (1 − β)</td>
+            <td class="px-3 py-2">Probability of detecting a true effect (commonly 0.80)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="text-sm text-gray-600">Notes: Choose appropriate tests, ensure adequate sample size to achieve desired power, and report both effect sizes and p-values for transparent interpretation.</p>
+
+    <div class="mt-8 text-sm text-gray-500">© DentalStats — educational content</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hypothesis Testing — DentalStats</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+  </style>
+</head>
+<body class="bg-gray-50">
+  <header class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="git-commit" class="w-7 h-7 text-amber-300"></i>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold">Hypothesis Testing</h1>
+            <p class="text-gray-200 mt-1">Decision-making under uncertainty (H₀ vs H₁, α, β, power)</p>
+          </div>
+        </div>
+        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Framework</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Null hypothesis (H₀)</h3>
+          <p class="text-gray-700 text-sm">“No effect / no difference.” Example: mean plaque index is equal between treatments.</p>
+          <div class="mono bg-gray-50 border rounded-lg p-2 mt-2 text-sm">H₀: μ₁ = μ₂</div>
+        </div>
+        <div class="bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Alternative (H₁)</h3>
+          <p class="text-gray-700 text-sm">“Effect exists.” Example: plaque index differs between treatments.</p>
+          <div class="mono bg-gray-50 border rounded-lg p-2 mt-2 text-sm">H₁: μ₁ ≠ μ₂</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div class="bg-white rounded-xl border p-4">
+          <h4 class="font-semibold text-gray-800">α (Type I error)</h4>
+          <p class="text-sm text-gray-600">False positive: reject H₀ when H₀ is true.</p>
+        </div>
+        <div class="bg-white rounded-xl border p-4">
+          <h4 class="font-semibold text-gray-800">β (Type II error)</h4>
+          <p class="text-sm text-gray-600">False negative: fail to reject H₀ when H₁ is true.</p>
+        </div>
+        <div class="bg-white rounded-xl border p-4">
+          <h4 class="font-semibold text-gray-800">Power = 1 − β</h4>
+          <p class="text-sm text-gray-600">Chance to detect a true effect.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: visualize α and β</h2>
+      <p class="text-gray-700 mb-4">
+        We draw two normal curves: one under H₀ and one under H₁ (shifted by effect size). Move the decision threshold and watch
+        α (false positive area) and β (false negative area) change.
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl border p-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Effect size (Δ in SD units)</label>
+          <input id="ht-delta" type="range" min="0" max="2.0" step="0.05" value="0.6" class="w-full accent-amber-600">
+          <div class="flex justify-between text-xs text-gray-500 mt-1"><span>0</span><span id="ht-delta-lbl" class="font-bold text-amber-700">0.60</span><span>2.0</span></div>
+
+          <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Decision threshold (c)</label>
+          <input id="ht-c" type="range" min="-1.5" max="2.5" step="0.05" value="1.0" class="w-full accent-amber-600">
+          <div class="flex justify-between text-xs text-gray-500 mt-1"><span>-1.5</span><span id="ht-c-lbl" class="font-bold text-amber-700">1.00</span><span>2.5</span></div>
+
+          <div class="mt-4 bg-gray-50 rounded-xl border p-3 text-sm">
+            <div><strong>α:</strong> <span id="ht-alpha">-</span></div>
+            <div><strong>β:</strong> <span id="ht-beta">-</span></div>
+            <div><strong>Power:</strong> <span id="ht-power">-</span></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-white rounded-xl border p-4">
+          <h3 class="font-semibold text-gray-800 mb-2">Decision regions</h3>
+          <div class="h-80"><canvas id="htChart"></canvas></div>
+          <p class="text-xs text-gray-500 mt-2">Red: H₀ distribution, Blue: H₁ distribution. Vertical line: threshold c.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
+      <p class="text-gray-700">
+        If you test “fluoride varnish reduces mean DMFT vs control,” choosing α=0.05 limits false positives. Ensuring high power (e.g., 0.80–0.90)
+        reduces the chance you miss a real benefit due to small sample size or noisy outcomes.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+
+    function normPdf(x, mu, s){
+      const z=(x-mu)/s;
+      return Math.exp(-0.5*z*z)/(s*Math.sqrt(2*Math.PI));
+    }
+    function normCdf(x){
+      // Abramowitz-Stegun approximation
+      const t=1/(1+0.2316419*Math.abs(x));
+      const d=0.3989423*Math.exp(-x*x/2);
+      let p=d*t*(0.3193815 + t*(-0.3565638 + t*(1.781478 + t*(-1.821256 + t*1.330274))));
+      if(x>0) p=1-p;
+      return p;
+    }
+
+    let chart=null;
+
+    function recompute(){
+      const delta=parseFloat(document.getElementById('ht-delta').value);
+      const c=parseFloat(document.getElementById('ht-c').value);
+      document.getElementById('ht-delta-lbl').textContent=delta.toFixed(2);
+      document.getElementById('ht-c-lbl').textContent=c.toFixed(2);
+
+      // assume H0: N(0,1), H1: N(delta,1)
+      const alpha = 1 - normCdf(c);        // P(reject|H0)
+      const beta  = normCdf(c - delta);    // P(fail reject|H1)
+      const power = 1 - beta;
+
+      document.getElementById('ht-alpha').textContent = (alpha*100).toFixed(1)+'%';
+      document.getElementById('ht-beta').textContent  = (beta*100).toFixed(1)+'%';
+      document.getElementById('ht-power').textContent = (power*100).toFixed(1)+'%';
+
+      render(delta, c);
+    }
+
+    function render(delta, c){
+      const xs=[];
+      for(let i=0;i<=300;i++){
+        xs.push(-3 + i*(6/300));
+      }
+      const h0=xs.map(x=>normPdf(x,0,1));
+      const h1=xs.map(x=>normPdf(x,delta,1));
+
+      const ctx=document.getElementById('htChart').getContext('2d');
+      if(chart) chart.destroy();
+
+      chart=new Chart(ctx,{
+        type:'line',
+        data:{
+          labels:xs.map(x=>x.toFixed(2)),
+          datasets:[
+            {label:'H0', data:h0, borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.08)', fill:true, pointRadius:0, tension:0.2},
+            {label:'H1', data:h1, borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.08)', fill:true, pointRadius:0, tension:0.2},
+            {label:'Threshold', data:xs.map(x=>x>=c?Math.max(...h0.concat(h1))*0.98:null), borderColor:'#111827', borderWidth:2, pointRadius:0}
+          ]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          scales:{
+            x:{title:{display:true,text:'Test statistic (standardized)'}},
+            y:{display:false}
+          },
+          plugins:{
+            legend:{display:true}
+          }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('ht-delta').addEventListener('input', recompute);
+      document.getElementById('ht-c').addEventListener('input', recompute);
+      recompute();
+    });
+  </script>
+</body>
+</html>
