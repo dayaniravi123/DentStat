@@ -588,29 +588,45 @@
         charts.distribution = new Chart(distCtx, {
             type: 'bar',
             data: {
-                labels: ['Success', 'Failure'],
+                labels: ['✓ Success', '✗ Failure'],
                 datasets: [{
                     label: 'Count',
                     data: [0, 0],
                     backgroundColor: [
-                        'rgba(16, 185, 129, 0.7)',
-                        'rgba(239, 68, 68, 0.7)'
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(239, 68, 68, 0.8)'
                     ],
                     borderColor: [
                         'rgb(16, 185, 129)',
                         'rgb(239, 68, 68)'
                     ],
-                    borderWidth: 2
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => {
+                                const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                const pct = total > 0 ? (ctx.raw / total * 100).toFixed(1) : 0;
+                                return `${ctx.raw} (${pct}%)`;
+                            }
+                        }
+                    }
                 },
                 scales: {
-                    y: { beginAtZero: true }
+                    x: { grid: { display: false } },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.06)' },
+                        ticks: { font: { size: 10 } }
+                    }
                 }
             }
         });
@@ -625,62 +641,119 @@
                     label: 'Observed Probability',
                     data: [],
                     borderColor: 'rgb(59, 130, 246)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 2,
+                    backgroundColor: (ctx) => {
+                        const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 300);
+                        gradient.addColorStop(0, 'rgba(59,130,246,0.25)');
+                        gradient.addColorStop(1, 'rgba(59,130,246,0.02)');
+                        return gradient;
+                    },
+                    borderWidth: 2.5,
                     fill: true,
-                    tension: 0.4
+                    tension: 0.35,
+                    pointRadius: 2.5,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: 'rgb(59, 130, 246)',
+                    pointBorderColor: 'white',
+                    pointBorderWidth: 1.5
                 }, {
                     label: 'True Probability',
                     data: [],
-                    borderColor: 'rgb(239, 68, 68)',
-                    borderDash: [5, 5],
+                    borderColor: 'rgba(239, 68, 68, 0.85)',
+                    borderDash: [6, 4],
                     borderWidth: 2,
-                    fill: false
+                    fill: false,
+                    pointRadius: 0,
+                    tension: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
                 plugins: {
-                    legend: { position: 'top' }
+                    legend: {
+                        position: 'top',
+                        labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 8, font: { size: 11 } }
+                    }
                 },
                 scales: {
+                    x: {
+                        grid: { color: 'rgba(0,0,0,0.04)' },
+                        ticks: { maxTicksLimit: 10, font: { size: 10 } }
+                    },
                     y: {
                         beginAtZero: true,
-                        max: 100
+                        max: 100,
+                        grid: { color: 'rgba(0,0,0,0.06)' },
+                        ticks: { callback: v => v + '%', font: { size: 10 } }
                     }
                 }
             }
         });
 
-        // Normal Distribution Chart
+        // Normal Approximation Chart — dynamic, updated after generateData()
         const normalCtx = document.getElementById('normalChart').getContext('2d');
-        const normalPoints = Array.from({length: 100}, (_, i) => {
-            const x = -4 + i * 0.08;
-            return { x, y: Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI) };
-        });
         charts.normal = new Chart(normalCtx, {
             type: 'line',
             data: {
-                labels: normalPoints.map(p => p.x.toFixed(1)),
+                labels: [],
                 datasets: [{
-                    label: 'Normal Distribution',
-                    data: normalPoints.map(p => p.y),
+                    label: 'Normal Approx. (np, σ)',
+                    data: [],
                     borderColor: 'rgb(139, 92, 246)',
-                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                    borderWidth: 2,
+                    backgroundColor: (ctx) => {
+                        const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 300);
+                        gradient.addColorStop(0, 'rgba(139,92,246,0.3)');
+                        gradient.addColorStop(1, 'rgba(139,92,246,0.02)');
+                        return gradient;
+                    },
+                    borderWidth: 2.5,
                     fill: true,
                     tension: 0.4,
                     pointRadius: 0
+                }, {
+                    label: 'Observed Count',
+                    data: [],
+                    borderColor: 'rgba(239,68,68,0)',
+                    backgroundColor: 'rgb(239, 68, 68)',
+                    pointRadius: 7,
+                    pointHoverRadius: 9,
+                    pointStyle: 'triangle',
+                    showLine: false
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => {
+                                if (ctx.datasetIndex === 0) return `Density: ${ctx.raw.toFixed(5)}`;
+                                if (ctx.raw !== null) return `Observed: ${ctx.label} successes`;
+                                return null;
+                            }
+                        }
+                    }
+                },
                 scales: {
-                    x: { ticks: { maxTicksLimit: 9 } },
-                    y: { beginAtZero: true }
+                    x: {
+                        title: { display: true, text: 'Number of Successes', font: { size: 11 } },
+                        grid: { color: 'rgba(0,0,0,0.04)' },
+                        ticks: { maxTicksLimit: 9, font: { size: 10 } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Probability Density', font: { size: 11 } },
+                        grid: { color: 'rgba(0,0,0,0.06)' },
+                        ticks: { font: { size: 10 } }
+                    }
                 }
             }
         });
@@ -741,6 +814,38 @@
         charts.convergence.data.datasets[0].data = data.convergenceHistory;
         charts.convergence.data.datasets[1].data = Array(data.convergenceHistory.length).fill(trueProb);
         charts.convergence.update();
+
+        // Update normal approximation chart
+        updateNormalChart(total, success, trueProb / 100);
+    }
+
+    // Normal Approximation — compute & render N(np, np(1-p)) curve + observed marker
+    function updateNormalChart(n, observed, p) {
+        const mu = n * p;
+        const sigma = Math.sqrt(n * p * (1 - p));
+
+        if (sigma === 0 || n === 0) return;
+
+        // Build curve from mu-4σ to mu+4σ
+        const lo = Math.max(0, Math.floor(mu - 4 * sigma));
+        const hi = Math.min(n, Math.ceil(mu + 4 * sigma));
+        const labels = [];
+        const curve = [];
+
+        for (let x = lo; x <= hi; x++) {
+            labels.push(x);
+            const z = (x - mu) / sigma;
+            const density = Math.exp(-0.5 * z * z) / (sigma * Math.sqrt(2 * Math.PI));
+            curve.push(density);
+        }
+
+        // Observed marker — place at the density value for the observed count
+        const obsMarker = labels.map(x => x === observed ? curve[labels.indexOf(x)] : null);
+
+        charts.normal.data.labels = labels;
+        charts.normal.data.datasets[0].data = curve;
+        charts.normal.data.datasets[1].data = obsMarker;
+        charts.normal.update();
     }
 
     // Statistical methods

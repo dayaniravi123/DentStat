@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Standard Deviation  DentalStats</title>
+  <title>Standard Deviation  DentalStats</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,9 +13,42 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   <link rel="stylesheet" href="{% static 'concepts/css/standard-deviation.css' %}">
+  <style>
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-delay { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    .fade-in-delay-2 { animation: fadeInUp 0.6s ease-out 0.4s both; }
+    .scenario-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    .scenario-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .step-box { opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .step-box.visible { opacity: 1; transform: translateY(0); }
+    .dot-marker { transition: all 0.5s ease; }
+    .bar-fill { transition: width 0.8s ease; }
+  </style>
 </head>
 
 <body class="bg-gray-50">
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg" style="z-index:100;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold">DentalStats</h1>
+                    <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
   <header class="gradient-bg text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
       <div class="flex items-center justify-between gap-4">
@@ -28,29 +61,170 @@
             </p>
           </div>
         </div>
-        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+        <a href="/#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
       </div>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-teal-500">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-teal-500 fade-in">
       <div class="mono bg-gray-50 border rounded-xl p-4 mt-4 text-sm overflow-auto">
-        Sample SD: s = sqrt( \u03a3(x\u1d62 \u2212 x\u0304)\u00b2 / (n \u2212 1) )
+        Sample SD: s = sqrt( &Sigma;(x&#x1d62; &minus; x&#x0304;)&sup2; / (n &minus; 1) )
       </div>
       <p class="text-sm text-gray-600 mt-3">
         In dentistry: SD helps interpret consistency—e.g., variation in probing depth reduction across patients after treatment.
       </p>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+    <!-- REAL DENTAL SCENARIO -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-emerald-500 fade-in-delay">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+          <i data-lucide="stethoscope" class="w-5 h-5 text-emerald-700"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Real Dental Scenario</h2>
+          <p class="text-sm text-gray-500">Comparing pocket depth consistency between two clinics</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-5 border border-emerald-200 mb-4">
+        <p class="text-gray-700"><strong>Scenario:</strong> Two dental clinics measured periodontal <strong>pocket depths (mm)</strong> for 5 patients each. Which clinic shows more consistent treatment outcomes?</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div class="bg-white rounded-lg p-4 border border-emerald-300">
+            <h4 class="font-bold text-emerald-700 mb-2">Clinic A (Consistent)</h4>
+            <div class="flex gap-2 font-mono text-sm">
+              <span class="px-2 py-1 bg-emerald-100 rounded">3.2</span>
+              <span class="px-2 py-1 bg-emerald-100 rounded">3.5</span>
+              <span class="px-2 py-1 bg-emerald-100 rounded">3.8</span>
+              <span class="px-2 py-1 bg-emerald-100 rounded">4.0</span>
+              <span class="px-2 py-1 bg-emerald-100 rounded">4.2</span>
+            </div>
+          </div>
+          <div class="bg-white rounded-lg p-4 border border-orange-300">
+            <h4 class="font-bold text-orange-700 mb-2">Clinic B (Variable)</h4>
+            <div class="flex gap-2 font-mono text-sm">
+              <span class="px-2 py-1 bg-orange-100 rounded">2.0</span>
+              <span class="px-2 py-1 bg-orange-100 rounded">3.0</span>
+              <span class="px-2 py-1 bg-orange-100 rounded">4.5</span>
+              <span class="px-2 py-1 bg-orange-100 rounded">5.5</span>
+              <span class="px-2 py-1 bg-orange-100 rounded">7.0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button id="sd-run-scenario" class="px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition shadow-md hover:shadow-lg flex items-center gap-2">
+        <i data-lucide="play" class="w-5 h-5"></i>
+        Run Scenario
+      </button>
+
+      <div id="sd-scenario-steps" class="mt-5 space-y-4">
+        <!-- Step 1: Means -->
+        <div id="sd-step-means" class="step-box bg-white rounded-xl border-2 border-emerald-200 p-5">
+          <h3 class="font-bold text-emerald-800 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm">1</span>
+            Calculate the Means
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+            <div class="bg-emerald-50 rounded-lg p-3">
+              <div class="text-sm text-gray-600 font-mono" id="sd-meanA-calc"></div>
+              <div class="text-lg font-bold text-emerald-700 mt-1" id="sd-meanA-result"></div>
+            </div>
+            <div class="bg-orange-50 rounded-lg p-3">
+              <div class="text-sm text-gray-600 font-mono" id="sd-meanB-calc"></div>
+              <div class="text-lg font-bold text-orange-700 mt-1" id="sd-meanB-result"></div>
+            </div>
+          </div>
+          <p id="sd-means-note" class="text-sm text-gray-600 mt-2 hidden">
+            <strong>Notice:</strong> Both clinics have similar means (~3.7 and ~4.4 mm), but the spread could be very different.
+          </p>
+        </div>
+
+        <!-- Step 2: Deviations -->
+        <div id="sd-step-dev" class="step-box bg-white rounded-xl border-2 border-blue-200 p-5">
+          <h3 class="font-bold text-blue-800 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm">2</span>
+            Deviations from the Mean
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+            <div>
+              <h4 class="font-semibold text-emerald-700 text-sm mb-2">Clinic A deviations</h4>
+              <div id="sd-devA" class="space-y-1 font-mono text-xs"></div>
+            </div>
+            <div>
+              <h4 class="font-semibold text-orange-700 text-sm mb-2">Clinic B deviations</h4>
+              <div id="sd-devB" class="space-y-1 font-mono text-xs"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: SD Results -->
+        <div id="sd-step-result" class="step-box bg-white rounded-xl border-2 border-purple-200 p-5">
+          <h3 class="font-bold text-purple-800 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm">3</span>
+            Standard Deviation Results
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+            <div class="text-center">
+              <div class="text-sm text-gray-600 mb-1">Clinic A SD</div>
+              <div class="text-4xl font-bold text-emerald-700" id="sd-resultA">-</div>
+              <div class="mt-2 h-4 bg-gray-200 rounded-full overflow-hidden">
+                <div id="sd-barA" class="h-full bg-emerald-500 rounded-full bar-fill" style="width:0%"></div>
+              </div>
+            </div>
+            <div class="text-center">
+              <div class="text-sm text-gray-600 mb-1">Clinic B SD</div>
+              <div class="text-4xl font-bold text-orange-700" id="sd-resultB">-</div>
+              <div class="mt-2 h-4 bg-gray-200 rounded-full overflow-hidden">
+                <div id="sd-barB" class="h-full bg-orange-500 rounded-full bar-fill" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Visual Spread -->
+        <div id="sd-step-visual" class="step-box bg-white rounded-xl border-2 border-teal-200 p-5">
+          <h3 class="font-bold text-teal-800 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-teal-600 text-white rounded-full flex items-center justify-center text-sm">4</span>
+            Visual Comparison of Spread
+          </h3>
+          <div class="mt-3">
+            <canvas id="sd-scenario-chart" height="200"></canvas>
+          </div>
+        </div>
+
+        <!-- Step 5: Clinical Summary -->
+        <div id="sd-step-summary" class="step-box bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl p-5 text-white">
+          <h3 class="font-bold text-lg flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-6 h-6"></i>
+            Clinical Interpretation
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+            <div class="bg-white/20 rounded-lg p-4 backdrop-blur">
+              <h4 class="font-bold text-emerald-100">Clinic A: Low SD (0.39 mm)</h4>
+              <p class="text-sm text-emerald-50 mt-1">Consistent outcomes. Patients receive predictable treatment quality. Good for standardized protocols.</p>
+            </div>
+            <div class="bg-white/20 rounded-lg p-4 backdrop-blur">
+              <h4 class="font-bold text-orange-200">Clinic B: High SD (1.87 mm)</h4>
+              <p class="text-sm text-emerald-50 mt-1">Highly variable outcomes. Some patients have shallow pockets (2.0), others have deep ones (7.0). Needs investigation.</p>
+            </div>
+          </div>
+          <p class="mt-3 text-emerald-100 text-sm">
+            <strong class="text-white">Key Takeaway:</strong> The mean alone does not tell the full story. A small SD means reliable, consistent treatment results. A large SD signals inconsistency that may require clinical review.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay-2">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: see SD change</h2>
       <p class="text-gray-700 mb-4">
         Adjust the spread slider to generate different "pocket depth" samples and observe how SD affects the histogram.
       </p>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div class="bg-white rounded-xl border p-4">
+        <div class="bg-white rounded-xl border p-4 scenario-card">
           <label class="block text-sm font-medium text-gray-700 mb-2">Mean pocket depth (mm)</label>
           <input id="sd-mean" type="number" value="4" step="0.1" class="w-full px-3 py-2 border rounded-lg mb-4">
 
@@ -77,7 +251,7 @@
           </div>
         </div>
 
-        <div class="lg:col-span-2 bg-white rounded-xl border p-4">
+        <div class="lg:col-span-2 bg-white rounded-xl border p-4 scenario-card">
           <h3 class="font-semibold text-gray-800 mb-2">Histogram of measurements</h3>
           <div class="h-80"><canvas id="sdChart"></canvas></div>
           <p class="text-xs text-gray-500 mt-2">
@@ -87,17 +261,193 @@
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg">
+    <section class="glass rounded-2xl p-6 shadow-lg fade-in-delay-2">
       <h2 class="text-xl font-bold text-gray-800 mb-2">How to report SD (common patterns)</h2>
       <ul class="list-disc pl-5 text-gray-700 space-y-1">
-        <li>Use <strong>mean ± SD</strong> when the data are reasonably symmetric.</li>
+        <li>Use <strong>mean &plusmn; SD</strong> when the data are reasonably symmetric.</li>
         <li>If the distribution is very skewed/outlier-heavy, prefer <strong>median (IQR)</strong>.</li>
         <li>Compare SDs across groups to discuss variability, not just center.</li>
       </ul>
     </section>
   </main>
 
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+        <div class="mt-3 flex justify-center space-x-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-teal-400 transition">Home</a>
+            <a href="/#concepts" class="hover:text-teal-400 transition">Concepts</a>
+            <a href="/about" class="hover:text-teal-400 transition">About Us</a>
+        </div>
+    </div>
+</footer>
+
   <script src="{% static 'js/script.js' %}"></script>
   <script src="{% static 'concepts/js/standard-deviation.js' %}"></script>
+  <script>
+  (function(){
+    const clinicA = [3.2, 3.5, 3.8, 4.0, 4.2];
+    const clinicB = [2.0, 3.0, 4.5, 5.5, 7.0];
+    const btn = document.getElementById('sd-run-scenario');
+    let running = false;
+    let scenarioChart = null;
+
+    function calcMean(arr){ return arr.reduce((a,b)=>a+b,0)/arr.length; }
+    function calcSD(arr){
+      const m = calcMean(arr);
+      const variance = arr.reduce((sum,v)=>sum+Math.pow(v-m,2),0)/(arr.length-1);
+      return Math.sqrt(variance);
+    }
+
+    btn.addEventListener('click', async function(){
+      if(running) return;
+      running = true;
+      btn.disabled = true;
+      btn.classList.add('opacity-50');
+
+      // Reset
+      document.querySelectorAll('#sd-scenario-steps .step-box').forEach(el => el.classList.remove('visible'));
+      document.getElementById('sd-barA').style.width = '0%';
+      document.getElementById('sd-barB').style.width = '0%';
+      if(scenarioChart){ scenarioChart.destroy(); scenarioChart = null; }
+
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+      const meanA = calcMean(clinicA);
+      const meanB = calcMean(clinicB);
+      const sdA = calcSD(clinicA);
+      const sdB = calcSD(clinicB);
+
+      // Step 1: Means
+      document.getElementById('sd-step-means').classList.add('visible');
+      await wait(400);
+      document.getElementById('sd-meanA-calc').innerHTML = '(' + clinicA.join(' + ') + ') / 5';
+      document.getElementById('sd-meanA-result').textContent = 'Mean A = ' + meanA.toFixed(2) + ' mm';
+      await wait(500);
+      document.getElementById('sd-meanB-calc').innerHTML = '(' + clinicB.join(' + ') + ') / 5';
+      document.getElementById('sd-meanB-result').textContent = 'Mean B = ' + meanB.toFixed(2) + ' mm';
+      await wait(500);
+      document.getElementById('sd-means-note').classList.remove('hidden');
+      await wait(800);
+
+      // Step 2: Deviations
+      document.getElementById('sd-step-dev').classList.add('visible');
+      await wait(400);
+      const devAEl = document.getElementById('sd-devA');
+      const devBEl = document.getElementById('sd-devB');
+      devAEl.innerHTML = '';
+      devBEl.innerHTML = '';
+
+      for(let i = 0; i < 5; i++){
+        const devA = (clinicA[i] - meanA).toFixed(2);
+        const devASq = Math.pow(clinicA[i] - meanA, 2).toFixed(4);
+        const rowA = document.createElement('div');
+        rowA.className = 'bg-emerald-50 rounded p-1.5 flex justify-between items-center';
+        rowA.style.opacity = '0';
+        rowA.innerHTML = '<span>' + clinicA[i] + ' - ' + meanA.toFixed(2) + ' = <strong>' + devA + '</strong></span><span class="text-gray-500">sq = ' + devASq + '</span>';
+        devAEl.appendChild(rowA);
+
+        const devB = (clinicB[i] - meanB).toFixed(2);
+        const devBSq = Math.pow(clinicB[i] - meanB, 2).toFixed(4);
+        const rowB = document.createElement('div');
+        rowB.className = 'bg-orange-50 rounded p-1.5 flex justify-between items-center';
+        rowB.style.opacity = '0';
+        rowB.innerHTML = '<span>' + clinicB[i] + ' - ' + meanB.toFixed(2) + ' = <strong>' + devB + '</strong></span><span class="text-gray-500">sq = ' + devBSq + '</span>';
+        devBEl.appendChild(rowB);
+
+        await wait(200);
+        rowA.style.transition = 'opacity 0.3s ease';
+        rowA.style.opacity = '1';
+        rowB.style.transition = 'opacity 0.3s ease';
+        rowB.style.opacity = '1';
+      }
+      await wait(600);
+
+      // Step 3: SD Results
+      document.getElementById('sd-step-result').classList.add('visible');
+      await wait(400);
+      document.getElementById('sd-resultA').textContent = sdA.toFixed(2) + ' mm';
+      document.getElementById('sd-resultB').textContent = sdB.toFixed(2) + ' mm';
+      await wait(300);
+      const maxSD = Math.max(sdA, sdB);
+      document.getElementById('sd-barA').style.width = (sdA/maxSD*100).toFixed(1) + '%';
+      document.getElementById('sd-barB').style.width = (sdB/maxSD*100).toFixed(1) + '%';
+      await wait(800);
+
+      // Step 4: Visual chart
+      document.getElementById('sd-step-visual').classList.add('visible');
+      await wait(400);
+      const ctx = document.getElementById('sd-scenario-chart').getContext('2d');
+      scenarioChart = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+          datasets: [
+            {
+              label: 'Clinic A',
+              data: clinicA.map((v,i) => ({x: v, y: 1.2})),
+              backgroundColor: 'rgba(16,185,129,0.8)',
+              borderColor: '#059669',
+              borderWidth: 2,
+              pointRadius: 10,
+              pointHoverRadius: 13,
+            },
+            {
+              label: 'Clinic B',
+              data: clinicB.map((v,i) => ({x: v, y: 0.8})),
+              backgroundColor: 'rgba(249,115,22,0.8)',
+              borderColor: '#ea580c',
+              borderWidth: 2,
+              pointRadius: 10,
+              pointHoverRadius: 13,
+            },
+            {
+              label: 'Mean A',
+              data: [{x: meanA, y: 1.2}],
+              backgroundColor: '#065f46',
+              borderColor: '#065f46',
+              pointRadius: 14,
+              pointStyle: 'rectRot',
+              borderWidth: 3,
+            },
+            {
+              label: 'Mean B',
+              data: [{x: meanB, y: 0.8}],
+              backgroundColor: '#9a3412',
+              borderColor: '#9a3412',
+              pointRadius: 14,
+              pointStyle: 'rectRot',
+              borderWidth: 3,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  return ctx.dataset.label + ': ' + ctx.parsed.x.toFixed(1) + ' mm';
+                }
+              }
+            }
+          },
+          scales: {
+            x: { title: { display: true, text: 'Pocket Depth (mm)' }, min: 1, max: 8 },
+            y: { display: false, min: 0.4, max: 1.6 }
+          }
+        }
+      });
+      await wait(800);
+
+      // Step 5: Summary
+      document.getElementById('sd-step-summary').classList.add('visible');
+
+      running = false;
+      btn.disabled = false;
+      btn.classList.remove('opacity-50');
+    });
+  })();
+  </script>
 </body>
 </html>

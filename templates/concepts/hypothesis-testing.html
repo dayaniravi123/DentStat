@@ -13,66 +13,93 @@
     .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
     .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
     .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-delay { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    .trial-step { opacity:0; transform:translateY(15px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .trial-step.visible { opacity:1; transform:translateY(0); }
+    @keyframes pulse-green { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+    .checkmark-pop { animation: pulse-green 0.4s ease; }
   </style>
 </head>
 <body class="bg-gray-50">
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg" style="z-index:100;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold">DentalStats</h1>
+                    <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
   <header class="gradient-bg text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
       <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <i data-lucide="git-commit" class="w-7 h-7 text-amber-300"></i>
           <div>
-            <h1 class="text-3xl md:text-4xl font-bold">Hypothesis Testing</h1>
-            <p class="text-gray-200 mt-1">Decision-making under uncertainty (H₀ vs H₁, α, β, power)</p>
+            <h1 class="text-3xl md:text-4xl font-bold fade-in">Hypothesis Testing</h1>
+            <p class="text-gray-200 mt-1 fade-in-delay">Decision-making under uncertainty (H&#8320; vs H&#8321;, &#945;, &#946;, power)</p>
           </div>
         </div>
-        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+        <a href="/#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
       </div>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500 fade-in">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Framework</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="bg-white rounded-xl border p-4">
-          <h3 class="font-semibold text-gray-800 mb-2">Null hypothesis (H₀)</h3>
-          <p class="text-gray-700 text-sm">“No effect / no difference.” Example: mean plaque index is equal between treatments.</p>
-          <div class="mono bg-gray-50 border rounded-lg p-2 mt-2 text-sm">H₀: μ₁ = μ₂</div>
+          <h3 class="font-semibold text-gray-800 mb-2">Null hypothesis (H&#8320;)</h3>
+          <p class="text-gray-700 text-sm">"No effect / no difference." Example: mean plaque index is equal between treatments.</p>
+          <div class="mono bg-gray-50 border rounded-lg p-2 mt-2 text-sm">H&#8320;: &#956;&#8321; = &#956;&#8322;</div>
         </div>
         <div class="bg-white rounded-xl border p-4">
-          <h3 class="font-semibold text-gray-800 mb-2">Alternative (H₁)</h3>
-          <p class="text-gray-700 text-sm">“Effect exists.” Example: plaque index differs between treatments.</p>
-          <div class="mono bg-gray-50 border rounded-lg p-2 mt-2 text-sm">H₁: μ₁ ≠ μ₂</div>
+          <h3 class="font-semibold text-gray-800 mb-2">Alternative (H&#8321;)</h3>
+          <p class="text-gray-700 text-sm">"Effect exists." Example: plaque index differs between treatments.</p>
+          <div class="mono bg-gray-50 border rounded-lg p-2 mt-2 text-sm">H&#8321;: &#956;&#8321; &#8800; &#956;&#8322;</div>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         <div class="bg-white rounded-xl border p-4">
-          <h4 class="font-semibold text-gray-800">α (Type I error)</h4>
-          <p class="text-sm text-gray-600">False positive: reject H₀ when H₀ is true.</p>
+          <h4 class="font-semibold text-gray-800">&#945; (Type I error)</h4>
+          <p class="text-sm text-gray-600">False positive: reject H&#8320; when H&#8320; is true.</p>
         </div>
         <div class="bg-white rounded-xl border p-4">
-          <h4 class="font-semibold text-gray-800">β (Type II error)</h4>
-          <p class="text-sm text-gray-600">False negative: fail to reject H₀ when H₁ is true.</p>
+          <h4 class="font-semibold text-gray-800">&#946; (Type II error)</h4>
+          <p class="text-sm text-gray-600">False negative: fail to reject H&#8320; when H&#8321; is true.</p>
         </div>
         <div class="bg-white rounded-xl border p-4">
-          <h4 class="font-semibold text-gray-800">Power = 1 − β</h4>
+          <h4 class="font-semibold text-gray-800">Power = 1 &#8722; &#946;</h4>
           <p class="text-sm text-gray-600">Chance to detect a true effect.</p>
         </div>
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
-      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: visualize α and β</h2>
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: visualize &#945; and &#946;</h2>
       <p class="text-gray-700 mb-4">
-        We draw two normal curves: one under H₀ and one under H₁ (shifted by effect size). Move the decision threshold and watch
-        α (false positive area) and β (false negative area) change.
+        We draw two normal curves: one under H&#8320; and one under H&#8321; (shifted by effect size). Move the decision threshold and watch
+        &#945; (false positive area) and &#946; (false negative area) change.
       </p>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="bg-white rounded-xl border p-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Effect size (Δ in SD units)</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Effect size (&#916; in SD units)</label>
           <input id="ht-delta" type="range" min="0" max="2.0" step="0.05" value="0.6" class="w-full accent-amber-600">
           <div class="flex justify-between text-xs text-gray-500 mt-1"><span>0</span><span id="ht-delta-lbl" class="font-bold text-amber-700">0.60</span><span>2.0</span></div>
 
@@ -81,8 +108,8 @@
           <div class="flex justify-between text-xs text-gray-500 mt-1"><span>-1.5</span><span id="ht-c-lbl" class="font-bold text-amber-700">1.00</span><span>2.5</span></div>
 
           <div class="mt-4 bg-gray-50 rounded-xl border p-3 text-sm">
-            <div><strong>α:</strong> <span id="ht-alpha">-</span></div>
-            <div><strong>β:</strong> <span id="ht-beta">-</span></div>
+            <div><strong>&#945;:</strong> <span id="ht-alpha">-</span></div>
+            <div><strong>&#946;:</strong> <span id="ht-beta">-</span></div>
             <div><strong>Power:</strong> <span id="ht-power">-</span></div>
           </div>
         </div>
@@ -90,19 +117,149 @@
         <div class="lg:col-span-2 bg-white rounded-xl border p-4">
           <h3 class="font-semibold text-gray-800 mb-2">Decision regions</h3>
           <div class="h-80"><canvas id="htChart"></canvas></div>
-          <p class="text-xs text-gray-500 mt-2">Red: H₀ distribution, Blue: H₁ distribution. Vertical line: threshold c.</p>
+          <p class="text-xs text-gray-500 mt-2">Red: H&#8320; distribution, Blue: H&#8321; distribution. Vertical line: threshold c.</p>
         </div>
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg">
+    <!-- Real Dental Scenario: Clinical Trial Walkthrough -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-teal-500 fade-in">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+          <i data-lucide="flask-conical" class="w-5 h-5 text-teal-600"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Real Dental Scenario</h2>
+          <p class="text-sm text-gray-500">Fluoride Varnish Clinical Trial</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl p-5 mb-5 border border-teal-200">
+        <p class="text-gray-700 leading-relaxed">
+          <strong>Study design:</strong> A dental researcher wants to test whether a <strong>new fluoride varnish</strong> reduces mean DMFT (Decayed, Missing, Filled Teeth) compared to a placebo.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div class="bg-white rounded-lg p-4 border border-blue-200 shadow-sm">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span class="font-semibold text-gray-800">Control Group (Placebo)</span>
+            </div>
+            <div class="mono text-sm text-gray-700">n = 50, Mean DMFT = 4.2, SD = 1.8</div>
+          </div>
+          <div class="bg-white rounded-lg p-4 border border-teal-200 shadow-sm">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-3 h-3 bg-teal-500 rounded-full"></div>
+              <span class="font-semibold text-gray-800">Treatment Group (Varnish)</span>
+            </div>
+            <div class="mono text-sm text-gray-700">n = 50, Mean DMFT = 3.5, SD = 1.6</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mb-6">
+        <button id="runTrialBtn" class="px-8 py-3 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-lg">
+          <i data-lucide="play" class="w-5 h-5 inline mr-2"></i>Run Clinical Trial
+        </button>
+      </div>
+
+      <div id="trialSteps" class="space-y-4">
+        <!-- Step 1: Hypotheses -->
+        <div id="step1" class="trial-step bg-white rounded-xl border-2 border-gray-100 p-5">
+          <div class="flex items-start gap-3">
+            <div id="check1" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all duration-300">
+              <span class="text-gray-400 text-sm font-bold">1</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-gray-800 text-lg">Step 1: State the Hypotheses</h3>
+              <div class="mt-3 space-y-2">
+                <div class="mono bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+                  <strong>H&#8320; (Null):</strong> &#956;<sub>treatment</sub> = &#956;<sub>control</sub> (No difference in mean DMFT)
+                </div>
+                <div class="mono bg-teal-50 border border-teal-200 rounded-lg p-3 text-sm">
+                  <strong>H&#8321; (Alternative):</strong> &#956;<sub>treatment</sub> &lt; &#956;<sub>control</sub> (Varnish reduces mean DMFT)
+                </div>
+                <p class="text-sm text-gray-600 mt-2">Significance level: &#945; = 0.05 (one-tailed test)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Compute Test Statistic -->
+        <div id="step2" class="trial-step bg-white rounded-xl border-2 border-gray-100 p-5">
+          <div class="flex items-start gap-3">
+            <div id="check2" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all duration-300">
+              <span class="text-gray-400 text-sm font-bold">2</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-gray-800 text-lg">Step 2: Compute the Test Statistic</h3>
+              <div class="mt-3 space-y-3">
+                <div class="mono bg-gray-50 border rounded-lg p-3 text-sm">
+                  <div class="text-gray-600 mb-1">Pooled standard error:</div>
+                  <div>SE = &#8730;(SD&#8321;&sup2;/n&#8321; + SD&#8322;&sup2;/n&#8322;) = &#8730;(1.8&sup2;/50 + 1.6&sup2;/50)</div>
+                  <div class="mt-1">SE = &#8730;(0.0648 + 0.0512) = &#8730;0.1160 = <strong class="text-teal-700">0.3406</strong></div>
+                </div>
+                <div class="mono bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm">
+                  <div class="text-gray-600 mb-1">t-statistic:</div>
+                  <div>t = (&#x0304;x&#8321; &#8722; &#x0304;x&#8322;) / SE = (3.5 &#8722; 4.2) / 0.3406</div>
+                  <div class="mt-1">t = &#8722;0.7 / 0.3406 = <strong class="text-amber-700">&#8722;2.055</strong></div>
+                </div>
+                <p class="text-sm text-gray-600">Degrees of freedom: df &#8776; 96 (Welch's approximation)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Make Decision -->
+        <div id="step3" class="trial-step bg-white rounded-xl border-2 border-gray-100 p-5">
+          <div class="flex items-start gap-3">
+            <div id="check3" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all duration-300">
+              <span class="text-gray-400 text-sm font-bold">3</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-gray-800 text-lg">Step 3: Make a Decision</h3>
+              <div class="mt-3 space-y-3">
+                <div class="mono bg-gray-50 border rounded-lg p-3 text-sm">
+                  <div>Critical value (one-tailed, &#945; = 0.05): t<sub>crit</sub> = &#8722;1.661</div>
+                  <div class="mt-1">Our t = <strong>&#8722;2.055</strong> &lt; &#8722;1.661 (falls in rejection region)</div>
+                  <div class="mt-1">p-value &#8776; <strong class="text-teal-700">0.021</strong> &lt; 0.05</div>
+                </div>
+                <div id="decisionBox" class="bg-teal-50 border-2 border-teal-400 rounded-xl p-4 opacity-0 transition-opacity duration-700">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center">
+                      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div>
+                      <p class="font-bold text-teal-800 text-lg">Reject H&#8320;</p>
+                      <p class="text-sm text-teal-700">There is statistically significant evidence (p = 0.021) that the fluoride varnish reduces mean DMFT compared to placebo.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
       <p class="text-gray-700">
-        If you test “fluoride varnish reduces mean DMFT vs control,” choosing α=0.05 limits false positives. Ensuring high power (e.g., 0.80–0.90)
+        If you test "fluoride varnish reduces mean DMFT vs control," choosing &#945;=0.05 limits false positives. Ensuring high power (e.g., 0.80-0.90)
         reduces the chance you miss a real benefit due to small sample size or noisy outcomes.
       </p>
     </section>
   </main>
+
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+        <div class="mt-3 flex justify-center space-x-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-teal-400 transition">Home</a>
+            <a href="/#concepts" class="hover:text-teal-400 transition">Concepts</a>
+            <a href="/about" class="hover:text-teal-400 transition">About Us</a>
+        </div>
+    </div>
+</footer>
 
   <script>
     lucide.createIcons();
@@ -112,7 +269,6 @@
       return Math.exp(-0.5*z*z)/(s*Math.sqrt(2*Math.PI));
     }
     function normCdf(x){
-      // Abramowitz-Stegun approximation
       const t=1/(1+0.2316419*Math.abs(x));
       const d=0.3989423*Math.exp(-x*x/2);
       let p=d*t*(0.3193815 + t*(-0.3565638 + t*(1.781478 + t*(-1.821256 + t*1.330274))));
@@ -128,9 +284,8 @@
       document.getElementById('ht-delta-lbl').textContent=delta.toFixed(2);
       document.getElementById('ht-c-lbl').textContent=c.toFixed(2);
 
-      // assume H0: N(0,1), H1: N(delta,1)
-      const alpha = 1 - normCdf(c);        // P(reject|H0)
-      const beta  = normCdf(c - delta);    // P(fail reject|H1)
+      const alpha = 1 - normCdf(c);
+      const beta  = normCdf(c - delta);
       const power = 1 - beta;
 
       document.getElementById('ht-alpha').textContent = (alpha*100).toFixed(1)+'%';
@@ -173,6 +328,56 @@
         }
       });
     }
+
+    // Clinical Trial Animation
+    (function(){
+      let running = false;
+      const btn = document.getElementById('runTrialBtn');
+
+      btn.addEventListener('click', function(){
+        if(running) return;
+        running = true;
+        btn.disabled = true;
+        btn.classList.add('opacity-60');
+
+        // Reset all steps
+        for(let i=1;i<=3;i++){
+          const step = document.getElementById('step'+i);
+          const check = document.getElementById('check'+i);
+          step.classList.remove('visible');
+          check.innerHTML = '<span class="text-gray-400 text-sm font-bold">'+i+'</span>';
+          check.className = 'w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all duration-300';
+        }
+        document.getElementById('decisionBox').style.opacity = '0';
+
+        function showStep(num, delay){
+          setTimeout(function(){
+            const step = document.getElementById('step'+num);
+            step.classList.add('visible');
+          }, delay);
+          setTimeout(function(){
+            const check = document.getElementById('check'+num);
+            check.innerHTML = '<svg class="w-5 h-5 text-white checkmark-pop" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>';
+            check.className = 'w-8 h-8 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all duration-300';
+          }, delay + 800);
+        }
+
+        showStep(1, 300);
+        showStep(2, 1800);
+        showStep(3, 3300);
+
+        // Reveal decision box
+        setTimeout(function(){
+          document.getElementById('decisionBox').style.opacity = '1';
+        }, 4500);
+
+        setTimeout(function(){
+          running = false;
+          btn.disabled = false;
+          btn.classList.remove('opacity-60');
+        }, 5000);
+      });
+    })();
 
     document.addEventListener('DOMContentLoaded', ()=>{
       document.getElementById('ht-delta').addEventListener('input', recompute);

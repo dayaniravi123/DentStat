@@ -13,26 +13,54 @@
     .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
     .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
     .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-delay { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    .scenario-step { opacity:0; transform:translateY(15px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .scenario-step.visible { opacity:1; transform:translateY(0); }
+    .treatment-bar { transition: height 0.8s ease-out; border-radius: 4px 4px 0 0; }
+    .anova-cell { transition: all 0.4s ease; }
+    .anova-cell.highlight { background-color: #fef3c7; transform: scale(1.05); }
   </style>
 </head>
 <body class="bg-gray-50">
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg" style="z-index:100;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold">DentalStats</h1>
+                    <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
   <header class="gradient-bg text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
       <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <i data-lucide="bar-chart-2" class="w-7 h-7 text-amber-300"></i>
           <div>
-            <h1 class="text-3xl md:text-4xl font-bold">ANOVA Basics</h1>
-            <p class="text-gray-200 mt-1">Compare means across 3+ groups with an F-statistic</p>
+            <h1 class="text-3xl md:text-4xl font-bold fade-in">ANOVA Basics</h1>
+            <p class="text-gray-200 mt-1 fade-in-delay">Compare means across 3+ groups with an F-statistic</p>
           </div>
         </div>
-        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+        <a href="/#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
       </div>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500 fade-in">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Concept</h2>
       <p class="text-gray-700">
         ANOVA tests whether <strong>at least one</strong> group mean differs. It compares between-group variability to within-group variability:
@@ -45,7 +73,7 @@
       </p>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: simulate 3 treatments</h2>
       <p class="text-gray-700 mb-4">
         Adjust group means/spreads and see how separation affects between-group vs within-group variation.
@@ -81,13 +109,237 @@
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg">
+    <!-- Real Dental Scenario Section -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay border-l-4 border-teal-500">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+          <i data-lucide="sparkles" class="w-5 h-5 text-teal-700"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Real Dental Scenario: Whitening Treatment Sensitivity</h2>
+          <p class="text-sm text-gray-500">One-way ANOVA with animated walkthrough</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl p-5 mb-5 border border-teal-200">
+        <h3 class="font-semibold text-gray-800 mb-2">Study Design</h3>
+        <p class="text-gray-700 text-sm">A dental clinic compares <strong>tooth sensitivity scores</strong> (0-10 scale) across <strong>3 whitening treatments</strong>. 30 patients are randomly assigned (10 per group). The question: do the treatments differ in how much sensitivity they cause?</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <div class="bg-white rounded-lg p-4 border border-teal-200">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-3 h-3 bg-amber-500 rounded-full"></div>
+              <span class="font-semibold text-gray-700">Treatment A (n=10)</span>
+            </div>
+            <p class="text-sm text-gray-600 mono">3, 4, 5, 3, 4, 5, 6, 4, 3, 5</p>
+            <p class="text-xs text-gray-500 mt-1">Low-concentration peroxide gel</p>
+          </div>
+          <div class="bg-white rounded-lg p-4 border border-teal-200">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span class="font-semibold text-gray-700">Treatment B (n=10)</span>
+            </div>
+            <p class="text-sm text-gray-600 mono">5, 6, 7, 6, 5, 7, 8, 6, 7, 5</p>
+            <p class="text-xs text-gray-500 mt-1">High-concentration peroxide gel</p>
+          </div>
+          <div class="bg-white rounded-lg p-4 border border-teal-200">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span class="font-semibold text-gray-700">Treatment C (n=10)</span>
+            </div>
+            <p class="text-sm text-gray-600 mono">2, 3, 2, 3, 4, 2, 3, 3, 2, 4</p>
+            <p class="text-xs text-gray-500 mt-1">LED-activated whitening</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mb-6">
+        <button id="run-anova-btn" onclick="runAnovaAnimation()" class="px-8 py-3 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+          <i data-lucide="play" class="w-5 h-5 inline mr-2"></i>Compare Treatments
+        </button>
+      </div>
+
+      <!-- Step 1: Group means visualization -->
+      <div id="anova-step-1" class="scenario-step mb-4">
+        <div class="bg-white rounded-xl border-2 border-blue-200 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+            <h4 class="font-bold text-gray-800">Group Means & Grand Mean</h4>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+            <div class="bg-amber-50 rounded-lg p-3 text-center border border-amber-200">
+              <div class="text-xs text-gray-500">Mean A</div>
+              <div class="text-2xl font-bold text-amber-700">4.20</div>
+            </div>
+            <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-200">
+              <div class="text-xs text-gray-500">Mean B</div>
+              <div class="text-2xl font-bold text-blue-700">6.20</div>
+            </div>
+            <div class="bg-green-50 rounded-lg p-3 text-center border border-green-200">
+              <div class="text-xs text-gray-500">Mean C</div>
+              <div class="text-2xl font-bold text-green-700">2.80</div>
+            </div>
+            <div class="bg-gray-100 rounded-lg p-3 text-center border border-gray-300">
+              <div class="text-xs text-gray-500">Grand Mean</div>
+              <div class="text-2xl font-bold text-gray-700">4.40</div>
+            </div>
+          </div>
+          <div class="h-64"><canvas id="anovaGroupChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Step 2: SSB calculation -->
+      <div id="anova-step-2" class="scenario-step mb-4">
+        <div class="bg-white rounded-xl border-2 border-amber-200 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+            <h4 class="font-bold text-gray-800">Sum of Squares Between (SSB)</h4>
+          </div>
+          <div class="mono text-sm bg-amber-50 rounded-lg p-3 space-y-1">
+            <div>SSB = n * sum( (group_mean - grand_mean)^2 )</div>
+            <div class="mt-2">= 10 * [ (4.20 - 4.40)^2 + (6.20 - 4.40)^2 + (2.80 - 4.40)^2 ]</div>
+            <div>= 10 * [ 0.04 + 3.24 + 2.56 ]</div>
+            <div>= 10 * 5.84 = <strong class="text-amber-700">58.40</strong></div>
+          </div>
+          <p class="text-sm text-gray-600 mt-2">SSB measures how much the group means vary around the grand mean.</p>
+        </div>
+      </div>
+
+      <!-- Step 3: SSW calculation -->
+      <div id="anova-step-3" class="scenario-step mb-4">
+        <div class="bg-white rounded-xl border-2 border-green-200 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+            <h4 class="font-bold text-gray-800">Sum of Squares Within (SSW)</h4>
+          </div>
+          <div class="mono text-sm bg-green-50 rounded-lg p-3 space-y-1">
+            <div>SSW = sum of (each value - its group mean)^2 across all groups</div>
+            <div class="mt-2">Group A: (3-4.2)^2 + (4-4.2)^2 + ... = <strong>8.60</strong></div>
+            <div>Group B: (5-6.2)^2 + (6-6.2)^2 + ... = <strong>9.60</strong></div>
+            <div>Group C: (2-2.8)^2 + (3-2.8)^2 + ... = <strong>5.60</strong></div>
+            <div class="mt-1">SSW = 8.60 + 9.60 + 5.60 = <strong class="text-green-700">23.80</strong></div>
+          </div>
+          <p class="text-sm text-gray-600 mt-2">SSW measures natural variation within each treatment group.</p>
+        </div>
+      </div>
+
+      <!-- Step 4: MSB, MSW, F-statistic -->
+      <div id="anova-step-4" class="scenario-step mb-4">
+        <div class="bg-white rounded-xl border-2 border-purple-200 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
+            <h4 class="font-bold text-gray-800">Mean Squares & F-Statistic</h4>
+          </div>
+          <div class="mono text-sm bg-purple-50 rounded-lg p-3 space-y-1">
+            <div>df_between = k - 1 = 3 - 1 = <strong>2</strong></div>
+            <div>df_within = N - k = 30 - 3 = <strong>27</strong></div>
+            <div class="mt-2">MSB = SSB / df_between = 58.40 / 2 = <strong class="text-purple-700">29.20</strong></div>
+            <div>MSW = SSW / df_within = 23.80 / 27 = <strong class="text-purple-700">0.881</strong></div>
+            <div class="mt-2 text-base">F = MSB / MSW = 29.20 / 0.881 = <strong class="text-purple-700 text-lg">33.14</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: ANOVA Table -->
+      <div id="anova-step-5" class="scenario-step mb-4">
+        <div class="bg-white rounded-xl border-2 border-red-200 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center text-sm font-bold">5</span>
+            <h4 class="font-bold text-gray-800">Complete ANOVA Table</h4>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse">
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="border border-gray-300 px-4 py-2 text-left">Source</th>
+                  <th class="border border-gray-300 px-4 py-2 text-center">SS</th>
+                  <th class="border border-gray-300 px-4 py-2 text-center">df</th>
+                  <th class="border border-gray-300 px-4 py-2 text-center">MS</th>
+                  <th class="border border-gray-300 px-4 py-2 text-center">F</th>
+                  <th class="border border-gray-300 px-4 py-2 text-center">Significance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="anova-cell" id="anova-row-between">
+                  <td class="border border-gray-300 px-4 py-2 font-medium">Between Groups</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center font-mono">58.40</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center">2</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center font-mono">29.20</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center font-mono font-bold text-red-600">33.14</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center"><span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-bold">p &lt; 0.001</span></td>
+                </tr>
+                <tr class="anova-cell" id="anova-row-within">
+                  <td class="border border-gray-300 px-4 py-2 font-medium">Within Groups</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center font-mono">23.80</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center">27</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center font-mono">0.881</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center">-</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center">-</td>
+                </tr>
+                <tr class="anova-cell bg-gray-50" id="anova-row-total">
+                  <td class="border border-gray-300 px-4 py-2 font-bold">Total</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center font-mono font-bold">82.20</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center font-bold">29</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center">-</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center">-</td>
+                  <td class="border border-gray-300 px-4 py-2 text-center">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 6: Conclusion -->
+      <div id="anova-step-6" class="scenario-step">
+        <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-5 border-2 border-gray-300">
+          <h4 class="font-bold text-gray-800 mb-3 text-center">Conclusion & Clinical Interpretation</h4>
+          <div class="bg-white rounded-lg p-4 mb-4 border border-teal-200">
+            <p class="text-gray-700 text-sm">
+              <strong>Result:</strong> F(2, 27) = 33.14, p &lt; 0.001. There is a <strong>statistically significant difference</strong> in tooth sensitivity scores across the three whitening treatments.
+            </p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="bg-green-50 rounded-lg p-4 text-center border-2 border-green-300">
+              <div class="text-lg font-bold text-green-700">Treatment C</div>
+              <div class="text-3xl font-bold text-green-600">2.80</div>
+              <div class="text-xs text-gray-600 mt-1">Lowest sensitivity</div>
+              <div class="text-xs text-green-600 font-semibold mt-1">Best tolerated</div>
+            </div>
+            <div class="bg-amber-50 rounded-lg p-4 text-center border border-amber-200">
+              <div class="text-lg font-bold text-amber-700">Treatment A</div>
+              <div class="text-3xl font-bold text-amber-600">4.20</div>
+              <div class="text-xs text-gray-600 mt-1">Moderate sensitivity</div>
+            </div>
+            <div class="bg-red-50 rounded-lg p-4 text-center border-2 border-red-300">
+              <div class="text-lg font-bold text-red-700">Treatment B</div>
+              <div class="text-3xl font-bold text-red-600">6.20</div>
+              <div class="text-xs text-gray-600 mt-1">Highest sensitivity</div>
+              <div class="text-xs text-red-600 font-semibold mt-1">Most sensitivity</div>
+            </div>
+          </div>
+          <p class="text-xs text-gray-500 mt-3 text-center">Post-hoc tests (e.g., Tukey HSD) would be needed to confirm which specific pairs of treatments differ significantly.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg fade-in">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
       <p class="text-gray-700">
         Comparing mean caries score across 3 fluoride regimens is classic one-way ANOVA. If significant, use post-hoc testing to see which regimens differ.
       </p>
     </section>
   </main>
+
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+        <div class="mt-3 flex justify-center space-x-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-teal-400 transition">Home</a>
+            <a href="/#concepts" class="hover:text-teal-400 transition">Concepts</a>
+            <a href="/about" class="hover:text-teal-400 transition">About Us</a>
+        </div>
+    </div>
+</footer>
 
   <script>
     lucide.createIcons();
@@ -104,6 +356,7 @@
     }
 
     let chart=null;
+    let anovaGroupChart=null;
 
     function generate(){
       const sep=parseFloat(document.getElementById('a-sep').value);
@@ -121,7 +374,6 @@
         return arr;
       });
 
-      // quick demo-F: between var of group means / pooled within var
       const means=groups.map(mean);
       const grand=mean(means);
       const between = means.reduce((s,m)=>s+(m-grand)*(m-grand),0) / (means.length-1);
@@ -136,7 +388,6 @@
       const ctx=document.getElementById('aChart').getContext('2d');
       if(chart) chart.destroy();
 
-      // show box-ish via point samples scatter
       const ds=groups.map((g,i)=>({
         type:'scatter',
         label:`Group ${i+1}`,
@@ -154,6 +405,153 @@
             y:{ title:{display:true,text:'Outcome value'} }
           }
         }
+      });
+    }
+
+    // ANOVA Scenario data
+    const treatA = [3,4,5,3,4,5,6,4,3,5];
+    const treatB = [5,6,7,6,5,7,8,6,7,5];
+    const treatC = [2,3,2,3,4,2,3,3,2,4];
+
+    function runAnovaAnimation() {
+      const btn = document.getElementById('run-anova-btn');
+      btn.disabled = true;
+      btn.classList.add('opacity-50');
+      btn.textContent = 'Analyzing treatments...';
+
+      // Reset all steps
+      for(let i=1; i<=6; i++) {
+        document.getElementById('anova-step-'+i).classList.remove('visible');
+      }
+
+      const delays = [300, 1500, 2700, 3900, 5100, 6300];
+
+      // Step 1: Group means + chart
+      setTimeout(() => {
+        document.getElementById('anova-step-1').classList.add('visible');
+        renderAnovaGroupChart();
+      }, delays[0]);
+
+      // Step 2: SSB
+      setTimeout(() => {
+        document.getElementById('anova-step-2').classList.add('visible');
+      }, delays[1]);
+
+      // Step 3: SSW
+      setTimeout(() => {
+        document.getElementById('anova-step-3').classList.add('visible');
+      }, delays[2]);
+
+      // Step 4: MSB, MSW, F
+      setTimeout(() => {
+        document.getElementById('anova-step-4').classList.add('visible');
+      }, delays[3]);
+
+      // Step 5: ANOVA table with row highlights
+      setTimeout(() => {
+        document.getElementById('anova-step-5').classList.add('visible');
+        setTimeout(() => {
+          document.getElementById('anova-row-between').classList.add('highlight');
+          setTimeout(() => {
+            document.getElementById('anova-row-between').classList.remove('highlight');
+            document.getElementById('anova-row-within').classList.add('highlight');
+            setTimeout(() => {
+              document.getElementById('anova-row-within').classList.remove('highlight');
+              document.getElementById('anova-row-total').classList.add('highlight');
+              setTimeout(() => document.getElementById('anova-row-total').classList.remove('highlight'), 600);
+            }, 600);
+          }, 600);
+        }, 300);
+      }, delays[4]);
+
+      // Step 6: Conclusion
+      setTimeout(() => {
+        document.getElementById('anova-step-6').classList.add('visible');
+        btn.disabled = false;
+        btn.classList.remove('opacity-50');
+        btn.innerHTML = '<i data-lucide="rotate-ccw" class="w-5 h-5 inline mr-2"></i>Re-run Analysis';
+        lucide.createIcons();
+      }, delays[5]);
+    }
+
+    function renderAnovaGroupChart() {
+      const ctx = document.getElementById('anovaGroupChart').getContext('2d');
+      if(anovaGroupChart) anovaGroupChart.destroy();
+
+      const allData = [
+        ...treatA.map(v => ({x: 1 + (Math.random()-0.5)*0.25, y: v})),
+        ...treatB.map(v => ({x: 2 + (Math.random()-0.5)*0.25, y: v})),
+        ...treatC.map(v => ({x: 3 + (Math.random()-0.5)*0.25, y: v}))
+      ];
+
+      anovaGroupChart = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+          datasets: [
+            {
+              label: 'Treatment A',
+              data: treatA.map(v => ({x: 1 + (Math.random()-0.5)*0.2, y: v})),
+              backgroundColor: 'rgba(245,158,11,0.7)',
+              pointRadius: 5
+            },
+            {
+              label: 'Treatment B',
+              data: treatB.map(v => ({x: 2 + (Math.random()-0.5)*0.2, y: v})),
+              backgroundColor: 'rgba(59,130,246,0.7)',
+              pointRadius: 5
+            },
+            {
+              label: 'Treatment C',
+              data: treatC.map(v => ({x: 3 + (Math.random()-0.5)*0.2, y: v})),
+              backgroundColor: 'rgba(34,197,94,0.7)',
+              pointRadius: 5
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: {
+            x: { min:0.5, max:3.5, ticks:{callback:(v)=>{if(v===1)return'A';if(v===2)return'B';if(v===3)return'C';return''}}, title:{display:true,text:'Treatment'} },
+            y: { min:0, max:10, title:{display:true,text:'Sensitivity Score'} }
+          },
+          plugins: { legend:{position:'top'} }
+        },
+        plugins: [{
+          id: 'meanLines',
+          afterDatasetsDraw(chart) {
+            const {ctx, scales:{x,y}} = chart;
+            const means = [4.2, 6.2, 2.8];
+            const colors = ['rgba(245,158,11,1)','rgba(59,130,246,1)','rgba(34,197,94,1)'];
+            ctx.save();
+            means.forEach((m, i) => {
+              const xPos = i + 1;
+              const left = x.getPixelForValue(xPos - 0.3);
+              const right = x.getPixelForValue(xPos + 0.3);
+              const yPos = y.getPixelForValue(m);
+              ctx.strokeStyle = colors[i];
+              ctx.lineWidth = 3;
+              ctx.setLineDash([6,3]);
+              ctx.beginPath();
+              ctx.moveTo(left, yPos);
+              ctx.lineTo(right, yPos);
+              ctx.stroke();
+            });
+            // Grand mean line
+            const grandY = y.getPixelForValue(4.4);
+            ctx.strokeStyle = 'rgba(107,114,128,0.8)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([4,4]);
+            ctx.beginPath();
+            ctx.moveTo(x.getPixelForValue(0.6), grandY);
+            ctx.lineTo(x.getPixelForValue(3.4), grandY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '11px Inter, sans-serif';
+            ctx.fillText('Grand Mean = 4.40', x.getPixelForValue(2.6), grandY - 8);
+            ctx.restore();
+          }
+        }]
       });
     }
 

@@ -13,48 +13,77 @@
     .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
     .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
     .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-delay { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    .chi-step { opacity:0; transform:translateY(15px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .chi-step.visible { opacity:1; transform:translateY(0); }
+    @keyframes revealResult { 0%{transform:scale(0.5);opacity:0} 50%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+    .result-reveal { animation: revealResult 0.8s ease both; }
+    .cell-highlight { transition: background-color 0.5s ease, transform 0.3s ease; }
+    .cell-highlight.active { background-color: #d1fae5; transform: scale(1.05); }
   </style>
 </head>
 <body class="bg-gray-50">
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg" style="z-index:100;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold">DentalStats</h1>
+                    <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
   <header class="gradient-bg text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
       <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <i data-lucide="grid" class="w-7 h-7 text-amber-300"></i>
           <div>
-            <h1 class="text-3xl md:text-4xl font-bold">Chi-Square Test</h1>
-            <p class="text-gray-200 mt-1">Testing association between categorical variables</p>
+            <h1 class="text-3xl md:text-4xl font-bold fade-in">Chi-Square Test</h1>
+            <p class="text-gray-200 mt-1 fade-in-delay">Testing association between categorical variables</p>
           </div>
         </div>
-        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+        <a href="/#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
       </div>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500 fade-in">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Idea</h2>
       <p class="text-gray-700">
         The chi-square test compares <strong>observed</strong> counts to <strong>expected</strong> counts under independence.
       </p>
       <div class="mono bg-gray-50 border rounded-xl p-4 mt-4 text-sm">
-        χ² = Σ ( (O − E)² / E ) ,  df = (r−1)(c−1)
+        &#967;&sup2; = &#931; ( (O &#8722; E)&sup2; / E ) ,  df = (r&#8722;1)(c&#8722;1)
       </div>
       <p class="text-sm text-gray-600 mt-2">
-        Rule-of-thumb: expected counts should usually be ≥ 5 in most cells; otherwise consider Fisher’s exact test for 2×2 tables.
+        Rule-of-thumb: expected counts should usually be &#8805; 5 in most cells; otherwise consider Fisher's exact test for 2&#215;2 tables.
       </p>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
-      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive 2×2 chi-square (teaching demo)</h2>
-      <p class="text-gray-700 mb-4">Enter a 2×2 table (e.g., treatment vs outcome) and see observed vs expected.</p>
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive 2&#215;2 chi-square (teaching demo)</h2>
+      <p class="text-gray-700 mb-4">Enter a 2&#215;2 table (e.g., treatment vs outcome) and see observed vs expected.</p>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div class="bg-white rounded-xl border p-4">
           <div class="grid grid-cols-3 gap-2 text-center text-sm font-medium mb-2">
             <div></div>
             <div class="bg-gray-100 rounded p-1">Outcome +</div>
-            <div class="bg-gray-100 rounded p-1">Outcome −</div>
+            <div class="bg-gray-100 rounded p-1">Outcome &#8722;</div>
           </div>
 
           <div class="grid grid-cols-3 gap-2 mb-2">
@@ -69,32 +98,207 @@
           </div>
 
           <button id="cs-run" class="mt-4 w-full px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 transition">
-            Compute χ²
+            Compute &#967;&sup2;
           </button>
 
           <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm">
-            <div><strong>χ²:</strong> <span id="chi">-</span></div>
+            <div><strong>&#967;&sup2;:</strong> <span id="chi">-</span></div>
             <div><strong>df:</strong> <span id="df">1</span></div>
-            <div><strong>Note:</strong> <span class="text-gray-700">This demo doesn’t compute exact p-values. In real work, use software to get p.</span></div>
+            <div><strong>Note:</strong> <span class="text-gray-700">This demo doesn't compute exact p-values. In real work, use software to get p.</span></div>
           </div>
         </div>
 
         <div class="bg-white rounded-xl border p-4">
           <h3 class="font-semibold text-gray-800 mb-2">Observed vs expected</h3>
           <div class="h-80"><canvas id="csChart"></canvas></div>
-          <p class="text-xs text-gray-500 mt-2">Big gaps between observed and expected contribute to χ².</p>
+          <p class="text-xs text-gray-500 mt-2">Big gaps between observed and expected contribute to &#967;&sup2;.</p>
         </div>
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg">
+    <!-- Real Dental Scenario: Smoking & Periodontal Disease -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-teal-500 fade-in">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+          <i data-lucide="cigarette" class="w-5 h-5 text-teal-600"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Real Dental Scenario</h2>
+          <p class="text-sm text-gray-500">Is Smoking Associated with Periodontal Disease?</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl p-5 mb-5 border border-teal-200">
+        <p class="text-gray-700 leading-relaxed">
+          <strong>The study:</strong> A periodontist examined <strong>300 patients</strong> and recorded their smoking status and whether they had periodontal disease. Is there an association between smoking and periodontal disease?
+        </p>
+      </div>
+
+      <!-- Observed Data Table -->
+      <div class="bg-white rounded-xl border p-5 mb-5">
+        <h3 class="font-semibold text-gray-800 mb-3">Observed Data (Contingency Table)</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-center border-collapse">
+            <thead>
+              <tr>
+                <th class="border-2 border-gray-300 bg-gray-100 p-3 font-semibold"></th>
+                <th class="border-2 border-gray-300 bg-red-50 p-3 font-semibold text-red-800">Periodontal Disease (Yes)</th>
+                <th class="border-2 border-gray-300 bg-green-50 p-3 font-semibold text-green-800">Periodontal Disease (No)</th>
+                <th class="border-2 border-gray-300 bg-gray-100 p-3 font-semibold">Row Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="border-2 border-gray-300 bg-orange-50 p-3 font-semibold text-orange-800">Smoker</td>
+                <td class="border-2 border-gray-300 p-3 cell-highlight" id="obs-a"><span class="text-2xl font-bold text-gray-800">45</span></td>
+                <td class="border-2 border-gray-300 p-3 cell-highlight" id="obs-b"><span class="text-2xl font-bold text-gray-800">30</span></td>
+                <td class="border-2 border-gray-300 p-3 bg-gray-50 font-semibold">75</td>
+              </tr>
+              <tr>
+                <td class="border-2 border-gray-300 bg-blue-50 p-3 font-semibold text-blue-800">Non-Smoker</td>
+                <td class="border-2 border-gray-300 p-3 cell-highlight" id="obs-c"><span class="text-2xl font-bold text-gray-800">55</span></td>
+                <td class="border-2 border-gray-300 p-3 cell-highlight" id="obs-d"><span class="text-2xl font-bold text-gray-800">170</span></td>
+                <td class="border-2 border-gray-300 p-3 bg-gray-50 font-semibold">225</td>
+              </tr>
+              <tr>
+                <td class="border-2 border-gray-300 bg-gray-100 p-3 font-semibold">Column Total</td>
+                <td class="border-2 border-gray-300 bg-gray-50 p-3 font-semibold">100</td>
+                <td class="border-2 border-gray-300 bg-gray-50 p-3 font-semibold">200</td>
+                <td class="border-2 border-gray-300 bg-teal-50 p-3 font-bold text-teal-800 text-lg">300</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="text-center mb-6">
+        <button id="chiScenarioBtn" class="px-8 py-3 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-lg">
+          <i data-lucide="calculator" class="w-5 h-5 inline mr-2"></i>Compute Chi-Square Step by Step
+        </button>
+      </div>
+
+      <div id="chiSteps" class="space-y-4">
+        <!-- Step 1: Expected Values -->
+        <div id="chiStep1" class="chi-step bg-white rounded-xl border-2 border-gray-100 p-5">
+          <div class="flex items-start gap-3">
+            <div id="chiCheck1" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all duration-300">
+              <span class="text-gray-400 text-sm font-bold">1</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-gray-800 text-lg">Step 1: Calculate Expected Values</h3>
+              <p class="text-sm text-gray-600 mt-1 mb-3">E = (Row Total &#215; Column Total) / Grand Total</p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="mono bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+                  <strong>E(Smoker, Disease):</strong><br>(75 &#215; 100) / 300 = <strong class="text-blue-700">25.00</strong>
+                </div>
+                <div class="mono bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+                  <strong>E(Smoker, No Disease):</strong><br>(75 &#215; 200) / 300 = <strong class="text-blue-700">50.00</strong>
+                </div>
+                <div class="mono bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+                  <strong>E(Non-Smoker, Disease):</strong><br>(225 &#215; 100) / 300 = <strong class="text-blue-700">75.00</strong>
+                </div>
+                <div class="mono bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+                  <strong>E(Non-Smoker, No Disease):</strong><br>(225 &#215; 200) / 300 = <strong class="text-blue-700">150.00</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Chi-Square Components -->
+        <div id="chiStep2" class="chi-step bg-white rounded-xl border-2 border-gray-100 p-5">
+          <div class="flex items-start gap-3">
+            <div id="chiCheck2" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all duration-300">
+              <span class="text-gray-400 text-sm font-bold">2</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-gray-800 text-lg">Step 2: Compute (O &#8722; E)&sup2; / E for Each Cell</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                <div class="mono bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm">
+                  <strong>Cell (Smoker, Disease):</strong><br>(45 &#8722; 25)&sup2; / 25 = 400/25 = <strong class="text-amber-700">16.000</strong>
+                </div>
+                <div class="mono bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm">
+                  <strong>Cell (Smoker, No Disease):</strong><br>(30 &#8722; 50)&sup2; / 50 = 400/50 = <strong class="text-amber-700">8.000</strong>
+                </div>
+                <div class="mono bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm">
+                  <strong>Cell (Non-Smoker, Disease):</strong><br>(55 &#8722; 75)&sup2; / 75 = 400/75 = <strong class="text-amber-700">5.333</strong>
+                </div>
+                <div class="mono bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm">
+                  <strong>Cell (Non-Smoker, No Disease):</strong><br>(170 &#8722; 150)&sup2; / 150 = 400/150 = <strong class="text-amber-700">2.667</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Sum & Decision -->
+        <div id="chiStep3" class="chi-step bg-white rounded-xl border-2 border-gray-100 p-5">
+          <div class="flex items-start gap-3">
+            <div id="chiCheck3" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all duration-300">
+              <span class="text-gray-400 text-sm font-bold">3</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-bold text-gray-800 text-lg">Step 3: Sum & Make a Decision</h3>
+              <div class="mt-3 space-y-3">
+                <div class="mono bg-gray-50 border rounded-lg p-4 text-sm">
+                  <div>&#967;&sup2; = 16.000 + 8.000 + 5.333 + 2.667 = <strong class="text-xl text-teal-700">32.000</strong></div>
+                  <div class="mt-2">df = (2&#8722;1)(2&#8722;1) = <strong>1</strong></div>
+                  <div class="mt-1">Critical value (&#945; = 0.05, df = 1): &#967;&sup2;<sub>crit</sub> = 3.841</div>
+                  <div class="mt-1">Our &#967;&sup2; = <strong>32.000</strong> &gt;&gt; 3.841</div>
+                  <div class="mt-1">p-value &lt; <strong class="text-teal-700">0.0001</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dramatic Result Reveal -->
+        <div id="chiResult" class="chi-step">
+          <div class="bg-gradient-to-r from-teal-500 to-blue-600 rounded-2xl p-6 text-white text-center shadow-xl">
+            <div class="mb-3">
+              <svg class="w-16 h-16 mx-auto text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3 class="text-2xl md:text-3xl font-bold mb-2">Significant Association Found!</h3>
+            <p class="text-lg text-teal-100 mb-3">&#967;&sup2;(1) = 32.00, p &lt; 0.0001</p>
+            <p class="text-teal-100 max-w-xl mx-auto">
+              There is a <strong class="text-white">highly significant association</strong> between smoking status and periodontal disease. Smokers are substantially more likely to have periodontal disease than non-smokers (60% vs 24.4%).
+            </p>
+            <div class="mt-4 grid grid-cols-2 gap-4 max-w-md mx-auto">
+              <div class="bg-white/20 rounded-xl p-3 backdrop-blur-sm">
+                <div class="text-3xl font-bold text-yellow-300">60%</div>
+                <div class="text-sm text-teal-200">Smokers with disease</div>
+                <div class="text-xs text-teal-300">(45 / 75)</div>
+              </div>
+              <div class="bg-white/20 rounded-xl p-3 backdrop-blur-sm">
+                <div class="text-3xl font-bold text-yellow-300">24.4%</div>
+                <div class="text-sm text-teal-200">Non-smokers with disease</div>
+                <div class="text-xs text-teal-300">(55 / 225)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Dental use</h2>
       <p class="text-gray-700">
-        Use chi-square for associations like “smoker vs non-smoker” and “periodontitis yes/no,” or “device positive/negative”
+        Use chi-square for associations like "smoker vs non-smoker" and "periodontitis yes/no," or "device positive/negative"
         across groups. Always report the table, effect size (e.g., risk ratio/odds ratio), and CI if possible.
       </p>
     </section>
   </main>
+
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+        <div class="mt-3 flex justify-center space-x-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-teal-400 transition">Home</a>
+            <a href="/#concepts" class="hover:text-teal-400 transition">Concepts</a>
+            <a href="/about" class="hover:text-teal-400 transition">About Us</a>
+        </div>
+    </div>
+</footer>
 
   <script>
     lucide.createIcons();
@@ -123,7 +327,7 @@
       chart=new Chart(ctx,{
         type:'bar',
         data:{
-          labels:['Treat +','Treat −','Ctrl +','Ctrl −'],
+          labels:['Treat +','Treat -','Ctrl +','Ctrl -'],
           datasets:[
             {label:'Observed', data:obs, backgroundColor:'rgba(245,158,11,0.65)'},
             {label:'Expected', data:exp, backgroundColor:'rgba(59,130,246,0.35)'}
@@ -135,6 +339,65 @@
         }
       });
     }
+
+    // Chi-Square Scenario Animation
+    (function(){
+      let running = false;
+      const btn = document.getElementById('chiScenarioBtn');
+
+      btn.addEventListener('click', function(){
+        if(running) return;
+        running = true;
+        btn.disabled = true;
+        btn.classList.add('opacity-60');
+
+        // Reset
+        for(let i=1;i<=3;i++){
+          document.getElementById('chiStep'+i).classList.remove('visible');
+          var chk = document.getElementById('chiCheck'+i);
+          chk.innerHTML = '<span class="text-gray-400 text-sm font-bold">'+i+'</span>';
+          chk.className = 'w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all duration-300';
+        }
+        document.getElementById('chiResult').classList.remove('visible');
+
+        // Reset cell highlights
+        ['obs-a','obs-b','obs-c','obs-d'].forEach(function(id){ document.getElementById(id).classList.remove('active'); });
+
+        // Animate cell highlights
+        var cells = ['obs-a','obs-b','obs-c','obs-d'];
+        cells.forEach(function(id, idx){
+          setTimeout(function(){
+            document.getElementById(id).classList.add('active');
+          }, 300 + idx * 250);
+        });
+
+        function showChiStep(num, delay){
+          setTimeout(function(){
+            document.getElementById('chiStep'+num).classList.add('visible');
+          }, delay);
+          setTimeout(function(){
+            var chk = document.getElementById('chiCheck'+num);
+            chk.innerHTML = '<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>';
+            chk.className = 'w-8 h-8 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all duration-300';
+          }, delay + 1000);
+        }
+
+        showChiStep(1, 1500);
+        showChiStep(2, 3500);
+        showChiStep(3, 5500);
+
+        // Dramatic result reveal
+        setTimeout(function(){
+          document.getElementById('chiResult').classList.add('visible');
+        }, 7500);
+
+        setTimeout(function(){
+          running = false;
+          btn.disabled = false;
+          btn.classList.remove('opacity-60');
+        }, 8500);
+      });
+    })();
 
     document.addEventListener('DOMContentLoaded', ()=>{
       document.getElementById('cs-run').addEventListener('click', compute);

@@ -14,10 +14,37 @@
     body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
     .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
     .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-delay { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    .fade-in-delay-2 { animation: fadeInUp 0.6s ease-out 0.4s both; }
+    .step-card { opacity:0; transform:translateY(15px); transition: all 0.5s ease; }
+    .step-card.visible { opacity:1; transform:translateY(0); }
+    .number-line-marker { transition: all 0.6s ease; }
   </style>
 </head>
 
 <body class="bg-gray-50">
+  <nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg" style="z-index:100;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold">DentalStats</h1>
+                    <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+            </div>
+        </div>
+    </div>
+  </nav>
+
   <header class="gradient-bg text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
       <div class="flex items-center justify-between gap-4">
@@ -34,7 +61,7 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500 fade-in">
       <h2 class="text-xl font-bold text-gray-800 mb-2">What does a 95% CI mean?</h2>
       <p class="text-gray-700">
         A confidence interval is a range of plausible values for a population parameter.
@@ -45,7 +72,149 @@
       </p>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+    <!-- Real Dental Scenario Section -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-rose-500 fade-in-delay">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center">
+          <i data-lucide="clipboard-list" class="w-5 h-5 text-rose-600"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Real Dental Scenario</h2>
+          <p class="text-sm text-gray-500">Childhood Caries Prevalence Survey</p>
+        </div>
+      </div>
+
+      <div class="bg-rose-50 border border-rose-200 rounded-xl p-4 mb-5">
+        <p class="text-gray-700">
+          <strong>The study:</strong> A dental public health survey screened <strong>200 children</strong> in a rural community.
+          Of these, <strong>45 children</strong> had untreated dental caries. What is the estimated prevalence and how precise is it?
+        </p>
+      </div>
+
+      <!-- Animated Walkthrough -->
+      <div class="bg-white rounded-xl border p-5 mb-4">
+        <div class="flex items-center justify-between mb-5">
+          <h3 class="font-semibold text-gray-800">Step-by-Step CI Calculation</h3>
+          <button id="scenarioStart" class="px-5 py-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition flex items-center gap-2">
+            <i data-lucide="play" class="w-4 h-4"></i> Walk Through It
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Step 1 -->
+          <div class="step-card" id="step1">
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">1</div>
+                <div class="flex-1">
+                  <h4 class="font-semibold text-gray-800 mb-1">Compute the sample proportion (p-hat)</h4>
+                  <div class="bg-white rounded-lg p-3 font-mono text-sm border">
+                    <span class="text-gray-500">p&#x0302; = events / n</span><br>
+                    <span class="text-gray-500">p&#x0302; = </span><span class="text-blue-700 font-bold">45 / 200</span><br>
+                    <span class="text-gray-500">p&#x0302; = </span><span class="text-blue-700 font-bold text-lg" id="phatResult">0.225</span>
+                    <span class="text-gray-400 ml-2">(22.5%)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="step-card" id="step2">
+            <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm shrink-0">2</div>
+                <div class="flex-1">
+                  <h4 class="font-semibold text-gray-800 mb-1">Compute the Standard Error (SE)</h4>
+                  <div class="bg-white rounded-lg p-3 font-mono text-sm border">
+                    <span class="text-gray-500">SE = sqrt( p&#x0302; * (1 - p&#x0302;) / n )</span><br>
+                    <span class="text-gray-500">SE = sqrt( 0.225 * 0.775 / 200 )</span><br>
+                    <span class="text-gray-500">SE = sqrt( </span><span class="text-purple-600">0.000872</span><span class="text-gray-500"> )</span><br>
+                    <span class="text-gray-500">SE = </span><span class="text-purple-700 font-bold text-lg" id="seResult">0.0295</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="step-card" id="step3">
+            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shrink-0">3</div>
+                <div class="flex-1">
+                  <h4 class="font-semibold text-gray-800 mb-1">Compute the 95% Confidence Interval</h4>
+                  <div class="bg-white rounded-lg p-3 font-mono text-sm border">
+                    <span class="text-gray-500">CI = p&#x0302; &plusmn; z * SE</span><br>
+                    <span class="text-gray-500">CI = 0.225 &plusmn; 1.96 * 0.0295</span><br>
+                    <span class="text-gray-500">CI = 0.225 &plusmn; </span><span class="text-emerald-600">0.0578</span><br>
+                    <span class="text-gray-500">CI = ( </span><span class="text-emerald-700 font-bold text-lg" id="ciLowResult">0.167</span>
+                    <span class="text-gray-500"> , </span>
+                    <span class="text-emerald-700 font-bold text-lg" id="ciHighResult">0.283</span><span class="text-gray-500"> )</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Number Line -->
+        <div class="step-card mt-5" id="step4">
+          <div class="bg-gray-50 border rounded-xl p-5">
+            <h4 class="font-semibold text-gray-800 mb-3 text-center">Visual: Confidence Interval on a Number Line</h4>
+            <div class="relative mx-auto" style="max-width:560px;">
+              <!-- Scale labels -->
+              <div class="flex justify-between text-xs text-gray-400 mb-1 px-1">
+                <span>0%</span><span>10%</span><span>20%</span><span>30%</span><span>40%</span><span>50%</span>
+              </div>
+              <!-- Number line -->
+              <div class="relative h-10 bg-gray-200 rounded-full overflow-hidden">
+                <!-- CI band -->
+                <div id="scenarioCIBand" class="absolute h-full bg-emerald-300 rounded-full number-line-marker" style="left:33.4%;width:23.2%;opacity:0;"></div>
+                <!-- Point estimate marker -->
+                <div id="scenarioPointMark" class="absolute h-full number-line-marker" style="left:45%;width:3px;opacity:0;">
+                  <div class="w-full h-full bg-rose-600 rounded"></div>
+                </div>
+              </div>
+              <!-- Annotations below -->
+              <div class="relative" style="height:40px;">
+                <div id="ciLowLabel" class="absolute text-xs font-bold text-emerald-700 number-line-marker" style="left:33.4%;transform:translateX(-50%);opacity:0;top:4px;">
+                  16.7%
+                </div>
+                <div id="phatLabel" class="absolute text-xs font-bold text-rose-600 number-line-marker" style="left:45%;transform:translateX(-50%);opacity:0;top:4px;">
+                  22.5% (p&#x0302;)
+                </div>
+                <div id="ciHighLabel" class="absolute text-xs font-bold text-emerald-700 number-line-marker" style="left:56.6%;transform:translateX(-50%);opacity:0;top:4px;">
+                  28.3%
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interpretation -->
+        <div class="step-card mt-4" id="step5">
+          <div class="bg-amber-50 border border-amber-300 rounded-xl p-4">
+            <div class="flex items-start gap-3">
+              <i data-lucide="lightbulb" class="w-6 h-6 text-amber-500 shrink-0 mt-0.5"></i>
+              <div>
+                <h4 class="font-semibold text-gray-800 mb-1">Interpretation</h4>
+                <p class="text-gray-700">
+                  We are <strong>95% confident</strong> that the true prevalence of untreated dental caries in this population
+                  is between <strong class="text-emerald-700">16.7%</strong> and <strong class="text-emerald-700">28.3%</strong>.
+                </p>
+                <p class="text-sm text-gray-500 mt-2">
+                  This means: if we repeated this survey many times with fresh random samples of 200 children,
+                  about 95 out of 100 such intervals would capture the true population prevalence.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay-2">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: CI for a proportion</h2>
       <p class="text-gray-700 mb-4">Use events and total sample size. This uses a simple normal approximation for teaching.</p>
 
@@ -96,7 +265,7 @@
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg">
+    <section class="glass rounded-2xl p-6 shadow-lg fade-in-delay-2">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Dental use cases</h2>
       <ul class="list-disc pl-5 text-gray-700 space-y-1">
         <li>Prevalence of periodontal disease in a clinic population</li>
@@ -105,6 +274,17 @@
       </ul>
     </section>
   </main>
+
+  <footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+        <div class="mt-3 flex justify-center space-x-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-teal-400 transition">Home</a>
+            <a href="/#concepts" class="hover:text-teal-400 transition">Concepts</a>
+            <a href="/about" class="hover:text-teal-400 transition">About Us</a>
+        </div>
+    </div>
+  </footer>
 
   <script>
     lucide.createIcons();
@@ -189,6 +369,36 @@
       updateResult();
       document.getElementById('pfixLbl').textContent=document.getElementById('pfix').value+'%';
       renderCIvsN();
+
+      // Scenario walkthrough animation
+      document.getElementById('scenarioStart').addEventListener('click', function(){
+        const steps = ['step1','step2','step3','step4','step5'];
+        // Reset all
+        steps.forEach(id => document.getElementById(id).classList.remove('visible'));
+
+        // Show steps sequentially
+        steps.forEach((id, i) => {
+          setTimeout(() => {
+            document.getElementById(id).classList.add('visible');
+
+            // When step4 appears, animate the number line
+            if(id === 'step4'){
+              setTimeout(() => {
+                // CI band
+                const band = document.getElementById('scenarioCIBand');
+                band.style.opacity = '1';
+                // point estimate
+                setTimeout(() => {
+                  document.getElementById('scenarioPointMark').style.opacity = '1';
+                  document.getElementById('ciLowLabel').style.opacity = '1';
+                  document.getElementById('phatLabel').style.opacity = '1';
+                  document.getElementById('ciHighLabel').style.opacity = '1';
+                }, 400);
+              }, 200);
+            }
+          }, (i+1) * 800);
+        });
+      });
     });
   </script>
 </body>

@@ -13,26 +13,54 @@
     .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
     .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
     .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-delay { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    .scenario-step { opacity:0; transform:translateY(15px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .scenario-step.visible { opacity:1; transform:translateY(0); }
+    .paired-bar { transition: height 0.8s ease-out, background-color 0.3s; border-radius: 4px 4px 0 0; }
+    .diff-cell { transition: opacity 0.5s ease, transform 0.5s ease; opacity:0; transform:scale(0.8); }
+    .diff-cell.visible { opacity:1; transform:scale(1); }
   </style>
 </head>
 <body class="bg-gray-50">
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg" style="z-index:100;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold">DentalStats</h1>
+                    <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
   <header class="gradient-bg text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
       <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <i data-lucide="activity" class="w-7 h-7 text-amber-300"></i>
           <div>
-            <h1 class="text-3xl md:text-4xl font-bold">t-Tests</h1>
-            <p class="text-gray-200 mt-1">Compare means: independent vs paired designs</p>
+            <h1 class="text-3xl md:text-4xl font-bold fade-in">t-Tests</h1>
+            <p class="text-gray-200 mt-1 fade-in-delay">Compare means: independent vs paired designs</p>
           </div>
         </div>
-        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+        <a href="/#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
       </div>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500 fade-in">
       <h2 class="text-xl font-bold text-gray-800 mb-2">When to use</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="bg-white rounded-xl border p-4">
@@ -48,7 +76,7 @@
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: independent t-statistic (teaching demo)</h2>
       <p class="text-gray-700 mb-4">Enter group summaries and visualize the mean difference with uncertainty.</p>
 
@@ -74,7 +102,7 @@
           </button>
 
           <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm">
-            <div><strong>Mean difference (1−2):</strong> <span id="t-diff">-</span></div>
+            <div><strong>Mean difference (1-2):</strong> <span id="t-diff">-</span></div>
             <div><strong>SE:</strong> <span id="t-se">-</span></div>
             <div><strong>t:</strong> <span id="t-stat">-</span></div>
             <div class="text-xs text-gray-600 mt-2">This page focuses on intuition. Compute exact p-values in statistical software.</div>
@@ -84,12 +112,129 @@
         <div class="bg-white rounded-xl border p-4">
           <h3 class="font-semibold text-gray-800 mb-2">Visual summary</h3>
           <div class="h-80"><canvas id="tChart"></canvas></div>
-          <p class="text-xs text-gray-500 mt-2">Error bars approximate ±1 SE around the mean.</p>
+          <p class="text-xs text-gray-500 mt-2">Error bars approximate +/-1 SE around the mean.</p>
         </div>
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg">
+    <!-- Real Dental Scenario Section -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay border-l-4 border-teal-500">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+          <i data-lucide="zap" class="w-5 h-5 text-teal-700"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Real Dental Scenario: Electric Toothbrush Effectiveness</h2>
+          <p class="text-sm text-gray-500">Paired t-test with animated walkthrough</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl p-5 mb-5 border border-teal-200">
+        <h3 class="font-semibold text-gray-800 mb-2">Study Design</h3>
+        <p class="text-gray-700 text-sm">A dentist measures the <strong>plaque index</strong> of <strong>8 patients</strong> before and after 4 weeks of using an electric toothbrush. Since each patient serves as their own control, a <strong>paired t-test</strong> is appropriate.</p>
+      </div>
+
+      <div class="text-center mb-6">
+        <button id="run-paired-btn" onclick="runPairedAnimation()" class="px-8 py-3 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+          <i data-lucide="play" class="w-5 h-5 inline mr-2"></i>Run Paired Analysis
+        </button>
+      </div>
+
+      <!-- Step 1: Before/After data with animated bars -->
+      <div id="paired-step-1" class="scenario-step mb-4">
+        <div class="bg-white rounded-xl border-2 border-blue-200 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+            <h4 class="font-bold text-gray-800">Patient Data: Before vs After</h4>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b-2 border-gray-200">
+                  <th class="py-2 px-3 text-left text-gray-600">Patient</th>
+                  <th class="py-2 px-3 text-center text-gray-600">Before</th>
+                  <th class="py-2 px-3 text-center text-gray-600">After</th>
+                  <th class="py-2 px-3 text-center text-gray-600">Visual Comparison</th>
+                </tr>
+              </thead>
+              <tbody id="paired-table-body">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Paired Differences -->
+      <div id="paired-step-2" class="scenario-step mb-4">
+        <div class="bg-white rounded-xl border-2 border-amber-200 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+            <h4 class="font-bold text-gray-800">Paired Differences (d = Before - After)</h4>
+          </div>
+          <div class="flex flex-wrap gap-2 mb-3" id="diff-values-container"></div>
+          <div class="mono text-sm bg-amber-50 rounded-lg p-3">
+            Differences: <span id="diff-values-text"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Mean difference -->
+      <div id="paired-step-3" class="scenario-step mb-4">
+        <div class="bg-white rounded-xl border-2 border-green-200 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+            <h4 class="font-bold text-gray-800">Mean Difference & Standard Deviation</h4>
+          </div>
+          <div class="mono text-sm bg-green-50 rounded-lg p-3 space-y-1">
+            <div>d-bar = (0.7 + 0.7 + 0.6 + 0.8 + 0.7 + 0.8 + 0.7 + 0.7) / 8 = <strong class="text-green-700">0.7125</strong></div>
+            <div>SD_d = sqrt( sum(d_i - d-bar)^2 / (n-1) ) = <strong class="text-green-700">0.0641</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: SE and t-statistic -->
+      <div id="paired-step-4" class="scenario-step mb-4">
+        <div class="bg-white rounded-xl border-2 border-purple-200 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
+            <h4 class="font-bold text-gray-800">Standard Error & t-Statistic</h4>
+          </div>
+          <div class="mono text-sm bg-purple-50 rounded-lg p-3 space-y-1">
+            <div>SE = SD_d / sqrt(n) = 0.0641 / sqrt(8) = <strong class="text-purple-700">0.0227</strong></div>
+            <div>t = d-bar / SE = 0.7125 / 0.0227 = <strong class="text-purple-700">31.40</strong></div>
+            <div>df = n - 1 = <strong class="text-purple-700">7</strong></div>
+          </div>
+          <p class="text-sm text-gray-700 mt-3"><strong>Interpretation:</strong> With t = 31.40 and df = 7, this is <strong>highly statistically significant</strong> (p &lt; 0.001). The electric toothbrush produced a consistent and meaningful reduction in plaque index.</p>
+        </div>
+      </div>
+
+      <!-- Step 5: Before/After Chart -->
+      <div id="paired-step-5" class="scenario-step">
+        <div class="bg-white rounded-xl border-2 border-teal-200 p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 bg-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold">5</span>
+            <h4 class="font-bold text-gray-800">Visual Summary: Before vs After</h4>
+          </div>
+          <div class="h-72"><canvas id="pairedChart"></canvas></div>
+          <div class="mt-3 grid grid-cols-3 gap-3 text-center">
+            <div class="bg-teal-50 rounded-lg p-3 border border-teal-200">
+              <div class="text-2xl font-bold text-teal-700">0.713</div>
+              <div class="text-xs text-gray-600">Mean Reduction</div>
+            </div>
+            <div class="bg-teal-50 rounded-lg p-3 border border-teal-200">
+              <div class="text-2xl font-bold text-teal-700">31.40</div>
+              <div class="text-xs text-gray-600">t-statistic</div>
+            </div>
+            <div class="bg-teal-50 rounded-lg p-3 border border-teal-200">
+              <div class="text-2xl font-bold text-teal-700">p &lt; .001</div>
+              <div class="text-xs text-gray-600">Significant</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg fade-in">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
       <p class="text-gray-700">
         Comparing mean probing depth reduction between two treatments is an independent t-test case.
@@ -98,9 +243,21 @@
     </section>
   </main>
 
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+        <div class="mt-3 flex justify-center space-x-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-teal-400 transition">Home</a>
+            <a href="/#concepts" class="hover:text-teal-400 transition">Concepts</a>
+            <a href="/about" class="hover:text-teal-400 transition">About Us</a>
+        </div>
+    </div>
+</footer>
+
   <script>
     lucide.createIcons();
     let chart=null;
+    let pairedChart=null;
 
     function compute(){
       const m1=+document.getElementById('t1-mean').value;
@@ -120,8 +277,6 @@
       document.getElementById('t-se').textContent = se.toFixed(3);
       document.getElementById('t-stat').textContent = t.toFixed(3);
 
-      render(m1,se/Math.sqrt(1/n1),m2,se/Math.sqrt(1/n2),s1/Math.sqrt(n1),s2/Math.sqrt(n2));
-      // above line: just to keep visuals stable; we’ll use group SEs:
       renderBars(m1, s1/Math.sqrt(n1), m2, s2/Math.sqrt(n2));
     }
 
@@ -168,6 +323,126 @@
             ctx.restore();
           }
         }]
+      });
+    }
+
+    // Paired t-test scenario data
+    const beforeData = [2.8, 3.1, 2.5, 3.6, 2.9, 3.3, 2.7, 3.0];
+    const afterData  = [2.1, 2.4, 1.9, 2.8, 2.2, 2.5, 2.0, 2.3];
+    const diffs = beforeData.map((b,i) => +(b - afterData[i]).toFixed(1));
+
+    function buildPairedTable() {
+      const tbody = document.getElementById('paired-table-body');
+      tbody.innerHTML = '';
+      for(let i=0; i<8; i++) {
+        const maxVal = 4.0;
+        const bPct = (beforeData[i]/maxVal*100).toFixed(0);
+        const aPct = (afterData[i]/maxVal*100).toFixed(0);
+        const row = document.createElement('tr');
+        row.className = 'border-b border-gray-100';
+        row.innerHTML = `
+          <td class="py-2 px-3 font-medium text-gray-700">P${i+1}</td>
+          <td class="py-2 px-3 text-center font-mono text-red-600">${beforeData[i]}</td>
+          <td class="py-2 px-3 text-center font-mono text-green-600">${afterData[i]}</td>
+          <td class="py-2 px-3">
+            <div class="flex items-center gap-1">
+              <div class="flex-1">
+                <div class="h-4 bg-red-400 rounded paired-bar" id="before-bar-${i}" style="width:0%"></div>
+              </div>
+              <div class="flex-1">
+                <div class="h-4 bg-green-400 rounded paired-bar" id="after-bar-${i}" style="width:0%"></div>
+              </div>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(row);
+      }
+    }
+
+    function runPairedAnimation() {
+      const btn = document.getElementById('run-paired-btn');
+      btn.disabled = true;
+      btn.classList.add('opacity-50');
+      btn.textContent = 'Running analysis...';
+
+      // Reset all steps
+      for(let i=1; i<=5; i++) {
+        document.getElementById('paired-step-'+i).classList.remove('visible');
+      }
+
+      buildPairedTable();
+
+      // Step 1: Show data table with animated bars
+      setTimeout(() => {
+        document.getElementById('paired-step-1').classList.add('visible');
+        const maxVal = 4.0;
+        for(let i=0; i<8; i++) {
+          setTimeout(() => {
+            const bBar = document.getElementById('before-bar-'+i);
+            const aBar = document.getElementById('after-bar-'+i);
+            if(bBar) bBar.style.width = (beforeData[i]/maxVal*100)+'%';
+            if(aBar) aBar.style.width = (afterData[i]/maxVal*100)+'%';
+          }, i*120);
+        }
+      }, 300);
+
+      // Step 2: Paired differences
+      setTimeout(() => {
+        document.getElementById('paired-step-2').classList.add('visible');
+        const container = document.getElementById('diff-values-container');
+        container.innerHTML = '';
+        diffs.forEach((d,i) => {
+          const el = document.createElement('div');
+          el.className = 'diff-cell bg-amber-100 border border-amber-300 rounded-lg px-3 py-2 text-center';
+          el.innerHTML = `<div class="text-xs text-gray-500">P${i+1}</div><div class="font-bold text-amber-700">${d}</div>`;
+          container.appendChild(el);
+          setTimeout(() => el.classList.add('visible'), i*150);
+        });
+        document.getElementById('diff-values-text').textContent = diffs.join(', ');
+      }, 1800);
+
+      // Step 3: Mean difference
+      setTimeout(() => {
+        document.getElementById('paired-step-3').classList.add('visible');
+      }, 3300);
+
+      // Step 4: SE and t
+      setTimeout(() => {
+        document.getElementById('paired-step-4').classList.add('visible');
+      }, 4200);
+
+      // Step 5: Chart
+      setTimeout(() => {
+        document.getElementById('paired-step-5').classList.add('visible');
+        renderPairedChart();
+        btn.disabled = false;
+        btn.classList.remove('opacity-50');
+        btn.innerHTML = '<i data-lucide="rotate-ccw" class="w-5 h-5 inline mr-2"></i>Re-run Analysis';
+        lucide.createIcons();
+      }, 5100);
+    }
+
+    function renderPairedChart() {
+      const ctx = document.getElementById('pairedChart').getContext('2d');
+      if(pairedChart) pairedChart.destroy();
+      const labels = beforeData.map((_,i) => 'P'+(i+1));
+      pairedChart = new Chart(ctx, {
+        type:'bar',
+        data:{
+          labels: labels,
+          datasets:[
+            { label:'Before', data:beforeData, backgroundColor:'rgba(239,68,68,0.6)', borderColor:'rgba(239,68,68,1)', borderWidth:1 },
+            { label:'After', data:afterData, backgroundColor:'rgba(34,197,94,0.6)', borderColor:'rgba(34,197,94,1)', borderWidth:1 }
+          ]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{position:'top'} },
+          scales:{
+            y:{ min:0, max:4.5, title:{display:true,text:'Plaque Index'} },
+            x:{ title:{display:true,text:'Patient'} }
+          }
+        }
       });
     }
 

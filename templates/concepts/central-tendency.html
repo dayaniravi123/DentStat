@@ -12,9 +12,45 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-delay { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    .fade-in-delay-2 { animation: fadeInUp 0.6s ease-out 0.4s both; }
+    .scenario-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    .scenario-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .data-cell { transition: all 0.4s ease; }
+    .data-cell.highlight { background: #0f766e; color: white; transform: scale(1.15); }
+    .data-cell.median-highlight { background: #2563eb; color: white; transform: scale(1.15); }
+    .data-cell.mode-highlight { background: #7c3aed; color: white; transform: scale(1.15); }
+    .step-box { opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .step-box.visible { opacity: 1; transform: translateY(0); }
+    .running-sum { transition: all 0.3s ease; }
+  </style>
 </head>
 
 <body class="bg-gray-50">
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg" style="z-index:100;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold">DentalStats</h1>
+                    <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
   <header class="gradient-bg text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
       <div class="flex items-center justify-between gap-4">
@@ -27,7 +63,7 @@
             Mean, median, and mode — what they measure, when they differ, and how to report them for dental variables like DMFT.
           </p>
         </div>
-        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">
+        <a href="/#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">
           Back
         </a>
       </div>
@@ -35,25 +71,25 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-teal-500">
-      <h2 class="text-xl font-bold text-gray-800 mb-2">What is “central tendency”?</h2>
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-teal-500 fade-in">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">What is "central tendency"?</h2>
       <p class="text-gray-700">
-        Central tendency describes a single “typical” value for a dataset. In clinical datasets, the “best” center depends on
+        Central tendency describes a single "typical" value for a dataset. In clinical datasets, the "best" center depends on
         whether your distribution is symmetric, skewed, or has outliers.
       </p>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-        <div class="bg-white rounded-xl border p-4">
+        <div class="bg-white rounded-xl border p-4 scenario-card">
           <h3 class="font-semibold text-gray-800 mb-1">Mean (average)</h3>
           <p class="text-sm text-gray-600">Uses all values. Sensitive to outliers.</p>
-          <div class="mono bg-gray-50 rounded-lg border mt-2 p-2 text-sm">x̄ = (1/n) Σ xᵢ</div>
+          <div class="mono bg-gray-50 rounded-lg border mt-2 p-2 text-sm">x&#x0304; = (1/n) &Sigma; x&#x1d62;</div>
         </div>
-        <div class="bg-white rounded-xl border p-4">
+        <div class="bg-white rounded-xl border p-4 scenario-card">
           <h3 class="font-semibold text-gray-800 mb-1">Median (middle)</h3>
           <p class="text-sm text-gray-600">Robust to skew/outliers.</p>
           <div class="mono bg-gray-50 rounded-lg border mt-2 p-2 text-sm">middle of sorted data</div>
         </div>
-        <div class="bg-white rounded-xl border p-4">
+        <div class="bg-white rounded-xl border p-4 scenario-card">
           <h3 class="font-semibold text-gray-800 mb-1">Mode (most frequent)</h3>
           <p class="text-sm text-gray-600">Most common value. Works for categorical too.</p>
           <div class="mono bg-gray-50 rounded-lg border mt-2 p-2 text-sm">argmax frequency(x)</div>
@@ -61,15 +97,15 @@
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Why mean and median can differ</h2>
       <p class="text-gray-700 mb-4">
         When data are right-skewed (common for counts like DMFT), a few high values pull the mean upward, but the median stays closer
-        to the “typical” patient.
+        to the "typical" patient.
       </p>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div class="bg-white rounded-xl border p-4">
+        <div class="bg-white rounded-xl border p-4 scenario-card">
           <h3 class="font-semibold text-gray-800 mb-2">Symmetric example</h3>
           <svg viewBox="0 0 640 220" width="100%" height="220" class="bg-white rounded-lg">
             <rect x="0" y="0" width="640" height="220" fill="#ffffff"/>
@@ -83,7 +119,7 @@
           <p class="text-sm text-gray-600 mt-2">All three are close when the distribution is roughly symmetric.</p>
         </div>
 
-        <div class="bg-white rounded-xl border p-4">
+        <div class="bg-white rounded-xl border p-4 scenario-card">
           <h3 class="font-semibold text-gray-800 mb-2">Right-skewed (DMFT-like)</h3>
           <svg viewBox="0 0 640 220" width="100%" height="220" class="bg-white rounded-lg">
             <rect x="0" y="0" width="640" height="220" fill="#ffffff"/>
@@ -101,7 +137,142 @@
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+    <!-- REAL DENTAL SCENARIO -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-emerald-500 fade-in-delay-2">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+          <i data-lucide="stethoscope" class="w-5 h-5 text-emerald-700"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Real Dental Scenario</h2>
+          <p class="text-sm text-gray-500">DMFT Score Analysis — Step-by-step walkthrough</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-5 border border-emerald-200 mb-4">
+        <p class="text-gray-700"><strong>Scenario:</strong> A dental clinic screened <strong>12 patients</strong> and recorded their DMFT (Decayed, Missing, Filled Teeth) scores:</p>
+        <div class="flex flex-wrap gap-2 mt-3" id="ct-scenario-data">
+          <span class="data-cell inline-block px-3 py-1.5 bg-white border border-gray-300 rounded-lg font-mono text-sm font-semibold">0</span>
+          <span class="data-cell inline-block px-3 py-1.5 bg-white border border-gray-300 rounded-lg font-mono text-sm font-semibold">1</span>
+          <span class="data-cell inline-block px-3 py-1.5 bg-white border border-gray-300 rounded-lg font-mono text-sm font-semibold">2</span>
+          <span class="data-cell inline-block px-3 py-1.5 bg-white border border-gray-300 rounded-lg font-mono text-sm font-semibold">2</span>
+          <span class="data-cell inline-block px-3 py-1.5 bg-white border border-gray-300 rounded-lg font-mono text-sm font-semibold">3</span>
+          <span class="data-cell inline-block px-3 py-1.5 bg-white border border-gray-300 rounded-lg font-mono text-sm font-semibold">3</span>
+          <span class="data-cell inline-block px-3 py-1.5 bg-white border border-gray-300 rounded-lg font-mono text-sm font-semibold">4</span>
+          <span class="data-cell inline-block px-3 py-1.5 bg-white border border-gray-300 rounded-lg font-mono text-sm font-semibold">5</span>
+          <span class="data-cell inline-block px-3 py-1.5 bg-white border border-gray-300 rounded-lg font-mono text-sm font-semibold">6</span>
+          <span class="data-cell inline-block px-3 py-1.5 bg-white border border-gray-300 rounded-lg font-mono text-sm font-semibold">8</span>
+          <span class="data-cell inline-block px-3 py-1.5 bg-white border border-gray-300 rounded-lg font-mono text-sm font-semibold">12</span>
+          <span class="data-cell inline-block px-3 py-1.5 bg-white border border-gray-300 rounded-lg font-mono text-sm font-semibold">15</span>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Data is already sorted for this demonstration.</p>
+      </div>
+
+      <button id="ct-run-scenario" class="px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition shadow-md hover:shadow-lg flex items-center gap-2">
+        <i data-lucide="play" class="w-5 h-5"></i>
+        Run Scenario
+      </button>
+
+      <div id="ct-scenario-steps" class="mt-5 space-y-4">
+        <!-- Step 1: Mean -->
+        <div id="ct-step-mean" class="step-box bg-white rounded-xl border-2 border-emerald-200 p-5">
+          <h3 class="font-bold text-emerald-800 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm">1</span>
+            Calculating the Mean
+          </h3>
+          <div class="mt-3 bg-gray-50 rounded-lg p-4 font-mono text-sm">
+            <div id="ct-mean-animation" class="space-y-2">
+              <div class="text-gray-600">Sum = <span id="ct-running-sum" class="running-sum font-bold text-emerald-700 text-lg">0</span></div>
+              <div id="ct-sum-steps" class="text-gray-500 text-xs"></div>
+              <div id="ct-mean-result" class="text-gray-800 font-semibold mt-2 hidden">
+                Mean = <span class="text-emerald-700">61</span> / <span class="text-emerald-700">12</span> = <span class="text-2xl text-emerald-700 font-bold">5.08</span>
+              </div>
+            </div>
+          </div>
+          <p id="ct-mean-interpret" class="text-sm text-gray-600 mt-2 hidden">
+            <strong>Interpretation:</strong> On average, patients have about 5 decayed/missing/filled teeth. But is this representative?
+          </p>
+        </div>
+
+        <!-- Step 2: Median -->
+        <div id="ct-step-median" class="step-box bg-white rounded-xl border-2 border-blue-200 p-5">
+          <h3 class="font-bold text-blue-800 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm">2</span>
+            Finding the Median
+          </h3>
+          <div class="mt-3 bg-gray-50 rounded-lg p-4">
+            <p class="text-sm text-gray-600 mb-2">n = 12 (even), so median = average of 6th and 7th values:</p>
+            <div class="flex flex-wrap gap-2" id="ct-median-display">
+              <span class="px-3 py-1.5 bg-gray-200 rounded-lg font-mono text-sm">0</span>
+              <span class="px-3 py-1.5 bg-gray-200 rounded-lg font-mono text-sm">1</span>
+              <span class="px-3 py-1.5 bg-gray-200 rounded-lg font-mono text-sm">2</span>
+              <span class="px-3 py-1.5 bg-gray-200 rounded-lg font-mono text-sm">2</span>
+              <span class="px-3 py-1.5 bg-gray-200 rounded-lg font-mono text-sm">3</span>
+              <span id="ct-med-6" class="px-3 py-1.5 bg-gray-200 rounded-lg font-mono text-sm">3</span>
+              <span id="ct-med-7" class="px-3 py-1.5 bg-gray-200 rounded-lg font-mono text-sm">4</span>
+              <span class="px-3 py-1.5 bg-gray-200 rounded-lg font-mono text-sm">5</span>
+              <span class="px-3 py-1.5 bg-gray-200 rounded-lg font-mono text-sm">6</span>
+              <span class="px-3 py-1.5 bg-gray-200 rounded-lg font-mono text-sm">8</span>
+              <span class="px-3 py-1.5 bg-gray-200 rounded-lg font-mono text-sm">12</span>
+              <span class="px-3 py-1.5 bg-gray-200 rounded-lg font-mono text-sm">15</span>
+            </div>
+            <div id="ct-median-result" class="mt-3 font-mono text-gray-800 font-semibold hidden">
+              Median = (3 + 4) / 2 = <span class="text-2xl text-blue-700 font-bold">3.5</span>
+            </div>
+          </div>
+          <p id="ct-median-interpret" class="text-sm text-gray-600 mt-2 hidden">
+            <strong>Interpretation:</strong> The median (3.5) is lower than the mean (5.08) because the outliers (12, 15) pull the mean up. The median better represents the "typical" patient.
+          </p>
+        </div>
+
+        <!-- Step 3: Mode -->
+        <div id="ct-step-mode" class="step-box bg-white rounded-xl border-2 border-purple-200 p-5">
+          <h3 class="font-bold text-purple-800 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm">3</span>
+            Identifying the Mode
+          </h3>
+          <div class="mt-3 bg-gray-50 rounded-lg p-4">
+            <p class="text-sm text-gray-600 mb-2">Count frequency of each value:</p>
+            <div id="ct-mode-freq" class="grid grid-cols-4 md:grid-cols-6 gap-2 text-sm font-mono">
+            </div>
+            <div id="ct-mode-result" class="mt-3 font-mono text-gray-800 font-semibold hidden">
+              Mode = <span class="text-2xl text-purple-700 font-bold">2 and 3</span> <span class="text-sm text-gray-500">(bimodal, each appears twice)</span>
+            </div>
+          </div>
+          <p id="ct-mode-interpret" class="text-sm text-gray-600 mt-2 hidden">
+            <strong>Interpretation:</strong> The most common DMFT scores are 2 and 3, which aligns more closely with the median than the mean.
+          </p>
+        </div>
+
+        <!-- Step 4: Summary -->
+        <div id="ct-step-summary" class="step-box bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl p-5 text-white">
+          <h3 class="font-bold text-lg flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-6 h-6"></i>
+            Clinical Summary
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+            <div class="bg-white/20 rounded-lg p-3 text-center backdrop-blur">
+              <div class="text-sm text-emerald-100">Mean</div>
+              <div class="text-3xl font-bold">5.08</div>
+            </div>
+            <div class="bg-white/20 rounded-lg p-3 text-center backdrop-blur">
+              <div class="text-sm text-emerald-100">Median</div>
+              <div class="text-3xl font-bold">3.5</div>
+            </div>
+            <div class="bg-white/20 rounded-lg p-3 text-center backdrop-blur">
+              <div class="text-sm text-emerald-100">Mode</div>
+              <div class="text-3xl font-bold">2, 3</div>
+            </div>
+          </div>
+          <p class="mt-3 text-emerald-100 text-sm">
+            <strong class="text-white">Recommendation:</strong> Since DMFT data is right-skewed, report <strong>median (IQR)</strong> for this clinic.
+            The mean of 5.08 overstates the typical patient experience due to a few patients with high DMFT scores (12, 15).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: compute + visualize</h2>
       <p class="text-gray-700 mb-4">Paste comma-separated numbers and compute summary + histogram + boxplot.</p>
 
@@ -119,7 +290,7 @@
             </select>
           </div>
         </div>
-        <div class="bg-white rounded-xl border p-4">
+        <div class="bg-white rounded-xl border p-4 scenario-card">
           <h4 class="text-sm font-semibold text-gray-700">Summary</h4>
           <div id="ct-summary" class="mt-2 text-sm text-gray-700">Results will appear here.</div>
         </div>
@@ -128,12 +299,12 @@
       <div id="ct-result" class="mt-4 bg-white rounded-xl border p-4">Results will appear here.</div>
 
       <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div class="bg-white rounded-xl border p-4">
+        <div class="bg-white rounded-xl border p-4 scenario-card">
           <h3 class="font-semibold text-gray-800 mb-2">Histogram</h3>
           <div class="h-64"><canvas id="ctHistogram"></canvas></div>
           <p class="text-xs text-gray-500 mt-2">Median line (teal), mean dot (red), mode diamond (blue).</p>
         </div>
-        <div class="bg-white rounded-xl border p-4">
+        <div class="bg-white rounded-xl border p-4 scenario-card">
           <h3 class="font-semibold text-gray-800 mb-2">Boxplot (quick view)</h3>
           <div class="h-32"><canvas id="ctBox"></canvas></div>
           <p class="text-xs text-gray-500 mt-2">Shows Q1–Q3 box, median line, whiskers, plus mean/mode markers.</p>
@@ -141,17 +312,129 @@
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg">
+    <section class="glass rounded-2xl p-6 shadow-lg fade-in-delay-2">
       <h2 class="text-xl font-bold text-gray-800 mb-2">How to report (dental examples)</h2>
       <ul class="list-disc pl-5 text-gray-700 space-y-1">
         <li><strong>Skewed counts (DMFT, lesions):</strong> report <strong>median (IQR)</strong>; optionally show % zeros.</li>
-        <li><strong>Symmetric continuous (often age):</strong> report <strong>mean ± SD</strong>.</li>
+        <li><strong>Symmetric continuous (often age):</strong> report <strong>mean &plusmn; SD</strong>.</li>
         <li><strong>Categorical outcomes:</strong> report <strong>mode</strong> or proportions.</li>
       </ul>
     </section>
   </main>
 
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+        <div class="mt-3 flex justify-center space-x-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-teal-400 transition">Home</a>
+            <a href="/#concepts" class="hover:text-teal-400 transition">Concepts</a>
+            <a href="/about" class="hover:text-teal-400 transition">About Us</a>
+        </div>
+    </div>
+</footer>
+
   <script src="{% static 'js/script.js' %}"></script>
   <script src="{% static 'concepts/js/central-tendency.js' %}"></script>
+  <script>
+  (function(){
+    const data = [0,1,2,2,3,3,4,5,6,8,12,15];
+    const btn = document.getElementById('ct-run-scenario');
+    let running = false;
+
+    btn.addEventListener('click', async function(){
+      if(running) return;
+      running = true;
+      btn.disabled = true;
+      btn.classList.add('opacity-50');
+
+      // Reset
+      document.querySelectorAll('.step-box').forEach(el => el.classList.remove('visible'));
+      document.querySelectorAll('.data-cell').forEach(el => {
+        el.classList.remove('highlight','median-highlight','mode-highlight');
+      });
+      document.getElementById('ct-running-sum').textContent = '0';
+      document.getElementById('ct-sum-steps').innerHTML = '';
+      document.getElementById('ct-mean-result').classList.add('hidden');
+      document.getElementById('ct-mean-interpret').classList.add('hidden');
+      document.getElementById('ct-median-result').classList.add('hidden');
+      document.getElementById('ct-median-interpret').classList.add('hidden');
+      document.getElementById('ct-mode-result').classList.add('hidden');
+      document.getElementById('ct-mode-interpret').classList.add('hidden');
+      document.getElementById('ct-mode-freq').innerHTML = '';
+      document.getElementById('ct-med-6').className = 'px-3 py-1.5 bg-gray-200 rounded-lg font-mono text-sm';
+      document.getElementById('ct-med-7').className = 'px-3 py-1.5 bg-gray-200 rounded-lg font-mono text-sm';
+
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+      const cells = document.querySelectorAll('#ct-scenario-data .data-cell');
+
+      // Step 1: Mean animation
+      document.getElementById('ct-step-mean').classList.add('visible');
+      await wait(400);
+
+      let sum = 0;
+      const sumEl = document.getElementById('ct-running-sum');
+      const stepsEl = document.getElementById('ct-sum-steps');
+      for(let i = 0; i < data.length; i++){
+        cells[i].classList.add('highlight');
+        sum += data[i];
+        sumEl.textContent = sum;
+        stepsEl.innerHTML += (i > 0 ? ' + ' : '') + '<span class="text-emerald-700 font-semibold">' + data[i] + '</span>';
+        await wait(300);
+        cells[i].classList.remove('highlight');
+      }
+      stepsEl.innerHTML += ' = <strong>' + sum + '</strong>';
+      await wait(300);
+      document.getElementById('ct-mean-result').classList.remove('hidden');
+      await wait(500);
+      document.getElementById('ct-mean-interpret').classList.remove('hidden');
+      await wait(800);
+
+      // Step 2: Median
+      document.getElementById('ct-step-median').classList.add('visible');
+      await wait(600);
+      document.getElementById('ct-med-6').className = 'px-3 py-1.5 bg-blue-600 text-white rounded-lg font-mono text-sm font-bold ring-2 ring-blue-400 ring-offset-2 transition-all duration-300';
+      await wait(400);
+      document.getElementById('ct-med-7').className = 'px-3 py-1.5 bg-blue-600 text-white rounded-lg font-mono text-sm font-bold ring-2 ring-blue-400 ring-offset-2 transition-all duration-300';
+      await wait(500);
+      document.getElementById('ct-median-result').classList.remove('hidden');
+      await wait(500);
+      document.getElementById('ct-median-interpret').classList.remove('hidden');
+      await wait(800);
+
+      // Step 3: Mode
+      document.getElementById('ct-step-mode').classList.add('visible');
+      await wait(400);
+      const freq = {};
+      data.forEach(v => { freq[v] = (freq[v]||0) + 1; });
+      const freqEl = document.getElementById('ct-mode-freq');
+      const maxFreq = Math.max(...Object.values(freq));
+      for(const [val, count] of Object.entries(freq)){
+        const isMode = count === maxFreq;
+        const div = document.createElement('div');
+        div.className = 'p-2 rounded-lg text-center border ' + (isMode ? 'bg-purple-100 border-purple-400' : 'bg-white border-gray-200');
+        div.innerHTML = '<div class="font-bold">' + val + '</div><div class="text-xs text-gray-500">' + count + 'x</div>';
+        div.style.opacity = '0';
+        div.style.transform = 'scale(0.8)';
+        freqEl.appendChild(div);
+        await wait(150);
+        div.style.transition = 'all 0.3s ease';
+        div.style.opacity = '1';
+        div.style.transform = 'scale(1)';
+      }
+      await wait(400);
+      document.getElementById('ct-mode-result').classList.remove('hidden');
+      await wait(500);
+      document.getElementById('ct-mode-interpret').classList.remove('hidden');
+      await wait(800);
+
+      // Step 4: Summary
+      document.getElementById('ct-step-summary').classList.add('visible');
+
+      running = false;
+      btn.disabled = false;
+      btn.classList.remove('opacity-50');
+    });
+  })();
+  </script>
 </body>
 </html>

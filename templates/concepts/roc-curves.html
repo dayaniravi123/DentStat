@@ -12,9 +12,40 @@
     body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
     .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
     .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-delay { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    @keyframes popIn { from { transform:scale(0); opacity:0; } to { transform:scale(1); opacity:1; } }
+    .patient-icon { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; margin:3px; font-size:14px; transition: all 0.3s ease; }
+    .patient-icon.correct { background:#d1fae5; color:#065f46; border:2px solid #10b981; }
+    .patient-icon.missed { background:#fee2e2; color:#991b1b; border:2px solid #ef4444; }
+    .patient-icon.false-alarm { background:#fef3c7; color:#92400e; border:2px solid #f59e0b; }
+    .patient-icon.pending { background:#f3f4f6; color:#9ca3af; border:2px solid #d1d5db; }
+    .scenario-card { transition: all 0.5s ease; }
+    .scenario-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
   </style>
 </head>
 <body class="bg-gray-50">
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg" style="z-index:100;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold">DentalStats</h1>
+                    <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
   <header class="gradient-bg text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
       <div class="flex items-center justify-between gap-4">
@@ -22,28 +53,28 @@
           <i data-lucide="move" class="w-7 h-7 text-red-300"></i>
           <div>
             <h1 class="text-3xl md:text-4xl font-bold">ROC Curves</h1>
-            <p class="text-gray-200 mt-1">Sensitivity vs 1−Specificity across thresholds</p>
+            <p class="text-gray-200 mt-1">Sensitivity vs 1-Specificity across thresholds</p>
           </div>
         </div>
-        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+        <a href="/#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
       </div>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-red-500">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-red-500 fade-in">
       <h2 class="text-xl font-bold text-gray-800 mb-2">What ROC shows</h2>
       <ul class="list-disc pl-5 text-gray-700 space-y-1">
         <li>Each threshold produces a (FPR, TPR) point.</li>
-        <li>TPR = Sensitivity, FPR = 1 − Specificity.</li>
-        <li>AUC ≈ 0.5 is chance; AUC ≈ 1.0 is excellent separation.</li>
+        <li>TPR = Sensitivity, FPR = 1 - Specificity.</li>
+        <li>AUC ~ 0.5 is chance; AUC ~ 1.0 is excellent separation.</li>
       </ul>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: generate an ROC curve</h2>
       <p class="text-gray-700 mb-4">
-        We simulate scores for “disease” and “no disease” groups and sweep thresholds to plot ROC.
+        We simulate scores for "disease" and "no disease" groups and sweep thresholds to plot ROC.
       </p>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -71,7 +102,72 @@
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg">
+    <!-- Real Dental Scenario Section -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay border-l-4 border-teal-500">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="bg-teal-100 p-2 rounded-lg">
+          <i data-lucide="scan" class="w-6 h-6 text-teal-700"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Real Dental Scenario</h2>
+          <p class="text-sm text-gray-500">AI Caries Detection System Evaluation</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl p-5 mb-5">
+        <p class="text-gray-700 leading-relaxed">
+          A dental AI system scores each tooth surface from 0 (definitely healthy) to 10 (definitely carious). You need to choose a <strong>detection threshold</strong>: any score at or above this threshold is flagged as caries. The challenge? Lower thresholds catch more cavities but also trigger more false alarms.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Left: Controls and Patient Icons -->
+        <div class="bg-white rounded-xl border p-5 scenario-card">
+          <h3 class="font-semibold text-gray-800 mb-3">Diagnostic Challenge</h3>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Detection Threshold Score</label>
+          <input id="dx-threshold" type="range" min="0" max="10" step="0.5" value="5" class="w-full accent-teal-600" oninput="updateDiagnostic()">
+          <div class="flex justify-between text-xs text-gray-500 mt-1">
+            <span>0 (flag everything)</span>
+            <span id="dx-thr-lbl" class="font-bold text-teal-700 text-base">5.0</span>
+            <span>10 (flag nothing)</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <div class="bg-blue-50 rounded-lg p-3 text-center">
+              <p class="text-xs text-gray-500">Sensitivity</p>
+              <p id="dx-sens" class="text-2xl font-bold text-blue-700">-</p>
+            </div>
+            <div class="bg-purple-50 rounded-lg p-3 text-center">
+              <p class="text-xs text-gray-500">Specificity</p>
+              <p id="dx-spec" class="text-2xl font-bold text-purple-700">-</p>
+            </div>
+          </div>
+
+          <!-- Patient Grid -->
+          <div class="mt-4">
+            <p class="text-sm font-medium text-gray-700 mb-2">30 Tooth Surfaces (15 truly carious, 15 healthy)</p>
+            <div id="patient-grid" class="flex flex-wrap"></div>
+            <div class="flex flex-wrap gap-3 mt-3 text-xs">
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-green-400 border border-green-600 inline-block"></span> Correctly detected</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-red-400 border border-red-600 inline-block"></span> Missed (false negative)</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-yellow-400 border border-yellow-600 inline-block"></span> False alarm</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-gray-300 border border-gray-400 inline-block"></span> Correctly ruled out</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Mini ROC Curve -->
+        <div class="bg-white rounded-xl border p-5 scenario-card">
+          <h3 class="font-semibold text-gray-800 mb-3">Live ROC Curve</h3>
+          <div class="h-64"><canvas id="miniRocChart"></canvas></div>
+          <div id="dx-interpretation" class="mt-3 bg-teal-50 border border-teal-200 rounded-lg p-3 text-sm text-gray-700">
+            Move the threshold slider to explore the sensitivity-specificity trade-off.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
       <p class="text-gray-700">
         ROC curves help choose thresholds for caries detection scores (from radiographs/AI), balancing missed lesions vs false alarms.
@@ -79,17 +175,157 @@
     </section>
   </main>
 
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+        <div class="mt-3 flex justify-center space-x-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-teal-400 transition">Home</a>
+            <a href="/#concepts" class="hover:text-teal-400 transition">Concepts</a>
+            <a href="/about" class="hover:text-teal-400 transition">About Us</a>
+        </div>
+    </div>
+</footer>
+
   <script>
     lucide.createIcons();
     let chart=null;
+    let miniRocChart=null;
 
+    // --- Simulated patient data for dental scenario ---
+    // 15 truly carious surfaces and 15 healthy, each with an AI score
+    const dxPatients = [];
+    // Seed consistent data
+    function seededRand(seed){ return function(){ seed=(seed*16807)%2147483647; return(seed-1)/2147483646; }; }
+    const srand = seededRand(42);
+    // Carious surfaces: scores tend higher (mean ~7)
+    for(let i=0;i<15;i++){
+      const score = Math.min(10, Math.max(0, 7 + (srand()-0.5)*6));
+      dxPatients.push({id:i+1, trueCaries:true, score:Math.round(score*10)/10, label:'C'});
+    }
+    // Healthy surfaces: scores tend lower (mean ~3)
+    for(let i=0;i<15;i++){
+      const score = Math.min(10, Math.max(0, 3 + (srand()-0.5)*6));
+      dxPatients.push({id:i+16, trueCaries:false, score:Math.round(score*10)/10, label:'H'});
+    }
+
+    function updateDiagnostic(){
+      const threshold = parseFloat(document.getElementById('dx-threshold').value);
+      document.getElementById('dx-thr-lbl').textContent = threshold.toFixed(1);
+
+      let TP=0, FP=0, TN=0, FN=0;
+      dxPatients.forEach(p=>{
+        const flagged = p.score >= threshold;
+        if(p.trueCaries && flagged) TP++;
+        else if(p.trueCaries && !flagged) FN++;
+        else if(!p.trueCaries && flagged) FP++;
+        else TN++;
+      });
+
+      const sens = (TP+FN)>0 ? TP/(TP+FN) : 0;
+      const spec = (TN+FP)>0 ? TN/(TN+FP) : 0;
+
+      document.getElementById('dx-sens').textContent = (sens*100).toFixed(0) + '%';
+      document.getElementById('dx-spec').textContent = (spec*100).toFixed(0) + '%';
+
+      // Update patient grid
+      const grid = document.getElementById('patient-grid');
+      grid.innerHTML = '';
+      dxPatients.forEach(p=>{
+        const flagged = p.score >= threshold;
+        let cls = 'pending';
+        let icon = '';
+        if(p.trueCaries && flagged){ cls='correct'; icon='&#10003;'; }
+        else if(p.trueCaries && !flagged){ cls='missed'; icon='&#10007;'; }
+        else if(!p.trueCaries && flagged){ cls='false-alarm'; icon='!'; }
+        else { cls='pending'; icon='&#10003;'; }
+
+        const el = document.createElement('span');
+        el.className = 'patient-icon ' + cls;
+        el.innerHTML = `<span title="Score: ${p.score} | ${p.trueCaries?'Carious':'Healthy'}">${icon}</span>`;
+        el.title = `Score: ${p.score} | ${p.trueCaries?'Truly Carious':'Truly Healthy'}`;
+        grid.appendChild(el);
+      });
+
+      // Update mini ROC
+      updateMiniROC(threshold);
+
+      // Interpretation
+      let interp = '';
+      if(threshold <= 2) interp = '<strong>Very low threshold:</strong> Almost everything is flagged. High sensitivity but many false alarms. This leads to unnecessary treatments.';
+      else if(threshold <= 4) interp = '<strong>Low threshold:</strong> Catches most caries but still some false alarms. Good for screening when missing a cavity is costly.';
+      else if(threshold <= 6) interp = '<strong>Moderate threshold:</strong> Balanced trade-off between catching caries and avoiding false alarms.';
+      else if(threshold <= 8) interp = '<strong>High threshold:</strong> Few false alarms but some cavities are missed. Good when over-treatment is a concern.';
+      else interp = '<strong>Very high threshold:</strong> Almost nothing is flagged. Very few false alarms but many caries go undetected.';
+
+      interp += ` <br><span class="text-xs text-gray-500 mt-1 inline-block">TP=${TP} FP=${FP} FN=${FN} TN=${TN}</span>`;
+      document.getElementById('dx-interpretation').innerHTML = interp;
+    }
+
+    function updateMiniROC(currentThreshold){
+      const ctx = document.getElementById('miniRocChart').getContext('2d');
+      if(miniRocChart) miniRocChart.destroy();
+
+      // Compute full ROC curve from patient data
+      const thresholds = [];
+      for(let t=0; t<=10.5; t+=0.25) thresholds.push(t);
+      thresholds.sort((a,b)=>a-b);
+
+      const rocPoints = [];
+      thresholds.forEach(thr=>{
+        let TP=0, FP=0, FN=0, TN=0;
+        dxPatients.forEach(p=>{
+          const flagged = p.score >= thr;
+          if(p.trueCaries && flagged) TP++;
+          else if(p.trueCaries && !flagged) FN++;
+          else if(!p.trueCaries && flagged) FP++;
+          else TN++;
+        });
+        const sens = (TP+FN)>0 ? TP/(TP+FN) : 0;
+        const fpr = (TN+FP)>0 ? FP/(TN+FP) : 0;
+        rocPoints.push({x:fpr, y:sens});
+      });
+
+      // Current threshold point
+      let cTP=0, cFP=0, cFN=0, cTN=0;
+      dxPatients.forEach(p=>{
+        const flagged = p.score >= currentThreshold;
+        if(p.trueCaries && flagged) cTP++;
+        else if(p.trueCaries && !flagged) cFN++;
+        else if(!p.trueCaries && flagged) cFP++;
+        else cTN++;
+      });
+      const cSens = (cTP+cFN)>0 ? cTP/(cTP+cFN) : 0;
+      const cFpr = (cTN+cFP)>0 ? cFP/(cTN+cFP) : 0;
+
+      miniRocChart = new Chart(ctx,{
+        type:'scatter',
+        data:{
+          datasets:[
+            {label:'ROC Curve', data:rocPoints, borderColor:'#0d9488', backgroundColor:'rgba(13,148,136,0.15)', showLine:true, pointRadius:0, tension:0, borderWidth:2.5, fill:true},
+            {label:`Threshold = ${currentThreshold.toFixed(1)}`, data:[{x:cFpr, y:cSens}], backgroundColor:'#ef4444', borderColor:'#991b1b', pointRadius:8, pointStyle:'crossRot', borderWidth:3},
+            {label:'Chance', data:[{x:0,y:0},{x:1,y:1}], borderColor:'#94a3b8', borderDash:[6,6], showLine:true, pointRadius:0}
+          ]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          scales:{
+            x:{title:{display:true,text:'False Positive Rate (1-Specificity)'}, min:0, max:1},
+            y:{title:{display:true,text:'Sensitivity (TPR)'}, min:0, max:1.05}
+          },
+          plugins:{
+            legend:{display:true, labels:{boxWidth:12, font:{size:10}}}
+          }
+        }
+      });
+    }
+
+    // --- Original ROC simulation ---
     function randn(){
       let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
       return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
     }
 
     function aucTrap(x,y){
-      // x assumed increasing
       let a=0;
       for(let i=1;i<x.length;i++){
         a += (x[i]-x[i-1])*(y[i]+y[i-1])/2;
@@ -109,7 +345,6 @@
         pos.push(randn()*1.0 + sep);
       }
 
-      // thresholds
       const all=neg.concat(pos).sort((a,b)=>a-b);
       const tpr=[], fpr=[];
       for(let k=0;k<all.length;k+=Math.max(1,Math.floor(all.length/120))){
@@ -121,21 +356,19 @@
         fpr.push(FP/neg.length);
       }
 
-      // ensure ends
       tpr.unshift(1); fpr.unshift(1);
       tpr.push(0); fpr.push(0);
 
-      // sort by fpr increasing
       const pairs=fpr.map((x,i)=>({x,y:tpr[i]})).sort((a,b)=>a.x-b.x);
       const xs=pairs.map(p=>p.x), ys=pairs.map(p=>p.y);
 
       const auc=aucTrap(xs,ys);
       document.getElementById('roc-auc').textContent=auc.toFixed(3);
 
-      render(xs,ys);
+      renderMain(xs,ys);
     }
 
-    function render(xs,ys){
+    function renderMain(xs,ys){
       const ctx=document.getElementById('rocChart').getContext('2d');
       if(chart) chart.destroy();
 
@@ -150,7 +383,7 @@
         options:{
           responsive:true, maintainAspectRatio:false,
           scales:{
-            x:{title:{display:true,text:'False Positive Rate (1−Specificity)'}, min:0, max:1},
+            x:{title:{display:true,text:'False Positive Rate (1-Specificity)'}, min:0, max:1},
             y:{title:{display:true,text:'True Positive Rate (Sensitivity)'}, min:0, max:1}
           }
         }
@@ -162,6 +395,7 @@
       document.getElementById('roc-sep').addEventListener('input', simulate);
       document.getElementById('roc-n').addEventListener('input', simulate);
       simulate();
+      updateDiagnostic();
     });
   </script>
 </body>

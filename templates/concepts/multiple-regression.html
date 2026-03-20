@@ -13,9 +13,41 @@
     .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
     .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
     .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-delay { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    .toggle-btn { position:relative; width:56px; height:28px; border-radius:14px; cursor:pointer; transition:background 0.3s; }
+    .toggle-btn.off { background:#cbd5e1; }
+    .toggle-btn.on { background:#ef4444; }
+    .toggle-btn::after { content:''; position:absolute; top:2px; left:2px; width:24px; height:24px; border-radius:50%; background:#fff; transition:transform 0.3s; box-shadow:0 1px 3px rgba(0,0,0,0.2); }
+    .toggle-btn.on::after { transform:translateX(28px); }
+    .gauge-container { position:relative; width:220px; height:130px; margin:0 auto; }
+    .gauge-bg { fill:none; stroke:#e5e7eb; stroke-width:18; }
+    .gauge-fill { fill:none; stroke-width:18; stroke-linecap:round; transition:stroke-dashoffset 0.8s ease, stroke 0.5s ease; }
+    .contrib-bar { transition: width 0.6s ease-out; }
   </style>
 </head>
 <body class="bg-gray-50">
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg" style="z-index:100;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold">DentalStats</h1>
+                    <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
   <header class="gradient-bg text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
       <div class="flex items-center justify-between gap-4">
@@ -32,17 +64,17 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-red-500">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-red-500 fade-in">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Model</h2>
       <div class="mono bg-gray-50 border rounded-xl p-4 text-sm overflow-auto">
-        Y = β₀ + β₁X₁ + β₂X₂ + ... + ε
+        Y = &beta;&#8320; + &beta;&#8321;X&#8321; + &beta;&#8322;X&#8322; + ... + &epsilon;
       </div>
       <p class="text-gray-700 mt-3">
-        Each β coefficient is the expected change in Y per unit change in that predictor, holding the others constant.
+        Each &beta; coefficient is the expected change in Y per unit change in that predictor, holding the others constant.
       </p>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: confounding intuition</h2>
       <p class="text-gray-700 mb-4">
         Simulate an outcome (e.g., bone loss) driven by two predictors (age + smoking). Toggle smoking association and see how the simple
@@ -76,7 +108,100 @@
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg">
+    <!-- Real Dental Scenario -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay border-l-4 border-teal-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+        <i data-lucide="stethoscope" class="w-6 h-6 text-teal-600"></i>
+        Real Dental Scenario: Predicting Marginal Bone Loss
+      </h2>
+      <p class="text-gray-700 mb-4">
+        A periodontist wants to predict marginal bone loss (mm) around dental implants using patient factors.
+        The fitted regression model is:
+      </p>
+      <div class="mono bg-teal-50 border border-teal-200 rounded-xl p-4 text-sm mb-6 overflow-auto">
+        BoneLoss = 0.5 + 0.03 &times; Age + 1.2 &times; Smoking + 0.8 &times; Diabetes
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Controls -->
+        <div class="bg-white rounded-xl border p-5 space-y-5">
+          <h3 class="font-semibold text-gray-800">Patient Inputs</h3>
+
+          <!-- Age slider -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Age: <span id="mr-age-val" class="font-bold text-teal-700">55</span> years</label>
+            <input id="mr-age" type="range" min="30" max="80" step="1" value="55" class="w-full accent-teal-600">
+            <div class="flex justify-between text-xs text-gray-400"><span>30</span><span>80</span></div>
+          </div>
+
+          <!-- Smoking toggle -->
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-gray-700">Smoking</span>
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-500" id="mr-smoke-label">No</span>
+              <div id="mr-smoke-toggle" class="toggle-btn off" onclick="toggleSmoke()"></div>
+            </div>
+          </div>
+
+          <!-- Diabetes toggle -->
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-gray-700">Diabetes</span>
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-500" id="mr-diab-label">No</span>
+              <div id="mr-diab-toggle" class="toggle-btn off" onclick="toggleDiab()"></div>
+            </div>
+          </div>
+
+          <button onclick="predictBoneLoss()" class="w-full px-4 py-3 rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition font-semibold text-sm">
+            Predict Patient Bone Loss
+          </button>
+        </div>
+
+        <!-- Results: Gauge + contributions -->
+        <div class="bg-white rounded-xl border p-5">
+          <h3 class="font-semibold text-gray-800 mb-4 text-center">Predicted Marginal Bone Loss</h3>
+
+          <!-- Gauge meter -->
+          <div class="gauge-container">
+            <svg viewBox="0 0 220 130" width="220" height="130">
+              <path d="M 20 120 A 90 90 0 0 1 200 120" class="gauge-bg"/>
+              <path d="M 20 120 A 90 90 0 0 1 200 120" class="gauge-fill" id="mr-gauge-fill" stroke="#14b8a6"
+                    stroke-dasharray="283" stroke-dashoffset="283"/>
+              <text x="110" y="105" text-anchor="middle" class="text-3xl font-bold" fill="#0f172a" id="mr-gauge-text" font-size="28">0.0</text>
+              <text x="110" y="122" text-anchor="middle" fill="#64748b" font-size="12">mm</text>
+              <text x="20" y="130" text-anchor="middle" fill="#94a3b8" font-size="10">0</text>
+              <text x="200" y="130" text-anchor="middle" fill="#94a3b8" font-size="10">5</text>
+            </svg>
+          </div>
+
+          <!-- Factor contributions -->
+          <div class="mt-4 space-y-3" id="mr-contrib-area">
+            <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Factor Contributions</p>
+            <div>
+              <div class="flex justify-between text-xs text-gray-600 mb-1"><span>Baseline (&beta;&#8320;)</span><span id="mr-c-base">0.50 mm</span></div>
+              <div class="w-full bg-gray-100 rounded-full h-3"><div class="contrib-bar bg-gray-400 h-3 rounded-full" id="mr-bar-base" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs text-gray-600 mb-1"><span>Age effect</span><span id="mr-c-age">0.00 mm</span></div>
+              <div class="w-full bg-gray-100 rounded-full h-3"><div class="contrib-bar bg-blue-500 h-3 rounded-full" id="mr-bar-age" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs text-gray-600 mb-1"><span>Smoking effect</span><span id="mr-c-smoke">0.00 mm</span></div>
+              <div class="w-full bg-gray-100 rounded-full h-3"><div class="contrib-bar bg-red-500 h-3 rounded-full" id="mr-bar-smoke" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs text-gray-600 mb-1"><span>Diabetes effect</span><span id="mr-c-diab">0.00 mm</span></div>
+              <div class="w-full bg-gray-100 rounded-full h-3"><div class="contrib-bar bg-amber-500 h-3 rounded-full" id="mr-bar-diab" style="width:0%"></div></div>
+            </div>
+          </div>
+
+          <!-- Risk interpretation -->
+          <div class="mt-4 p-3 rounded-lg text-sm font-medium text-center" id="mr-risk-box" style="display:none;"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
       <p class="text-gray-700">
         Predict marginal bone loss (mm) from age, smoking, diabetes, and oral hygiene score.
@@ -85,10 +210,22 @@
     </section>
   </main>
 
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+        <div class="mt-3 flex justify-center space-x-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-teal-400 transition">Home</a>
+            <a href="/#concepts" class="hover:text-teal-400 transition">Concepts</a>
+            <a href="/about" class="hover:text-teal-400 transition">About Us</a>
+        </div>
+    </div>
+</footer>
+
   <script>
     lucide.createIcons();
     let chart=null;
 
+    /* ---- Original scatter plot simulation ---- */
     function randn(){
       let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
       return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
@@ -103,14 +240,10 @@
       const n=220;
       const points=[];
       for(let i=0;i<n;i++){
-        const age = 20 + Math.random()*60; // 20-80
-        // smoking probability depends on age (confounding)
+        const age = 20 + Math.random()*60;
         const pSmoke = 0.15 + conf*(age-20)/60 * 0.6;
         const smoke = Math.random() < Math.min(0.95, Math.max(0.05,pSmoke)) ? 1 : 0;
-
-        // true model: outcome depends on age + smoking
         const y = 0.02*(age-20) + 0.9*smoke + randn()*noise;
-
         points.push({x:age, y, smoke});
       }
       render(points);
@@ -119,10 +252,8 @@
     function render(points){
       const ctx=document.getElementById('mrChart').getContext('2d');
       if(chart) chart.destroy();
-
       const smokers=points.filter(p=>p.smoke===1).map(p=>({x:p.x,y:p.y}));
       const nons=points.filter(p=>p.smoke===0).map(p=>({x:p.x,y:p.y}));
-
       chart=new Chart(ctx,{
         type:'scatter',
         data:{
@@ -141,11 +272,105 @@
       });
     }
 
+    /* ---- Real Dental Scenario: Bone Loss Prediction ---- */
+    let mrSmoking = 0;
+    let mrDiabetes = 0;
+
+    function toggleSmoke(){
+      mrSmoking = mrSmoking ? 0 : 1;
+      const el = document.getElementById('mr-smoke-toggle');
+      el.className = 'toggle-btn ' + (mrSmoking ? 'on' : 'off');
+      document.getElementById('mr-smoke-label').textContent = mrSmoking ? 'Yes' : 'No';
+    }
+
+    function toggleDiab(){
+      mrDiabetes = mrDiabetes ? 0 : 1;
+      const el = document.getElementById('mr-diab-toggle');
+      el.className = 'toggle-btn ' + (mrDiabetes ? 'on' : 'off');
+      document.getElementById('mr-diab-label').textContent = mrDiabetes ? 'Yes' : 'No';
+    }
+
+    function predictBoneLoss(){
+      const age = parseInt(document.getElementById('mr-age').value);
+      document.getElementById('mr-age-val').textContent = age;
+
+      const baseline = 0.5;
+      const ageEffect = 0.03 * age;
+      const smokeEffect = 1.2 * mrSmoking;
+      const diabEffect = 0.8 * mrDiabetes;
+      const total = baseline + ageEffect + smokeEffect + diabEffect;
+      const maxVal = 5.0;
+
+      // Animate gauge
+      const gaugeArc = 283; // approximate arc length
+      const fraction = Math.min(total / maxVal, 1);
+      const offset = gaugeArc * (1 - fraction);
+      const gaugeFill = document.getElementById('mr-gauge-fill');
+
+      // Color based on severity
+      let color = '#14b8a6'; // teal (low)
+      if(total > 3.5) color = '#ef4444'; // red
+      else if(total > 2.5) color = '#f59e0b'; // amber
+      else if(total > 1.5) color = '#3b82f6'; // blue
+
+      gaugeFill.setAttribute('stroke', color);
+      gaugeFill.setAttribute('stroke-dashoffset', offset);
+
+      // Animate number
+      const textEl = document.getElementById('mr-gauge-text');
+      let current = parseFloat(textEl.textContent) || 0;
+      const steps = 30;
+      const increment = (total - current) / steps;
+      let step = 0;
+      const anim = setInterval(()=>{
+        step++;
+        current += increment;
+        textEl.textContent = current.toFixed(1);
+        if(step >= steps){ textEl.textContent = total.toFixed(1); clearInterval(anim); }
+      }, 20);
+
+      // Update contribution bars & labels
+      document.getElementById('mr-c-base').textContent = baseline.toFixed(2) + ' mm';
+      document.getElementById('mr-c-age').textContent = ageEffect.toFixed(2) + ' mm';
+      document.getElementById('mr-c-smoke').textContent = smokeEffect.toFixed(2) + ' mm';
+      document.getElementById('mr-c-diab').textContent = diabEffect.toFixed(2) + ' mm';
+
+      const barMax = maxVal;
+      setTimeout(()=>{
+        document.getElementById('mr-bar-base').style.width = (baseline/barMax*100) + '%';
+        document.getElementById('mr-bar-age').style.width = (ageEffect/barMax*100) + '%';
+        document.getElementById('mr-bar-smoke').style.width = (smokeEffect/barMax*100) + '%';
+        document.getElementById('mr-bar-diab').style.width = (diabEffect/barMax*100) + '%';
+      }, 50);
+
+      // Risk interpretation
+      const riskBox = document.getElementById('mr-risk-box');
+      riskBox.style.display = 'block';
+      if(total > 3.5){
+        riskBox.className = 'mt-4 p-3 rounded-lg text-sm font-medium text-center bg-red-100 text-red-800';
+        riskBox.textContent = 'High risk of significant bone loss. Consider intensive monitoring and risk factor modification.';
+      } else if(total > 2.5){
+        riskBox.className = 'mt-4 p-3 rounded-lg text-sm font-medium text-center bg-amber-100 text-amber-800';
+        riskBox.textContent = 'Moderate bone loss expected. Smoking cessation and glycemic control could reduce predicted loss.';
+      } else {
+        riskBox.className = 'mt-4 p-3 rounded-lg text-sm font-medium text-center bg-teal-100 text-teal-800';
+        riskBox.textContent = 'Low predicted bone loss. Continue routine monitoring.';
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', ()=>{
       document.getElementById('mr-run').addEventListener('click', simulate);
       document.getElementById('mr-conf').addEventListener('input', simulate);
       document.getElementById('mr-noise').addEventListener('input', simulate);
       simulate();
+
+      // Age slider live update
+      document.getElementById('mr-age').addEventListener('input', function(){
+        document.getElementById('mr-age-val').textContent = this.value;
+      });
+
+      // Auto-predict on load
+      predictBoneLoss();
     });
   </script>
 </body>

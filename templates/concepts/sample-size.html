@@ -13,9 +13,44 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   <link rel="stylesheet" href="{% static 'concepts/css/sample-size.css' %}">
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
+    .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-delay { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    .fade-in-delay-2 { animation: fadeInUp 0.6s ease-out 0.4s both; }
+    #scenario-chart-container { position: relative; width: 100%; height: 280px; }
+    #scenarioCanvas { width: 100%; height: 100%; }
+    .dot-n10 { background: #ef4444; }
+    .dot-n50 { background: #f59e0b; }
+    .dot-n200 { background: #10b981; }
+    .ci-band { transition: all 0.5s ease; }
+  </style>
 </head>
 
 <body class="bg-gray-50">
+  <nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg" style="z-index:100;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold">DentalStats</h1>
+                    <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+            </div>
+        </div>
+    </div>
+  </nav>
+
   <header class="gradient-bg text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
       <div class="flex items-center justify-between gap-4">
@@ -23,7 +58,7 @@
           <i data-lucide="users" class="w-7 h-7 text-teal-300"></i>
           <div>
             <h1 class="text-3xl md:text-4xl font-bold">Sample Size Basics</h1>
-            <p class="text-gray-200 mt-1">Why “n matters”: stability, precision, and CLT intuition</p>
+            <p class="text-gray-200 mt-1">Why "n matters": stability, precision, and CLT intuition</p>
           </div>
         </div>
         <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
@@ -32,19 +67,94 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-teal-500">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-teal-500 fade-in">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Why sample size is important</h2>
       <ul class="list-disc pl-5 text-gray-700 space-y-1">
         <li>Larger samples reduce random noise and make estimates more stable.</li>
         <li>Precision improves: confidence intervals become narrower.</li>
-        <li>With larger n, sampling distributions become more “normal” (CLT intuition).</li>
+        <li>With larger n, sampling distributions become more "normal" (CLT intuition).</li>
       </ul>
       <p class="text-sm text-gray-600 mt-3">
-        The “n ≥ 30” idea is a rule of thumb, not a law — skewed/heavy-tail data may need more.
+        The "n &ge; 30" idea is a rule of thumb, not a law — skewed/heavy-tail data may need more.
       </p>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+    <!-- Real Dental Scenario Section -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-emerald-500 fade-in-delay">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+          <i data-lucide="flask-conical" class="w-5 h-5 text-emerald-600"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Real Dental Scenario</h2>
+          <p class="text-sm text-gray-500">Mouthwash Gingivitis Study</p>
+        </div>
+      </div>
+
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-5">
+        <p class="text-gray-700">
+          <strong>The question:</strong> A researcher wants to study whether a new chlorhexidine mouthwash reduces gingivitis scores
+          (Gingival Index, scale 0&ndash;3) compared to a placebo. The true population mean reduction is <strong>0.4 points</strong>.
+          How does sample size affect the reliability of the estimate?
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-5">
+        <div class="bg-white rounded-xl border-2 border-red-200 p-4 text-center">
+          <div class="text-3xl font-bold text-red-500 mb-1">n = 10</div>
+          <p class="text-sm text-gray-600">Estimate jumps wildly between studies. One trial might show 0.1, another 0.8.</p>
+          <div class="mt-2 text-xs font-semibold text-red-400">UNSTABLE</div>
+        </div>
+        <div class="bg-white rounded-xl border-2 border-amber-200 p-4 text-center">
+          <div class="text-3xl font-bold text-amber-500 mb-1">n = 50</div>
+          <p class="text-sm text-gray-600">Estimate settles down. Most studies find values between 0.25 and 0.55.</p>
+          <div class="mt-2 text-xs font-semibold text-amber-400">STABILIZING</div>
+        </div>
+        <div class="bg-white rounded-xl border-2 border-emerald-200 p-4 text-center">
+          <div class="text-3xl font-bold text-emerald-500 mb-1">n = 200</div>
+          <p class="text-sm text-gray-600">Estimate is precise. Consistently near 0.4, with a tight confidence interval.</p>
+          <div class="mt-2 text-xs font-semibold text-emerald-400">PRECISE</div>
+        </div>
+      </div>
+
+      <!-- Animated Demo -->
+      <div class="bg-white rounded-xl border p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-gray-800">Animated Sampling Demo</h3>
+          <button id="scenarioRun" class="px-5 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center gap-2">
+            <i data-lucide="play" class="w-4 h-4"></i> Watch the Demo
+          </button>
+        </div>
+
+        <div id="scenario-chart-container">
+          <canvas id="scenarioCanvas"></canvas>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 mt-4" id="scenarioStats">
+          <div class="bg-red-50 rounded-lg p-3 text-center">
+            <div class="text-xs text-gray-500 mb-1">n=10 running mean</div>
+            <div class="text-lg font-bold text-red-600" id="mean10">--</div>
+            <div class="text-xs text-gray-400">CI: <span id="ci10">--</span></div>
+          </div>
+          <div class="bg-amber-50 rounded-lg p-3 text-center">
+            <div class="text-xs text-gray-500 mb-1">n=50 running mean</div>
+            <div class="text-lg font-bold text-amber-600" id="mean50">--</div>
+            <div class="text-xs text-gray-400">CI: <span id="ci50">--</span></div>
+          </div>
+          <div class="bg-emerald-50 rounded-lg p-3 text-center">
+            <div class="text-xs text-gray-500 mb-1">n=200 running mean</div>
+            <div class="text-lg font-bold text-emerald-600" id="mean200">--</div>
+            <div class="text-xs text-gray-400">CI: <span id="ci200">--</span></div>
+          </div>
+        </div>
+
+        <p class="text-xs text-gray-500 mt-3 text-center">
+          Each dot is a simulated study. The shaded bands show the 95% confidence interval. Notice how it narrows as n grows.
+        </p>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay-2">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Mini CLT demo (sample means)</h2>
       <p class="text-gray-700 mb-4">
         Pick a population shape and sample size <strong>n</strong>. We repeatedly sample and plot the distribution of sample means.
@@ -89,7 +199,7 @@
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg">
+    <section class="glass rounded-2xl p-6 shadow-lg fade-in-delay-2">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Dental context</h2>
       <p class="text-gray-700">
         For outcomes like DMFT or plaque scores, skewness is common. If you plan parametric tests,
@@ -98,7 +208,147 @@
     </section>
   </main>
 
+  <footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+        <div class="mt-3 flex justify-center space-x-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-teal-400 transition">Home</a>
+            <a href="/#concepts" class="hover:text-teal-400 transition">Concepts</a>
+            <a href="/about" class="hover:text-teal-400 transition">About Us</a>
+        </div>
+    </div>
+  </footer>
+
   <script src="{% static 'js/script.js' %}"></script>
   <script src="{% static 'concepts/js/sample-size.js' %}"></script>
+  <script>
+    // Scenario demo: animated sampling for mouthwash gingivitis study
+    (function(){
+      const trueMean = 0.4;
+      const trueSD = 0.6;
+      let scenarioChart = null;
+      let animationId = null;
+
+      function gaussRandom() {
+        let u=0, v=0;
+        while(u===0) u=Math.random();
+        while(v===0) v=Math.random();
+        return Math.sqrt(-2.0*Math.log(u))*Math.cos(2.0*Math.PI*v);
+      }
+
+      function sampleMean(n) {
+        let sum=0;
+        for(let i=0;i<n;i++) sum += trueMean + trueSD*gaussRandom();
+        return sum/n;
+      }
+
+      function ci95Width(sd, n) {
+        return 1.96 * sd / Math.sqrt(n);
+      }
+
+      document.getElementById('scenarioRun').addEventListener('click', function(){
+        if(animationId) { cancelAnimationFrame(animationId); animationId=null; }
+
+        const ctx = document.getElementById('scenarioCanvas').getContext('2d');
+        if(scenarioChart) scenarioChart.destroy();
+
+        const totalSteps = 30;
+        const data10=[], data50=[], data200=[];
+        const labels=[];
+        let step=0;
+
+        // Pre-generate all data
+        for(let i=0;i<totalSteps;i++){
+          data10.push(sampleMean(10));
+          data50.push(sampleMean(50));
+          data200.push(sampleMean(200));
+          labels.push(i+1);
+        }
+
+        // Running stats arrays
+        const shown10=[], shown50=[], shown200=[];
+        const ciUp10=[], ciDown10=[], ciUp50=[], ciDown50=[], ciUp200=[], ciDown200=[];
+
+        scenarioChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: [],
+            datasets: [
+              { label:'n=10 mean', data:[], borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.08)', pointRadius:4, pointBackgroundColor:'#ef4444', tension:0.2, borderWidth:2 },
+              { label:'n=10 CI upper', data:[], borderColor:'rgba(239,68,68,0.2)', backgroundColor:'rgba(239,68,68,0.08)', pointRadius:0, borderWidth:0, fill:'+1', borderDash:[2,2] },
+              { label:'n=10 CI lower', data:[], borderColor:'rgba(239,68,68,0.2)', pointRadius:0, borderWidth:0, borderDash:[2,2] },
+              { label:'n=50 mean', data:[], borderColor:'#f59e0b', backgroundColor:'rgba(245,158,11,0.08)', pointRadius:4, pointBackgroundColor:'#f59e0b', tension:0.2, borderWidth:2 },
+              { label:'n=50 CI upper', data:[], borderColor:'rgba(245,158,11,0.2)', backgroundColor:'rgba(245,158,11,0.08)', pointRadius:0, borderWidth:0, fill:'+1', borderDash:[2,2] },
+              { label:'n=50 CI lower', data:[], borderColor:'rgba(245,158,11,0.2)', pointRadius:0, borderWidth:0, borderDash:[2,2] },
+              { label:'n=200 mean', data:[], borderColor:'#10b981', backgroundColor:'rgba(16,185,129,0.08)', pointRadius:4, pointBackgroundColor:'#10b981', tension:0.2, borderWidth:2 },
+              { label:'n=200 CI upper', data:[], borderColor:'rgba(16,185,129,0.2)', backgroundColor:'rgba(16,185,129,0.08)', pointRadius:0, borderWidth:0, fill:'+1', borderDash:[2,2] },
+              { label:'n=200 CI lower', data:[], borderColor:'rgba(16,185,129,0.2)', pointRadius:0, borderWidth:0, borderDash:[2,2] },
+              { label:'True mean (0.4)', data:[], borderColor:'#6366f1', borderDash:[6,4], pointRadius:0, borderWidth:2 }
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            animation: { duration: 300 },
+            scales: {
+              x: { title:{display:true, text:'Study replication #'} },
+              y: { title:{display:true, text:'Mean gingivitis reduction'}, min:-0.3, max:1.1,
+                ticks:{ callback: v => v.toFixed(1) }
+              }
+            },
+            plugins: {
+              legend: { labels: { filter: item => ['n=10 mean','n=50 mean','n=200 mean','True mean (0.4)'].includes(item.text) } }
+            }
+          }
+        });
+
+        function addStep(){
+          if(step>=totalSteps) return;
+          const i = step;
+          scenarioChart.data.labels.push(labels[i]);
+
+          // running means
+          shown10.push(data10[i]); shown50.push(data50[i]); shown200.push(data200[i]);
+          const rm10 = shown10.reduce((a,b)=>a+b,0)/shown10.length;
+          const rm50 = shown50.reduce((a,b)=>a+b,0)/shown50.length;
+          const rm200 = shown200.reduce((a,b)=>a+b,0)/shown200.length;
+
+          // running SD
+          function rsd(arr,m){ if(arr.length<2) return trueSD/Math.sqrt(arr.length); const v=arr.reduce((s,x)=>s+(x-m)*(x-m),0)/(arr.length-1); return Math.sqrt(v); }
+          const sd10=rsd(shown10,rm10), sd50=rsd(shown50,rm50), sd200=rsd(shown200,rm200);
+          const hw10=ci95Width(trueSD,10), hw50=ci95Width(trueSD,50), hw200=ci95Width(trueSD,200);
+
+          scenarioChart.data.datasets[0].data.push(data10[i]);
+          scenarioChart.data.datasets[1].data.push(data10[i]+hw10);
+          scenarioChart.data.datasets[2].data.push(data10[i]-hw10);
+
+          scenarioChart.data.datasets[3].data.push(data50[i]);
+          scenarioChart.data.datasets[4].data.push(data50[i]+hw50);
+          scenarioChart.data.datasets[5].data.push(data50[i]-hw50);
+
+          scenarioChart.data.datasets[6].data.push(data200[i]);
+          scenarioChart.data.datasets[7].data.push(data200[i]+hw200);
+          scenarioChart.data.datasets[8].data.push(data200[i]-hw200);
+
+          scenarioChart.data.datasets[9].data.push(trueMean);
+
+          scenarioChart.update();
+
+          // Update stats
+          document.getElementById('mean10').textContent = rm10.toFixed(3);
+          document.getElementById('mean50').textContent = rm50.toFixed(3);
+          document.getElementById('mean200').textContent = rm200.toFixed(3);
+          document.getElementById('ci10').textContent = (rm10-hw10).toFixed(2)+' - '+(rm10+hw10).toFixed(2);
+          document.getElementById('ci50').textContent = (rm50-hw50).toFixed(2)+' - '+(rm50+hw50).toFixed(2);
+          document.getElementById('ci200').textContent = (rm200-hw200).toFixed(2)+' - '+(rm200+hw200).toFixed(2);
+
+          step++;
+          if(step<totalSteps) animationId = setTimeout(addStep, 250);
+        }
+
+        step=0;
+        addStep();
+      });
+    })();
+  </script>
 </body>
 </html>

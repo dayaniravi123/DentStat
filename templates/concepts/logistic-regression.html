@@ -13,14 +13,41 @@
     .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
     .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
     .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-delay { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    .prob-gauge-track { fill:none; stroke:#e5e7eb; stroke-width:14; }
+    .prob-gauge-fill { fill:none; stroke-width:14; stroke-linecap:round; transition:stroke-dashoffset 0.6s ease, stroke 0.4s ease; }
+    @keyframes pulse-dot { 0%,100%{r:6} 50%{r:9} }
+    .pulse-dot { animation: pulse-dot 1s ease-in-out infinite; }
   </style>
 </head>
 <body class="bg-gray-50">
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg" style="z-index:100;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold">DentalStats</h1>
+                    <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
   <header class="gradient-bg text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
       <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-          <i data-lucide="curve" class="w-7 h-7 text-red-300"></i>
+          <i data-lucide="trending-up" class="w-7 h-7 text-red-300"></i>
           <div>
             <h1 class="text-3xl md:text-4xl font-bold">Logistic Regression</h1>
             <p class="text-gray-200 mt-1">Binary outcomes (yes/no) and odds ratios</p>
@@ -32,33 +59,33 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-red-500">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-red-500 fade-in">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Model</h2>
       <div class="mono bg-gray-50 border rounded-xl p-4 text-sm overflow-auto">
-        logit(p) = ln(p/(1-p)) = β₀ + β₁x
-        p = 1 / (1 + e^{-(β₀ + β₁x)})
+        logit(p) = ln(p/(1-p)) = &beta;&#8320; + &beta;&#8321;x
+        p = 1 / (1 + e^{-(&beta;&#8320; + &beta;&#8321;x)})
       </div>
       <p class="text-gray-700 mt-3">
-        Exponentiating β gives an <strong>odds ratio</strong>. If β₁=0.7, OR=exp(0.7)=2.01 (odds roughly doubled per unit x).
+        Exponentiating &beta; gives an <strong>odds ratio</strong>. If &beta;&#8321;=0.7, OR=exp(0.7)=2.01 (odds roughly doubled per unit x).
       </p>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: shape of the logistic curve</h2>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="bg-white rounded-xl border p-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Intercept β₀</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Intercept &beta;&#8320;</label>
           <input id="lg-b0" type="range" min="-6" max="2" step="0.1" value="-3" class="w-full accent-red-600">
           <div class="flex justify-between text-xs text-gray-500 mt-1"><span>-6</span><span id="lg-b0-lbl" class="font-bold text-red-700">-3.0</span><span>2</span></div>
 
-          <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Slope β₁</label>
+          <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Slope &beta;&#8321;</label>
           <input id="lg-b1" type="range" min="0" max="2.5" step="0.05" value="0.8" class="w-full accent-red-600">
           <div class="flex justify-between text-xs text-gray-500 mt-1"><span>0</span><span id="lg-b1-lbl" class="font-bold text-red-700">0.80</span><span>2.5</span></div>
 
           <div class="mt-4 bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
             <div><strong>OR per +1 unit x:</strong> <span id="lg-or">-</span></div>
-            <div class="text-xs text-gray-600 mt-1">OR = exp(β₁)</div>
+            <div class="text-xs text-gray-600 mt-1">OR = exp(&beta;&#8321;)</div>
           </div>
         </div>
 
@@ -70,7 +97,67 @@
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg">
+    <!-- Real Dental Scenario -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay border-l-4 border-teal-500">
+      <h2 class="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+        <i data-lucide="heart-pulse" class="w-6 h-6 text-teal-600"></i>
+        Real Dental Scenario: Implant Failure Risk from Smoking
+      </h2>
+      <p class="text-gray-700 mb-2">
+        A study models implant failure probability based on the number of cigarettes smoked per day.
+        The fitted logistic model is:
+      </p>
+      <div class="mono bg-teal-50 border border-teal-200 rounded-xl p-4 text-sm mb-6 overflow-auto">
+        logit(p) = -3.5 + 0.15 &times; cigarettes/day &nbsp;&nbsp;&nbsp; OR per cigarette = exp(0.15) = 1.16
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Controls -->
+        <div class="bg-white rounded-xl border p-5 space-y-5">
+          <h3 class="font-semibold text-gray-800">Check Patient Risk</h3>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Cigarettes per day: <span id="lr-cig-val" class="font-bold text-teal-700">10</span>
+            </label>
+            <input id="lr-cig" type="range" min="0" max="40" step="1" value="10" class="w-full accent-teal-600">
+            <div class="flex justify-between text-xs text-gray-400"><span>0</span><span>20</span><span>40</span></div>
+          </div>
+
+          <!-- Probability gauge -->
+          <div class="text-center mt-4">
+            <svg viewBox="0 0 200 120" width="200" height="120" class="mx-auto">
+              <path d="M 15 110 A 85 85 0 0 1 185 110" class="prob-gauge-track"/>
+              <path d="M 15 110 A 85 85 0 0 1 185 110" class="prob-gauge-fill" id="lr-gauge-fill" stroke="#14b8a6"
+                    stroke-dasharray="267" stroke-dashoffset="267"/>
+              <text x="100" y="95" text-anchor="middle" fill="#0f172a" font-size="26" font-weight="bold" id="lr-gauge-text">0%</text>
+              <text x="100" y="112" text-anchor="middle" fill="#64748b" font-size="11">failure probability</text>
+              <text x="15" y="118" text-anchor="middle" fill="#94a3b8" font-size="9">0%</text>
+              <text x="185" y="118" text-anchor="middle" fill="#94a3b8" font-size="9">100%</text>
+            </svg>
+          </div>
+
+          <!-- Risk interpretation -->
+          <div class="p-3 rounded-lg text-sm font-medium text-center" id="lr-risk-box">
+            <span class="text-gray-400">Adjust slider and see risk update in real time</span>
+          </div>
+
+          <div class="bg-gray-50 rounded-lg p-3 text-xs text-gray-600">
+            <strong>Odds Ratio:</strong> Each additional cigarette/day multiplies the odds of failure by <strong>1.16</strong>.
+            A 20-cigarette/day smoker has exp(0.15&times;20)=20&times; the baseline odds.
+          </div>
+        </div>
+
+        <!-- S-curve chart with moving dot -->
+        <div class="bg-white rounded-xl border p-5">
+          <h3 class="font-semibold text-gray-800 mb-2">S-Curve: Failure Probability vs Cigarettes/Day</h3>
+          <div class="h-80"><canvas id="lrScenarioChart"></canvas></div>
+          <p class="text-xs text-gray-500 mt-2">The red dot shows the current patient's position on the curve.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
       <p class="text-gray-700">
         Outcome: implant failure (yes/no). Predictors: smoking, diabetes, bone quality, clinician experience.
@@ -79,12 +166,25 @@
     </section>
   </main>
 
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+        <div class="mt-3 flex justify-center space-x-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-teal-400 transition">Home</a>
+            <a href="/#concepts" class="hover:text-teal-400 transition">Concepts</a>
+            <a href="/about" class="hover:text-teal-400 transition">About Us</a>
+        </div>
+    </div>
+</footer>
+
   <script>
     lucide.createIcons();
     let chart=null;
+    let scenarioChart=null;
 
     function sigmoid(z){ return 1/(1+Math.exp(-z)); }
 
+    /* ---- Original interactive logistic curve ---- */
     function update(){
       const b0=parseFloat(document.getElementById('lg-b0').value);
       const b1=parseFloat(document.getElementById('lg-b1').value);
@@ -98,10 +198,10 @@
         xs.push(x);
         ys.push(sigmoid(b0 + b1*x));
       }
-      render(xs,ys);
+      renderOriginal(xs,ys);
     }
 
-    function render(xs,ys){
+    function renderOriginal(xs,ys){
       const ctx=document.getElementById('lgChart').getContext('2d');
       if(chart) chart.destroy();
       chart=new Chart(ctx,{
@@ -125,10 +225,106 @@
       });
     }
 
+    /* ---- Real Dental Scenario: Implant failure from smoking ---- */
+    function updateScenario(){
+      const cigs = parseInt(document.getElementById('lr-cig').value);
+      document.getElementById('lr-cig-val').textContent = cigs;
+
+      const b0 = -3.5, b1 = 0.15;
+      const prob = sigmoid(b0 + b1 * cigs);
+      const pct = (prob * 100);
+
+      // Update gauge
+      const arcLen = 267;
+      const offset = arcLen * (1 - prob);
+      const gf = document.getElementById('lr-gauge-fill');
+      let color = '#14b8a6';
+      if(pct > 60) color = '#ef4444';
+      else if(pct > 30) color = '#f59e0b';
+      else if(pct > 15) color = '#3b82f6';
+      gf.setAttribute('stroke', color);
+      gf.setAttribute('stroke-dashoffset', offset);
+      document.getElementById('lr-gauge-text').textContent = pct.toFixed(1) + '%';
+
+      // Risk text
+      const box = document.getElementById('lr-risk-box');
+      if(pct > 60){
+        box.className = 'p-3 rounded-lg text-sm font-medium text-center bg-red-100 text-red-800';
+        box.textContent = 'Very high failure risk. Implant placement strongly discouraged without smoking cessation.';
+      } else if(pct > 30){
+        box.className = 'p-3 rounded-lg text-sm font-medium text-center bg-amber-100 text-amber-800';
+        box.textContent = 'Elevated risk. Counsel patient on smoking reduction before implant surgery.';
+      } else if(pct > 15){
+        box.className = 'p-3 rounded-lg text-sm font-medium text-center bg-blue-100 text-blue-800';
+        box.textContent = 'Moderate risk. Document smoking status and consider closer follow-up.';
+      } else {
+        box.className = 'p-3 rounded-lg text-sm font-medium text-center bg-teal-100 text-teal-800';
+        box.textContent = 'Low failure risk. Standard implant protocol appropriate.';
+      }
+
+      // S-curve chart with moving dot
+      renderScenarioCurve(cigs, prob);
+    }
+
+    function renderScenarioCurve(currentCigs, currentProb){
+      const ctx = document.getElementById('lrScenarioChart').getContext('2d');
+      if(scenarioChart) scenarioChart.destroy();
+
+      const b0=-3.5, b1=0.15;
+      const curveX=[], curveY=[];
+      for(let c=0; c<=40; c+=0.5){
+        curveX.push(c);
+        curveY.push(sigmoid(b0 + b1*c) * 100);
+      }
+
+      scenarioChart = new Chart(ctx, {
+        type:'scatter',
+        data:{
+          datasets:[
+            {
+              label:'Failure probability curve',
+              data: curveX.map((x,i) => ({x, y:curveY[i]})),
+              showLine:true,
+              borderColor:'#6366f1',
+              backgroundColor:'rgba(99,102,241,0.08)',
+              fill:true,
+              pointRadius:0,
+              borderWidth:2.5,
+              tension:0.3
+            },
+            {
+              label:'Current patient',
+              data:[{x:currentCigs, y:currentProb*100}],
+              pointRadius:8,
+              pointBackgroundColor:'#ef4444',
+              pointBorderColor:'#fff',
+              pointBorderWidth:2,
+              pointHoverRadius:10
+            }
+          ]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          scales:{
+            x:{title:{display:true,text:'Cigarettes per day'}, min:0, max:40},
+            y:{title:{display:true,text:'Failure probability (%)'}, min:0, max:100}
+          },
+          plugins:{
+            legend:{display:true, position:'bottom'}
+          }
+        }
+      });
+    }
+
     document.addEventListener('DOMContentLoaded', ()=>{
+      // Original interactive
       document.getElementById('lg-b0').addEventListener('input', update);
       document.getElementById('lg-b1').addEventListener('input', update);
       update();
+
+      // Scenario slider - real-time update
+      document.getElementById('lr-cig').addEventListener('input', updateScenario);
+      updateScenario();
     });
   </script>
 </body>

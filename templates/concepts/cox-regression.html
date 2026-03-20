@@ -13,9 +13,37 @@
     .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
     .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
     .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-delay { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    @keyframes drawCurve { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
+    @keyframes pulseGlow { 0%,100%{box-shadow:0 0 5px rgba(239,68,68,0.3)} 50%{box-shadow:0 0 20px rgba(239,68,68,0.6)} }
+    .gauge-fill { transition: width 0.8s ease-out; }
+    .scenario-card { transition: all 0.5s ease; }
+    .scenario-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
   </style>
 </head>
 <body class="bg-gray-50">
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg" style="z-index:100;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold">DentalStats</h1>
+                    <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
   <header class="gradient-bg text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
       <div class="flex items-center justify-between gap-4">
@@ -26,17 +54,17 @@
             <p class="text-gray-200 mt-1">Hazard ratios and the proportional hazards idea</p>
           </div>
         </div>
-        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+        <a href="/#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
       </div>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-red-500">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-red-500 fade-in">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Model intuition</h2>
       <div class="mono bg-gray-50 border rounded-xl p-4 text-sm overflow-auto">
-        h(t | X) = h₀(t) * exp(βX)
-        HR = exp(β)
+        h(t | X) = h&#8320;(t) * exp(&#946;X)
+        HR = exp(&#946;)
       </div>
       <p class="text-gray-700 mt-3">
         The hazard ratio (HR) compares instantaneous risk of event between groups. HR=1.5 means 50% higher hazard at any time t
@@ -44,7 +72,7 @@
       </p>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: what does HR do to survival curves?</h2>
       <p class="text-gray-700 mb-4">
         We draw illustrative survival curves from a simple exponential baseline. This is a teaching visualization, not a Cox fit.
@@ -69,7 +97,105 @@
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg">
+    <!-- Real Dental Scenario Section -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay border-l-4 border-teal-500">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="bg-teal-100 p-2 rounded-lg">
+          <i data-lucide="stethoscope" class="w-6 h-6 text-teal-700"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Real Dental Scenario</h2>
+          <p class="text-sm text-gray-500">Implant Survival: Smokers vs Non-Smokers</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl p-5 mb-5">
+        <p class="text-gray-700 leading-relaxed">
+          A study followed 240 patients with dental implants over 10 years. Researchers found that smoking was a significant predictor of implant failure using Cox regression.
+        </p>
+        <div class="mt-4 bg-white rounded-lg p-4 border-l-4 border-teal-500">
+          <p class="font-semibold text-gray-800">Key Finding: <span class="text-red-600">HR = 2.1</span> for smoking</p>
+          <p class="text-gray-600 text-sm mt-1">This means smokers have <strong>2.1 times the hazard</strong> of implant failure at any given time compared to non-smokers, after adjusting for age, bone density, and implant type.</p>
+        </div>
+      </div>
+
+      <!-- See the Impact Button -->
+      <button id="impact-btn" onclick="showImpact()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-teal-600 text-white font-semibold hover:bg-teal-700 transition-all transform hover:scale-105 shadow-md mb-5">
+        <span class="flex items-center justify-center gap-2">
+          <i data-lucide="play" class="w-5 h-5"></i>
+          See the Impact
+        </span>
+      </button>
+
+      <!-- Animated Survival Curves -->
+      <div id="impact-panel" class="hidden">
+        <div class="bg-white rounded-xl border p-5 mb-5 scenario-card">
+          <h3 class="font-semibold text-gray-800 mb-3">Smokers vs Non-Smokers: 10-Year Implant Survival</h3>
+          <div class="h-72"><canvas id="impactChart"></canvas></div>
+          <div id="impact-annotation" class="mt-3 text-sm text-gray-600 opacity-0 transition-opacity duration-1000">
+            <div class="flex items-center gap-2 bg-red-50 rounded-lg p-3 border border-red-200">
+              <i data-lucide="alert-triangle" class="w-5 h-5 text-red-500 flex-shrink-0"></i>
+              <span>Notice how the gap between curves <strong>widens over time</strong>. By year 5, the survival difference is substantial. By year 10, non-smokers retain ~78% of implants while smokers retain only ~52%.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive HR Slider with 5-Year Gauge -->
+        <div class="bg-white rounded-xl border p-5 scenario-card">
+          <h3 class="font-semibold text-gray-800 mb-3">Explore: How does HR affect 5-year survival?</h3>
+          <p class="text-sm text-gray-600 mb-4">Adjust the hazard ratio to see how it impacts the 5-year implant survival probability.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Hazard Ratio</label>
+              <input id="scenario-hr" type="range" min="0.5" max="4.0" step="0.1" value="2.1" class="w-full accent-teal-600" oninput="updateScenarioGauge()">
+              <div class="flex justify-between text-xs text-gray-500 mt-1">
+                <span>0.5 (protective)</span>
+                <span id="scenario-hr-lbl" class="font-bold text-teal-700 text-base">2.1</span>
+                <span>4.0 (high risk)</span>
+              </div>
+              <div class="mt-4 text-sm text-gray-600">
+                <p id="scenario-interp" class="bg-gray-50 rounded-lg p-3">Smokers have <strong>2.1x</strong> the hazard of implant failure.</p>
+              </div>
+            </div>
+
+            <div>
+              <p class="text-sm font-medium text-gray-700 mb-3">5-Year Survival Probability</p>
+              <!-- Non-smoker gauge -->
+              <div class="mb-4">
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-blue-600 font-medium">Non-smoker (baseline)</span>
+                  <span id="gauge-baseline" class="font-bold text-blue-700">83%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-5 overflow-hidden">
+                  <div id="gauge-bar-baseline" class="h-full bg-blue-500 rounded-full gauge-fill flex items-center justify-end pr-2" style="width:83%">
+                  </div>
+                </div>
+              </div>
+              <!-- Smoker gauge -->
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-red-600 font-medium">Smoker (HR applied)</span>
+                  <span id="gauge-exposed" class="font-bold text-red-700">61%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-5 overflow-hidden">
+                  <div id="gauge-bar-exposed" class="h-full bg-red-500 rounded-full gauge-fill flex items-center justify-end pr-2" style="width:61%">
+                  </div>
+                </div>
+              </div>
+              <!-- Difference -->
+              <div class="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm">
+                <span class="font-semibold text-amber-800">Absolute difference: </span>
+                <span id="gauge-diff" class="font-bold text-amber-900">22%</span>
+                <span class="text-amber-700"> fewer implants surviving at 5 years</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
       <p class="text-gray-700">
         Cox regression can model time-to-implant failure with predictors like smoking, diabetes, bone density, and clinician experience,
@@ -78,9 +204,21 @@
     </section>
   </main>
 
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+        <div class="mt-3 flex justify-center space-x-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-teal-400 transition">Home</a>
+            <a href="/#concepts" class="hover:text-teal-400 transition">Concepts</a>
+            <a href="/about" class="hover:text-teal-400 transition">About Us</a>
+        </div>
+    </div>
+</footer>
+
   <script>
     lucide.createIcons();
     let chart=null;
+    let impactChart=null;
 
     function update(){
       const hr=parseFloat(document.getElementById('cx-hr').value);
@@ -119,6 +257,107 @@
           }
         }
       });
+    }
+
+    function showImpact(){
+      const panel = document.getElementById('impact-panel');
+      panel.classList.remove('hidden');
+      panel.scrollIntoView({behavior:'smooth', block:'start'});
+      document.getElementById('impact-btn').textContent = 'Impact Shown Below';
+      document.getElementById('impact-btn').classList.add('bg-gray-400');
+      document.getElementById('impact-btn').classList.remove('bg-teal-600','hover:bg-teal-700');
+
+      // Animate survival curves
+      animateImpactChart();
+      updateScenarioGauge();
+
+      // Show annotation after delay
+      setTimeout(()=>{
+        document.getElementById('impact-annotation').classList.remove('opacity-0');
+        document.getElementById('impact-annotation').classList.add('opacity-100');
+      }, 2500);
+
+      // Re-init icons for new elements
+      lucide.createIcons();
+    }
+
+    function animateImpactChart(){
+      const ctx = document.getElementById('impactChart').getContext('2d');
+      if(impactChart) impactChart.destroy();
+
+      const baseLam = 0.04; // baseline monthly hazard
+      const hr = 2.1;
+      const months = 120; // 10 years
+      const t=[], sNonSmoker=[], sSmoker=[];
+
+      for(let i=0;i<=months;i+=2){
+        t.push((i/12).toFixed(1));
+        sNonSmoker.push(Math.exp(-baseLam*i)*100);
+        sSmoker.push(Math.exp(-(baseLam*hr)*i)*100);
+      }
+
+      // Animate: start with empty data, then reveal
+      const emptyNS = sNonSmoker.map(()=>null);
+      const emptyS = sSmoker.map(()=>null);
+
+      impactChart = new Chart(ctx,{
+        type:'line',
+        data:{
+          labels:t,
+          datasets:[
+            {label:'Non-Smokers', data:[...emptyNS], borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.08)', fill:true, tension:0.3, pointRadius:0, borderWidth:3},
+            {label:'Smokers (HR=2.1)', data:[...emptyS], borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.08)', fill:true, tension:0.3, pointRadius:0, borderWidth:3, borderDash:[5,3]}
+          ]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          animation:{duration:0},
+          scales:{
+            x:{title:{display:true,text:'Years after implant placement'}, ticks:{maxTicksLimit:11}},
+            y:{title:{display:true,text:'Implant Survival %'}, min:0, max:100}
+          },
+          plugins:{
+            legend:{position:'top'}
+          }
+        }
+      });
+
+      // Progressive reveal
+      let step = 0;
+      const totalSteps = sNonSmoker.length;
+      const interval = setInterval(()=>{
+        if(step >= totalSteps){ clearInterval(interval); return; }
+        impactChart.data.datasets[0].data[step] = sNonSmoker[step];
+        impactChart.data.datasets[1].data[step] = sSmoker[step];
+        impactChart.update('none');
+        step++;
+      }, 30);
+    }
+
+    function updateScenarioGauge(){
+      const hr = parseFloat(document.getElementById('scenario-hr').value);
+      document.getElementById('scenario-hr-lbl').textContent = hr.toFixed(1);
+
+      const baseLam = 0.04;
+      const months60 = 60; // 5 years
+      const survBaseline = Math.exp(-baseLam * months60) * 100;
+      const survExposed = Math.exp(-(baseLam * hr) * months60) * 100;
+      const diff = Math.abs(survBaseline - survExposed);
+
+      document.getElementById('gauge-baseline').textContent = survBaseline.toFixed(0) + '%';
+      document.getElementById('gauge-exposed').textContent = survExposed.toFixed(0) + '%';
+      document.getElementById('gauge-diff').textContent = diff.toFixed(0) + '%';
+
+      document.getElementById('gauge-bar-baseline').style.width = survBaseline + '%';
+      document.getElementById('gauge-bar-exposed').style.width = survExposed + '%';
+
+      // Interpretation
+      let interp = '';
+      if(hr < 1) interp = `This factor is <strong>protective</strong> (HR=${hr.toFixed(1)}), reducing hazard by ${((1-hr)*100).toFixed(0)}%.`;
+      else if(hr === 1) interp = 'HR = 1.0: no difference in hazard between groups.';
+      else if(hr < 2) interp = `The exposed group has <strong>${hr.toFixed(1)}x</strong> the hazard — a ${((hr-1)*100).toFixed(0)}% increase in risk.`;
+      else interp = `The exposed group has <strong>${hr.toFixed(1)}x</strong> the hazard — implant failure risk is dramatically elevated.`;
+      document.getElementById('scenario-interp').innerHTML = interp;
     }
 
     document.addEventListener('DOMContentLoaded', ()=>{

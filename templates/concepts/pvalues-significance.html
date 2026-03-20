@@ -13,45 +13,79 @@
     .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
     .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
     .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace}
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-delay { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    .fade-in-delay-2 { animation: fadeInUp 0.6s ease-out 0.4s both; }
+    .scenario-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    .scenario-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .interp-item { opacity:0; transform:translateX(-20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .interp-item.visible { opacity:1; transform:translateX(0); }
+    @keyframes meterFill { from { width:0; } }
+    .meter-bar { animation: meterFill 1.5s ease-out both; }
+    @keyframes popIn { 0%{transform:scale(0)} 50%{transform:scale(1.3)} 100%{transform:scale(1)} }
+    .icon-pop { animation: popIn 0.4s ease both; }
+    .wh-step { opacity:0; transform:translateY(15px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .wh-step.visible { opacity:1; transform:translateY(0); }
   </style>
 </head>
 <body class="bg-gray-50">
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg" style="z-index:100;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold">DentalStats</h1>
+                    <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
   <header class="gradient-bg text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
       <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <i data-lucide="alert-circle" class="w-7 h-7 text-amber-300"></i>
           <div>
-            <h1 class="text-3xl md:text-4xl font-bold">p-values & Significance</h1>
-            <p class="text-gray-200 mt-1">What a p-value is — and what it is not</p>
+            <h1 class="text-3xl md:text-4xl font-bold fade-in">p-values & Significance</h1>
+            <p class="text-gray-200 mt-1 fade-in-delay">What a p-value is -- and what it is not</p>
           </div>
         </div>
-        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+        <a href="/#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
       </div>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-amber-500 fade-in">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Definition</h2>
       <p class="text-gray-700">
         A <strong>p-value</strong> is the probability of observing results at least as extreme as yours,
         <strong>assuming the null hypothesis is true</strong>.
       </p>
       <div class="mono bg-gray-50 border rounded-xl p-4 mt-4 text-sm">
-        p = P( data as/extremer | H₀ true )
+        p = P( data as/extremer | H&#8320; true )
       </div>
       <div class="mt-4 bg-white rounded-xl border p-4 text-sm text-gray-700">
         <p class="font-semibold mb-1">Common misunderstandings</p>
         <ul class="list-disc pl-5 space-y-1">
-          <li>Not: “probability H₀ is true”</li>
-          <li>Not: “clinical importance”</li>
-          <li>Not: “replication guarantee”</li>
+          <li>Not: "probability H&#8320; is true"</li>
+          <li>Not: "clinical importance"</li>
+          <li>Not: "replication guarantee"</li>
         </ul>
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive: p-value from a z-score</h2>
       <p class="text-gray-700 mb-4">
         Move the z-score and see the two-tailed p-value as shaded tail area.
@@ -65,7 +99,7 @@
 
           <div class="mt-4 bg-gray-50 rounded-xl border p-3 text-sm">
             <div><strong>Two-tailed p:</strong> <span id="pv-out">-</span></div>
-            <div class="text-xs text-gray-600 mt-1">Rule-of-thumb: z≈1.96 ↔ p≈0.05</div>
+            <div class="text-xs text-gray-600 mt-1">Rule-of-thumb: z&#8776;1.96 &#8596; p&#8776;0.05</div>
           </div>
 
           <div class="mt-4 bg-white rounded-xl border p-4 text-sm">
@@ -77,21 +111,260 @@
         </div>
 
         <div class="lg:col-span-2 bg-white rounded-xl border p-4">
-          <h3 class="font-semibold text-gray-800 mb-2">Standard normal (H₀)</h3>
+          <h3 class="font-semibold text-gray-800 mb-2">Standard normal (H&#8320;)</h3>
           <div class="h-80"><canvas id="pvChart"></canvas></div>
           <p class="text-xs text-gray-500 mt-2">Shaded tails correspond to the two-tailed p-value.</p>
         </div>
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg">
+    <!-- Real Dental Scenario: Whitening Gel -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-teal-500 fade-in-delay-2">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+          <i data-lucide="sparkles" class="w-5 h-5 text-teal-600"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Dental Scenario: Whitening Gel Effectiveness</h2>
+          <p class="text-sm text-gray-500">Testing if a new whitening gel significantly improves shade scores</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl p-5 mb-5 border border-teal-200">
+        <p class="text-gray-700 leading-relaxed">
+          <strong>The study:</strong> A dental researcher tests a new whitening gel on <strong>n = 36 patients</strong>. The known population mean shade improvement with the standard gel is <strong>&mu;&#8320; = 2.0 shades</strong>. The new gel produces a sample mean of <strong>x&#772; = 2.8 shades</strong> with <strong>s = 1.5</strong>. Does the new gel perform significantly better?
+        </p>
+      </div>
+
+      <div class="text-center mb-6">
+        <button id="whiteningBtn" class="px-8 py-3 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-lg">
+          <i data-lucide="play" class="w-5 h-5 inline mr-2"></i>Walk Through the Analysis
+        </button>
+      </div>
+
+      <!-- Step 1: Hypotheses -->
+      <div id="wh-step-1" class="wh-step mb-4">
+        <div class="bg-white rounded-xl border-2 border-blue-200 p-5 scenario-card">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+            <h4 class="font-bold text-gray-800">State the Hypotheses</h4>
+          </div>
+          <div class="mono text-sm bg-blue-50 rounded-lg p-4 space-y-2">
+            <div><strong>H&#8320;:</strong> &mu; = 2.0 (The new gel is no better than the standard)</div>
+            <div><strong>H&#8321;:</strong> &mu; > 2.0 (The new gel improves shade scores more)</div>
+            <div class="text-gray-500 mt-2">One-tailed test, &alpha; = 0.05</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Compute z-score -->
+      <div id="wh-step-2" class="wh-step mb-4">
+        <div class="bg-white rounded-xl border-2 border-amber-200 p-5 scenario-card">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+            <h4 class="font-bold text-gray-800">Compute the z-Score</h4>
+          </div>
+          <div class="mono text-sm bg-amber-50 rounded-lg p-4 space-y-1">
+            <div>SE = s / &radic;n = 1.5 / &radic;36 = 1.5 / 6 = <strong class="text-amber-700">0.25</strong></div>
+            <div class="mt-2">z = (x&#772; &minus; &mu;&#8320;) / SE = (2.8 &minus; 2.0) / 0.25 = 0.8 / 0.25 = <strong class="text-amber-700">3.20</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Normal curve with z-score -->
+      <div id="wh-step-3" class="wh-step mb-4">
+        <div class="bg-white rounded-xl border-2 border-purple-200 p-5 scenario-card">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+            <h4 class="font-bold text-gray-800">Locate z = 3.20 on the Normal Curve &amp; Shade the Tail</h4>
+          </div>
+          <div class="h-64"><canvas id="whiteningCurve"></canvas></div>
+          <p class="text-xs text-gray-500 mt-2">The shaded right tail represents the probability of observing z &ge; 3.20 under H&#8320;.</p>
+        </div>
+      </div>
+
+      <!-- Step 4: Interpret -->
+      <div id="wh-step-4" class="wh-step mb-4">
+        <div class="bg-white rounded-xl border-2 border-green-200 p-5 scenario-card">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-7 h-7 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
+            <h4 class="font-bold text-gray-800">Interpret: p-value vs &alpha;</h4>
+          </div>
+          <div class="mono text-sm bg-green-50 rounded-lg p-4 space-y-1">
+            <div>p-value = P(Z &ge; 3.20) = <strong class="text-green-700">0.0007</strong></div>
+            <div class="mt-2">Since <strong class="text-green-700">p = 0.0007 &lt; &alpha; = 0.05</strong>, we reject H&#8320;.</div>
+          </div>
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-center">
+            <div class="bg-teal-50 rounded-lg p-3 border border-teal-200">
+              <div class="text-2xl font-bold text-teal-700">z = 3.20</div>
+              <div class="text-xs text-gray-600">Test statistic</div>
+            </div>
+            <div class="bg-teal-50 rounded-lg p-3 border border-teal-200">
+              <div class="text-2xl font-bold text-teal-700">p = 0.0007</div>
+              <div class="text-xs text-gray-600">One-tailed p-value</div>
+            </div>
+            <div class="bg-teal-50 rounded-lg p-3 border border-teal-200">
+              <div class="text-2xl font-bold text-teal-700">Reject H&#8320;</div>
+              <div class="text-xs text-gray-600">Significant at &alpha; = 0.05</div>
+            </div>
+          </div>
+          <p class="text-sm text-gray-700 mt-4"><strong>Conclusion:</strong> There is strong statistical evidence that the new whitening gel produces greater shade improvement than the standard gel (z = 3.20, p = 0.0007). However, clinicians should also consider whether a 0.8-shade difference is clinically meaningful to patients.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Original Toothpaste Scenario (preserved) -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-teal-500 fade-in">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+          <i data-lucide="stethoscope" class="w-5 h-5 text-teal-600"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Real Dental Scenario</h2>
+          <p class="text-sm text-gray-500">Interpreting p = 0.03 in a Toothpaste Comparison</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl p-5 mb-5 border border-teal-200">
+        <p class="text-gray-700 leading-relaxed">
+          <strong>The study:</strong> Researchers compared <strong>Brand A</strong> vs <strong>Brand B</strong> toothpaste on plaque reduction in 200 patients over 6 months. The study found a statistically significant difference with <strong class="text-teal-700 text-lg">p = 0.03</strong>.
+        </p>
+      </div>
+
+      <!-- Significance Meter -->
+      <div class="bg-white rounded-xl border p-5 mb-5">
+        <h3 class="font-semibold text-gray-800 mb-3">Significance Meter</h3>
+        <div class="relative">
+          <div class="flex justify-between text-xs text-gray-500 mb-1">
+            <span>p = 1.0 (No evidence)</span>
+            <span>p = 0.05</span>
+            <span>p = 0.001</span>
+            <span>p ~ 0 (Strong)</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-8 overflow-hidden relative">
+            <div class="absolute inset-0 flex">
+              <div class="flex-1 bg-gradient-to-r from-gray-300 to-yellow-300"></div>
+              <div class="flex-1 bg-gradient-to-r from-yellow-300 to-orange-400"></div>
+              <div class="flex-1 bg-gradient-to-r from-orange-400 to-red-500"></div>
+              <div class="flex-1 bg-gradient-to-r from-red-500 to-red-700"></div>
+            </div>
+            <!-- Marker for p=0.03 -->
+            <div id="pMeterMarker" class="absolute top-0 h-full w-1 bg-black transition-all duration-1000" style="left:0%;">
+              <div class="absolute -top-7 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap font-bold">p = 0.03</div>
+              <div class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs font-bold text-black">&#9650;</div>
+            </div>
+          </div>
+          <div class="flex mt-2">
+            <div class="flex-1 text-center"><span class="text-xs px-2 py-0.5 bg-gray-100 rounded">Not significant</span></div>
+            <div class="flex-1 text-center"><span class="text-xs px-2 py-0.5 bg-yellow-100 rounded">Borderline</span></div>
+            <div class="flex-1 text-center"><span class="text-xs px-2 py-0.5 bg-orange-100 rounded">Significant</span></div>
+            <div class="flex-1 text-center"><span class="text-xs px-2 py-0.5 bg-red-100 rounded">Highly significant</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mb-6">
+        <button id="interpretBtn" class="px-8 py-3 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-lg">
+          <i data-lucide="search" class="w-5 h-5 inline mr-2"></i>Interpret the Result
+        </button>
+      </div>
+
+      <div id="interpretSteps" class="space-y-3">
+        <!-- Correct interpretations -->
+        <div class="interp-item" data-type="correct">
+          <div class="flex items-start gap-3 bg-green-50 border border-green-200 rounded-xl p-4">
+            <div class="w-7 h-7 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg class="w-4 h-4 text-white icon-pop" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <div>
+              <p class="font-semibold text-green-800">Correct: Evidence against H&#8320;</p>
+              <p class="text-sm text-green-700">If H&#8320; were true (no difference), there is only a 3% chance of seeing a difference this large or larger. This is moderate evidence against H&#8320;.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="interp-item" data-type="correct">
+          <div class="flex items-start gap-3 bg-green-50 border border-green-200 rounded-xl p-4">
+            <div class="w-7 h-7 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg class="w-4 h-4 text-white icon-pop" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <div>
+              <p class="font-semibold text-green-800">Correct: Statistically significant at &#945; = 0.05</p>
+              <p class="text-sm text-green-700">Since p = 0.03 &lt; 0.05, we reject H&#8320; at the conventional 5% significance level.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Misconceptions -->
+        <div class="interp-item" data-type="wrong">
+          <div class="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4">
+            <div class="w-7 h-7 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg class="w-4 h-4 text-white icon-pop" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+            </div>
+            <div>
+              <p class="font-semibold text-red-800">Wrong: "There is a 97% probability Brand A is better"</p>
+              <p class="text-sm text-red-700">p-values do NOT give the probability that one treatment is better. They assume H&#8320; is true and measure data extremeness.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="interp-item" data-type="wrong">
+          <div class="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4">
+            <div class="w-7 h-7 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg class="w-4 h-4 text-white icon-pop" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+            </div>
+            <div>
+              <p class="font-semibold text-red-800">Wrong: "The difference is clinically meaningful"</p>
+              <p class="text-sm text-red-700">Statistical significance does NOT equal clinical significance. A tiny plaque reduction may be statistically significant with a large sample but clinically trivial.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="interp-item" data-type="wrong">
+          <div class="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4">
+            <div class="w-7 h-7 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg class="w-4 h-4 text-white icon-pop" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+            </div>
+            <div>
+              <p class="font-semibold text-red-800">Wrong: "If we repeat the study, 97% of the time we'll get the same result"</p>
+              <p class="text-sm text-red-700">The p-value is NOT a replication probability. Replication depends on effect size, sample size, and other factors.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="interp-item" data-type="wrong">
+          <div class="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4">
+            <div class="w-7 h-7 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg class="w-4 h-4 text-white icon-pop" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+            </div>
+            <div>
+              <p class="font-semibold text-red-800">Wrong: "There is only a 3% chance H&#8320; is true"</p>
+              <p class="text-sm text-red-700">The p-value is NOT the probability that H&#8320; is true. It is the probability of the data (or more extreme) given H&#8320;. These are fundamentally different.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg fade-in-delay-2">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example</h2>
       <p class="text-gray-700">
-        Suppose a new sealant reduces mean caries score by 0.2 units with p=0.01. The evidence against H₀ is strong,
+        Suppose a new sealant reduces mean caries score by 0.2 units with p=0.01. The evidence against H&#8320; is strong,
         but you still need to judge whether a 0.2-unit reduction is clinically meaningful, and whether it generalizes.
       </p>
     </section>
   </main>
+
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+        <div class="mt-3 flex justify-center space-x-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-teal-400 transition">Home</a>
+            <a href="/#concepts" class="hover:text-teal-400 transition">Concepts</a>
+            <a href="/about" class="hover:text-teal-400 transition">About Us</a>
+        </div>
+    </div>
+</footer>
 
   <script>
     lucide.createIcons();
@@ -117,7 +390,6 @@
       const ctx=document.getElementById('pvChart').getContext('2d');
       if(chart) chart.destroy();
 
-      // tail area masks
       const leftMask=xs.map((x,i)=> x<=-z ? ys[i] : null);
       const rightMask=xs.map((x,i)=> x>= z ? ys[i] : null);
 
@@ -149,6 +421,130 @@
       document.getElementById('pv-out').textContent = p.toFixed(4);
       render(z);
     }
+
+    // Significance Meter & Interpretation Animation
+    (function(){
+      let running = false;
+      const btn = document.getElementById('interpretBtn');
+      const marker = document.getElementById('pMeterMarker');
+      const items = document.querySelectorAll('.interp-item');
+
+      // Animate meter on page load after short delay
+      setTimeout(function(){
+        marker.style.left = '62%';
+      }, 500);
+
+      btn.addEventListener('click', function(){
+        if(running) return;
+        running = true;
+        btn.disabled = true;
+        btn.classList.add('opacity-60');
+
+        // Reset items
+        items.forEach(function(item){ item.classList.remove('visible'); });
+
+        // Animate meter
+        marker.style.left = '0%';
+        setTimeout(function(){ marker.style.left = '62%'; }, 200);
+
+        // Show items one by one
+        items.forEach(function(item, idx){
+          setTimeout(function(){
+            item.classList.add('visible');
+          }, 800 + idx * 700);
+        });
+
+        setTimeout(function(){
+          running = false;
+          btn.disabled = false;
+          btn.classList.remove('opacity-60');
+        }, 800 + items.length * 700 + 500);
+      });
+    })();
+
+    // Whitening Gel Scenario Animation
+    (function(){
+      let whRunning = false;
+      const whBtn = document.getElementById('whiteningBtn');
+      let whiteningChart = null;
+
+      function renderWhiteningCurve(){
+        const canvas = document.getElementById('whiteningCurve');
+        if(!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if(whiteningChart) whiteningChart.destroy();
+
+        const xs = [];
+        for(let i=0;i<=400;i++) xs.push(-4 + i*(8/400));
+        const ys = xs.map(normPdf);
+        const rightTail = xs.map((x,i) => x >= 3.20 ? ys[i] : null);
+
+        whiteningChart = new Chart(ctx, {
+          type:'line',
+          data:{
+            labels: xs,
+            datasets:[
+              {label:'N(0,1)', data:ys, borderColor:'#111827', borderWidth:2, pointRadius:0, tension:0.2, fill:false},
+              {label:'p-value area', data:rightTail, borderColor:'rgba(13,148,136,0.0)', backgroundColor:'rgba(13,148,136,0.35)', fill:true, pointRadius:0}
+            ]
+          },
+          options:{
+            responsive:true, maintainAspectRatio:false,
+            plugins:{
+              legend:{display:false},
+              annotation: {}
+            },
+            scales:{
+              x:{
+                title:{display:true, text:'z-score'},
+                ticks:{
+                  callback:function(val,idx){
+                    const v = this.getLabelForValue(val);
+                    const n = parseFloat(v);
+                    if(Number.isInteger(n) && n>=-4 && n<=4) return n;
+                    if(Math.abs(n-3.20)<0.02) return '3.20';
+                    return null;
+                  },
+                  maxTicksLimit:10
+                }
+              },
+              y:{display:false}
+            }
+          }
+        });
+      }
+
+      whBtn.addEventListener('click', function(){
+        if(whRunning) return;
+        whRunning = true;
+        whBtn.disabled = true;
+        whBtn.classList.add('opacity-60');
+
+        // Reset steps
+        for(let i=1;i<=4;i++){
+          document.getElementById('wh-step-'+i).classList.remove('visible');
+        }
+
+        // Step 1
+        setTimeout(function(){ document.getElementById('wh-step-1').classList.add('visible'); }, 300);
+        // Step 2
+        setTimeout(function(){ document.getElementById('wh-step-2').classList.add('visible'); }, 1200);
+        // Step 3
+        setTimeout(function(){
+          document.getElementById('wh-step-3').classList.add('visible');
+          renderWhiteningCurve();
+        }, 2100);
+        // Step 4
+        setTimeout(function(){
+          document.getElementById('wh-step-4').classList.add('visible');
+          whRunning = false;
+          whBtn.disabled = false;
+          whBtn.classList.remove('opacity-60');
+          whBtn.innerHTML = '<i data-lucide="rotate-ccw" class="w-5 h-5 inline mr-2"></i>Re-run Walkthrough';
+          lucide.createIcons();
+        }, 3000);
+      });
+    })();
 
     document.addEventListener('DOMContentLoaded', ()=>{
       document.getElementById('pv-z').addEventListener('input', update);

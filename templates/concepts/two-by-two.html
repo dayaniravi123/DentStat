@@ -14,10 +14,42 @@
     body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
     .gradient-bg{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f766e 100%)}
     .glass{background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-delay { animation: fadeInUp 0.6s ease-out 0.2s both; }
+    .fade-in-delay-2 { animation: fadeInUp 0.6s ease-out 0.4s both; }
+    .scenario-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    .scenario-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .step-box { opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .step-box.visible { opacity: 1; transform: translateY(0); }
+    .table-cell-anim { transition: all 0.5s ease; }
+    .table-cell-anim.filled { transform: scale(1.05); }
+    @keyframes countUp { from { opacity:0; transform:scale(0.5); } to { opacity:1; transform:scale(1); } }
+    .count-anim { animation: countUp 0.4s ease-out both; }
   </style>
 </head>
 
 <body class="bg-gray-50">
+<nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg" style="z-index:100;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
+                <div>
+                    <h1 class="text-xl font-bold">DentalStats</h1>
+                    <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
+                <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
+                <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
+                <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
   <header class="gradient-bg text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
       <div class="flex items-center justify-between gap-4">
@@ -28,13 +60,13 @@
             <p class="text-gray-200 mt-1">Diagnostic test accuracy: sensitivity, specificity, PPV, NPV</p>
           </div>
         </div>
-        <a href="/index.html#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
+        <a href="/#concepts" class="px-4 py-2 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 transition">Back</a>
       </div>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-8">
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-blue-500">
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-blue-500 fade-in">
       <h2 class="text-xl font-bold text-gray-800 mb-2">What is a 2×2 table?</h2>
       <p class="text-gray-700">
         A 2×2 table summarizes two binary variables. In diagnostics, one axis is the <strong>true condition</strong>
@@ -65,14 +97,226 @@
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg mb-6">
+    <!-- REAL DENTAL SCENARIO -->
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 border-l-4 border-emerald-500 fade-in-delay">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+          <i data-lucide="scan" class="w-5 h-5 text-emerald-700"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Real Dental Scenario</h2>
+          <p class="text-sm text-gray-500">AI Caries Detection vs Clinical Examination</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-5 border border-emerald-200 mb-4">
+        <p class="text-gray-700"><strong>Scenario:</strong> A dental clinic tested <strong>200 patients</strong> for caries using a new <strong>AI detection tool</strong>. Results were compared against <strong>clinical examination</strong> (gold standard).</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+          <div class="bg-white rounded-lg p-3 text-center border border-green-300">
+            <div class="text-xs text-gray-500">True Positives</div>
+            <div class="text-2xl font-bold text-green-700">72</div>
+          </div>
+          <div class="bg-white rounded-lg p-3 text-center border border-red-300">
+            <div class="text-xs text-gray-500">False Positives</div>
+            <div class="text-2xl font-bold text-red-600">8</div>
+          </div>
+          <div class="bg-white rounded-lg p-3 text-center border border-orange-300">
+            <div class="text-xs text-gray-500">False Negatives</div>
+            <div class="text-2xl font-bold text-orange-600">12</div>
+          </div>
+          <div class="bg-white rounded-lg p-3 text-center border border-blue-300">
+            <div class="text-xs text-gray-500">True Negatives</div>
+            <div class="text-2xl font-bold text-blue-700">108</div>
+          </div>
+        </div>
+      </div>
+
+      <button id="demo-run" class="px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition shadow-md hover:shadow-lg flex items-center gap-2">
+        <i data-lucide="play" class="w-5 h-5"></i>
+        Run Demo
+      </button>
+
+      <div id="demo-steps" class="mt-5 space-y-4">
+        <!-- Step 1: Fill the table -->
+        <div id="demo-step-table" class="step-box bg-white rounded-xl border-2 border-emerald-200 p-5">
+          <h3 class="font-bold text-emerald-800 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm">1</span>
+            Building the 2×2 Table
+          </h3>
+          <div class="mt-3 overflow-x-auto">
+            <table class="w-full max-w-lg mx-auto text-sm border-collapse">
+              <thead>
+                <tr>
+                  <th class="p-3 border bg-gray-50"></th>
+                  <th class="p-3 border bg-emerald-50 text-emerald-800 font-bold">Caries Present<br>(Gold Standard +)</th>
+                  <th class="p-3 border bg-red-50 text-red-800 font-bold">Caries Absent<br>(Gold Standard −)</th>
+                  <th class="p-3 border bg-gray-100 font-bold">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="p-3 border bg-gray-50 font-bold">AI Positive</td>
+                  <td class="p-3 border text-center table-cell-anim" id="demo-tp">
+                    <span class="text-2xl font-bold text-gray-300">—</span>
+                  </td>
+                  <td class="p-3 border text-center table-cell-anim" id="demo-fp">
+                    <span class="text-2xl font-bold text-gray-300">—</span>
+                  </td>
+                  <td class="p-3 border text-center table-cell-anim" id="demo-row1">
+                    <span class="text-lg font-bold text-gray-300">—</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="p-3 border bg-gray-50 font-bold">AI Negative</td>
+                  <td class="p-3 border text-center table-cell-anim" id="demo-fn">
+                    <span class="text-2xl font-bold text-gray-300">—</span>
+                  </td>
+                  <td class="p-3 border text-center table-cell-anim" id="demo-tn">
+                    <span class="text-2xl font-bold text-gray-300">—</span>
+                  </td>
+                  <td class="p-3 border text-center table-cell-anim" id="demo-row2">
+                    <span class="text-lg font-bold text-gray-300">—</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="p-3 border bg-gray-50 font-bold">Total</td>
+                  <td class="p-3 border text-center table-cell-anim" id="demo-col1">
+                    <span class="text-lg font-bold text-gray-300">—</span>
+                  </td>
+                  <td class="p-3 border text-center table-cell-anim" id="demo-col2">
+                    <span class="text-lg font-bold text-gray-300">—</span>
+                  </td>
+                  <td class="p-3 border text-center bg-gray-100 table-cell-anim" id="demo-total">
+                    <span class="text-lg font-bold text-gray-300">—</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Step 2: Sensitivity -->
+        <div id="demo-step-sens" class="step-box bg-white rounded-xl border-2 border-blue-200 p-5">
+          <h3 class="font-bold text-blue-800 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm">2</span>
+            Sensitivity (True Positive Rate)
+          </h3>
+          <div class="mt-3 bg-blue-50 rounded-lg p-4">
+            <div class="font-mono text-sm text-gray-700">
+              Sensitivity = TP / (TP + FN)
+            </div>
+            <div id="demo-sens-calc" class="font-mono text-lg mt-2 hidden">
+              = <span class="text-green-700 font-bold">72</span> / (<span class="text-green-700 font-bold">72</span> + <span class="text-orange-600 font-bold">12</span>)
+              = 72 / 84 = <span class="text-3xl text-blue-700 font-bold count-anim">85.7%</span>
+            </div>
+            <p id="demo-sens-interp" class="text-sm text-gray-600 mt-2 hidden">
+              <strong>Meaning:</strong> The AI tool correctly detects <strong>85.7%</strong> of patients who actually have caries. It misses about 14.3% (12 patients with caries were not flagged).
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 3: Specificity -->
+        <div id="demo-step-spec" class="step-box bg-white rounded-xl border-2 border-indigo-200 p-5">
+          <h3 class="font-bold text-indigo-800 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm">3</span>
+            Specificity (True Negative Rate)
+          </h3>
+          <div class="mt-3 bg-indigo-50 rounded-lg p-4">
+            <div class="font-mono text-sm text-gray-700">
+              Specificity = TN / (TN + FP)
+            </div>
+            <div id="demo-spec-calc" class="font-mono text-lg mt-2 hidden">
+              = <span class="text-blue-700 font-bold">108</span> / (<span class="text-blue-700 font-bold">108</span> + <span class="text-red-600 font-bold">8</span>)
+              = 108 / 116 = <span class="text-3xl text-indigo-700 font-bold count-anim">93.1%</span>
+            </div>
+            <p id="demo-spec-interp" class="text-sm text-gray-600 mt-2 hidden">
+              <strong>Meaning:</strong> Among patients without caries, <strong>93.1%</strong> are correctly identified as negative. Only 8 healthy patients received a false alarm.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 4: PPV -->
+        <div id="demo-step-ppv" class="step-box bg-white rounded-xl border-2 border-green-200 p-5">
+          <h3 class="font-bold text-green-800 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-green-600 text-white rounded-full flex items-center justify-center text-sm">4</span>
+            Positive Predictive Value (PPV)
+          </h3>
+          <div class="mt-3 bg-green-50 rounded-lg p-4">
+            <div class="font-mono text-sm text-gray-700">
+              PPV = TP / (TP + FP)
+            </div>
+            <div id="demo-ppv-calc" class="font-mono text-lg mt-2 hidden">
+              = <span class="text-green-700 font-bold">72</span> / (<span class="text-green-700 font-bold">72</span> + <span class="text-red-600 font-bold">8</span>)
+              = 72 / 80 = <span class="text-3xl text-green-700 font-bold count-anim">90.0%</span>
+            </div>
+            <p id="demo-ppv-interp" class="text-sm text-gray-600 mt-2 hidden">
+              <strong>Meaning:</strong> When the AI says "caries detected," it is correct <strong>90%</strong> of the time. A clinician can trust a positive result with high confidence.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 5: NPV -->
+        <div id="demo-step-npv" class="step-box bg-white rounded-xl border-2 border-teal-200 p-5">
+          <h3 class="font-bold text-teal-800 flex items-center gap-2 text-lg">
+            <span class="w-7 h-7 bg-teal-600 text-white rounded-full flex items-center justify-center text-sm">5</span>
+            Negative Predictive Value (NPV)
+          </h3>
+          <div class="mt-3 bg-teal-50 rounded-lg p-4">
+            <div class="font-mono text-sm text-gray-700">
+              NPV = TN / (TN + FN)
+            </div>
+            <div id="demo-npv-calc" class="font-mono text-lg mt-2 hidden">
+              = <span class="text-blue-700 font-bold">108</span> / (<span class="text-blue-700 font-bold">108</span> + <span class="text-orange-600 font-bold">12</span>)
+              = 108 / 120 = <span class="text-3xl text-teal-700 font-bold count-anim">90.0%</span>
+            </div>
+            <p id="demo-npv-interp" class="text-sm text-gray-600 mt-2 hidden">
+              <strong>Meaning:</strong> When the AI says "no caries," it is correct <strong>90%</strong> of the time. However, 10% of negatives are actually missed caries.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 6: Summary -->
+        <div id="demo-step-summary" class="step-box bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl p-5 text-white">
+          <h3 class="font-bold text-lg flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-6 h-6"></i>
+            Clinical Summary: AI Caries Detection Performance
+          </h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+            <div class="bg-white/20 rounded-lg p-3 text-center backdrop-blur">
+              <div class="text-xs text-emerald-100">Sensitivity</div>
+              <div class="text-2xl font-bold">85.7%</div>
+            </div>
+            <div class="bg-white/20 rounded-lg p-3 text-center backdrop-blur">
+              <div class="text-xs text-emerald-100">Specificity</div>
+              <div class="text-2xl font-bold">93.1%</div>
+            </div>
+            <div class="bg-white/20 rounded-lg p-3 text-center backdrop-blur">
+              <div class="text-xs text-emerald-100">PPV</div>
+              <div class="text-2xl font-bold">90.0%</div>
+            </div>
+            <div class="bg-white/20 rounded-lg p-3 text-center backdrop-blur">
+              <div class="text-xs text-emerald-100">NPV</div>
+              <div class="text-2xl font-bold">90.0%</div>
+            </div>
+          </div>
+          <p class="mt-4 text-emerald-100 text-sm">
+            <strong class="text-white">Recommendation:</strong> This AI tool shows strong diagnostic performance. However, with a sensitivity of 85.7%, approximately <strong>1 in 7 caries cases may be missed</strong>. For screening purposes this is acceptable, but for definitive diagnosis, clinical examination should remain the primary method with AI as a supplementary tool.
+          </p>
+          <p class="mt-2 text-emerald-200 text-xs">
+            Prevalence in sample = 84/200 = 42%. PPV/NPV will shift if prevalence changes in the population.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-2xl p-6 shadow-lg mb-6 fade-in-delay-2">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Interactive calculator</h2>
       <p class="text-gray-700 mb-4">
         Enter TP/FP/FN/TN (e.g., caries detection test vs reference standard) and compute metrics.
       </p>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div class="bg-white rounded-xl border p-4">
+        <div class="bg-white rounded-xl border p-4 scenario-card">
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="text-xs text-gray-600">TP</label>
@@ -97,19 +341,19 @@
           </button>
 
           <div class="grid grid-cols-2 gap-3 mt-4">
-            <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-200">
+            <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-200 scenario-card">
               <div class="text-xs text-gray-600">Sensitivity</div>
               <div class="text-xl font-bold text-blue-700" id="sens">-</div>
             </div>
-            <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-200">
+            <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-200 scenario-card">
               <div class="text-xs text-gray-600">Specificity</div>
               <div class="text-xl font-bold text-blue-700" id="spec">-</div>
             </div>
-            <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-200">
+            <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-200 scenario-card">
               <div class="text-xs text-gray-600">PPV</div>
               <div class="text-xl font-bold text-blue-700" id="ppv">-</div>
             </div>
-            <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-200">
+            <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-200 scenario-card">
               <div class="text-xs text-gray-600">NPV</div>
               <div class="text-xl font-bold text-blue-700" id="npv">-</div>
             </div>
@@ -120,7 +364,7 @@
           </div>
         </div>
 
-        <div class="bg-white rounded-xl border p-4">
+        <div class="bg-white rounded-xl border p-4 scenario-card">
           <h3 class="font-semibold text-gray-800 mb-2">Metric definitions</h3>
           <ul class="text-sm text-gray-700 space-y-2">
             <li><strong>Sensitivity</strong> = TP / (TP + FN) — among condition+, how often test is +</li>
@@ -137,7 +381,7 @@
       </div>
     </section>
 
-    <section class="glass rounded-2xl p-6 shadow-lg">
+    <section class="glass rounded-2xl p-6 shadow-lg fade-in-delay-2">
       <h2 class="text-xl font-bold text-gray-800 mb-2">Dental example (quick interpretation)</h2>
       <p class="text-gray-700">
         For a caries detection device, high sensitivity reduces missed lesions (low FN), while high specificity reduces false alarms (low FP).
@@ -145,6 +389,17 @@
       </p>
     </section>
   </main>
+
+<footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-400 text-sm">&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+        <div class="mt-3 flex justify-center space-x-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-teal-400 transition">Home</a>
+            <a href="/#concepts" class="hover:text-teal-400 transition">Concepts</a>
+            <a href="/about" class="hover:text-teal-400 transition">About Us</a>
+        </div>
+    </div>
+</footer>
 
   <script>
     lucide.createIcons();
@@ -200,6 +455,111 @@
       document.getElementById('calc').addEventListener('click', compute);
       compute();
     });
+
+    // Demo scenario animation
+    (function(){
+      const btn = document.getElementById('demo-run');
+      let running = false;
+
+      function fillCell(id, value, bgClass){
+        const el = document.getElementById(id);
+        el.innerHTML = '<span class="text-2xl font-bold count-anim">' + value + '</span>';
+        el.classList.add('filled');
+        if(bgClass) el.classList.add(bgClass);
+      }
+      function fillSmallCell(id, value){
+        const el = document.getElementById(id);
+        el.innerHTML = '<span class="text-lg font-bold count-anim">' + value + '</span>';
+        el.classList.add('filled');
+      }
+
+      btn.addEventListener('click', async function(){
+        if(running) return;
+        running = true;
+        btn.disabled = true;
+        btn.classList.add('opacity-50');
+
+        // Reset
+        document.querySelectorAll('#demo-steps .step-box').forEach(el => el.classList.remove('visible'));
+        ['demo-tp','demo-fp','demo-fn','demo-tn','demo-row1','demo-row2','demo-col1','demo-col2','demo-total'].forEach(id => {
+          const el = document.getElementById(id);
+          el.innerHTML = '<span class="text-2xl font-bold text-gray-300">\u2014</span>';
+          el.className = 'p-3 border text-center table-cell-anim';
+        });
+        ['demo-sens-calc','demo-sens-interp','demo-spec-calc','demo-spec-interp','demo-ppv-calc','demo-ppv-interp','demo-npv-calc','demo-npv-interp'].forEach(id => {
+          document.getElementById(id).classList.add('hidden');
+        });
+
+        const wait = ms => new Promise(r => setTimeout(r, ms));
+
+        // Step 1: Fill table
+        document.getElementById('demo-step-table').classList.add('visible');
+        await wait(500);
+
+        fillCell('demo-tp', 72, 'bg-green-50');
+        await wait(400);
+        fillCell('demo-fp', 8, 'bg-red-50');
+        await wait(400);
+        fillCell('demo-fn', 12, 'bg-orange-50');
+        await wait(400);
+        fillCell('demo-tn', 108, 'bg-blue-50');
+        await wait(400);
+
+        // Row/column totals
+        fillSmallCell('demo-row1', 80);
+        await wait(250);
+        fillSmallCell('demo-row2', 120);
+        await wait(250);
+        fillSmallCell('demo-col1', 84);
+        await wait(250);
+        fillSmallCell('demo-col2', 116);
+        await wait(250);
+        const totalEl = document.getElementById('demo-total');
+        totalEl.innerHTML = '<span class="text-lg font-bold count-anim">200</span>';
+        totalEl.classList.add('filled','bg-gray-100');
+        await wait(600);
+
+        // Step 2: Sensitivity
+        document.getElementById('demo-step-sens').classList.add('visible');
+        await wait(400);
+        document.getElementById('demo-sens-calc').classList.remove('hidden');
+        await wait(500);
+        document.getElementById('demo-sens-interp').classList.remove('hidden');
+        await wait(700);
+
+        // Step 3: Specificity
+        document.getElementById('demo-step-spec').classList.add('visible');
+        await wait(400);
+        document.getElementById('demo-spec-calc').classList.remove('hidden');
+        await wait(500);
+        document.getElementById('demo-spec-interp').classList.remove('hidden');
+        await wait(700);
+
+        // Step 4: PPV
+        document.getElementById('demo-step-ppv').classList.add('visible');
+        await wait(400);
+        document.getElementById('demo-ppv-calc').classList.remove('hidden');
+        await wait(500);
+        document.getElementById('demo-ppv-interp').classList.remove('hidden');
+        await wait(700);
+
+        // Step 5: NPV
+        document.getElementById('demo-step-npv').classList.add('visible');
+        await wait(400);
+        document.getElementById('demo-npv-calc').classList.remove('hidden');
+        await wait(500);
+        document.getElementById('demo-npv-interp').classList.remove('hidden');
+        await wait(700);
+
+        // Step 6: Summary
+        document.getElementById('demo-step-summary').classList.add('visible');
+        lucide.createIcons();
+
+        running = false;
+        btn.disabled = false;
+        btn.classList.remove('opacity-50');
+      });
+    })();
   </script>
 </body>
 </html>
