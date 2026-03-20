@@ -1185,6 +1185,16 @@ function drawCLTHistogram() {
         const mean = simState.centralLimit.means.reduce((a, b) => a + b, 0) / simState.centralLimit.means.length;
         const variance = simState.centralLimit.means.reduce((s, v) => s + (v - mean) ** 2, 0) / simState.centralLimit.means.length;
         const std = Math.sqrt(variance);
+
+        // Compute median
+        const sorted = [...simState.centralLimit.means].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        const median = sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+
+        // Compute mode (center of highest-count bin)
+        const maxBin = counts.indexOf(Math.max(...counts));
+        const mode = (maxBin + 0.5) / bins;
+
         if (std > 0) {
             const totalArea = simState.centralLimit.draws * binWidth;
             ctx.strokeStyle = '#ef4444';
@@ -1201,21 +1211,36 @@ function drawCLTHistogram() {
             }
             ctx.stroke();
 
-            // Dashed mean line
-            ctx.strokeStyle = '#ef4444';
+            // Dashed vertical lines: mode (purple), median (orange), mean (red)
+            const lines = [
+                { val: mode,   color: '#8b5cf6', label: 'Mode' },
+                { val: median, color: '#f59e0b', label: 'Median' },
+                { val: mean,   color: '#ef4444', label: 'Mean' },
+            ];
             ctx.lineWidth = 1.5;
             ctx.setLineDash([5, 4]);
-            ctx.beginPath();
-            ctx.moveTo(PAD.left + mean * pw, PAD.top);
-            ctx.lineTo(PAD.left + mean * pw, PAD.top + ph);
-            ctx.stroke();
+            lines.forEach(({ val, color }) => {
+                ctx.strokeStyle = color;
+                ctx.beginPath();
+                ctx.moveTo(PAD.left + val * pw, PAD.top);
+                ctx.lineTo(PAD.left + val * pw, PAD.top + ph);
+                ctx.stroke();
+            });
             ctx.setLineDash([]);
 
             // Legend
             ctx.font = '10px Inter,sans-serif';
-            ctx.fillStyle = '#ef4444';
             ctx.textAlign = 'left';
-            ctx.fillText('▬ Normal curve', PAD.left + 4, PAD.top + 14);
+            const legendItems = [
+                { color: '#ef4444', label: '▬ Normal curve' },
+                { color: '#ef4444', label: `— Mean: ${mean.toFixed(3)}` },
+                { color: '#f59e0b', label: `— Median: ${median.toFixed(3)}` },
+                { color: '#8b5cf6', label: `— Mode: ${mode.toFixed(3)}` },
+            ];
+            legendItems.forEach(({ color, label }, i) => {
+                ctx.fillStyle = color;
+                ctx.fillText(label, PAD.left + 4, PAD.top + 14 + i * 14);
+            });
         }
     }
     ctx.restore();
