@@ -7,6 +7,9 @@
     <title>Statistical Analysis Playground</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         * {
             margin: 0;
@@ -27,37 +30,10 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
             color: var(--dark);
             line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            animation: slideDown 0.6s ease-out;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .header p {
-            font-size: 1rem;
-            color: var(--gray-600);
         }
 
         @keyframes slideDown {
@@ -80,12 +56,13 @@
 
         .control-panel {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
             height: fit-content;
             position: sticky;
-            top: 20px;
+            top: 80px;
+            border: 1px solid #e2e8f0;
         }
 
         .control-group {
@@ -169,14 +146,16 @@
         }
 
         .btn.btn-primary {
-            background: var(--primary);
+            background: linear-gradient(135deg, #0f766e, #0d9488);
             color: white;
-            border-color: var(--primary);
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
         }
 
         .btn.btn-primary:hover {
-            background: #2563eb;
-            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+            opacity: 0.9;
+            box-shadow: 0 6px 20px rgba(15,118,110,0.35);
         }
 
         .method-selector {
@@ -186,70 +165,78 @@
         }
 
         .method-item {
-            padding: 10px;
+            padding: 11px 14px;
             margin-bottom: 8px;
-            border: 2px solid #e5e7eb;
-            border-radius: 6px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #475569;
         }
 
         .method-item:hover {
-            border-color: var(--primary);
-            background: #f0f9ff;
+            border-color: #0f766e;
+            background: #f0fdf4;
+            color: #0f766e;
         }
 
         .method-item.active {
-            background: var(--primary);
+            background: linear-gradient(135deg, #0f766e, #0d9488);
             color: white;
-            border-color: var(--primary);
+            border-color: #0f766e;
         }
 
         .stats-box {
-            background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
-            border: 1px solid #dbeafe;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
             font-size: 0.85rem;
         }
 
         .stats-label {
-            color: var(--gray-600);
+            color: #64748b;
             font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             margin-bottom: 4px;
         }
 
         .stats-value {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            color: var(--primary);
+            color: #0f766e;
             font-family: 'Courier New', monospace;
         }
 
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 20px;
         }
 
         .card {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
         }
 
         .card-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
-            margin-bottom: 15px;
-            color: var(--dark);
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 10px;
+            margin-bottom: 16px;
+            color: #0f172a;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .chart-container {
@@ -459,591 +446,678 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div style="text-align: right; margin-bottom: 12px;">
-            <a href="/" class="btn">← Back to Home</a>
+
+<nav style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0d9488 100%); color: white; position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+  <div style="max-width:1400px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;align-items:center;height:64px;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <i data-lucide="activity" style="width:32px;height:32px;color:#5eead4;"></i>
+      <div>
+        <div style="font-size:1.2rem;font-weight:700;">DentalStats</div>
+        <div style="font-size:0.7rem;color:#99f6e4;">Biostatistics for Dental Research</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:28px;align-items:center;">
+      <a href="/#concepts" style="color:white;text-decoration:none;font-size:0.9rem;opacity:0.85;">Concepts</a>
+      <a href="/calculator" style="color:white;text-decoration:none;font-size:0.9rem;opacity:0.85;">Calculators</a>
+      <a href="/visualization/live-graph" style="color:#5eead4;text-decoration:none;font-size:0.9rem;font-weight:600;">Visualizations</a>
+      <a href="/about" style="color:white;text-decoration:none;font-size:0.9rem;opacity:0.85;">About Us</a>
+      <a href="/" style="color:white;text-decoration:none;font-size:0.875rem;opacity:0.7;border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:6px 16px;">← Home</a>
+    </div>
+  </div>
+</nav>
+
+<div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 55%,#0f766e 100%);color:white;padding:40px 24px 36px;margin-bottom:32px;">
+  <div style="max-width:1400px;margin:0 auto;">
+    <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.6;margin-bottom:8px;">Interactive Tool</div>
+    <h1 style="font-size:2.2rem;font-weight:800;margin-bottom:10px;letter-spacing:-0.02em;">📊 Statistical Analysis Playground</h1>
+    <p style="opacity:0.8;font-size:0.95rem;max-width:600px;line-height:1.6;">Explore statistical methods interactively — Law of Large Numbers, Confidence Intervals, Hypothesis Testing, and more. Use dental presets or set your own parameters.</p>
+    <!-- Dental Preset buttons -->
+    <div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:10px;">
+      <span style="font-size:0.75rem;font-weight:600;opacity:0.7;align-self:center;text-transform:uppercase;letter-spacing:0.05em;">Quick Load:</span>
+      <button onclick="loadPreset('dmft')" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:7px 16px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;">🦷 DMFT Study (n=200, p=35%)</button>
+      <button onclick="loadPreset('implant')" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:7px 16px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;">🔩 Implant Success (n=150, p=92%)</button>
+      <button onclick="loadPreset('perio')" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:7px 16px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;">🩺 Periodontal BOP (n=300, p=60%)</button>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:1400px;margin:0 auto;padding:0 20px 40px;">
+    <div class="main-grid">
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="control-group">
+                <label class="control-label">Sample Size</label>
+                <input type="range" id="sampleSize" class="slider" min="10" max="1000" value="100">
+                <div class="slider-value"><span id="sampleSizeValue">100</span></div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">True Probability (%)</label>
+                <input type="range" id="trueProb" class="slider" min="5" max="95" value="30">
+                <div class="slider-value"><span id="trueProbValue">30</span>%</div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="generateData()">📈 Generate Data</button>
+                <button class="btn" onclick="resetData()">🔄 Reset</button>
+            </div>
+
+            <div class="method-selector">
+                <div class="control-label">Statistical Methods</div>
+                <div class="method-item active" onclick="selectMethod(this, 'lln')">Law of Large Numbers</div>
+                <div class="method-item" onclick="selectMethod(this, 'mle')">Maximum Likelihood Est.</div>
+                <div class="method-item" onclick="selectMethod(this, 'ci')">Confidence Interval</div>
+                <div class="method-item" onclick="selectMethod(this, 'hypothesis')">Hypothesis Testing</div>
+                <div class="method-item" onclick="selectMethod(this, 'regression')">Linear Regression</div>
+                <div class="method-item" onclick="selectMethod(this, 'distribution')">Distribution Analysis</div>
+            </div>
+
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
+                <div class="stats-box">
+                    <div class="stats-label">Total Samples</div>
+                    <div class="stats-value"><span id="statsTotal">0</span></div>
+                </div>
+                <div class="stats-box">
+                    <div class="stats-label">Success Count</div>
+                    <div class="stats-value"><span id="statsSuccess">0</span></div>
+                </div>
+                <div class="stats-box">
+                    <div class="stats-label">Observed Rate</div>
+                    <div class="stats-value"><span id="statsRate">0</span>%</div>
+                </div>
+                <div class="stats-box">
+                    <div class="stats-label">Error Margin</div>
+                    <div class="stats-value"><span id="statsError">0</span>%</div>
+                </div>
+            </div>
         </div>
-        <div class="header">
-            <h1>📊 Statistical Analysis Playground</h1>
-            <p>Interactive visualization of statistical methods with Law of Large Numbers</p>
-        </div>
 
-        <div class="main-grid">
-            <!-- Control Panel -->
-            <div class="control-panel">
-                <div class="control-group">
-                    <label class="control-label">Sample Size</label>
-                    <input type="range" id="sampleSize" class="slider" min="10" max="1000" value="100">
-                    <div class="slider-value"><span id="sampleSizeValue">100</span></div>
-                </div>
-
-                <div class="control-group">
-                    <label class="control-label">True Probability (%)</label>
-                    <input type="range" id="trueProb" class="slider" min="5" max="95" value="30">
-                    <div class="slider-value"><span id="trueProbValue">30</span>%</div>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="generateData()">📈 Generate Data</button>
-                    <button class="btn" onclick="resetData()">🔄 Reset</button>
-                </div>
-
-                <div class="method-selector">
-                    <div class="control-label">Statistical Methods</div>
-                    <div class="method-item active" onclick="selectMethod(this, 'lln')">Law of Large Numbers</div>
-                    <div class="method-item" onclick="selectMethod(this, 'mle')">Maximum Likelihood Est.</div>
-                    <div class="method-item" onclick="selectMethod(this, 'ci')">Confidence Interval</div>
-                    <div class="method-item" onclick="selectMethod(this, 'hypothesis')">Hypothesis Testing</div>
-                    <div class="method-item" onclick="selectMethod(this, 'regression')">Linear Regression</div>
-                    <div class="method-item" onclick="selectMethod(this, 'distribution')">Distribution Analysis</div>
-                </div>
-
-                <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
-                    <div class="stats-box">
-                        <div class="stats-label">Total Samples</div>
-                        <div class="stats-value"><span id="statsTotal">0</span></div>
-                    </div>
-                    <div class="stats-box">
-                        <div class="stats-label">Success Count</div>
-                        <div class="stats-value"><span id="statsSuccess">0</span></div>
-                    </div>
-                    <div class="stats-box">
-                        <div class="stats-label">Observed Rate</div>
-                        <div class="stats-value"><span id="statsRate">0</span>%</div>
-                    </div>
-                    <div class="stats-box">
-                        <div class="stats-label">Error Margin</div>
-                        <div class="stats-value"><span id="statsError">0</span>%</div>
-                    </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Data Distribution Chart -->
+            <div class="card">
+                <div class="card-title">📊 Data Distribution</div>
+                <div class="chart-container">
+                    <canvas id="distributionChart"></canvas>
                 </div>
             </div>
 
-            <!-- Main Content -->
-            <div class="main-content">
-                <!-- Data Distribution Chart -->
-                <div class="card">
-                    <div class="card-title">📊 Data Distribution</div>
-                    <div class="chart-container">
-                        <canvas id="distributionChart"></canvas>
-                    </div>
+            <!-- Convergence Chart -->
+            <div class="card">
+                <div class="card-title">📈 Convergence Analysis</div>
+                <div class="chart-container">
+                    <canvas id="convergenceChart"></canvas>
                 </div>
+            </div>
 
-                <!-- Convergence Chart -->
-                <div class="card">
-                    <div class="card-title">📈 Convergence Analysis</div>
-                    <div class="chart-container">
-                        <canvas id="convergenceChart"></canvas>
-                    </div>
+            <!-- Normal Approximation Chart -->
+            <div class="card">
+                <div class="card-title">🔔 Normal Approximation</div>
+                <div class="chart-container">
+                    <canvas id="normalChart"></canvas>
                 </div>
+            </div>
 
-                <!-- Method Results -->
-                <div class="card full-width">
-                    <div class="card-title">🔬 Method Analysis & Results</div>
-                    <div id="methodContent"></div>
-                </div>
+            <!-- Method Results -->
+            <div class="card full-width">
+                <div class="card-title">🔬 Method Analysis &amp; Results</div>
+                <div id="methodContent"></div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // Global state
-        let data = {
-            samples: [],
-            convergenceHistory: [],
-            currentMethod: 'lln'
-        };
+<footer style="border-top:1px solid #e2e8f0;padding:24px;text-align:center;font-size:0.8rem;color:#94a3b8;margin-top:20px;">
+  DentalStats — educational content &nbsp;·&nbsp; <a href="/" style="color:#0f766e;text-decoration:none;">Back to Home</a>
+</footer>
 
-        let charts = {};
+<script>
+    // Global state
+    let data = {
+        samples: [],
+        convergenceHistory: [],
+        currentMethod: 'lln'
+    };
 
-        // Initialize charts
-        function initCharts() {
-            // Distribution Chart
-            const distCtx = document.getElementById('distributionChart').getContext('2d');
-            charts.distribution = new Chart(distCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Success', 'Failure'],
-                    datasets: [{
-                        label: 'Count',
-                        data: [0, 0],
-                        backgroundColor: [
-                            'rgba(16, 185, 129, 0.7)',
-                            'rgba(239, 68, 68, 0.7)'
-                        ],
-                        borderColor: [
-                            'rgb(16, 185, 129)',
-                            'rgb(239, 68, 68)'
-                        ],
-                        borderWidth: 2
-                    }]
+    let charts = {};
+
+    // Initialize charts
+    function initCharts() {
+        // Distribution Chart
+        const distCtx = document.getElementById('distributionChart').getContext('2d');
+        charts.distribution = new Chart(distCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Success', 'Failure'],
+                datasets: [{
+                    label: 'Count',
+                    data: [0, 0],
+                    backgroundColor: [
+                        'rgba(16, 185, 129, 0.7)',
+                        'rgba(239, 68, 68, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgb(16, 185, 129)',
+                        'rgb(239, 68, 68)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
-                }
-            });
-
-            // Convergence Chart
-            const convCtx = document.getElementById('convergenceChart').getContext('2d');
-            charts.convergence = new Chart(convCtx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Observed Probability',
-                        data: [],
-                        borderColor: 'rgb(59, 130, 246)',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4
-                    }, {
-                        label: 'True Probability',
-                        data: [],
-                        borderColor: 'rgb(239, 68, 68)',
-                        borderDash: [5, 5],
-                        borderWidth: 2,
-                        fill: false
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top' }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100
-                        }
-                    }
-                }
-            });
-        }
-
-        // Generate random data
-        function generateData() {
-            const sampleSize = parseInt(document.getElementById('sampleSize').value);
-            const trueProb = parseInt(document.getElementById('trueProb').value) / 100;
-
-            data.samples = [];
-            data.convergenceHistory = [];
-
-            // Generate samples
-            for (let i = 0; i < sampleSize; i++) {
-                const sample = Math.random() < trueProb ? 1 : 0;
-                data.samples.push(sample);
-
-                // Record convergence
-                const successCount = data.samples.filter(s => s === 1).length;
-                const observedProb = (successCount / (i + 1)) * 100;
-                data.convergenceHistory.push(observedProb);
-            }
-
-            updateStats();
-            updateCharts();
-            updateMethodResults();
-        }
-
-        // Update statistics
-        function updateStats() {
-            const total = data.samples.length;
-            const success = data.samples.filter(s => s === 1).length;
-            const observedRate = total > 0 ? (success / total) * 100 : 0;
-            const trueProb = parseInt(document.getElementById('trueProb').value);
-            const error = Math.abs(observedRate - trueProb);
-
-            document.getElementById('statsTotal').textContent = total;
-            document.getElementById('statsSuccess').textContent = success;
-            document.getElementById('statsRate').textContent = observedRate.toFixed(2);
-            document.getElementById('statsError').textContent = error.toFixed(2);
-            document.getElementById('sampleSizeValue').textContent = total;
-        }
-
-        // Update charts
-        function updateCharts() {
-            const total = data.samples.length;
-            const success = data.samples.filter(s => s === 1).length;
-            const failure = total - success;
-
-            // Update distribution chart
-            charts.distribution.data.datasets[0].data = [success, failure];
-            charts.distribution.update();
-
-            // Update convergence chart
-            const trueProb = parseInt(document.getElementById('trueProb').value);
-            charts.convergence.data.labels = Array.from({length: data.convergenceHistory.length}, (_, i) => i + 1);
-            charts.convergence.data.datasets[0].data = data.convergenceHistory;
-            charts.convergence.data.datasets[1].data = Array(data.convergenceHistory.length).fill(trueProb);
-            charts.convergence.update();
-        }
-
-        // Statistical methods
-        const methods = {
-            lln: {
-                title: 'Law of Large Numbers',
-                description: 'As sample size increases, observed probability converges to true probability.',
-                calculate: function() {
-                    const total = data.samples.length;
-                    const success = data.samples.filter(s => s === 1).length;
-                    const observed = (success / total) * 100;
-                    const trueProb = parseInt(document.getElementById('trueProb').value);
-                    const convergence = (Math.abs(observed - trueProb) < 5) ? 'CONVERGED ✓' : 'Converging...';
-
-                    return `
-                        <div class="method-description">
-                            <strong>Law of Large Numbers Theorem:</strong> States that as the number of trials increases, 
-                            the empirical probability approaches the theoretical probability.
-                        </div>
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-card-label">True Probability</div>
-                                <div class="stat-card-value">${trueProb}%</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-card-label">Observed Probability</div>
-                                <div class="stat-card-value">${observed.toFixed(2)}%</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-card-label">Difference</div>
-                                <div class="stat-card-value">${Math.abs(observed - trueProb).toFixed(2)}%</div>
-                            </div>
-                            <div class="stat-card success">
-                                <div class="stat-card-label">Status</div>
-                                <div class="stat-card-value">${convergence}</div>
-                            </div>
-                        </div>
-                        <div class="success-box">
-                            <strong>Interpretation:</strong> With ${total} samples, the observed probability (${observed.toFixed(2)}%) 
-                            is very close to the true probability (${trueProb}%). This demonstrates the Law of Large Numbers.
-                        </div>
-                    `;
-                }
-            },
-
-            mle: {
-                title: 'Maximum Likelihood Estimation',
-                description: 'Estimates the parameter that maximizes the likelihood of observed data.',
-                calculate: function() {
-                    const total = data.samples.length;
-                    const success = data.samples.filter(s => s === 1).length;
-                    const mleEstimate = (success / total) * 100;
-                    const trueProb = parseInt(document.getElementById('trueProb').value);
-
-                    return `
-                        <div class="method-description">
-                            <strong>Maximum Likelihood Estimation (MLE):</strong> Finds the parameter value that makes 
-                            the observed data most probable.
-                        </div>
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-card-label">True Parameter (p)</div>
-                                <div class="stat-card-value">${trueProb}%</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-card-label">MLE Estimate</div>
-                                <div class="stat-card-value">${mleEstimate.toFixed(2)}%</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-card-label">Log Likelihood</div>
-                                <div class="stat-card-value">${(success * Math.log(mleEstimate/100 || 0.001) + (total-success) * Math.log(1-mleEstimate/100 || 0.999)).toFixed(2)}</div>
-                            </div>
-                            <div class="stat-card warning">
-                                <div class="stat-card-label">Bias</div>
-                                <div class="stat-card-value">${(mleEstimate - trueProb).toFixed(2)}%</div>
-                            </div>
-                        </div>
-                        <div class="method-description">
-                            <strong>Result:</strong> The MLE of parameter p is ${mleEstimate.toFixed(4)}, which is obtained by 
-                            finding the value that maximizes the likelihood function L(p) = p^k(1-p)^(n-k), where k is the number of successes.
-                        </div>
-                    `;
-                }
-            },
-
-            ci: {
-                title: 'Confidence Interval',
-                description: 'Estimates a range of values containing the true parameter with specified confidence.',
-                calculate: function() {
-                    const total = data.samples.length;
-                    const success = data.samples.filter(s => s === 1).length;
-                    const p = success / total;
-                    const z = 1.96; // 95% confidence
-                    const se = Math.sqrt((p * (1 - p)) / total);
-                    const me = z * se * 100;
-                    const lower = (p * 100) - me;
-                    const upper = (p * 100) + me;
-
-                    return `
-                        <div class="method-description">
-                            <strong>Confidence Interval (95%):</strong> We are 95% confident that the true parameter 
-                            lies within this interval.
-                        </div>
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-card-label">Point Estimate</div>
-                                <div class="stat-card-value">${(p * 100).toFixed(2)}%</div>
-                            </div>
-                            <div class="stat-card danger">
-                                <div class="stat-card-label">Lower Bound</div>
-                                <div class="stat-card-value">${lower.toFixed(2)}%</div>
-                            </div>
-                            <div class="stat-card success">
-                                <div class="stat-card-label">Upper Bound</div>
-                                <div class="stat-card-value">${upper.toFixed(2)}%</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-card-label">Margin of Error</div>
-                                <div class="stat-card-value">±${me.toFixed(2)}%</div>
-                            </div>
-                        </div>
-                        <div class="success-box">
-                            <strong>Interpretation:</strong> We are 95% confident that the true proportion lies between 
-                            ${lower.toFixed(2)}% and ${upper.toFixed(2)}%.
-                        </div>
-                    `;
-                }
-            },
-
-            hypothesis: {
-                title: 'Hypothesis Testing',
-                description: 'Tests whether the observed data supports a hypothesis about the population.',
-                calculate: function() {
-                    const total = data.samples.length;
-                    const success = data.samples.filter(s => s === 1).length;
-                    const observed = success / total;
-                    const trueProb = parseInt(document.getElementById('trueProb').value) / 100;
-                    
-                    // Calculate Z-test statistic
-                    const se = Math.sqrt((trueProb * (1 - trueProb)) / total);
-                    const z = (observed - trueProb) / se;
-                    const pValue = 2 * (1 - normalCDF(Math.abs(z)));
-
-                    const significant = pValue < 0.05 ? 'YES - Reject H0' : 'NO - Fail to reject H0';
-
-                    return `
-                        <div class="method-description">
-                            <strong>Hypothesis Test (Two-tailed):</strong>
-                            <br>H0: p = ${(trueProb * 100).toFixed(1)}% vs H1: p ≠ ${(trueProb * 100).toFixed(1)}%
-                        </div>
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-card-label">Z-Statistic</div>
-                                <div class="stat-card-value">${z.toFixed(4)}</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-card-label">P-Value</div>
-                                <div class="stat-card-value">${pValue.toFixed(4)}</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-card-label">Significance Level</div>
-                                <div class="stat-card-value">α = 0.05</div>
-                            </div>
-                            <div class="stat-card ${pValue < 0.05 ? 'danger' : 'success'}">
-                                <div class="stat-card-label">Significant?</div>
-                                <div class="stat-card-value">${significant}</div>
-                            </div>
-                        </div>
-                        <div class="${pValue < 0.05 ? 'warning-box' : 'success-box'}">
-                            <strong>Result:</strong> With p-value = ${pValue.toFixed(4)} ${pValue < 0.05 ? '< 0.05, we reject the null hypothesis. The data provides significant evidence that p ≠ ' + (trueProb * 100).toFixed(1) + '%.' : '≥ 0.05, we fail to reject the null hypothesis. No significant difference detected.'}
-                        </div>
-                    `;
-                }
-            },
-
-            regression: {
-                title: 'Linear Regression',
-                description: 'Models the relationship between sample index and observed outcomes.',
-                calculate: function() {
-                    const n = data.samples.length;
-                    if (n < 2) return '<p>Need at least 2 samples</p>';
-
-                    // Calculate cumulative success rate
-                    let cumSuccess = 0;
-                    const y = [];
-                    for (let i = 0; i < n; i++) {
-                        cumSuccess += data.samples[i];
-                        y.push((cumSuccess / (i + 1)) * 100);
-                    }
-
-                    // Simple linear regression
-                    const x = Array.from({length: n}, (_, i) => i + 1);
-                    const meanX = x.reduce((a, b) => a + b) / n;
-                    const meanY = y.reduce((a, b) => a + b) / n;
-
-                    const slope = x.reduce((sum, xi, i) => sum + (xi - meanX) * (y[i] - meanY), 0) / 
-                                  x.reduce((sum, xi) => sum + Math.pow(xi - meanX, 2), 0);
-                    const intercept = meanY - slope * meanX;
-                    
-                    const r2 = Math.pow(
-                        x.reduce((sum, xi, i) => sum + (xi - meanX) * (y[i] - meanY), 0) / 
-                        Math.sqrt(x.reduce((sum, xi) => sum + Math.pow(xi - meanX, 2), 0) * 
-                        y.reduce((sum, yi) => sum + Math.pow(yi - meanY, 2), 0)), 2
-                    );
-
-                    return `
-                        <div class="method-description">
-                            <strong>Linear Regression:</strong> Models the trend of convergence over samples.
-                        </div>
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-card-label">Slope</div>
-                                <div class="stat-card-value">${slope.toFixed(4)}</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-card-label">Intercept</div>
-                                <div class="stat-card-value">${intercept.toFixed(2)}</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-card-label">R² Value</div>
-                                <div class="stat-card-value">${r2.toFixed(4)}</div>
-                            </div>
-                            <div class="stat-card success">
-                                <div class="stat-card-label">Regression Line</div>
-                                <div class="stat-card-value">y = ${intercept.toFixed(2)} + ${slope.toFixed(4)}x</div>
-                            </div>
-                        </div>
-                        <div class="method-description">
-                            <strong>Interpretation:</strong> The regression line shows that as sample size increases by 1, 
-                            the observed probability changes by ${slope.toFixed(4)}%. The R² = ${r2.toFixed(4)} indicates the goodness of fit.
-                        </div>
-                    `;
-                }
-            },
-
-            distribution: {
-                title: 'Distribution Analysis',
-                description: 'Analyzes the distributional properties of the data.',
-                calculate: function() {
-                    const total = data.samples.length;
-                    const success = data.samples.filter(s => s === 1).length;
-                    const failure = total - success;
-                    const p = success / total;
-
-                    // Binomial distribution statistics
-                    const mean = total * p;
-                    const variance = total * p * (1 - p);
-                    const stdDev = Math.sqrt(variance);
-                    const skewness = (1 - 2 * p) / stdDev;
-
-                    return `
-                        <div class="method-description">
-                            <strong>Binomial Distribution Analysis:</strong> The number of successes follows a binomial distribution.
-                        </div>
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-card-label">Mean (μ)</div>
-                                <div class="stat-card-value">${mean.toFixed(2)}</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-card-label">Variance (σ²)</div>
-                                <div class="stat-card-value">${variance.toFixed(2)}</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-card-label">Std. Dev (σ)</div>
-                                <div class="stat-card-value">${stdDev.toFixed(2)}</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-card-label">Skewness</div>
-                                <div class="stat-card-value">${skewness.toFixed(4)}</div>
-                            </div>
-                        </div>
-                        <div class="distribution-row">
-                            <div class="distribution-label">Success</div>
-                            <div class="distribution-bar" style="width: ${(success/total)*100}%;">
-                                <div class="distribution-value">${success} (${(success/total*100).toFixed(1)}%)</div>
-                            </div>
-                        </div>
-                        <div class="distribution-row">
-                            <div class="distribution-label">Failure</div>
-                            <div class="distribution-bar" style="width: ${(failure/total)*100}%; background: linear-gradient(90deg, var(--danger), var(--warning));">
-                                <div class="distribution-value">${failure} (${(failure/total*100).toFixed(1)}%)</div>
-                            </div>
-                        </div>
-                        <div class="success-box">
-                            <strong>Summary:</strong> With n=${total} trials and p=${p.toFixed(4)}, the distribution has 
-                            mean=${mean.toFixed(2)}, std.dev=${stdDev.toFixed(2)}.
-                        </div>
-                    `;
+                scales: {
+                    y: { beginAtZero: true }
                 }
             }
-        };
-
-        // Normal CDF approximation
-        function normalCDF(z) {
-            return 0.5 * (1 + erf(z / Math.sqrt(2)));
-        }
-
-        function erf(x) {
-            const a1 =  0.254829592;
-            const a2 = -0.284496736;
-            const a3 =  1.421413741;
-            const a4 = -1.453152027;
-            const a5 =  1.061405429;
-            const p  =  0.3275911;
-            const sign = x < 0 ? -1 : 1;
-            x = Math.abs(x);
-            const t = 1.0 / (1.0 + p * x);
-            return sign * (1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x));
-        }
-
-        // Select method
-        function selectMethod(element, method) {
-            document.querySelectorAll('.method-item').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
-            data.currentMethod = method;
-            updateMethodResults();
-        }
-
-        // Update method results
-        function updateMethodResults() {
-            if (data.samples.length === 0) {
-                document.getElementById('methodContent').innerHTML = 
-                    '<p style="color: var(--gray-600); text-align: center;">Generate data to see analysis</p>';
-                return;
-            }
-
-            const method = methods[data.currentMethod];
-            const html = `
-                <h3 style="margin-bottom: 15px; color: var(--primary);">${method.title}</h3>
-                <p style="margin-bottom: 15px; color: var(--gray-600);">${method.description}</p>
-                ${method.calculate()}
-            `;
-            document.getElementById('methodContent').innerHTML = html;
-        }
-
-        // Reset data
-        function resetData() {
-            data.samples = [];
-            data.convergenceHistory = [];
-            document.getElementById('sampleSize').value = 100;
-            document.getElementById('statsTotal').textContent = '0';
-            document.getElementById('statsSuccess').textContent = '0';
-            document.getElementById('statsRate').textContent = '0';
-            document.getElementById('statsError').textContent = '0';
-            updateCharts();
-            updateMethodResults();
-        }
-
-        // Update sliders
-        document.getElementById('sampleSize').addEventListener('input', (e) => {
-            document.getElementById('sampleSizeValue').textContent = e.target.value;
         });
 
-        document.getElementById('trueProb').addEventListener('input', (e) => {
-            document.getElementById('trueProbValue').textContent = e.target.value;
+        // Convergence Chart
+        const convCtx = document.getElementById('convergenceChart').getContext('2d');
+        charts.convergence = new Chart(convCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Observed Probability',
+                    data: [],
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'True Probability',
+                    data: [],
+                    borderColor: 'rgb(239, 68, 68)',
+                    borderDash: [5, 5],
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
         });
 
-        // Initialize
-        initCharts();
-        resetData();
-    </script>
+        // Normal Distribution Chart
+        const normalCtx = document.getElementById('normalChart').getContext('2d');
+        const normalPoints = Array.from({length: 100}, (_, i) => {
+            const x = -4 + i * 0.08;
+            return { x, y: Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI) };
+        });
+        charts.normal = new Chart(normalCtx, {
+            type: 'line',
+            data: {
+                labels: normalPoints.map(p => p.x.toFixed(1)),
+                datasets: [{
+                    label: 'Normal Distribution',
+                    data: normalPoints.map(p => p.y),
+                    borderColor: 'rgb(139, 92, 246)',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { maxTicksLimit: 9 } },
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    // Generate random data
+    function generateData() {
+        const sampleSize = parseInt(document.getElementById('sampleSize').value);
+        const trueProb = parseInt(document.getElementById('trueProb').value) / 100;
+
+        data.samples = [];
+        data.convergenceHistory = [];
+
+        // Generate samples
+        for (let i = 0; i < sampleSize; i++) {
+            const sample = Math.random() < trueProb ? 1 : 0;
+            data.samples.push(sample);
+
+            // Record convergence
+            const successCount = data.samples.filter(s => s === 1).length;
+            const observedProb = (successCount / (i + 1)) * 100;
+            data.convergenceHistory.push(observedProb);
+        }
+
+        updateStats();
+        updateCharts();
+        updateMethodResults();
+    }
+
+    // Update statistics
+    function updateStats() {
+        const total = data.samples.length;
+        const success = data.samples.filter(s => s === 1).length;
+        const observedRate = total > 0 ? (success / total) * 100 : 0;
+        const trueProb = parseInt(document.getElementById('trueProb').value);
+        const error = Math.abs(observedRate - trueProb);
+
+        document.getElementById('statsTotal').textContent = total;
+        document.getElementById('statsSuccess').textContent = success;
+        document.getElementById('statsRate').textContent = observedRate.toFixed(2);
+        document.getElementById('statsError').textContent = error.toFixed(2);
+        document.getElementById('sampleSizeValue').textContent = total;
+    }
+
+    // Update charts
+    function updateCharts() {
+        const total = data.samples.length;
+        const success = data.samples.filter(s => s === 1).length;
+        const failure = total - success;
+
+        // Update distribution chart
+        charts.distribution.data.datasets[0].data = [success, failure];
+        charts.distribution.update();
+
+        // Update convergence chart
+        const trueProb = parseInt(document.getElementById('trueProb').value);
+        charts.convergence.data.labels = Array.from({length: data.convergenceHistory.length}, (_, i) => i + 1);
+        charts.convergence.data.datasets[0].data = data.convergenceHistory;
+        charts.convergence.data.datasets[1].data = Array(data.convergenceHistory.length).fill(trueProb);
+        charts.convergence.update();
+    }
+
+    // Statistical methods
+    const methods = {
+        lln: {
+            title: 'Law of Large Numbers',
+            description: 'As sample size increases, observed probability converges to true probability.',
+            calculate: function() {
+                const total = data.samples.length;
+                const success = data.samples.filter(s => s === 1).length;
+                const observed = (success / total) * 100;
+                const trueProb = parseInt(document.getElementById('trueProb').value);
+                const convergence = (Math.abs(observed - trueProb) < 5) ? 'CONVERGED ✓' : 'Converging...';
+
+                return `
+                    <div class="method-description">
+                        <strong>Law of Large Numbers Theorem:</strong> States that as the number of trials increases,
+                        the empirical probability approaches the theoretical probability.
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card-label">True Probability</div>
+                            <div class="stat-card-value">${trueProb}%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">Observed Probability</div>
+                            <div class="stat-card-value">${observed.toFixed(2)}%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">Difference</div>
+                            <div class="stat-card-value">${Math.abs(observed - trueProb).toFixed(2)}%</div>
+                        </div>
+                        <div class="stat-card success">
+                            <div class="stat-card-label">Status</div>
+                            <div class="stat-card-value">${convergence}</div>
+                        </div>
+                    </div>
+                    <div class="success-box">
+                        <strong>Interpretation:</strong> With ${total} samples, the observed probability (${observed.toFixed(2)}%)
+                        is very close to the true probability (${trueProb}%). This demonstrates the Law of Large Numbers.
+                    </div>
+                `;
+            }
+        },
+
+        mle: {
+            title: 'Maximum Likelihood Estimation',
+            description: 'Estimates the parameter that maximizes the likelihood of observed data.',
+            calculate: function() {
+                const total = data.samples.length;
+                const success = data.samples.filter(s => s === 1).length;
+                const mleEstimate = (success / total) * 100;
+                const trueProb = parseInt(document.getElementById('trueProb').value);
+
+                return `
+                    <div class="method-description">
+                        <strong>Maximum Likelihood Estimation (MLE):</strong> Finds the parameter value that makes
+                        the observed data most probable.
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card-label">True Parameter (p)</div>
+                            <div class="stat-card-value">${trueProb}%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">MLE Estimate</div>
+                            <div class="stat-card-value">${mleEstimate.toFixed(2)}%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">Log Likelihood</div>
+                            <div class="stat-card-value">${(success * Math.log(mleEstimate/100 || 0.001) + (total-success) * Math.log(1-mleEstimate/100 || 0.999)).toFixed(2)}</div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-card-label">Bias</div>
+                            <div class="stat-card-value">${(mleEstimate - trueProb).toFixed(2)}%</div>
+                        </div>
+                    </div>
+                    <div class="method-description">
+                        <strong>Result:</strong> The MLE of parameter p is ${mleEstimate.toFixed(4)}, which is obtained by
+                        finding the value that maximizes the likelihood function L(p) = p^k(1-p)^(n-k), where k is the number of successes.
+                    </div>
+                `;
+            }
+        },
+
+        ci: {
+            title: 'Confidence Interval',
+            description: 'Estimates a range of values containing the true parameter with specified confidence.',
+            calculate: function() {
+                const total = data.samples.length;
+                const success = data.samples.filter(s => s === 1).length;
+                const p = success / total;
+                const z = 1.96; // 95% confidence
+                const se = Math.sqrt((p * (1 - p)) / total);
+                const me = z * se * 100;
+                const lower = (p * 100) - me;
+                const upper = (p * 100) + me;
+
+                return `
+                    <div class="method-description">
+                        <strong>Confidence Interval (95%):</strong> We are 95% confident that the true parameter
+                        lies within this interval.
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card-label">Point Estimate</div>
+                            <div class="stat-card-value">${(p * 100).toFixed(2)}%</div>
+                        </div>
+                        <div class="stat-card danger">
+                            <div class="stat-card-label">Lower Bound</div>
+                            <div class="stat-card-value">${lower.toFixed(2)}%</div>
+                        </div>
+                        <div class="stat-card success">
+                            <div class="stat-card-label">Upper Bound</div>
+                            <div class="stat-card-value">${upper.toFixed(2)}%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">Margin of Error</div>
+                            <div class="stat-card-value">±${me.toFixed(2)}%</div>
+                        </div>
+                    </div>
+                    <div class="success-box">
+                        <strong>Interpretation:</strong> We are 95% confident that the true proportion lies between
+                        ${lower.toFixed(2)}% and ${upper.toFixed(2)}%.
+                    </div>
+                `;
+            }
+        },
+
+        hypothesis: {
+            title: 'Hypothesis Testing',
+            description: 'Tests whether the observed data supports a hypothesis about the population.',
+            calculate: function() {
+                const total = data.samples.length;
+                const success = data.samples.filter(s => s === 1).length;
+                const observed = success / total;
+                const trueProb = parseInt(document.getElementById('trueProb').value) / 100;
+
+                // Calculate Z-test statistic
+                const se = Math.sqrt((trueProb * (1 - trueProb)) / total);
+                const z = (observed - trueProb) / se;
+                const pValue = 2 * (1 - normalCDF(Math.abs(z)));
+
+                const significant = pValue < 0.05 ? 'YES - Reject H0' : 'NO - Fail to reject H0';
+
+                return `
+                    <div class="method-description">
+                        <strong>Hypothesis Test (Two-tailed):</strong>
+                        <br>H0: p = ${(trueProb * 100).toFixed(1)}% vs H1: p ≠ ${(trueProb * 100).toFixed(1)}%
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card-label">Z-Statistic</div>
+                            <div class="stat-card-value">${z.toFixed(4)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">P-Value</div>
+                            <div class="stat-card-value">${pValue.toFixed(4)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">Significance Level</div>
+                            <div class="stat-card-value">α = 0.05</div>
+                        </div>
+                        <div class="stat-card ${pValue < 0.05 ? 'danger' : 'success'}">
+                            <div class="stat-card-label">Significant?</div>
+                            <div class="stat-card-value">${significant}</div>
+                        </div>
+                    </div>
+                    <div class="${pValue < 0.05 ? 'warning-box' : 'success-box'}">
+                        <strong>Result:</strong> With p-value = ${pValue.toFixed(4)} ${pValue < 0.05 ? '< 0.05, we reject the null hypothesis. The data provides significant evidence that p ≠ ' + (trueProb * 100).toFixed(1) + '%.' : '≥ 0.05, we fail to reject the null hypothesis. No significant difference detected.'}
+                    </div>
+                `;
+            }
+        },
+
+        regression: {
+            title: 'Linear Regression',
+            description: 'Models the relationship between sample index and observed outcomes.',
+            calculate: function() {
+                const n = data.samples.length;
+                if (n < 2) return '<p>Need at least 2 samples</p>';
+
+                // Calculate cumulative success rate
+                let cumSuccess = 0;
+                const y = [];
+                for (let i = 0; i < n; i++) {
+                    cumSuccess += data.samples[i];
+                    y.push((cumSuccess / (i + 1)) * 100);
+                }
+
+                // Simple linear regression
+                const x = Array.from({length: n}, (_, i) => i + 1);
+                const meanX = x.reduce((a, b) => a + b) / n;
+                const meanY = y.reduce((a, b) => a + b) / n;
+
+                const slope = x.reduce((sum, xi, i) => sum + (xi - meanX) * (y[i] - meanY), 0) /
+                              x.reduce((sum, xi) => sum + Math.pow(xi - meanX, 2), 0);
+                const intercept = meanY - slope * meanX;
+
+                const r2 = Math.pow(
+                    x.reduce((sum, xi, i) => sum + (xi - meanX) * (y[i] - meanY), 0) /
+                    Math.sqrt(x.reduce((sum, xi) => sum + Math.pow(xi - meanX, 2), 0) *
+                    y.reduce((sum, yi) => sum + Math.pow(yi - meanY, 2), 0)), 2
+                );
+
+                return `
+                    <div class="method-description">
+                        <strong>Linear Regression:</strong> Models the trend of convergence over samples.
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card-label">Slope</div>
+                            <div class="stat-card-value">${slope.toFixed(4)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">Intercept</div>
+                            <div class="stat-card-value">${intercept.toFixed(2)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">R² Value</div>
+                            <div class="stat-card-value">${r2.toFixed(4)}</div>
+                        </div>
+                        <div class="stat-card success">
+                            <div class="stat-card-label">Regression Line</div>
+                            <div class="stat-card-value">y = ${intercept.toFixed(2)} + ${slope.toFixed(4)}x</div>
+                        </div>
+                    </div>
+                    <div class="method-description">
+                        <strong>Interpretation:</strong> The regression line shows that as sample size increases by 1,
+                        the observed probability changes by ${slope.toFixed(4)}%. The R² = ${r2.toFixed(4)} indicates the goodness of fit.
+                    </div>
+                `;
+            }
+        },
+
+        distribution: {
+            title: 'Distribution Analysis',
+            description: 'Analyzes the distributional properties of the data.',
+            calculate: function() {
+                const total = data.samples.length;
+                const success = data.samples.filter(s => s === 1).length;
+                const failure = total - success;
+                const p = success / total;
+
+                // Binomial distribution statistics
+                const mean = total * p;
+                const variance = total * p * (1 - p);
+                const stdDev = Math.sqrt(variance);
+                const skewness = (1 - 2 * p) / stdDev;
+
+                return `
+                    <div class="method-description">
+                        <strong>Binomial Distribution Analysis:</strong> The number of successes follows a binomial distribution.
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-card-label">Mean (μ)</div>
+                            <div class="stat-card-value">${mean.toFixed(2)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">Variance (σ²)</div>
+                            <div class="stat-card-value">${variance.toFixed(2)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">Std. Dev (σ)</div>
+                            <div class="stat-card-value">${stdDev.toFixed(2)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-label">Skewness</div>
+                            <div class="stat-card-value">${skewness.toFixed(4)}</div>
+                        </div>
+                    </div>
+                    <div class="distribution-row">
+                        <div class="distribution-label">Success</div>
+                        <div class="distribution-bar" style="width: ${(success/total)*100}%;">
+                            <div class="distribution-value">${success} (${(success/total*100).toFixed(1)}%)</div>
+                        </div>
+                    </div>
+                    <div class="distribution-row">
+                        <div class="distribution-label">Failure</div>
+                        <div class="distribution-bar" style="width: ${(failure/total)*100}%; background: linear-gradient(90deg, var(--danger), var(--warning));">
+                            <div class="distribution-value">${failure} (${(failure/total*100).toFixed(1)}%)</div>
+                        </div>
+                    </div>
+                    <div class="success-box">
+                        <strong>Summary:</strong> With n=${total} trials and p=${p.toFixed(4)}, the distribution has
+                        mean=${mean.toFixed(2)}, std.dev=${stdDev.toFixed(2)}.
+                    </div>
+                `;
+            }
+        }
+    };
+
+    // Normal CDF approximation
+    function normalCDF(z) {
+        return 0.5 * (1 + erf(z / Math.sqrt(2)));
+    }
+
+    function erf(x) {
+        const a1 =  0.254829592;
+        const a2 = -0.284496736;
+        const a3 =  1.421413741;
+        const a4 = -1.453152027;
+        const a5 =  1.061405429;
+        const p  =  0.3275911;
+        const sign = x < 0 ? -1 : 1;
+        x = Math.abs(x);
+        const t = 1.0 / (1.0 + p * x);
+        return sign * (1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x));
+    }
+
+    // Select method
+    function selectMethod(element, method) {
+        document.querySelectorAll('.method-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+        data.currentMethod = method;
+        updateMethodResults();
+    }
+
+    // Update method results
+    function updateMethodResults() {
+        if (data.samples.length === 0) {
+            document.getElementById('methodContent').innerHTML =
+                '<p style="color: var(--gray-600); text-align: center;">Generate data to see analysis</p>';
+            return;
+        }
+
+        const method = methods[data.currentMethod];
+        const html = `
+            <h3 style="margin-bottom: 15px; color: var(--primary);">${method.title}</h3>
+            <p style="margin-bottom: 15px; color: var(--gray-600);">${method.description}</p>
+            ${method.calculate()}
+        `;
+        document.getElementById('methodContent').innerHTML = html;
+    }
+
+    // Reset data
+    function resetData() {
+        data.samples = [];
+        data.convergenceHistory = [];
+        document.getElementById('sampleSize').value = 100;
+        document.getElementById('statsTotal').textContent = '0';
+        document.getElementById('statsSuccess').textContent = '0';
+        document.getElementById('statsRate').textContent = '0';
+        document.getElementById('statsError').textContent = '0';
+        updateCharts();
+        updateMethodResults();
+    }
+
+    // Load preset
+    function loadPreset(name) {
+        const presets = {
+            dmft:    { size: 200, prob: 35 },
+            implant: { size: 150, prob: 92 },
+            perio:   { size: 300, prob: 60 }
+        };
+        const p = presets[name];
+        document.getElementById('sampleSize').value = p.size;
+        document.getElementById('trueProb').value = p.prob;
+        document.getElementById('sampleSizeValue').textContent = p.size;
+        document.getElementById('trueProbValue').textContent = p.prob;
+        generateData();
+    }
+
+    // Update sliders
+    document.getElementById('sampleSize').addEventListener('input', (e) => {
+        document.getElementById('sampleSizeValue').textContent = e.target.value;
+    });
+
+    document.getElementById('trueProb').addEventListener('input', (e) => {
+        document.getElementById('trueProbValue').textContent = e.target.value;
+    });
+
+    // Initialize
+    initCharts();
+    resetData();
+</script>
+<script>lucide.createIcons();</script>
 </body>
 </html>
