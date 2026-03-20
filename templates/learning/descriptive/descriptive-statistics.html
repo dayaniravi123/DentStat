@@ -7,1099 +7,693 @@
   <title>Descriptive Statistics — DentalStats Learning</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+
+    /* Hero */
+    .hero-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 55%, #0f766e 100%);
+      border-radius: 16px;
+      padding: 40px 32px;
+      color: white;
+    }
+
+    /* Stat cards grid */
+    .stat-card {
+      border-radius: 14px;
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      border: none;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.08);
+      border-radius: 14px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.18); }
+    .stat-card:hover::before { opacity: 1; }
+    .stat-card .icon { font-size: 2rem; margin-bottom: 10px; }
+    .stat-card .label { font-size: 1rem; font-weight: 700; letter-spacing: 0.01em; }
+    .stat-card .sublabel { font-size: 0.75rem; opacity: 0.82; margin-top: 4px; }
+
+    .card-mean     { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    .card-median   { background: linear-gradient(135deg, #10b981, #047857); }
+    .card-mode     { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+    .card-sd       { background: linear-gradient(135deg, #f59e0b, #b45309); }
+    .card-iqr      { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+    .card-range    { background: linear-gradient(135deg, #ec4899, #9d174d); }
+
+    /* Section headings */
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .section-title .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #0f766e;
+      flex-shrink: 0;
+    }
+
+    /* Info panel (replaces walls of text) */
+    .info-pill {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: white;
+      border-radius: 12px;
+      padding: 16px 18px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border-left: 4px solid #0f766e;
+    }
+    .info-pill .emoji { font-size: 1.4rem; flex-shrink: 0; }
+    .info-pill p { margin: 0; font-size: 0.9rem; color: #374151; }
+    .info-pill strong { color: #0f172a; }
+
+    /* Calculator panels */
+    .calc-panel {
+      background: white;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+      margin-bottom: 8px;
+    }
+    .calc-panel input[type="text"] {
+      width: 100%;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 12px;
+    }
+    .calc-panel input[type="text"]:focus { border-color: #0f766e; }
+    .calc-btn {
+      background: linear-gradient(135deg, #0f766e, #0d9488);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .calc-btn:hover { opacity: 0.88; }
+    .result-line {
+      margin-top: 14px;
+      font-size: 1.05rem;
+      color: #374151;
+      text-align: center;
+    }
+    .result-val { font-weight: 700; color: #0f766e; }
+
+    /* Example badge */
+    .example-badge {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      color: #166534;
+      margin-bottom: 16px;
+    }
+    .example-badge strong { display: block; margin-bottom: 4px; }
+
+    /* Modal */
+    #modal { display: none; }
+    #modal.active { display: flex; }
+
+    /* Number animation boxes */
+    .falling-number, .number-box, .mode-box, .sd-box, .iqr-box, .range-box, .patient-box {
+      padding: 8px 12px;
+      background: #3b82f6;
+      color: white;
+      border-radius: 8px;
+      font-weight: bold;
+      animation: drop 0.4s ease;
+    }
+    .falling-number {
+      position: absolute;
+      top: -40px;
+      animation: fall 1s ease forwards;
+    }
+    @keyframes fall { to { top: 120px; } }
+    @keyframes drop {
+      from { transform: translateY(-20px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .highlight       { background: #22c55e !important; }
+    .mode-highlight  { background: #22c55e !important; }
+    .sd-highlight    { background: #f59e0b !important; }
+    .q1 { background: #22c55e !important; }
+    .q3 { background: #ef4444 !important; }
+    .min { background: #22c55e !important; }
+    .max { background: #ef4444 !important; }
+
+    /* Reporting table */
+    .report-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    .report-table th { background: #f1f5f9; padding: 10px 14px; text-align: left; font-weight: 600; color: #334155; }
+    .report-table td { padding: 10px 14px; color: #475569; border-top: 1px solid #f1f5f9; }
+    .report-table tr:hover td { background: #f8fafc; }
+
+    /* Back link */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #0f766e;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+      margin-bottom: 24px;
+      transition: gap 0.15s;
+    }
+    .back-link:hover { gap: 10px; }
+  </style>
 </head>
-<body class="bg-gray-50">
-  <div class="max-w-4xl mx-auto py-12 px-4">
-    <a href="/index.html#concepts" class="inline-block mb-6 text-sm text-teal-600">← Back to Concepts</a>
-    <h1 class="text-3xl font-bold mb-4">Descriptive Statistics in Dentistry</h1>
-    <p class="text-gray-700 mb-4">Descriptive statistics plays a fundamental role in dental research and clinical practice by helping dentists and researchers summarize and interpret oral health data. In dentistry, large amounts of data are collected from patients, such as dental caries scores, periodontal measurements, treatment outcomes, and demographic variables. Descriptive statistics simplifies this complex information into meaningful summaries, making it easier to understand patterns of oral diseases and patient characteristics .</p>
+<body>
+  <div class="max-w-4xl mx-auto py-10 px-4">
 
-    <p class="text-gray-700 mb-4">One of the most common applications of descriptive statistics in dentistry is the analysis of dental caries using the DMFT index (Decayed, Missing, and Filled Teeth). This index is widely used in oral epidemiology to assess the prevalence and severity of dental caries in populations . For example, a study may report that the mean DMFT score of a population is 6.3, indicating the average number of affected teeth per individual. However, because DMFT data is often skewed (many people may have zero or low scores), researchers also report the median to better represent the typical patient.</p>
+    <!-- Back -->
+    <a href="{% url 'index' %}" class="back-link">← Back to Home</a>
 
-    <p class="text-gray-700 mb-4">Measures of central tendency, such as mean, median, and mode, are frequently used in dental studies. The mean is commonly used to report average values such as age, number of missing teeth, or plaque index. However, in cases where the data is not normally distributed, such as periodontal pocket depth or caries counts, the median is preferred because it is not affected by extreme values. For example, periodontal pocket depth measurements often show skewed distributions, so reporting median and interquartile range (IQR) provides a more accurate representation of the data.</p>
-
-    <p class="text-gray-700 mb-4">Measures of variability are equally important in dentistry. Standard deviation is used to describe how much variation exists in measurements such as clinical attachment level or plaque scores. A small standard deviation indicates that patients have similar oral health conditions, while a large standard deviation suggests greater variability among patients. The interquartile range is particularly useful in dental research because it focuses on the middle 50% of the data and is less influenced by outliers, which are common in clinical datasets.</p>
-
-    <p class="text-gray-700 mb-4">Descriptive statistics is also widely used in periodontal research. For example, parameters such as bleeding on probing, plaque index, and pocket depth are summarized using mean, median, minimum, and maximum values. Studies often report that the distribution of these measurements is skewed, emphasizing the importance of choosing appropriate statistical measures . Similarly, clinical studies may present tables showing mean and standard deviation for variables like attachment loss and number of teeth, allowing easy comparison between patient groups .</p>
-
-    <p class="text-gray-700 mb-4">In addition to numerical summaries, descriptive statistics in dentistry includes graphical representations such as histograms, bar charts, and box plots. These visual tools help identify patterns such as clustering of disease, distribution of caries, or variation in treatment outcomes. For example, a histogram of DMFT scores can reveal whether most patients have low caries levels or whether a subset of patients has significantly higher disease burden.</p>
-
-    <p class="text-gray-700 mb-4">In clinical trials and dental research papers, descriptive statistics is typically the first step of analysis. Researchers use it to describe baseline characteristics of patients, such as age, gender, oral hygiene status, and disease severity. For normally distributed variables, results are reported as mean ± standard deviation, while skewed data is reported as median and interquartile range. This ensures accurate and meaningful interpretation of results.</p>
-
-    <p class="text-gray-700 mb-4">In summary, descriptive statistics is essential in dentistry for summarizing patient data, understanding disease patterns, and supporting clinical decision-making. It helps researchers and clinicians interpret complex datasets, identify trends in oral health, and provide a foundation for further statistical analysis. Without descriptive statistics, it would be difficult to draw meaningful conclusions from dental data and improve patient care.</p>
-
-
-    <p class="text-gray-700 mb-4">For example, a researcher studying periodontal disease in 500 patients may ask: <strong>What is the average pocket depth?</strong> <strong>What is the most common severity level of disease?</strong> <strong>How spread out are the measurements?</strong> Descriptive statistics provide simple numerical summaries that answer these questions.</p>
-
-    <h2 class="text-xl font-semibold mt-6 mb-2">Key Statistical Measures</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-6">
-    
-        <!-- Card -->
-        <div onclick="openModal('mean')" class="card">Mean</div>
-        <div onclick="openModal('median')" class="card">Median</div>
-        <div onclick="openModal('mode')" class="card">Mode</div>
-        <div onclick="openModal('sd')" class="card">Standard Deviation</div>
-        <div onclick="openModal('iqr')" class="card">IQR</div>
-        <div onclick="openModal('range')" class="card">Range</div>
-    
+    <!-- Hero Banner -->
+    <div class="hero-banner mb-10">
+      <div class="text-xs font-semibold uppercase tracking-widest opacity-60 mb-2">Learning Module</div>
+      <h1 class="text-3xl font-bold mb-3">Descriptive Statistics</h1>
+      <p class="opacity-85 text-sm leading-relaxed max-w-xl">
+        Descriptive statistics helps you <strong>summarise</strong> dental data quickly — turning hundreds of patient measurements into a few clear numbers that anyone can understand.
+      </p>
+      <div class="flex flex-wrap gap-3 mt-6">
+        <span class="bg-white/20 text-white text-xs font-medium px-3 py-1 rounded-full">Mean · Median · Mode</span>
+        <span class="bg-white/20 text-white text-xs font-medium px-3 py-1 rounded-full">SD · IQR · Range</span>
+        <span class="bg-white/20 text-white text-xs font-medium px-3 py-1 rounded-full">Interactive Calculators</span>
+      </div>
     </div>
-    <script>
-        function openModal(type) {
-            const modal = document.getElementById("modal");
-            const content = document.getElementById("modalContent");
 
-            modal.classList.add("active");
-
-            if (type === "mean") {
-                content.innerHTML = `
-          <h2 class="text-lg font-bold mb-3">Mean (Average)</h2>
-          ${document.querySelector("#meanInput").closest('.bg-white').outerHTML}
-        `;
-            }
-
-            if (type === "median") {
-                content.innerHTML = `
-          <h2 class="text-lg font-bold mb-3">Median</h2>
-          ${document.querySelector("#medianInput").closest('.bg-white').outerHTML}
-        `;
-            }
-
-            if (type === "mode") {
-                content.innerHTML = `
-          <h2 class="text-lg font-bold mb-3">Mode</h2>
-          ${document.querySelector("#modeInput").closest('.bg-white').outerHTML}
-        `;
-            }
-
-            if (type === "sd") {
-                content.innerHTML = `
-          <h2 class="text-lg font-bold mb-3">Standard Deviation</h2>
-          ${document.querySelector("#sdInput").closest('.bg-white').outerHTML}
-        `;
-            }
-
-            if (type === "iqr") {
-                content.innerHTML = `
-          <h2 class="text-lg font-bold mb-3">IQR</h2>
-          ${document.querySelector("#iqrInput").closest('.bg-white').outerHTML}
-        `;
-            }
-
-            if (type === "range") {
-                content.innerHTML = `
-          <h2 class="text-lg font-bold mb-3">Range</h2>
-          ${document.querySelector("#rangeInput").closest('.bg-white').outerHTML}
-        `;
-            }
-        }
-
-        function closeModal() {
-            document.getElementById("modal").classList.remove("active");
-        }
-    </script>
-    
-    <style>
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            font-weight: bold;
-            cursor: pointer;
-            border: 1px solid #e5e7eb;
-            transition: all 0.3s ease;
-        }
-    
-        .card:hover {
-            transform: translateY(-5px);
-            background: #3b82f6;
-            color: white;
-        }
-    </style>
-    
-    <div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-    
-        <div class="bg-white rounded-xl p-6 w-[90%] max-w-2xl relative">
-    
-            <!-- Close -->
-            <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-500">✖</button>
-    
-            <!-- Dynamic Content -->
-            <div id="modalContent">
-                <h3 class="font-medium"><strong>Mean (Average)</strong></h3>
-                <p class="text-gray-700">The mean is the arithmetic average of a dataset. It is calculated by summing all values and
-                    dividing by the number of observations. Mean works best when the data follows a normal distribution and is not
-                    heavily influenced by extreme values.</p>
-                <div class="bg-white border rounded-lg p-3 my-3">
-                    <strong>Example:</strong>
-                    <div class="text-sm text-gray-600 mt-1">A study records ages: 25, 30, 34, 40, 41 → Mean age = 34 years</div>
-                </div>
-                <div class="bg-white border rounded-lg p-4 my-3">
-                    <input type="text" id="meanInput" placeholder="Enter values (e.g., 25,30,34,40,41)"
-                        class="w-full border p-2 rounded mb-3">
-                    <button onclick="startAnimation()" class="bg-blue-600 text-white px-4 py-2 rounded">
-                        Calculate Mean
-                    </button>
-                    <div id="animationArea"
-                        class="relative mt-5 h-48 border rounded bg-gray-50 overflow-hidden flex items-end justify-center">
-                    </div>
-                    <div class="mt-4 text-lg text-gray-800 text-center">
-                        Mean = <span id="meanResult" class="font-bold text-blue-600">--</span>
-                    </div>
-                </div>
-                <style>
-                    .falling-number {
-                        position: absolute;
-                        top: -40px;
-                        font-weight: bold;
-                        padding: 6px 10px;
-                        background: #3b82f6;
-                        color: white;
-                        border-radius: 6px;
-                        animation: fall 1s ease forwards;
-                    }
-            
-                    @keyframes fall {
-                        to {
-                            top: 120px;
-                        }
-                    }
-                </style>
-            </div>
-    
-        </div>
-    
+    <!-- Quick intro pills -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+      <div class="info-pill">
+        <div class="emoji">📊</div>
+        <p><strong>Summarise data</strong><br>Describe hundreds of patient records with just a few numbers.</p>
+      </div>
+      <div class="info-pill">
+        <div class="emoji">🦷</div>
+        <p><strong>Used everywhere</strong><br>DMFT scores, pocket depths, plaque indices — all rely on descriptive stats.</p>
+      </div>
+      <div class="info-pill">
+        <div class="emoji">📝</div>
+        <p><strong>Report results</strong><br>Every dental research paper starts with a descriptive statistics table.</p>
+      </div>
     </div>
-    
-    <style>
-        #modal {
-            display: none;
-        }
-    
-        #modal.active {
-            display: flex;
-        }
-    </style>
-    
-    <h3 class="font-medium"><strong>Mean (Average)</strong></h3>
-    <p class="text-gray-700">The mean is the arithmetic average of a dataset. It is calculated by summing all values and dividing by the number of observations. Mean works best when the data follows a normal distribution and is not heavily influenced by extreme values.</p>
-    <div class="bg-white border rounded-lg p-3 my-3">
-      <strong>Example:</strong>
-      <div class="text-sm text-gray-600 mt-1">A study records ages: 25, 30, 34, 40, 41 → Mean age = 34 years</div>
+
+    <!-- ─── SECTION 1: Central Tendency ─── -->
+    <div class="section-title"><span class="dot"></span> Measures of Central Tendency</div>
+    <p class="text-gray-500 text-sm mb-6">These tell you where the "centre" of your data is — the typical patient value.</p>
+
+    <!-- Stat Cards Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+      <div class="stat-card card-mean"    onclick="scrollTo('sec-mean')">
+        <div class="icon">➕</div>
+        <div class="label">Mean</div>
+        <div class="sublabel">The average</div>
+      </div>
+      <div class="stat-card card-median"  onclick="scrollTo('sec-median')">
+        <div class="icon">🎯</div>
+        <div class="label">Median</div>
+        <div class="sublabel">Middle value</div>
+      </div>
+      <div class="stat-card card-mode"    onclick="scrollTo('sec-mode')">
+        <div class="icon">🔁</div>
+        <div class="label">Mode</div>
+        <div class="sublabel">Most common</div>
+      </div>
+      <div class="stat-card card-sd"      onclick="scrollTo('sec-sd')">
+        <div class="icon">📏</div>
+        <div class="label">Std Deviation</div>
+        <div class="sublabel">Spread around mean</div>
+      </div>
+      <div class="stat-card card-iqr"     onclick="scrollTo('sec-iqr')">
+        <div class="icon">📦</div>
+        <div class="label">IQR</div>
+        <div class="sublabel">Middle 50% spread</div>
+      </div>
+      <div class="stat-card card-range"   onclick="scrollTo('sec-range')">
+        <div class="icon">↔️</div>
+        <div class="label">Range</div>
+        <div class="sublabel">Max − Min</div>
+      </div>
     </div>
-    <div class="bg-white border rounded-lg p-4 my-3">
-        <input type="text" id="meanInput" placeholder="Enter values (e.g., 25,30,34,40,41)"
-            class="w-full border p-2 rounded mb-3">
-        <button onclick="startAnimation()" class="bg-blue-600 text-white px-4 py-2 rounded">
-            Calculate Mean
-        </button>
-        <div id="animationArea"
-            class="relative mt-5 h-48 border rounded bg-gray-50 overflow-hidden flex items-end justify-center">
-        </div>
-        <div class="mt-4 text-lg text-gray-800 text-center">
-            Mean = <span id="meanResult" class="font-bold text-blue-600">--</span>
-        </div>
+
+    <!-- ─── MEAN ─── -->
+    <div id="sec-mean" class="mb-10">
+      <div class="section-title"><span class="dot" style="background:#3b82f6"></span> Mean (Average)</div>
+      <p class="text-gray-600 text-sm mb-4">
+        Add all values together and divide by how many there are. Use mean when your data is roughly symmetric — no extreme outliers.
+      </p>
+      <div class="example-badge">
+        <strong>🦷 Dental Example</strong>
+        Ages of 5 patients: 25, 30, 34, 40, 41 → Mean = (25+30+34+40+41) ÷ 5 = <strong>34 years</strong>
+      </div>
+      <div class="calc-panel">
+        <input type="text" id="meanInput" placeholder="Enter values separated by commas, e.g. 25,30,34,40,41">
+        <button class="calc-btn" onclick="startAnimation()">Calculate Mean</button>
+        <div id="animationArea" class="relative mt-5 h-32 border rounded-lg bg-gray-50 overflow-hidden flex items-end justify-center"></div>
+        <div class="result-line">Mean = <span id="meanResult" class="result-val">--</span></div>
+      </div>
     </div>
-    <style>
-        .falling-number {
-            position: absolute;
-            top: -40px;
-            font-weight: bold;
-            padding: 6px 10px;
-            background: #3b82f6;
-            color: white;
-            border-radius: 6px;
-            animation: fall 1s ease forwards;
-        }
-    
-        @keyframes fall {
-            to {
-                top: 120px;
-            }
-        }
-    </style>
-    
-    <script>
-        async function startAnimation() {
-            let input = document.getElementById("meanInput").value;
-            let area = document.getElementById("animationArea");
-            let resultSpan = document.getElementById("meanResult");
 
-            area.innerHTML = "";
-            resultSpan.innerText = "--";
-
-            let numbers = input.split(",").map(Number).filter(n => !isNaN(n));
-
-            if (numbers.length === 0) {
-                resultSpan.innerText = "Invalid input";
-                return;
-            }
-
-            let sum = 0;
-
-            for (let i = 0; i < numbers.length; i++) {
-                let num = numbers[i];
-
-                // Create falling number
-                let div = document.createElement("div");
-                div.className = "falling-number";
-                div.style.left = (20 + i * 50) + "px";
-                div.innerText = num;
-
-                area.appendChild(div);
-
-                sum += num;
-
-                await delay(600);
-            }
-
-            // Show sum after all numbers drop
-            let sumDiv = document.createElement("div");
-            sumDiv.className = "mt-2 text-center font-bold";
-            sumDiv.innerText = "Sum = " + sum;
-            area.appendChild(sumDiv);
-
-            await delay(800);
-
-            let mean = sum / numbers.length;
-            resultSpan.innerText = mean.toFixed(2);
-        }
-
-        // delay helper
-        function delay(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-    </script>
-    <h3 class="font-medium"><strong>Median</strong></h3>
-    <p class="text-gray-700">The median represents the middle value in an ordered dataset. It is more reliable than the mean when data contains outliers or is skewed.</p>
-    <div class="bg-white border rounded-lg p-3 my-3">
-      <strong>Example:</strong>
-      <div class="text-sm text-gray-600 mt-1">Pocket depths: 2 mm, 3 mm, 4 mm, 6 mm, 9 mm → Median = 4 mm</div>
+    <!-- ─── MEDIAN ─── -->
+    <div id="sec-median" class="mb-10">
+      <div class="section-title"><span class="dot" style="background:#10b981"></span> Median</div>
+      <p class="text-gray-600 text-sm mb-4">
+        Sort all values, then pick the middle one. Use median when data is skewed (e.g. pocket depths, DMFT scores) — it isn't pulled by outliers.
+      </p>
+      <div class="example-badge">
+        <strong>🦷 Dental Example</strong>
+        Pocket depths: 2, 3, 4, 6, 9 mm → Median = <strong>4 mm</strong> (middle value after sorting)
+      </div>
+      <div class="calc-panel">
+        <input type="text" id="medianInput" placeholder="Enter values, e.g. 2,3,4,6,9">
+        <button class="calc-btn" onclick="calculateMedianAnimated()">Calculate Median</button>
+        <div id="medianSteps" class="mt-4 text-sm text-gray-600 space-y-1"></div>
+        <div id="medianVisual" class="flex flex-wrap justify-center gap-2 mt-4"></div>
+        <div class="result-line">Median = <span id="medianResult" class="result-val">--</span></div>
+      </div>
     </div>
-    <div class="bg-white border rounded-lg p-4 my-3">
-    
-        <!-- Input -->
-        <input type="text" id="medianInput" placeholder="Enter values (e.g., 2,3,4,6,9)"
-            class="w-full border p-2 rounded mb-3">
-    
-        <!-- Button -->
-        <button onclick="calculateMedianAnimated()" class="bg-blue-600 text-white px-4 py-2 rounded">
-            Calculate Median
-        </button>
-    
-        <!-- Animation Area -->
-        <div id="medianSteps" class="mt-4 text-sm text-gray-700 space-y-2"></div>
-    
-        <!-- Visual Area -->
-        <div id="medianVisual" class="flex justify-center mt-4 space-x-2"></div>
-    
-        <!-- Result -->
-        <div class="mt-3 text-lg text-gray-800 text-center">
-            Median = <span id="medianResult" class="font-bold text-blue-600">--</span>
-        </div>
-    
-    </div>
-    
-    <style>
-        .number-box {
-            padding: 8px 12px;
-            background: #3b82f6;
-            color: white;
-            border-radius: 6px;
-            font-weight: bold;
-            animation: drop 0.5s ease;
-        }
-    
-        .highlight {
-            background: #22c55e !important;
-        }
-    
-        @keyframes drop {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-    
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-    </style>
-    
-    <script>
-        async function calculateMedianAnimated() {
-            let input = document.getElementById("medianInput").value;
-            let steps = document.getElementById("medianSteps");
-            let visual = document.getElementById("medianVisual");
-            let result = document.getElementById("medianResult");
 
-            steps.innerHTML = "";
-            visual.innerHTML = "";
-            result.innerText = "--";
-
-            let numbers = input.split(",").map(Number).filter(n => !isNaN(n));
-
-            if (numbers.length === 0) {
-                steps.innerHTML = "<span class='text-red-500'>Invalid input</span>";
-                return;
-            }
-
-            // Step 1: Show original numbers
-            steps.innerHTML += `<div>Original: ${numbers.join(", ")}</div>`;
-            await delay(500);
-
-            // Show falling numbers
-            for (let num of numbers) {
-                let box = document.createElement("div");
-                box.className = "number-box";
-                box.innerText = num;
-                visual.appendChild(box);
-                await delay(300);
-            }
-
-            await delay(700);
-
-            // Step 2: Sort numbers
-            numbers.sort((a, b) => a - b);
-            steps.innerHTML += `<div>Sorted: ${numbers.join(", ")}</div>`;
-            visual.innerHTML = "";
-
-            for (let num of numbers) {
-                let box = document.createElement("div");
-                box.className = "number-box";
-                box.innerText = num;
-                visual.appendChild(box);
-                await delay(300);
-            }
-
-            await delay(800);
-
-            // Step 3: Find median
-            let mid = Math.floor(numbers.length / 2);
-
-            if (numbers.length % 2 === 0) {
-                // Highlight two middle values
-                visual.children[mid - 1].classList.add("highlight");
-                visual.children[mid].classList.add("highlight");
-
-                await delay(700);
-
-                let median = (numbers[mid - 1] + numbers[mid]) / 2;
-                steps.innerHTML += `<div>Median = (${numbers[mid - 1]} + ${numbers[mid]}) / 2</div>`;
-                result.innerText = median.toFixed(2);
-
-            } else {
-                // Highlight one middle value
-                visual.children[mid].classList.add("highlight");
-
-                await delay(700);
-
-                let median = numbers[mid];
-                steps.innerHTML += `<div>Median = ${median}</div>`;
-                result.innerText = median.toFixed(2);
-            }
-        }
-
-        function delay(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-    </script>
-
-    <h3 class="font-medium"><strong>Mode</strong></h3>
-    <p class="text-gray-700 mb-3">The mode is the most frequently occurring value. Useful for categorical data and discrete counts.</p>
-    <div class="bg-white border rounded-lg p-3 mb-3">
-      <strong>Example:</strong>
-      <div class="text-sm text-gray-600 mt-1">If first molar: 45 cases, second molar: 30 cases, the first molar is the mode for caries occurrence.</div>
-    </div>
-    <div class="bg-white border rounded-lg p-4 mb-3">
-    
-        <!-- Input -->
-        <input type="text" id="modeInput" placeholder="Enter values (e.g., 2,2,3,4,4,4,5)"
-            class="w-full border p-2 rounded mb-3">
-    
-        <!-- Button -->
-        <button onclick="calculateModeAnimated()" class="bg-blue-600 text-white px-4 py-2 rounded">
-            Calculate Mode
-        </button>
-    
-        <!-- Steps -->
-        <div id="modeSteps" class="mt-4 text-sm text-gray-700 space-y-2"></div>
-    
-        <!-- Visual Area -->
+    <!-- ─── MODE ─── -->
+    <div id="sec-mode" class="mb-10">
+      <div class="section-title"><span class="dot" style="background:#8b5cf6"></span> Mode</div>
+      <p class="text-gray-600 text-sm mb-4">
+        The value that appears most often. Great for categorical data like "which tooth is most affected?"
+      </p>
+      <div class="example-badge">
+        <strong>🦷 Dental Example</strong>
+        Affected teeth: Molar (45), Premolar (30), Incisor (12) → Mode = <strong>Molar</strong>
+      </div>
+      <div class="calc-panel">
+        <input type="text" id="modeInput" placeholder="Enter values, e.g. 2,2,3,4,4,4,5">
+        <button class="calc-btn" onclick="calculateModeAnimated()">Calculate Mode</button>
+        <div id="modeSteps" class="mt-4 text-sm text-gray-600 space-y-1"></div>
         <div id="modeVisual" class="flex flex-wrap justify-center gap-2 mt-4"></div>
-    
-        <!-- Result -->
-        <div class="mt-3 text-lg text-gray-800 text-center">
-            Mode = <span id="modeResult" class="font-bold text-blue-600">--</span>
+        <div class="result-line">Mode = <span id="modeResult" class="result-val">--</span></div>
+        <div id="modeInfo" class="text-xs text-gray-400 mt-1 text-center"></div>
+      </div>
+    </div>
+
+    <!-- ─── SECTION 2: Spread ─── -->
+    <div class="section-title mt-2"><span class="dot"></span> Measures of Spread (Variability)</div>
+    <p class="text-gray-500 text-sm mb-6">These tell you how consistent or spread out your data is.</p>
+
+    <!-- ─── SD ─── -->
+    <div id="sec-sd" class="mb-10">
+      <div class="section-title"><span class="dot" style="background:#f59e0b"></span> Standard Deviation (SD)</div>
+      <p class="text-gray-600 text-sm mb-4">
+        Shows how far values typically are from the mean. Small SD = patients are similar. Large SD = patients vary a lot.
+        Reported as <strong>Mean ± SD</strong> in dental papers.
+      </p>
+      <div class="example-badge">
+        <strong>🦷 Dental Example</strong>
+        Plaque index = 1.6 ± 0.4 → Most patients score between 1.2 and 2.0
+      </div>
+      <div class="calc-panel">
+        <input type="text" id="sdInput" placeholder="Enter values, e.g. 1.2,1.5,1.6,2.0">
+        <button class="calc-btn" onclick="calculateSDAnimated()">Calculate SD</button>
+        <div id="sdSteps" class="mt-4 text-sm text-gray-600 space-y-1"></div>
+        <div id="sdVisual" class="flex flex-wrap justify-center gap-2 mt-4"></div>
+        <div class="result-line">SD = <span id="sdResult" class="result-val">--</span></div>
+        <div id="sdInfo" class="text-xs text-gray-400 mt-1 text-center"></div>
+      </div>
+    </div>
+
+    <!-- ─── IQR ─── -->
+    <div id="sec-iqr" class="mb-10">
+      <div class="section-title"><span class="dot" style="background:#ef4444"></span> Interquartile Range (IQR)</div>
+      <p class="text-gray-600 text-sm mb-4">
+        IQR = Q3 − Q1. It covers the middle 50% of your data and ignores extreme values — perfect for skewed clinical measurements.
+      </p>
+      <div class="example-badge">
+        <strong>🦷 Dental Example</strong>
+        Median pocket depth = 4 mm, IQR 3–6 mm → 50% of patients have depths between 3 and 6 mm
+      </div>
+      <div class="calc-panel">
+        <input type="text" id="iqrInput" placeholder="Enter at least 4 values, e.g. 2,3,4,6,9">
+        <button class="calc-btn" onclick="calculateIQRAnimated()">Calculate IQR</button>
+        <div id="iqrSteps" class="mt-4 text-sm text-gray-600 space-y-1"></div>
+        <div id="iqrVisual" class="flex flex-wrap justify-center gap-2 mt-4"></div>
+        <div class="result-line">IQR = <span id="iqrResult" class="result-val">--</span></div>
+        <div id="iqrInfo" class="text-xs text-gray-400 mt-1 text-center"></div>
+      </div>
+    </div>
+
+    <!-- ─── RANGE ─── -->
+    <div id="sec-range" class="mb-10">
+      <div class="section-title"><span class="dot" style="background:#ec4899"></span> Range</div>
+      <p class="text-gray-600 text-sm mb-4">
+        Range = Maximum − Minimum. Quick to calculate but sensitive to outliers.
+      </p>
+      <div class="example-badge">
+        <strong>🦷 Dental Example</strong>
+        DMFT scores: 0 to 14 → Range = <strong>14</strong>
+      </div>
+      <div class="calc-panel">
+        <input type="text" id="rangeInput" placeholder="Enter values, e.g. 2,3,4,6,9">
+        <button class="calc-btn" onclick="calculateRangeAnimated()">Calculate Range</button>
+        <div id="rangeSteps" class="mt-4 text-sm text-gray-600 space-y-1"></div>
+        <div id="rangeVisual" class="flex flex-wrap justify-center gap-2 mt-4"></div>
+        <div class="result-line">Range = <span id="rangeResult" class="result-val">--</span></div>
+      </div>
+    </div>
+
+    <!-- ─── Simulation ─── -->
+    <div class="mb-10">
+      <div class="section-title"><span class="dot"></span> Dental Research Simulation</div>
+      <p class="text-gray-500 text-sm mb-4">Watch how a researcher would analyse 5 patients step-by-step.</p>
+      <div class="calc-panel text-center">
+        <button onclick="runDentalSimulation()" class="calc-btn" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)">▶ Run Simulation</button>
+        <div id="dentalVisual" class="flex flex-wrap justify-center gap-2 mt-5"></div>
+        <div id="dentalOutput" class="mt-4 text-gray-700 text-sm space-y-2 text-left"></div>
+      </div>
+    </div>
+
+    <!-- ─── How to Report ─── -->
+    <div class="mb-10">
+      <div class="section-title"><span class="dot"></span> How to Report Results in a Paper</div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="info-pill">
+          <div class="emoji">📐</div>
+          <p><strong>Normal data</strong><br>Report as <strong>Mean ± SD</strong><br><span class="text-xs">e.g. Age: 34.5 ± 8.2 yrs</span></p>
         </div>
-    
-        <div id="modeInfo" class="text-xs text-gray-500 mt-1 text-center"></div>
-    
-    </div>
-    
-    <style>
-        .mode-box {
-            padding: 8px 12px;
-            background: #3b82f6;
-            color: white;
-            border-radius: 6px;
-            font-weight: bold;
-            animation: drop 0.4s ease;
-        }
-    
-        .mode-highlight {
-            background: #22c55e !important;
-        }
-    
-        @keyframes drop {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-    
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-    </style>
-    
-    <script>
-        async function calculateModeAnimated() {
-            let input = document.getElementById("modeInput").value;
-            let steps = document.getElementById("modeSteps");
-            let visual = document.getElementById("modeVisual");
-            let result = document.getElementById("modeResult");
-            let info = document.getElementById("modeInfo");
-
-            steps.innerHTML = "";
-            visual.innerHTML = "";
-            result.innerText = "--";
-            info.innerText = "";
-
-            let numbers = input.split(",").map(Number).filter(n => !isNaN(n));
-
-            if (numbers.length === 0) {
-                steps.innerHTML = "<span class='text-red-500'>Invalid input</span>";
-                return;
-            }
-
-            // Step 1: Show numbers
-            steps.innerHTML += `<div>Numbers: ${numbers.join(", ")}</div>`;
-            await delay(500);
-
-            // Drop numbers visually
-            for (let num of numbers) {
-                let box = document.createElement("div");
-                box.className = "mode-box";
-                box.innerText = num;
-                visual.appendChild(box);
-                await delay(200);
-            }
-
-            await delay(700);
-
-            // Step 2: Frequency counting
-            let freq = {};
-            for (let num of numbers) {
-                freq[num] = (freq[num] || 0) + 1;
-                steps.innerHTML += `<div>Counting ${num} → ${freq[num]}</div>`;
-                await delay(300);
-            }
-
-            let maxFreq = Math.max(...Object.values(freq));
-            let modes = Object.keys(freq).filter(num => freq[num] === maxFreq);
-
-            await delay(500);
-
-            // Step 3: Highlight mode(s)
-            Array.from(visual.children).forEach(box => {
-                if (modes.includes(box.innerText)) {
-                    box.classList.add("mode-highlight");
-                }
-            });
-
-            await delay(500);
-
-            // Step 4: Result
-            if (maxFreq === 1) {
-                result.innerText = "No mode";
-                info.innerText = "All values appear once";
-            } else {
-                result.innerText = modes.join(", ");
-                info.innerText = `Frequency: ${maxFreq} | Total values: ${numbers.length}`;
-            }
-        }
-
-        function delay(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-    </script>
-
-    <h2 class="text-xl font-semibold mt-6 mb-2">Measures of Data Spread (Variability)</h2>
-    <h3 class="font-medium"><strong>Standard Deviation (SD)</strong></h3>
-    <p class="text-gray-700 mb-2">Standard deviation measures how far data values are spread around the mean. A small SD indicates values are close to the mean; a large SD indicates greater variability.</p>
-    <div class="bg-white border rounded-lg p-3 my-3">
-      <strong>Example:</strong>
-      <div class="text-sm text-gray-600 mt-1">Mean plaque index = 1.6 ± 0.4 — most values lie within 0.4 units of the mean.</div>
-    </div>
-    <div class="bg-white border rounded-lg p-4 my-3">
-    
-        <!-- Input -->
-        <input type="text" id="sdInput" placeholder="Enter values (e.g., 1.2,1.5,1.6,2.0)"
-            class="w-full border p-2 rounded mb-3">
-    
-        <!-- Button -->
-        <button onclick="calculateSDAnimated()" class="bg-blue-600 text-white px-4 py-2 rounded">
-            Calculate SD
-        </button>
-    
-        <!-- Steps -->
-        <div id="sdSteps" class="mt-4 text-sm text-gray-700 space-y-2"></div>
-    
-        <!-- Visual -->
-        <div id="sdVisual" class="flex justify-center gap-2 mt-4 flex-wrap"></div>
-    
-        <!-- Result -->
-        <div class="mt-3 text-lg text-gray-800 text-center">
-            SD = <span id="sdResult" class="font-bold text-blue-600">--</span>
+        <div class="info-pill" style="border-color:#f59e0b">
+          <div class="emoji">📦</div>
+          <p><strong>Skewed data</strong><br>Report as <strong>Median (IQR)</strong><br><span class="text-xs">e.g. Pocket depth: 4 (3–6) mm</span></p>
         </div>
-    
-        <div id="sdInfo" class="text-xs text-gray-500 mt-1 text-center"></div>
-    
-    </div>
-    
-    <style>
-        .sd-box {
-            padding: 8px 12px;
-            background: #3b82f6;
-            color: white;
-            border-radius: 6px;
-            font-weight: bold;
-            animation: drop 0.4s ease;
-        }
-    
-        .sd-highlight {
-            background: #f59e0b !important;
-        }
-    
-        @keyframes drop {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-    
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-    </style>
-    
-    <script>
-        async function calculateSDAnimated() {
-            let input = document.getElementById("sdInput").value;
-            let steps = document.getElementById("sdSteps");
-            let visual = document.getElementById("sdVisual");
-            let result = document.getElementById("sdResult");
-            let info = document.getElementById("sdInfo");
-
-            steps.innerHTML = "";
-            visual.innerHTML = "";
-            result.innerText = "--";
-            info.innerText = "";
-
-            let numbers = input.split(",").map(Number).filter(n => !isNaN(n));
-
-            if (numbers.length === 0) {
-                steps.innerHTML = "<span class='text-red-500'>Invalid input</span>";
-                return;
-            }
-
-            // Step 1: Show numbers
-            steps.innerHTML += `<div>Numbers: ${numbers.join(", ")}</div>`;
-            await delay(500);
-
-            // Drop numbers
-            for (let num of numbers) {
-                let box = document.createElement("div");
-                box.className = "sd-box";
-                box.innerText = num;
-                visual.appendChild(box);
-                await delay(200);
-            }
-
-            await delay(600);
-
-            // Step 2: Calculate mean
-            let mean = numbers.reduce((a, b) => a + b, 0) / numbers.length;
-            steps.innerHTML += `<div>Mean = ${mean.toFixed(2)}</div>`;
-            await delay(700);
-
-            // Step 3: Show deviation
-            let squaredDiffs = [];
-
-            for (let i = 0; i < numbers.length; i++) {
-                let diff = numbers[i] - mean;
-                let squared = diff * diff;
-                squaredDiffs.push(squared);
-
-                visual.children[i].classList.add("sd-highlight");
-
-                steps.innerHTML += `<div>(${numbers[i]} - ${mean.toFixed(2)})² = ${squared.toFixed(2)}</div>`;
-                await delay(400);
-            }
-
-            await delay(600);
-
-            // Step 4: Variance
-            let variance = squaredDiffs.reduce((a, b) => a + b, 0) / numbers.length;
-            steps.innerHTML += `<div>Variance = ${variance.toFixed(2)}</div>`;
-            await delay(600);
-
-            // Step 5: SD
-            let sd = Math.sqrt(variance);
-            steps.innerHTML += `<div>SD = √${variance.toFixed(2)} = ${sd.toFixed(2)}</div>`;
-
-            result.innerText = sd.toFixed(2);
-            info.innerText = `Mean = ${mean.toFixed(2)} | Values = ${numbers.length}`;
-        }
-
-        function delay(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-    </script>
-
-    <h3 class="font-medium"><strong>Interquartile Range (IQR)</strong></h3>
-    <p class="text-gray-700 mb-2">IQR = Q3 − Q1. It measures the spread of the middle 50% of observations and is robust to outliers.</p>
-    <div class="bg-white border rounded-lg p-3 my-3">
-      <strong>Example:</strong>
-      <div class="text-sm text-gray-600 mt-1">Median pocket depth = 4 mm (IQR: 3–6 mm) — 50% of patients have depths between 3 and 6 mm.</div>
-    </div>
-    <div class="bg-white border rounded-lg p-4 my-3">
-    
-        <!-- Input -->
-        <input type="text" id="iqrInput" placeholder="Enter values (e.g., 2,3,4,6,9)"
-            class="w-full border p-2 rounded mb-3">
-    
-        <!-- Button -->
-        <button onclick="calculateIQRAnimated()" class="bg-blue-600 text-white px-4 py-2 rounded">
-            Calculate IQR
-        </button>
-    
-        <!-- Steps -->
-        <div id="iqrSteps" class="mt-4 text-sm text-gray-700 space-y-2"></div>
-    
-        <!-- Visual -->
-        <div id="iqrVisual" class="flex justify-center gap-2 mt-4 flex-wrap"></div>
-    
-        <!-- Result -->
-        <div class="mt-3 text-lg text-gray-800 text-center">
-            IQR = <span id="iqrResult" class="font-bold text-blue-600">--</span>
+        <div class="info-pill" style="border-color:#8b5cf6">
+          <div class="emoji">📋</div>
+          <p><strong>Categories</strong><br>Report as <strong>Frequency (%)</strong><br><span class="text-xs">e.g. Smokers: 42 (34%)</span></p>
         </div>
-    
-        <div id="iqrInfo" class="text-xs text-gray-500 mt-1 text-center"></div>
-    
-    </div>
-    
-    <style>
-        .iqr-box {
-            padding: 8px 12px;
-            background: #3b82f6;
-            color: white;
-            border-radius: 6px;
-            font-weight: bold;
-            animation: drop 0.4s ease;
-        }
-    
-        .q1 {
-            background: #22c55e !important;
-        }
-    
-        .q3 {
-            background: #ef4444 !important;
-        }
-    
-        @keyframes drop {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-    
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-    </style>
-    
-    <script>
-        async function calculateIQRAnimated() {
-            let input = document.getElementById("iqrInput").value;
-            let steps = document.getElementById("iqrSteps");
-            let visual = document.getElementById("iqrVisual");
-            let result = document.getElementById("iqrResult");
-            let info = document.getElementById("iqrInfo");
+      </div>
 
-            steps.innerHTML = "";
-            visual.innerHTML = "";
-            result.innerText = "--";
-            info.innerText = "";
-
-            let numbers = input.split(",").map(Number).filter(n => !isNaN(n));
-
-            if (numbers.length < 4) {
-                steps.innerHTML = "<span class='text-red-500'>Need at least 4 values</span>";
-                return;
-            }
-
-            // Step 1: Show original numbers
-            steps.innerHTML += `<div>Original: ${numbers.join(", ")}</div>`;
-            await delay(500);
-
-            // Drop numbers
-            for (let num of numbers) {
-                let box = document.createElement("div");
-                box.className = "iqr-box";
-                box.innerText = num;
-                visual.appendChild(box);
-                await delay(200);
-            }
-
-            await delay(700);
-
-            // Step 2: Sort
-            numbers.sort((a, b) => a - b);
-            steps.innerHTML += `<div>Sorted: ${numbers.join(", ")}</div>`;
-            visual.innerHTML = "";
-
-            for (let num of numbers) {
-                let box = document.createElement("div");
-                box.className = "iqr-box";
-                box.innerText = num;
-                visual.appendChild(box);
-                await delay(200);
-            }
-
-            await delay(700);
-
-            // Median helper
-            function median(arr) {
-                let mid = Math.floor(arr.length / 2);
-                return arr.length % 2 === 0
-                    ? (arr[mid - 1] + arr[mid]) / 2
-                    : arr[mid];
-            }
-
-            // Step 3: Split data
-            let mid = Math.floor(numbers.length / 2);
-            let lower = numbers.slice(0, mid);
-            let upper = numbers.slice(numbers.length % 2 === 0 ? mid : mid + 1);
-
-            steps.innerHTML += `<div>Lower half: ${lower.join(", ")}</div>`;
-            await delay(600);
-
-            steps.innerHTML += `<div>Upper half: ${upper.join(", ")}</div>`;
-            await delay(600);
-
-            // Step 4: Calculate Q1 and Q3
-            let Q1 = median(lower);
-            let Q3 = median(upper);
-
-            steps.innerHTML += `<div>Q1 = ${Q1}</div>`;
-            await delay(500);
-
-            steps.innerHTML += `<div>Q3 = ${Q3}</div>`;
-            await delay(500);
-
-            // Highlight Q1 and Q3
-            Array.from(visual.children).forEach(box => {
-                if (Number(box.innerText) === Q1) {
-                    box.classList.add("q1");
-                }
-                if (Number(box.innerText) === Q3) {
-                    box.classList.add("q3");
-                }
-            });
-
-            await delay(700);
-
-            // Step 5: IQR
-            let IQR = Q3 - Q1;
-            steps.innerHTML += `<div>IQR = ${Q3} - ${Q1} = ${IQR}</div>`;
-
-            result.innerText = IQR.toFixed(2);
-            info.innerText = `Q1 = ${Q1} | Q3 = ${Q3}`;
-        }
-
-        function delay(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-    </script>
-
-    <h2 class="text-xl font-semibold mt-6 mb-2">Additional Descriptive Measures</h2>
-    <p class="text-gray-700 mb-2"><strong>Range:</strong> Maximum − Minimum (quick overview but sensitive to outliers).</p>
-    <p class="text-gray-700 mb-2"><strong>Frequency distribution:</strong> Counts or percentages shown in tables, histograms, or bar charts — useful for DMFT scores, disease severity, and age groups.</p>
-    <h2 class="text-xl font-semibold mt-6 mb-2">Range (Interactive)</h2>
-
-    <div class="bg-white border rounded-lg p-4 my-3">
-    
-        <input type="text" id="rangeInput" placeholder="Enter values (e.g., 2,3,4,6,9)"
-            class="w-full border p-2 rounded mb-3">
-    
-        <button onclick="calculateRangeAnimated()" class="bg-blue-600 text-white px-4 py-2 rounded">
-            Calculate Range
-        </button>
-    
-        <div id="rangeSteps" class="mt-4 text-sm text-gray-700 space-y-2"></div>
-    
-        <div id="rangeVisual" class="flex justify-center gap-2 mt-4 flex-wrap"></div>
-    
-        <div class="mt-3 text-lg text-center">
-            Range = <span id="rangeResult" class="font-bold text-blue-600">--</span>
-        </div>
-    
-    </div>
-    
-    <style>
-        .range-box {
-            padding: 8px 12px;
-            background: #3b82f6;
-            color: white;
-            border-radius: 6px;
-            animation: drop 0.4s ease;
-        }
-    
-        .min {
-            background: #22c55e !important;
-        }
-    
-        .max {
-            background: #ef4444 !important;
-        }
-    
-        @keyframes drop {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-    
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-    </style>
-    
-    <script>
-        async function calculateRangeAnimated() {
-            let input = document.getElementById("rangeInput").value;
-            let steps = document.getElementById("rangeSteps");
-            let visual = document.getElementById("rangeVisual");
-            let result = document.getElementById("rangeResult");
-
-            steps.innerHTML = "";
-            visual.innerHTML = "";
-            result.innerText = "--";
-
-            let numbers = input.split(",").map(Number).filter(n => !isNaN(n));
-
-            if (numbers.length === 0) {
-                steps.innerHTML = "Invalid input";
-                return;
-            }
-
-            steps.innerHTML += `<div>Numbers: ${numbers.join(", ")}</div>`;
-            await delay(500);
-
-            // Drop numbers
-            for (let num of numbers) {
-                let box = document.createElement("div");
-                box.className = "range-box";
-                box.innerText = num;
-                visual.appendChild(box);
-                await delay(200);
-            }
-
-            await delay(600);
-
-            let min = Math.min(...numbers);
-            let max = Math.max(...numbers);
-
-            steps.innerHTML += `<div>Min = ${min}, Max = ${max}</div>`;
-
-            // Highlight min/max
-            Array.from(visual.children).forEach(box => {
-                if (Number(box.innerText) === min) box.classList.add("min");
-                if (Number(box.innerText) === max) box.classList.add("max");
-            });
-
-            await delay(700);
-
-            let range = max - min;
-            steps.innerHTML += `<div>Range = ${max} - ${min} = ${range}</div>`;
-            result.innerText = range;
-        }
-
-        function delay(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-    </script>
-
-    <h2 class="text-xl font-semibold mt-6 mb-2">Practical Example in Dental Research</h2>
-
-    <p class="text-gray-700 mb-4">
-        Simulate a periodontal study with patient data and see how statistics are generated step-by-step.
-    </p>
-    
-    <div class="bg-white border rounded-lg p-4 my-3 text-center">
-    
-        <button onclick="runDentalSimulation()" class="bg-purple-600 text-white px-4 py-2 rounded">
-            ▶ Run Simulation
-        </button>
-    
-        <!-- Animation Area -->
-        <div id="dentalVisual" class="flex justify-center gap-2 mt-4 flex-wrap"></div>
-    
-        <!-- Output -->
-        <div id="dentalOutput" class="mt-4 text-gray-700 space-y-2"></div>
-    
-    </div>
-    
-    <style>
-        .patient-box {
-            padding: 8px 10px;
-            background: #3b82f6;
-            color: white;
-            border-radius: 6px;
-            font-size: 12px;
-            animation: drop 0.4s ease;
-        }
-    
-        .highlight {
-            background: #22c55e !important;
-        }
-    
-        @keyframes drop {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-    
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-    </style>
-    
-    <script>
-        async function runDentalSimulation() {
-            let visual = document.getElementById("dentalVisual");
-            let output = document.getElementById("dentalOutput");
-
-            visual.innerHTML = "";
-            output.innerHTML = "";
-
-            // Example patient data
-            let ages = [25, 30, 34, 40, 41];
-            let pocketDepths = [2, 3, 4, 6, 9];
-            let plaque = [1.2, 1.5, 1.6, 2.0, 2.2];
-            let teeth = ["Molar", "Molar", "Premolar", "Molar", "Incisor"];
-
-            output.innerHTML += "<div>🦷 Collecting patient data...</div>";
-            await delay(800);
-
-            // Drop patient data
-            for (let i = 0; i < ages.length; i++) {
-                let box = document.createElement("div");
-                box.className = "patient-box";
-                box.innerText = `P${i + 1}`;
-                visual.appendChild(box);
-                await delay(300);
-            }
-
-            await delay(800);
-
-            // Mean age
-            let meanAge = ages.reduce((a, b) => a + b, 0) / ages.length;
-            output.innerHTML += `<div>📊 Mean Age = ${meanAge.toFixed(1)} years</div>`;
-            await delay(800);
-
-            // Median pocket depth
-            let sortedPD = [...pocketDepths].sort((a, b) => a - b);
-            let medianPD = sortedPD[Math.floor(sortedPD.length / 2)];
-            output.innerHTML += `<div>📍 Median Pocket Depth = ${medianPD} mm</div>`;
-            await delay(800);
-
-            // IQR
-            let Q1 = sortedPD[1];
-            let Q3 = sortedPD[3];
-            output.innerHTML += `<div>📈 IQR = ${Q1}–${Q3} mm</div>`;
-            await delay(800);
-
-            // Mean plaque
-            let meanPlaque = plaque.reduce((a, b) => a + b, 0) / plaque.length;
-            output.innerHTML += `<div>🧪 Mean Plaque Index = ${meanPlaque.toFixed(1)}</div>`;
-            await delay(800);
-
-            // Mode tooth
-            let freq = {};
-            teeth.forEach(t => freq[t] = (freq[t] || 0) + 1);
-            let modeTooth = Object.keys(freq).reduce((a, b) => freq[a] > freq[b] ? a : b);
-
-            output.innerHTML += `<div>🔥 Most Affected Tooth = ${modeTooth}</div>`;
-        }
-
-        function delay(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-    </script>
-
-    <h2 class="text-xl font-semibold mt-6 mb-2">Why Descriptive Statistics Are Important in Dentistry</h2>
-    <p class="text-gray-700 mb-4">They allow researchers to understand dataset structure, identify patterns, detect outliers, and summarize patient characteristics. Descriptive statistics are widely used in caries epidemiology, periodontal disease research, orthodontic studies, implant success analyses, and oral microbiome research.</p>
-
-    <h2 class="text-xl font-semibold mt-6 mb-2">How Descriptive Statistics Are Reported</h2>
-    <p class="text-gray-700 mb-4">Dental papers typically present descriptive statistics in tables or summary statements. Common conventions include:</p>
-    <ul class="list-disc pl-5 mb-4 text-sm space-y-1">
-      <li>Mean ± SD for approximately normal data</li>
-      <li>Median (IQR) for skewed variables</li>
-      <li>Frequency (%) for categorical data</li>
-    </ul>
-
-    <div class="overflow-auto mb-3">
-      <table class="table-auto w-full text-sm border-collapse">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="px-3 py-2 text-left">Variable</th>
-            <th class="px-3 py-2 text-left">Mean ± SD</th>
-            <th class="px-3 py-2 text-left">Median (IQR)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="px-3 py-2">Age (years)</td>
-            <td class="px-3 py-2">34.5 ± 8.2</td>
-            <td class="px-3 py-2">—</td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="px-3 py-2">Pocket Depth (mm)</td>
-            <td class="px-3 py-2">—</td>
-            <td class="px-3 py-2">4 (3–6)</td>
-          </tr>
-          <tr>
-            <td class="px-3 py-2">Plaque Index</td>
-            <td class="px-3 py-2">1.7 ± 0.5</td>
-            <td class="px-3 py-2">—</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="calc-panel p-0 overflow-hidden">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Variable</th>
+              <th>Mean ± SD</th>
+              <th>Median (IQR)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Age (years)</td>
+              <td><strong>34.5 ± 8.2</strong></td>
+              <td class="text-gray-300">—</td>
+            </tr>
+            <tr>
+              <td>Pocket Depth (mm)</td>
+              <td class="text-gray-300">—</td>
+              <td><strong>4 (3–6)</strong></td>
+            </tr>
+            <tr>
+              <td>Plaque Index</td>
+              <td><strong>1.7 ± 0.5</strong></td>
+              <td class="text-gray-300">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <p class="text-sm text-gray-600">Guidance: Use mean ± SD for approximately normal data; use median (IQR) for skewed clinical measurements; report frequencies (%) for categorical variables.</p>
+    <!-- Footer -->
+    <div class="mt-10 pt-6 border-t border-gray-100 text-center text-xs text-gray-400">
+      DentalStats — educational content &nbsp;·&nbsp; <a href="{% url 'index' %}" class="text-teal-600 hover:underline">Back to Home</a>
+    </div>
 
-    <div class="mt-8 text-sm text-gray-500">© DentalStats — educational content</div>
-  </div>
+  </div><!-- /max-w -->
+
+  <!-- ─────────── JavaScript ─────────── -->
+  <script>
+    // Smooth scroll to section
+    function scrollTo(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    /* ── MEAN ── */
+    async function startAnimation() {
+      let input = document.getElementById("meanInput").value;
+      let area  = document.getElementById("animationArea");
+      let result = document.getElementById("meanResult");
+      area.innerHTML = ""; result.innerText = "--";
+      let numbers = input.split(",").map(Number).filter(n => !isNaN(n));
+      if (!numbers.length) { result.innerText = "Invalid input"; return; }
+      let sum = 0;
+      for (let i = 0; i < numbers.length; i++) {
+        let div = document.createElement("div");
+        div.className = "falling-number";
+        div.style.left = (20 + i * 52) + "px";
+        div.innerText = numbers[i];
+        area.appendChild(div);
+        sum += numbers[i];
+        await delay(600);
+      }
+      let sumDiv = document.createElement("div");
+      sumDiv.className = "mt-2 text-center font-bold text-gray-700";
+      sumDiv.innerText = "Sum = " + sum;
+      area.appendChild(sumDiv);
+      await delay(800);
+      result.innerText = (sum / numbers.length).toFixed(2);
+    }
+
+    /* ── MEDIAN ── */
+    async function calculateMedianAnimated() {
+      let input   = document.getElementById("medianInput").value;
+      let steps   = document.getElementById("medianSteps");
+      let visual  = document.getElementById("medianVisual");
+      let result  = document.getElementById("medianResult");
+      steps.innerHTML = ""; visual.innerHTML = ""; result.innerText = "--";
+      let numbers = input.split(",").map(Number).filter(n => !isNaN(n));
+      if (!numbers.length) { steps.innerHTML = "<span class='text-red-500'>Invalid input</span>"; return; }
+      steps.innerHTML += `<div>Original: ${numbers.join(", ")}</div>`;
+      await delay(500);
+      for (let num of numbers) {
+        let box = document.createElement("div"); box.className = "number-box"; box.innerText = num;
+        visual.appendChild(box); await delay(300);
+      }
+      await delay(700);
+      numbers.sort((a, b) => a - b);
+      steps.innerHTML += `<div>Sorted: ${numbers.join(", ")}</div>`;
+      visual.innerHTML = "";
+      for (let num of numbers) {
+        let box = document.createElement("div"); box.className = "number-box"; box.innerText = num;
+        visual.appendChild(box); await delay(300);
+      }
+      await delay(800);
+      let mid = Math.floor(numbers.length / 2);
+      if (numbers.length % 2 === 0) {
+        visual.children[mid-1].classList.add("highlight");
+        visual.children[mid].classList.add("highlight");
+        await delay(700);
+        let median = (numbers[mid-1] + numbers[mid]) / 2;
+        steps.innerHTML += `<div>Median = (${numbers[mid-1]} + ${numbers[mid]}) / 2</div>`;
+        result.innerText = median.toFixed(2);
+      } else {
+        visual.children[mid].classList.add("highlight");
+        await delay(700);
+        steps.innerHTML += `<div>Median = ${numbers[mid]}</div>`;
+        result.innerText = numbers[mid].toFixed(2);
+      }
+    }
+
+    /* ── MODE ── */
+    async function calculateModeAnimated() {
+      let input  = document.getElementById("modeInput").value;
+      let steps  = document.getElementById("modeSteps");
+      let visual = document.getElementById("modeVisual");
+      let result = document.getElementById("modeResult");
+      let info   = document.getElementById("modeInfo");
+      steps.innerHTML = ""; visual.innerHTML = ""; result.innerText = "--"; info.innerText = "";
+      let numbers = input.split(",").map(Number).filter(n => !isNaN(n));
+      if (!numbers.length) { steps.innerHTML = "<span class='text-red-500'>Invalid input</span>"; return; }
+      steps.innerHTML += `<div>Numbers: ${numbers.join(", ")}</div>`;
+      await delay(500);
+      for (let num of numbers) {
+        let box = document.createElement("div"); box.className = "mode-box"; box.innerText = num;
+        visual.appendChild(box); await delay(200);
+      }
+      await delay(700);
+      let freq = {};
+      for (let num of numbers) {
+        freq[num] = (freq[num] || 0) + 1;
+        steps.innerHTML += `<div>Counting ${num} → ${freq[num]}</div>`;
+        await delay(300);
+      }
+      let maxFreq = Math.max(...Object.values(freq));
+      let modes = Object.keys(freq).filter(n => freq[n] === maxFreq);
+      await delay(500);
+      Array.from(visual.children).forEach(box => { if (modes.includes(box.innerText)) box.classList.add("mode-highlight"); });
+      await delay(500);
+      if (maxFreq === 1) { result.innerText = "No mode"; info.innerText = "All values appear once"; }
+      else { result.innerText = modes.join(", "); info.innerText = `Frequency: ${maxFreq} | Total: ${numbers.length}`; }
+    }
+
+    /* ── SD ── */
+    async function calculateSDAnimated() {
+      let input  = document.getElementById("sdInput").value;
+      let steps  = document.getElementById("sdSteps");
+      let visual = document.getElementById("sdVisual");
+      let result = document.getElementById("sdResult");
+      let info   = document.getElementById("sdInfo");
+      steps.innerHTML = ""; visual.innerHTML = ""; result.innerText = "--"; info.innerText = "";
+      let numbers = input.split(",").map(Number).filter(n => !isNaN(n));
+      if (!numbers.length) { steps.innerHTML = "<span class='text-red-500'>Invalid input</span>"; return; }
+      steps.innerHTML += `<div>Numbers: ${numbers.join(", ")}</div>`;
+      await delay(500);
+      for (let num of numbers) {
+        let box = document.createElement("div"); box.className = "sd-box"; box.innerText = num;
+        visual.appendChild(box); await delay(200);
+      }
+      await delay(600);
+      let mean = numbers.reduce((a,b) => a+b, 0) / numbers.length;
+      steps.innerHTML += `<div>Mean = ${mean.toFixed(2)}</div>`;
+      await delay(700);
+      let squaredDiffs = [];
+      for (let i = 0; i < numbers.length; i++) {
+        let diff = numbers[i] - mean, sq = diff*diff;
+        squaredDiffs.push(sq);
+        visual.children[i].classList.add("sd-highlight");
+        steps.innerHTML += `<div>(${numbers[i]} − ${mean.toFixed(2)})² = ${sq.toFixed(2)}</div>`;
+        await delay(400);
+      }
+      await delay(600);
+      let variance = squaredDiffs.reduce((a,b) => a+b, 0) / numbers.length;
+      steps.innerHTML += `<div>Variance = ${variance.toFixed(2)}</div>`;
+      await delay(600);
+      let sd = Math.sqrt(variance);
+      steps.innerHTML += `<div>SD = √${variance.toFixed(2)} = ${sd.toFixed(2)}</div>`;
+      result.innerText = sd.toFixed(2);
+      info.innerText = `Mean = ${mean.toFixed(2)} | Values = ${numbers.length}`;
+    }
+
+    /* ── IQR ── */
+    async function calculateIQRAnimated() {
+      let input  = document.getElementById("iqrInput").value;
+      let steps  = document.getElementById("iqrSteps");
+      let visual = document.getElementById("iqrVisual");
+      let result = document.getElementById("iqrResult");
+      let info   = document.getElementById("iqrInfo");
+      steps.innerHTML = ""; visual.innerHTML = ""; result.innerText = "--"; info.innerText = "";
+      let numbers = input.split(",").map(Number).filter(n => !isNaN(n));
+      if (numbers.length < 4) { steps.innerHTML = "<span class='text-red-500'>Need at least 4 values</span>"; return; }
+      steps.innerHTML += `<div>Original: ${numbers.join(", ")}</div>`;
+      await delay(500);
+      for (let num of numbers) {
+        let box = document.createElement("div"); box.className = "iqr-box"; box.innerText = num;
+        visual.appendChild(box); await delay(200);
+      }
+      await delay(700);
+      numbers.sort((a,b) => a-b);
+      steps.innerHTML += `<div>Sorted: ${numbers.join(", ")}</div>`;
+      visual.innerHTML = "";
+      for (let num of numbers) {
+        let box = document.createElement("div"); box.className = "iqr-box"; box.innerText = num;
+        visual.appendChild(box); await delay(200);
+      }
+      await delay(700);
+      function med(arr) { let m=Math.floor(arr.length/2); return arr.length%2===0?(arr[m-1]+arr[m])/2:arr[m]; }
+      let mid = Math.floor(numbers.length/2);
+      let lower = numbers.slice(0, mid);
+      let upper = numbers.slice(numbers.length%2===0 ? mid : mid+1);
+      steps.innerHTML += `<div>Lower half: ${lower.join(", ")}</div>`; await delay(600);
+      steps.innerHTML += `<div>Upper half: ${upper.join(", ")}</div>`; await delay(600);
+      let Q1=med(lower), Q3=med(upper);
+      steps.innerHTML += `<div>Q1 = ${Q1}</div>`; await delay(500);
+      steps.innerHTML += `<div>Q3 = ${Q3}</div>`; await delay(500);
+      Array.from(visual.children).forEach(box => {
+        if (Number(box.innerText)===Q1) box.classList.add("q1");
+        if (Number(box.innerText)===Q3) box.classList.add("q3");
+      });
+      await delay(700);
+      let IQR=Q3-Q1;
+      steps.innerHTML += `<div>IQR = ${Q3} − ${Q1} = ${IQR}</div>`;
+      result.innerText = IQR.toFixed(2);
+      info.innerText = `Q1 = ${Q1} | Q3 = ${Q3}`;
+    }
+
+    /* ── RANGE ── */
+    async function calculateRangeAnimated() {
+      let input  = document.getElementById("rangeInput").value;
+      let steps  = document.getElementById("rangeSteps");
+      let visual = document.getElementById("rangeVisual");
+      let result = document.getElementById("rangeResult");
+      steps.innerHTML = ""; visual.innerHTML = ""; result.innerText = "--";
+      let numbers = input.split(",").map(Number).filter(n => !isNaN(n));
+      if (!numbers.length) { steps.innerHTML = "Invalid input"; return; }
+      steps.innerHTML += `<div>Numbers: ${numbers.join(", ")}</div>`;
+      await delay(500);
+      for (let num of numbers) {
+        let box = document.createElement("div"); box.className = "range-box"; box.innerText = num;
+        visual.appendChild(box); await delay(200);
+      }
+      await delay(600);
+      let min=Math.min(...numbers), max=Math.max(...numbers);
+      steps.innerHTML += `<div>Min = ${min}, Max = ${max}</div>`;
+      Array.from(visual.children).forEach(box => {
+        if (Number(box.innerText)===min) box.classList.add("min");
+        if (Number(box.innerText)===max) box.classList.add("max");
+      });
+      await delay(700);
+      let range=max-min;
+      steps.innerHTML += `<div>Range = ${max} − ${min} = ${range}</div>`;
+      result.innerText = range;
+    }
+
+    /* ── SIMULATION ── */
+    async function runDentalSimulation() {
+      let visual = document.getElementById("dentalVisual");
+      let output = document.getElementById("dentalOutput");
+      visual.innerHTML = ""; output.innerHTML = "";
+      let ages=[25,30,34,40,41], pocketDepths=[2,3,4,6,9], plaque=[1.2,1.5,1.6,2.0,2.2];
+      let teeth=["Molar","Molar","Premolar","Molar","Incisor"];
+      output.innerHTML += "<div>🦷 Collecting patient data...</div>";
+      await delay(800);
+      for (let i=0;i<ages.length;i++) {
+        let box=document.createElement("div"); box.className="patient-box"; box.innerText=`P${i+1}`;
+        visual.appendChild(box); await delay(300);
+      }
+      await delay(800);
+      let meanAge=ages.reduce((a,b)=>a+b,0)/ages.length;
+      output.innerHTML += `<div>📊 Mean Age = ${meanAge.toFixed(1)} years</div>`; await delay(800);
+      let sortedPD=[...pocketDepths].sort((a,b)=>a-b);
+      let medianPD=sortedPD[Math.floor(sortedPD.length/2)];
+      output.innerHTML += `<div>📍 Median Pocket Depth = ${medianPD} mm</div>`; await delay(800);
+      output.innerHTML += `<div>📈 IQR = ${sortedPD[1]}–${sortedPD[3]} mm</div>`; await delay(800);
+      let meanPlaque=plaque.reduce((a,b)=>a+b,0)/plaque.length;
+      output.innerHTML += `<div>🧪 Mean Plaque Index = ${meanPlaque.toFixed(1)}</div>`; await delay(800);
+      let freq={};
+      teeth.forEach(t=>freq[t]=(freq[t]||0)+1);
+      let modeTooth=Object.keys(freq).reduce((a,b)=>freq[a]>freq[b]?a:b);
+      output.innerHTML += `<div>🔥 Most Affected Tooth = ${modeTooth}</div>`;
+    }
+  </script>
+
 </body>
 </html>
