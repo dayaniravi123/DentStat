@@ -876,56 +876,154 @@ function updateVisualizationsForLevel() {
 
 // ==================== CENTRAL LIMIT THEOREM SIMULATION ====================
 function initCLTCanvas() {
-    const canvas = document.getElementById('cltCanvas');
-    if (canvas) {
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
+    const dpr = window.devicePixelRatio || 1;
+    const cltCanvas = document.getElementById('cltCanvas');
+    if (cltCanvas) {
+        cltCanvas.width = cltCanvas.offsetWidth * dpr;
+        cltCanvas.height = cltCanvas.offsetHeight * dpr;
     }
     const popCanvas = document.getElementById('populationCanvas');
     if (popCanvas) {
-        popCanvas.width = popCanvas.offsetWidth;
-        popCanvas.height = popCanvas.offsetHeight;
+        popCanvas.width = popCanvas.offsetWidth * dpr;
+        popCanvas.height = popCanvas.offsetHeight * dpr;
         drawPopulationDistribution();
     }
 }
 
 function drawPopulationDistribution() {
     const canvas = document.getElementById('populationCanvas');
-    const ctx = canvas.getContext('2d');
+    if (!canvas) return;
     const type = document.getElementById('clt-distribution').value;
-    const w = canvas.width;
-    const h = canvas.height;
-   
-    ctx.clearRect(0, 0, w, h);
-    ctx.beginPath();
-    ctx.strokeStyle = '#0f766e';
-    ctx.lineWidth = 2;
-   
-    const points = [];
-    for (let x = 0; x <= w; x += 5) {
+    const dpr = window.devicePixelRatio || 1;
+    const dw = canvas.offsetWidth || 250;
+    const dh = canvas.offsetHeight || 150;
+    canvas.width = dw * dpr;
+    canvas.height = dh * dpr;
+
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.scale(dpr, dpr);
+
+    const W = dw, H = dh;
+    const PAD = { top: 22, right: 10, bottom: 18, left: 10 };
+    const pw = W - PAD.left - PAD.right;
+    const ph = H - PAD.top - PAD.bottom;
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+
+    // Build curve points (t in [0,1])
+    const N = 300;
+    const raw = [];
+    for (let i = 0; i <= N; i++) {
+        const t = i / N;
         let y;
-        const t = x / w;
         if (type === 'uniform') {
-            y = h * 0.3;
+            y = 0.6;
         } else if (type === 'exponential') {
-            y = h * 0.8 * Math.exp(-t * 3);
+            y = Math.exp(-t * 4);
         } else if (type === 'bimodal') {
-            const g1 = Math.exp(-Math.pow((t - 0.3) * 8, 2));
-            const g2 = Math.exp(-Math.pow((t - 0.7) * 8, 2));
-            y = h * 0.8 * (g1 + g2) / 2;
-        } else if (type === 'dental') {
-            y = h * 0.9 * (1 / (0.1 + t * 0.5)) * Math.exp(-t * 2);
+            y = (Math.exp(-Math.pow((t - 0.3) * 9, 2)) + Math.exp(-Math.pow((t - 0.7) * 9, 2))) / 2;
+        } else {
+            y = (1 / (0.08 + t * 0.5)) * Math.exp(-t * 2.2);
         }
-        points.push({x, y: h - 20 - y * 0.8});
+        raw.push({ t, y });
     }
-   
-    ctx.moveTo(points[0].x, points[0].y);
-    points.forEach(p => ctx.lineTo(p.x, p.y));
-    ctx.stroke();
-    ctx.fillStyle = 'rgba(15, 118, 110, 0.1)';
-    ctx.lineTo(w, h);
-    ctx.lineTo(0, h);
+    const maxY = Math.max(...raw.map(p => p.y));
+    const pts = raw.map(p => ({ t: p.t, y: p.y / maxY }));
+
+    // Compute stats numerically
+    let modePt = pts.reduce((b, p) => p.y > b.y ? p : b, pts[0]).t;
+    const totalArea = pts.slice(1).reduce((s, p, i) => s + (p.y + pts[i].y) / 2 / N, 0);
+    let cumArea = 0, medianPt = 0.5;
+    for (let i = 1; i < pts.length; i++) {
+        cumArea += (pts[i].y + pts[i - 1].y) / 2 / N;
+        if (cumArea >= totalArea / 2) { medianPt = pts[i].t; break; }
+    }
+    const meanPt = pts.slice(1).reduce((s, p) => s + p.t * p.y / N, 0) / (totalArea || 1);
+
+    // Clamp
+    const clamp = v => Math.min(0.97, Math.max(0.03, v));
+
+    // Draw filled area
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, PAD.top + ph);
+    pts.forEach(p => ctx.lineTo(PAD.left + p.t * pw, PAD.top + ph - p.y * ph * 0.88));
+    ctx.lineTo(PAD.left + pw, PAD.top + ph);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(13,148,136,0.10)';
     ctx.fill();
+
+    // Draw curve
+    ctx.beginPath();
+    ctx.strokeStyle = '#0d9488';
+    ctx.lineWidth = 2;
+    let first = true;
+    pts.forEach(p => {
+        const x = PAD.left + p.t * pw;
+        const y = PAD.top + ph - p.y * ph * 0.88;
+        if (first) { ctx.moveTo(x, y); first = false; } else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // X axis
+    ctx.strokeStyle = '#d1d5db';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, PAD.top + ph);
+    ctx.lineTo(PAD.left + pw, PAD.top + ph);
+    ctx.stroke();
+
+    // Draw stat lines
+    const drawStat = (tPos, color, label, labelRow) => {
+        const x = PAD.left + clamp(tPos) * pw;
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.moveTo(x, PAD.top + ph);
+        ctx.lineTo(x, PAD.top - 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = color;
+        ctx.font = 'bold 8px Inter,sans-serif';
+        ctx.textAlign = 'center';
+        // Stagger labels in 3 rows above chart
+        const labelY = PAD.top - 12 + labelRow * 8;
+        ctx.fillText(label, x, Math.max(6, labelY));
+        ctx.restore();
+    };
+
+    if (type === 'uniform') {
+        drawStat(0.5, '#6b7280', 'Mean = Median = Mode', 0);
+    } else if (type === 'bimodal') {
+        drawStat(0.3, '#8b5cf6', 'Mode₁', 0);
+        drawStat(0.7, '#8b5cf6', 'Mode₂', 0);
+        drawStat(0.5, '#ef4444', 'Mean', 1);
+        drawStat(0.5, '#f59e0b', 'Median', 2);
+    } else {
+        // Right-skewed: Mode < Median < Mean
+        drawStat(modePt, '#8b5cf6', 'Mode', 0);
+        drawStat(medianPt, '#f59e0b', 'Median', 1);
+        drawStat(meanPt, '#ef4444', 'Mean', 2);
+    }
+
+    // Legend at bottom
+    if (type !== 'uniform') {
+        ctx.font = '7.5px Inter,sans-serif';
+        ctx.textAlign = 'left';
+        const items = type === 'bimodal'
+            ? [['Mode', '#8b5cf6'], ['Mean/Med', '#ef4444']]
+            : [['Mode', '#8b5cf6'], ['Median', '#f59e0b'], ['Mean', '#ef4444']];
+        items.forEach(([label, color], i) => {
+            ctx.fillStyle = color;
+            ctx.fillText('— ' + label, PAD.left + i * 55, H - 4);
+        });
+    }
+
+    ctx.restore();
 }
 
 function updateCLTDistribution() {
