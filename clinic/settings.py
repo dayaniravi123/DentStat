@@ -17,6 +17,7 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 ALLOWED_HOSTS = ['.railway.app']  # Allow all hosts for development; adjust for production
+#ALLOWED_HOSTS = ['*'] #['.railway.app']  # Allow all hosts for development; adjust for production
 
 # Application definition
 
