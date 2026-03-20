@@ -1101,8 +1101,16 @@ function animateCLT() {
 function drawCLTHistogram() {
     const canvas = document.getElementById('cltCanvas');
     const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
+    const dpr = window.devicePixelRatio || 1;
+    // Re-sync canvas pixel size to current display size
+    const dw = canvas.offsetWidth;
+    const dh = canvas.offsetHeight;
+    canvas.width = dw * dpr;
+    canvas.height = dh * dpr;
+    ctx.save();
+    ctx.scale(dpr, dpr);
+    const w = dw;
+    const h = dh;
     const PAD = { top: 20, right: 20, bottom: 44, left: 48 };
     const pw = w - PAD.left - PAD.right;
     const ph = h - PAD.top - PAD.bottom;
@@ -1210,6 +1218,7 @@ function drawCLTHistogram() {
             ctx.fillText('▬ Normal curve', PAD.left + 4, PAD.top + 14);
         }
     }
+    ctx.restore();
 }
 
 function resetCLT() {
