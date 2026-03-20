@@ -79,111 +79,139 @@
       display: flex;
       position: fixed;
       inset: 0;
-      background: rgba(15,23,42,0.55);
+      background: rgba(15,23,42,0.6);
       z-index: 100;
       align-items: center;
       justify-content: center;
       padding: 16px;
     }
     .modal-box {
-      background: white;
-      border-radius: 18px;
+      background: #f8fafc;
+      border-radius: 20px;
       width: 100%;
-      max-width: 560px;
-      max-height: 90vh;
+      max-width: 600px;
+      max-height: 92vh;
       overflow-y: auto;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.25);
-      animation: modalIn 0.25s ease;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.3);
+      animation: modalIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
     }
     @keyframes modalIn {
-      from { opacity: 0; transform: translateY(20px) scale(0.97); }
-      to   { opacity: 1; transform: translateY(0)   scale(1); }
+      from { opacity: 0; transform: translateY(30px) scale(0.95); }
+      to   { opacity: 1; transform: translateY(0)    scale(1); }
     }
     .modal-header {
-      padding: 24px 24px 18px;
-      border-radius: 18px 18px 0 0;
+      padding: 28px 28px 22px;
+      border-radius: 20px 20px 0 0;
       color: white;
       position: relative;
     }
-    .modal-header h2 { font-size: 1.4rem; font-weight: 700; margin: 0 0 6px; }
-    .modal-header p  { font-size: 0.875rem; opacity: 0.88; margin: 0; }
+    .modal-header .header-icon {
+      width: 52px; height: 52px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 14px;
+    }
+    .modal-header h2 { font-size: 1.5rem; font-weight: 800; margin: 0 0 6px; letter-spacing: -0.01em; }
+    .modal-header p  { font-size: 0.875rem; opacity: 0.85; margin: 0; line-height: 1.5; max-width: 400px; }
     .modal-close {
       position: absolute;
-      top: 16px; right: 16px;
-      background: rgba(255,255,255,0.2);
-      border: none;
+      top: 18px; right: 18px;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.25);
       color: white;
-      width: 30px; height: 30px;
+      width: 32px; height: 32px;
       border-radius: 50%;
-      font-size: 1rem;
+      font-size: 0.9rem;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
     }
-    .modal-body { padding: 20px 24px 24px; }
+    .modal-close:hover { background: rgba(255,255,255,0.3); }
+    .modal-body { padding: 22px 24px 28px; }
 
     .example-badge {
       background: #f0fdf4;
       border: 1px solid #bbf7d0;
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 0.84rem;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 0.85rem;
       color: #166534;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
+      line-height: 1.5;
     }
-    .example-badge strong { display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .example-badge strong { display: block; margin-bottom: 4px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: #15803d; }
 
     .calc-input {
       width: 100%;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 0.875rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 0.9rem;
       outline: none;
-      transition: border-color 0.2s;
+      background: white;
+      transition: border-color 0.2s, box-shadow 0.2s;
       margin-bottom: 10px;
       box-sizing: border-box;
+      color: #1e293b;
     }
-    .calc-input:focus { border-color: #0f766e; }
+    .calc-input:focus { border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15,118,110,0.1); }
 
     .calc-btn {
       color: white;
       border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
+      border-radius: 10px;
+      padding: 11px 22px;
       font-size: 0.875rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      transition: opacity 0.2s;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.01em;
     }
-    .calc-btn:hover { opacity: 0.88; }
+    .calc-btn:hover  { opacity: 0.9; }
+    .calc-btn:active { transform: scale(0.97); }
 
-    .result-line { margin-top: 14px; font-size: 1.05rem; color: #374151; text-align: center; }
-    .result-val { font-weight: 700; color: #0f766e; }
+    .result-box {
+      margin-top: 16px;
+      background: white;
+      border-radius: 12px;
+      padding: 14px 18px;
+      text-align: center;
+      border: 1.5px solid #e2e8f0;
+      font-size: 1.1rem;
+      color: #374151;
+      display: none;
+    }
+    .result-box.show { display: block; }
+    .result-val { font-weight: 800; color: #0f766e; font-size: 1.3rem; }
 
     /* animation boxes */
-    .falling-number, .number-box, .mode-box, .sd-box, .iqr-box, .range-box, .patient-box {
-      padding: 8px 12px;
+    .number-box, .mode-box, .sd-box, .iqr-box, .range-box, .patient-box {
+      padding: 9px 14px;
       background: #3b82f6;
       color: white;
       border-radius: 8px;
-      font-weight: bold;
-      animation: drop 0.4s ease;
+      font-weight: 700;
+      font-size: 0.9rem;
+      animation: drop 0.35s cubic-bezier(0.34,1.56,0.64,1);
     }
-    .falling-number { position: absolute; top: -40px; animation: fall 1s ease forwards; }
-    @keyframes fall { to { top: 120px; } }
     @keyframes drop {
-      from { transform: translateY(-20px); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
+      from { transform: translateY(-16px) scale(0.85); opacity: 0; }
+      to   { transform: translateY(0)     scale(1);    opacity: 1; }
     }
     .highlight, .mode-highlight { background: #22c55e !important; }
-    .sd-highlight { background: #f59e0b !important; }
-    .q1 { background: #22c55e !important; }
-    .q3 { background: #ef4444 !important; }
+    .sd-highlight    { background: #f59e0b !important; }
+    .q1  { background: #22c55e !important; }
+    .q3  { background: #ef4444 !important; }
     .min { background: #22c55e !important; }
     .max { background: #ef4444 !important; }
 
-    .steps-box { margin-top: 12px; font-size: 0.82rem; color: #6b7280; }
-    .steps-box div { padding: 2px 0; border-bottom: 1px dashed #f3f4f6; }
+    .visual-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; min-height: 44px; }
+    .step-log { margin-top: 10px; background: white; border-radius: 10px; padding: 10px 12px; border: 1px solid #e2e8f0; }
+    .step-log div { font-size: 0.8rem; color: #64748b; padding: 3px 0; border-bottom: 1px dashed #f1f5f9; }
+    .step-log div:last-child { border-bottom: none; }
+
 
     /* reporting */
     .report-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
@@ -337,6 +365,7 @@
   <div class="modal-box">
     <div id="modalHeader" class="modal-header">
       <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="header-icon" id="modalIcon"></div>
       <h2 id="modalTitle"></h2>
       <p id="modalDesc"></p>
     </div>
@@ -418,17 +447,18 @@
   function openModal(type) {
     const s = STATS[type];
     document.getElementById('modalHeader').style.background = s.color;
-    document.getElementById('modalTitle').textContent = s.icon + '  ' + s.title;
+    document.getElementById('modalIcon').textContent = s.icon;
+    document.getElementById('modalTitle').textContent = s.title;
     document.getElementById('modalDesc').textContent = s.desc;
     document.getElementById('modalExample').innerHTML = s.example;
     document.getElementById('modalCalc').innerHTML = `
+      <label style="font-size:0.8rem;font-weight:600;color:#64748b;display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Enter your values</label>
       <input type="text" class="calc-input" id="modalInput" placeholder="${s.placeholder}">
-      <button class="calc-btn" style="background:${s.btnColor}" onclick="${s.fn}()">${s.btnLabel}</button>
-      <div id="modalSteps" class="steps-box"></div>
-      <div id="modalVisual" class="flex flex-wrap justify-center gap-2 mt-3"></div>
-      <div id="modalAnim" class="relative h-28 mt-3 border rounded-lg bg-gray-50 overflow-hidden ${type !== 'mean' ? 'hidden' : ''}"></div>
-      <div class="result-line" id="modalResultLine"></div>
-      <div class="text-xs text-gray-400 text-center mt-1" id="modalInfo"></div>
+      <button class="calc-btn" style="background:${s.btnColor};width:100%" onclick="${s.fn}()">${s.btnLabel}</button>
+      <div id="modalVisual" class="visual-row"></div>
+      <div id="modalSteps" class="step-log" style="display:none"></div>
+      <div id="modalResult" class="result-box"></div>
+      <div class="text-xs text-gray-400 text-center mt-2" id="modalInfo"></div>
     `;
     document.getElementById('statModal').classList.add('open');
   }
@@ -445,179 +475,169 @@
   function parseInput() {
     return document.getElementById('modalInput').value.split(',').map(Number).filter(n => !isNaN(n));
   }
-  function setResult(label, val) {
-    document.getElementById('modalResultLine').innerHTML = `${label} = <span class="result-val">${val}</span>`;
+  function getEls() {
+    return {
+      vis:   document.getElementById('modalVisual'),
+      steps: document.getElementById('modalSteps'),
+      res:   document.getElementById('modalResult'),
+      info:  document.getElementById('modalInfo'),
+    };
+  }
+  function addStep(stepsEl, text) {
+    stepsEl.style.display = 'block';
+    const d = document.createElement('div'); d.textContent = text; stepsEl.appendChild(d);
+  }
+  function showResult(el, label, val) {
+    el.classList.add('show');
+    el.innerHTML = `${label} = <span class="result-val">${val}</span>`;
+  }
+  function resetEls() {
+    const {vis,steps,res,info} = getEls();
+    vis.innerHTML=''; steps.innerHTML=''; steps.style.display='none';
+    res.classList.remove('show'); res.innerHTML=''; info.textContent='';
+  }
+  async function addBox(parent, text, cls) {
+    const b=document.createElement('div'); b.className=cls; b.textContent=text; parent.appendChild(b); await delay(220);
   }
 
   /* ── MEAN ── */
   async function runMean() {
     const nums = parseInput();
-    const anim = document.getElementById('modalAnim');
-    const steps = document.getElementById('modalSteps');
-    anim.innerHTML = ''; steps.innerHTML = '';
-    setResult('Mean', '--');
-    if (!nums.length) { steps.innerHTML = "<span class='text-red-500'>Invalid input</span>"; return; }
-    let sum = 0;
-    for (let i = 0; i < nums.length; i++) {
-      const d = document.createElement('div');
-      d.className = 'falling-number';
-      d.style.left = (10 + i * 52) + 'px';
-      d.innerText = nums[i];
-      anim.appendChild(d);
-      sum += nums[i];
-      await delay(600);
-    }
-    const sd = document.createElement('div');
-    sd.className = 'mt-2 text-center font-bold text-gray-700 text-sm';
-    sd.innerText = 'Sum = ' + sum;
-    anim.appendChild(sd);
-    await delay(800);
-    setResult('Mean', (sum / nums.length).toFixed(2));
+    const {vis,steps,res,info} = getEls();
+    resetEls();
+    if (!nums.length) { addStep(steps,'⚠ Invalid input'); return; }
+    addStep(steps, `Values: ${nums.join(', ')}`);
+    for (const n of nums) await addBox(vis, n, 'number-box');
+    await delay(500);
+    const sum = nums.reduce((a,b)=>a+b,0);
+    addStep(steps, `Sum: ${nums.join(' + ')} = ${sum}`);
+    addStep(steps, `Count: ${nums.length}`);
+    await delay(400);
+    addStep(steps, `Mean = ${sum} ÷ ${nums.length} = ${(sum/nums.length).toFixed(2)}`);
+    showResult(res, 'Mean', (sum/nums.length).toFixed(2));
   }
 
   /* ── MEDIAN ── */
   async function runMedian() {
     let nums = parseInput();
-    const steps = document.getElementById('modalSteps');
-    const vis   = document.getElementById('modalVisual');
-    steps.innerHTML = ''; vis.innerHTML = '';
-    setResult('Median', '--');
-    if (!nums.length) { steps.innerHTML = "<span class='text-red-500'>Invalid input</span>"; return; }
-    steps.innerHTML += `<div>Original: ${nums.join(', ')}</div>`;
-    await delay(400);
-    for (let n of nums) { const b=document.createElement('div'); b.className='number-box'; b.innerText=n; vis.appendChild(b); await delay(250); }
-    await delay(600);
-    nums.sort((a,b) => a-b);
-    steps.innerHTML += `<div>Sorted: ${nums.join(', ')}</div>`;
-    vis.innerHTML = '';
-    for (let n of nums) { const b=document.createElement('div'); b.className='number-box'; b.innerText=n; vis.appendChild(b); await delay(250); }
-    await delay(600);
-    const mid = Math.floor(nums.length / 2);
-    if (nums.length % 2 === 0) {
+    const {vis,steps,res} = getEls();
+    resetEls();
+    if (!nums.length) { addStep(steps,'⚠ Invalid input'); return; }
+    addStep(steps, `Original: ${nums.join(', ')}`);
+    for (const n of nums) await addBox(vis, n, 'number-box');
+    await delay(500);
+    nums.sort((a,b)=>a-b);
+    addStep(steps, `Sorted: ${nums.join(', ')}`);
+    vis.innerHTML='';
+    for (const n of nums) await addBox(vis, n, 'number-box');
+    await delay(500);
+    const mid = Math.floor(nums.length/2);
+    if (nums.length%2===0) {
       vis.children[mid-1].classList.add('highlight');
       vis.children[mid].classList.add('highlight');
-      await delay(600);
-      const m = (nums[mid-1]+nums[mid])/2;
-      steps.innerHTML += `<div>Median = (${nums[mid-1]}+${nums[mid]}) / 2</div>`;
-      setResult('Median', m.toFixed(2));
+      await delay(500);
+      const m=(nums[mid-1]+nums[mid])/2;
+      addStep(steps, `Median = (${nums[mid-1]} + ${nums[mid]}) ÷ 2 = ${m.toFixed(2)}`);
+      showResult(res, 'Median', m.toFixed(2));
     } else {
       vis.children[mid].classList.add('highlight');
-      await delay(600);
-      steps.innerHTML += `<div>Median = ${nums[mid]}</div>`;
-      setResult('Median', nums[mid].toFixed(2));
+      await delay(500);
+      addStep(steps, `Middle value at position ${mid+1} = ${nums[mid]}`);
+      showResult(res, 'Median', nums[mid].toFixed(2));
     }
   }
 
   /* ── MODE ── */
   async function runMode() {
     const nums = parseInput();
-    const steps = document.getElementById('modalSteps');
-    const vis   = document.getElementById('modalVisual');
-    const info  = document.getElementById('modalInfo');
-    steps.innerHTML = ''; vis.innerHTML = ''; info.innerText = '';
-    setResult('Mode', '--');
-    if (!nums.length) { steps.innerHTML = "<span class='text-red-500'>Invalid input</span>"; return; }
-    steps.innerHTML += `<div>Numbers: ${nums.join(', ')}</div>`;
-    await delay(400);
-    for (let n of nums) { const b=document.createElement('div'); b.className='mode-box'; b.innerText=n; vis.appendChild(b); await delay(200); }
-    await delay(600);
-    const freq = {};
-    for (let n of nums) { freq[n]=(freq[n]||0)+1; steps.innerHTML+=`<div>Counting ${n} → ${freq[n]}</div>`; await delay(250); }
-    const maxF = Math.max(...Object.values(freq));
-    const modes = Object.keys(freq).filter(k => freq[k]===maxF);
-    await delay(400);
-    Array.from(vis.children).forEach(b => { if (modes.includes(b.innerText)) b.classList.add('mode-highlight'); });
-    if (maxF === 1) { setResult('Mode', 'No mode'); info.innerText = 'All values appear once'; }
-    else { setResult('Mode', modes.join(', ')); info.innerText = `Frequency: ${maxF} | Total: ${nums.length}`; }
+    const {vis,steps,res,info} = getEls();
+    resetEls();
+    if (!nums.length) { addStep(steps,'⚠ Invalid input'); return; }
+    addStep(steps, `Numbers: ${nums.join(', ')}`);
+    for (const n of nums) await addBox(vis, n, 'mode-box');
+    await delay(500);
+    const freq={};
+    for (const n of nums) { freq[n]=(freq[n]||0)+1; addStep(steps,`Count ${n} → appears ${freq[n]}×`); await delay(200); }
+    const maxF=Math.max(...Object.values(freq));
+    const modes=Object.keys(freq).filter(k=>freq[k]===maxF);
+    await delay(300);
+    Array.from(vis.children).forEach(b=>{ if(modes.includes(b.textContent)) b.classList.add('mode-highlight'); });
+    if (maxF===1) { showResult(res,'Mode','No mode'); info.textContent='All values appear once'; }
+    else { showResult(res,'Mode',modes.join(', ')); info.textContent=`Frequency: ${maxF}× | Total values: ${nums.length}`; }
   }
 
   /* ── SD ── */
   async function runSD() {
     const nums = parseInput();
-    const steps = document.getElementById('modalSteps');
-    const vis   = document.getElementById('modalVisual');
-    const info  = document.getElementById('modalInfo');
-    steps.innerHTML = ''; vis.innerHTML = ''; info.innerText = '';
-    setResult('SD', '--');
-    if (!nums.length) { steps.innerHTML = "<span class='text-red-500'>Invalid input</span>"; return; }
-    steps.innerHTML += `<div>Numbers: ${nums.join(', ')}</div>`;
-    await delay(400);
-    for (let n of nums) { const b=document.createElement('div'); b.className='sd-box'; b.innerText=n; vis.appendChild(b); await delay(200); }
+    const {vis,steps,res,info} = getEls();
+    resetEls();
+    if (!nums.length) { addStep(steps,'⚠ Invalid input'); return; }
+    addStep(steps, `Values: ${nums.join(', ')}`);
+    for (const n of nums) await addBox(vis, n, 'sd-box');
     await delay(500);
-    const mean = nums.reduce((a,b)=>a+b,0)/nums.length;
-    steps.innerHTML += `<div>Mean = ${mean.toFixed(2)}</div>`; await delay(600);
-    const sq = [];
+    const mean=nums.reduce((a,b)=>a+b,0)/nums.length;
+    addStep(steps, `Mean = ${mean.toFixed(2)}`); await delay(400);
+    const sq=[];
     for (let i=0;i<nums.length;i++) {
       const d=nums[i]-mean, s=d*d; sq.push(s);
       vis.children[i].classList.add('sd-highlight');
-      steps.innerHTML+=`<div>(${nums[i]} − ${mean.toFixed(2)})² = ${s.toFixed(2)}</div>`; await delay(350);
+      addStep(steps,`(${nums[i]} − ${mean.toFixed(2)})² = ${s.toFixed(3)}`); await delay(300);
     }
-    await delay(500);
-    const variance = sq.reduce((a,b)=>a+b,0)/nums.length;
-    steps.innerHTML += `<div>Variance = ${variance.toFixed(2)}</div>`; await delay(500);
-    const sd = Math.sqrt(variance);
-    steps.innerHTML += `<div>SD = √${variance.toFixed(2)} = ${sd.toFixed(2)}</div>`;
-    setResult('SD', sd.toFixed(2));
-    info.innerText = `Mean = ${mean.toFixed(2)} | n = ${nums.length}`;
+    await delay(400);
+    const variance=sq.reduce((a,b)=>a+b,0)/nums.length;
+    addStep(steps,`Variance = ${variance.toFixed(3)}`); await delay(400);
+    const sd=Math.sqrt(variance);
+    addStep(steps,`SD = √${variance.toFixed(3)} = ${sd.toFixed(3)}`);
+    showResult(res,'SD',sd.toFixed(3));
+    info.textContent=`Mean = ${mean.toFixed(2)} | n = ${nums.length}`;
   }
 
   /* ── IQR ── */
   async function runIQR() {
     let nums = parseInput();
-    const steps = document.getElementById('modalSteps');
-    const vis   = document.getElementById('modalVisual');
-    const info  = document.getElementById('modalInfo');
-    steps.innerHTML = ''; vis.innerHTML = ''; info.innerText = '';
-    setResult('IQR', '--');
-    if (nums.length < 4) { steps.innerHTML = "<span class='text-red-500'>Need at least 4 values</span>"; return; }
-    steps.innerHTML += `<div>Original: ${nums.join(', ')}</div>`; await delay(400);
-    for (let n of nums) { const b=document.createElement('div'); b.className='iqr-box'; b.innerText=n; vis.appendChild(b); await delay(200); }
-    await delay(600);
+    const {vis,steps,res,info} = getEls();
+    resetEls();
+    if (nums.length<4) { addStep(steps,'⚠ Need at least 4 values'); return; }
+    addStep(steps,`Original: ${nums.join(', ')}`);
+    for (const n of nums) await addBox(vis, n, 'iqr-box');
+    await delay(500);
     nums.sort((a,b)=>a-b);
-    steps.innerHTML += `<div>Sorted: ${nums.join(', ')}</div>`;
-    vis.innerHTML = '';
-    for (let n of nums) { const b=document.createElement('div'); b.className='iqr-box'; b.innerText=n; vis.appendChild(b); await delay(200); }
-    await delay(600);
-    function med(a) { const m=Math.floor(a.length/2); return a.length%2===0?(a[m-1]+a[m])/2:a[m]; }
+    addStep(steps,`Sorted: ${nums.join(', ')}`);
+    vis.innerHTML='';
+    for (const n of nums) await addBox(vis, n, 'iqr-box');
+    await delay(500);
+    const medFn=a=>{ const m=Math.floor(a.length/2); return a.length%2===0?(a[m-1]+a[m])/2:a[m]; };
     const mid=Math.floor(nums.length/2);
     const lower=nums.slice(0,mid), upper=nums.slice(nums.length%2===0?mid:mid+1);
-    steps.innerHTML += `<div>Lower: ${lower.join(', ')}</div>`; await delay(500);
-    steps.innerHTML += `<div>Upper: ${upper.join(', ')}</div>`; await delay(500);
-    const Q1=med(lower), Q3=med(upper);
-    steps.innerHTML += `<div>Q1 = ${Q1}</div>`; await delay(400);
-    steps.innerHTML += `<div>Q3 = ${Q3}</div>`; await delay(400);
-    Array.from(vis.children).forEach(b => {
-      if (Number(b.innerText)===Q1) b.classList.add('q1');
-      if (Number(b.innerText)===Q3) b.classList.add('q3');
-    });
-    await delay(600);
+    addStep(steps,`Lower half: ${lower.join(', ')}`); await delay(400);
+    addStep(steps,`Upper half: ${upper.join(', ')}`); await delay(400);
+    const Q1=medFn(lower), Q3=medFn(upper);
+    addStep(steps,`Q1 = ${Q1}`); await delay(300);
+    addStep(steps,`Q3 = ${Q3}`); await delay(300);
+    Array.from(vis.children).forEach(b=>{ if(Number(b.textContent)===Q1) b.classList.add('q1'); if(Number(b.textContent)===Q3) b.classList.add('q3'); });
+    await delay(500);
     const IQR=Q3-Q1;
-    steps.innerHTML += `<div>IQR = ${Q3} − ${Q1} = ${IQR}</div>`;
-    setResult('IQR', IQR.toFixed(2));
-    info.innerText = `Q1 = ${Q1} | Q3 = ${Q3}`;
+    addStep(steps,`IQR = ${Q3} − ${Q1} = ${IQR}`);
+    showResult(res,'IQR',IQR.toFixed(2));
+    info.textContent=`Q1 = ${Q1} | Q3 = ${Q3}`;
   }
 
   /* ── RANGE ── */
   async function runRange() {
     const nums = parseInput();
-    const steps = document.getElementById('modalSteps');
-    const vis   = document.getElementById('modalVisual');
-    steps.innerHTML = ''; vis.innerHTML = '';
-    setResult('Range', '--');
-    if (!nums.length) { steps.innerHTML = 'Invalid input'; return; }
-    steps.innerHTML += `<div>Numbers: ${nums.join(', ')}</div>`; await delay(400);
-    for (let n of nums) { const b=document.createElement('div'); b.className='range-box'; b.innerText=n; vis.appendChild(b); await delay(200); }
+    const {vis,steps,res} = getEls();
+    resetEls();
+    if (!nums.length) { addStep(steps,'⚠ Invalid input'); return; }
+    addStep(steps,`Numbers: ${nums.join(', ')}`);
+    for (const n of nums) await addBox(vis, n, 'range-box');
     await delay(500);
     const mn=Math.min(...nums), mx=Math.max(...nums);
-    steps.innerHTML += `<div>Min = ${mn}, Max = ${mx}</div>`;
-    Array.from(vis.children).forEach(b => {
-      if (Number(b.innerText)===mn) b.classList.add('min');
-      if (Number(b.innerText)===mx) b.classList.add('max');
-    });
-    await delay(600);
+    addStep(steps,`Min = ${mn}  (green)  |  Max = ${mx}  (red)`);
+    Array.from(vis.children).forEach(b=>{ if(Number(b.textContent)===mn) b.classList.add('min'); if(Number(b.textContent)===mx) b.classList.add('max'); });
+    await delay(500);
     const range=mx-mn;
-    steps.innerHTML += `<div>Range = ${mx} − ${mn} = ${range}</div>`;
-    setResult('Range', range);
+    addStep(steps,`Range = ${mx} − ${mn} = ${range}`);
+    showResult(res,'Range',range);
   }
 
   /* ── SIMULATION ── */
