@@ -37,31 +37,36 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <div class="relative overflow-hidden">
+    <!-- Hero Section with Animated Canvas -->
+    <div class="relative overflow-hidden" id="hero-section">
         <div class="absolute inset-0 gradient-bg"></div>
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.03\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
-       
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
-                Master Dental <span class="text-teal-300">Biostatistics</span>
+        <canvas id="hero-canvas"></canvas>
+
+        <div class="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6" style="text-shadow: 0 2px 20px rgba(0,0,0,0.3);">
+                Master Dental <span class="text-teal-300" style="text-shadow: 0 0 30px rgba(45,212,191,0.4);">Biostatistics</span>
             </h1>
-            <p class="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto mb-8" style="text-shadow: 0 1px 10px rgba(0,0,0,0.3);">
                 Interactive tools and visualizations designed specifically for dental research.
                 From basic descriptive statistics to advanced survival analysis.
             </p>
-           
+
             <!-- Difficulty Selector -->
             <div class="flex justify-center space-x-4 mb-12">
-                <button onclick="setDifficulty('beginner')" id="btn-beginner" class="difficulty-btn px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 bg-white/20 text-white border-2 border-white/30">
+                <button onclick="setDifficulty('beginner')" id="btn-beginner" class="difficulty-btn btn-ripple px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 bg-white/20 text-white border-2 border-white/30">
                     <i data-lucide="book-open" class="w-4 h-4 inline mr-2"></i>Beginner
                 </button>
-                <button onclick="setDifficulty('intermediate')" id="btn-intermediate" class="difficulty-btn px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 bg-white/20 text-white border-2 border-white/30">
+                <button onclick="setDifficulty('intermediate')" id="btn-intermediate" class="difficulty-btn btn-ripple px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 bg-white/20 text-white border-2 border-white/30">
                     <i data-lucide="brain" class="w-4 h-4 inline mr-2"></i>Intermediate
                 </button>
-                <button onclick="setDifficulty('advanced')" id="btn-advanced" class="difficulty-btn px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 bg-white/20 text-white border-2 border-white/30">
+                <button onclick="setDifficulty('advanced')" id="btn-advanced" class="difficulty-btn btn-ripple px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 bg-white/20 text-white border-2 border-white/30">
                     <i data-lucide="microscope" class="w-4 h-4 inline mr-2"></i>Advanced
                 </button>
+            </div>
+
+            <!-- Scroll indicator -->
+            <div class="animate-bounce mt-4">
+                <i data-lucide="chevrons-down" class="w-6 h-6 text-teal-300/60 mx-auto"></i>
             </div>
         </div>
     </div>
@@ -93,74 +98,90 @@
 
         <!-- Interactive Visual Playground -->
         <section id="visual-playground" class="mb-16">
-            <h2 class="text-3xl font-bold text-gray-800 mb-2 flex items-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2 flex items-center reveal section-title">
                 <i data-lucide="play-circle" class="w-8 h-8 mr-3 text-teal-600"></i>
                 Visual Probability Playground
             </h2>
-            <p class="text-gray-600 mb-8">Interactive simulations inspired by Seeing Theory - click and drag to explore statistical concepts</p>
+            <p class="text-gray-600 mb-8 reveal" style="transition-delay: 100ms;">Interactive simulations — click and explore statistical concepts through beautiful animations</p>
            
             <!-- Simulation 1: Central Limit Theorem Visualizer -->
-            <div class="glass-panel rounded-2xl p-6 shadow-xl mb-8 border-t-4 border-teal-500">
-                <div class="flex justify-between items-start mb-4">
+            <div class="glass-panel rounded-2xl p-6 shadow-xl mb-8 sim-panel reveal" id="clt-panel">
+                <div class="flex flex-col sm:flex-row justify-between items-start mb-5 gap-3">
                     <div>
                         <h3 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i data-lucide="activity" class="w-5 h-5 mr-2 text-teal-600"></i>
+                            <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center mr-2 shadow-md">
+                                <i data-lucide="activity" class="w-4 h-4 text-white"></i>
+                            </span>
                             Central Limit Theorem Visualizer
                         </h3>
-                        <p class="text-sm text-gray-600 mt-1">Watch how sample means converge to normal distribution regardless of population shape</p>
+                        <p class="text-sm text-gray-500 mt-1 ml-10">Watch sample means converge to a normal distribution — regardless of the population shape</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <button onclick="startCLTSimulation()" id="clt-start" class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition flex items-center text-sm font-medium">
-                            <i data-lucide="play" class="w-4 h-4 mr-1"></i> Start
+                    <div class="flex space-x-2 ml-10 sm:ml-0">
+                        <button onclick="startCLTSimulation()" id="clt-start" class="btn-ripple px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-xl hover:shadow-lg hover:shadow-teal-500/20 transition-all flex items-center text-sm font-semibold">
+                            <i data-lucide="play" class="w-4 h-4 mr-1.5"></i> Start
                         </button>
-                        <button onclick="resetCLT()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center text-sm font-medium">
+                        <button onclick="resetCLT()" class="btn-ripple px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-all flex items-center text-sm font-medium">
                             <i data-lucide="rotate-ccw" class="w-4 h-4 mr-1"></i> Reset
                         </button>
                     </div>
                 </div>
-               
+
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Left: Controls -->
                     <div class="lg:col-span-1 space-y-4">
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Population Distribution</label>
-                            <select id="clt-distribution" class="w-full border rounded-lg px-3 py-2 mb-3" onchange="updateCLTDistribution()">
+                        <div class="bg-gradient-to-b from-gray-50 to-white rounded-xl p-4 border border-gray-100">
+                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Population Shape</label>
+                            <select id="clt-distribution" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm font-medium bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition" onchange="updateCLTDistribution()">
                                 <option value="uniform">Uniform (Flat)</option>
                                 <option value="exponential">Exponential (Skewed)</option>
                                 <option value="bimodal">Bimodal (Two Peaks)</option>
-                                <option value="dental">Dental Scenario (Right-skewed DMFT)</option>
+                                <option value="dental">Dental DMFT (Right-skewed)</option>
                             </select>
-                            <canvas id="populationCanvas" width="250" height="150" class="w-full border rounded bg-white"></canvas>
+                            <div class="relative">
+                                <canvas id="populationCanvas" width="250" height="150" class="w-full rounded-lg bg-white shadow-inner"></canvas>
+                            </div>
                         </div>
-                       
-                        <div class="space-y-3">
+
+                        <div class="space-y-3 px-1">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Sample Size (n)</label>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Sample Size</label>
                                 <input type="range" id="clt-n" min="1" max="100" value="30" class="w-full accent-teal-600" oninput="updateCLTParams()">
-                                <div class="flex justify-between text-xs text-gray-500"><span>n=1</span><span id="clt-n-val">n=30</span><span>n=100</span></div>
+                                <div class="flex justify-between text-xs text-gray-400 mt-0.5"><span>n=1</span><span id="clt-n-val" class="font-semibold text-teal-700 text-sm">n=30</span><span>n=100</span></div>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Sampling Speed</label>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Speed</label>
                                 <input type="range" id="clt-speed" min="1" max="10" value="5" class="w-full accent-teal-600">
                             </div>
                         </div>
-                       
-                        <div class="bg-teal-50 rounded-lg p-3 border border-teal-200">
-                            <p class="text-sm text-teal-800 font-medium">Samples Drawn: <span id="clt-count" class="text-2xl font-bold">0</span></p>
-                            <p class="text-xs text-teal-600 mt-1">Mean of means: <span id="clt-grand-mean">-</span></p>
+
+                        <!-- Live stats -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="stat-card bg-gradient-to-br from-teal-50 to-emerald-50 rounded-xl p-3 border border-teal-100 text-center">
+                                <p class="text-[10px] font-semibold text-teal-600 uppercase tracking-wider">Samples</p>
+                                <p id="clt-count" class="text-2xl font-bold text-teal-800 counter-animate">0</p>
+                            </div>
+                            <div class="stat-card bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-100 text-center">
+                                <p class="text-[10px] font-semibold text-blue-600 uppercase tracking-wider">Grand Mean</p>
+                                <p id="clt-grand-mean" class="text-lg font-bold text-blue-800 mt-0.5">-</p>
+                            </div>
                         </div>
                     </div>
-                   
+
+                    <!-- Right: Histogram canvas -->
                     <div class="lg:col-span-2">
-                        <div class="relative h-80 bg-white rounded-lg border p-2">
+                        <div class="relative h-80 bg-gradient-to-b from-white to-gray-50/50 rounded-xl border border-gray-200 p-2 shadow-inner">
                             <canvas id="cltCanvas" class="w-full h-full"></canvas>
-                            <div id="clt-overlay" class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-lg">
+                            <div id="clt-overlay" class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm rounded-xl">
                                 <div class="text-center">
-                                    <i data-lucide="play-circle" class="w-12 h-12 text-teal-600 mx-auto mb-2"></i>
-                                    <p class="text-gray-600 font-medium">Click Start to Begin Sampling</p>
+                                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-teal-500/20">
+                                        <i data-lucide="play" class="w-8 h-8 text-white"></i>
+                                    </div>
+                                    <p class="text-gray-700 font-semibold text-base">Click Start to Begin</p>
+                                    <p class="text-gray-400 text-xs mt-1">Watch the Central Limit Theorem in action</p>
                                 </div>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-500 mt-2 text-center">This shows the distribution of sample means forming a normal curve</p>
+                        <p class="text-xs text-gray-400 mt-2 text-center italic">Sample means gradually form a bell curve — the heart of the Central Limit Theorem</p>
                     </div>
                 </div>
             </div>
@@ -232,47 +253,58 @@
             </div> -->
 
             <!-- Simulation 3: Confidence Interval Dance -->
-            <div class="glass-panel rounded-2xl p-6 shadow-xl mb-8 border-t-4 border-purple-500">
-                <div class="flex justify-between items-start mb-4">
+            <div class="glass-panel rounded-2xl p-6 shadow-xl mb-8 sim-panel reveal" id="ci-panel">
+                <div class="flex flex-col sm:flex-row justify-between items-start mb-5 gap-3">
                     <div>
                         <h3 class="text-xl font-bold text-gray-800 flex items-center">
-                            <i data-lucide="refresh-cw" class="w-5 h-5 mr-2 text-purple-600"></i>
+                            <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center mr-2 shadow-md">
+                                <i data-lucide="refresh-cw" class="w-4 h-4 text-white"></i>
+                            </span>
                             Confidence Interval Dance
                         </h3>
-                        <p class="text-sm text-gray-600 mt-1">Visualize how 95% of intervals capture the true mean (shown in red)</p>
+                        <p class="text-sm text-gray-500 mt-1 ml-10">See why "95% confident" means 95% of intervals capture the true mean</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <button onclick="startCIDance()" id="ci-dance-start" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm font-medium">Run 100 Samples</button>
-                        <button onclick="resetCIDance()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium">Clear</button>
+                    <div class="flex space-x-2 ml-10 sm:ml-0">
+                        <button onclick="startCIDance()" id="ci-dance-start" class="btn-ripple px-5 py-2.5 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all text-sm font-semibold">Run 100 Samples</button>
+                        <button onclick="resetCIDance()" class="btn-ripple px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-all text-sm font-medium">Clear</button>
                     </div>
                 </div>
-               
-                <canvas id="ciDanceCanvas" class="w-full rounded-lg border bg-white" style="height:340px;display:block;"></canvas>
-               
-                <div class="mt-4 flex justify-between items-center bg-purple-50 rounded-lg p-3">
-                    <div class="text-sm text-purple-900">
-                        <span class="font-bold" id="ci-capture-count">0</span> of <span id="ci-total-count">0</span> intervals capture the mean
-                        (<span id="ci-percentage">0</span>%)
+
+                <div class="relative rounded-xl border border-gray-200 bg-gradient-to-b from-white to-gray-50/50 shadow-inner overflow-hidden">
+                    <canvas id="ciDanceCanvas" class="w-full" style="height:340px;display:block;"></canvas>
+                </div>
+
+                <div class="mt-4 grid grid-cols-3 gap-3">
+                    <div class="stat-card bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-3 text-center border border-purple-100">
+                        <p class="text-[10px] font-semibold text-purple-600 uppercase tracking-wider">Captured</p>
+                        <p class="text-2xl font-bold text-purple-800" id="ci-capture-count">0</p>
                     </div>
-                    <div class="text-xs text-purple-700">Target: ~95%</div>
+                    <div class="stat-card bg-gradient-to-br from-gray-50 to-slate-50 rounded-xl p-3 text-center border border-gray-100">
+                        <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Total</p>
+                        <p class="text-2xl font-bold text-gray-700" id="ci-total-count">0</p>
+                    </div>
+                    <div class="stat-card bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-3 text-center border border-emerald-100">
+                        <p class="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider">Capture Rate</p>
+                        <p class="text-2xl font-bold text-emerald-800"><span id="ci-percentage">0</span>%</p>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Concepts Grid -->
         <section id="concepts" class="mb-16">
-            <h2 class="text-3xl font-bold text-gray-800 mb-2">Statistical Concepts Explorer</h2>
-            <p class="text-gray-600 mb-8">Click cards to launch interactive visualizations</p>
-           
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="concepts-grid">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2 reveal section-title">Statistical Concepts Explorer</h2>
+            <p class="text-gray-600 mb-8 reveal" style="transition-delay: 100ms;">Click cards to launch interactive visualizations</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children" id="concepts-grid">
                 <!-- Concepts will be populated by JavaScript with interactive elements -->
             </div>
         </section>
 
         <!-- Interactive Calculators -->
         <section id="calculators" class="mb-16">
-            <h2 class="text-3xl font-bold text-gray-800 mb-2">Interactive Calculators</h2>
-            <p class="text-gray-600 mb-8">Practical tools for dental research calculations</p>
+            <h2 class="text-3xl font-bold text-gray-800 mb-2 reveal section-title">Interactive Calculators</h2>
+            <p class="text-gray-600 mb-8 reveal" style="transition-delay: 100ms;">Practical tools for dental research calculations</p>
            
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                
@@ -564,33 +596,33 @@
 
         <!-- Educational Content Cards -->
           <section class="mb-16">
-            <h2 class="text-3xl font-bold text-gray-800 mb-2">Learning Resources</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                <a href="/learning/descriptive/descriptive-statistics.html" class="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition block">
-                    <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center mb-4">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2 reveal section-title">Learning Resources</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 stagger-children">
+                <a href="/learning/descriptive/descriptive-statistics.html" class="learning-card bg-white rounded-xl shadow-md p-6 block" style="--card-accent: #0d9488;">
+                    <div class="w-12 h-12 bg-gradient-to-br from-teal-100 to-emerald-100 rounded-xl flex items-center justify-center mb-4 shadow-sm">
                         <i data-lucide="table" class="w-6 h-6 text-teal-600"></i>
                     </div>
                     <h3 class="font-bold text-gray-800 mb-2">Descriptive Statistics</h3>
                     <p class="text-sm text-gray-600">Mean, median, mode, standard deviation in dental contexts</p>
-                    <span class="inline-block mt-3 text-teal-600 text-sm font-medium">Open full page →</span>
+                    <span class="inline-flex items-center mt-3 text-teal-600 text-sm font-medium">Open full page <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i></span>
                 </a>
-               
-                <a href="/learning/hypothesis/hypothesis-testing.html" class="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition block">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+
+                <a href="/learning/hypothesis/hypothesis-testing.html" class="learning-card bg-white rounded-xl shadow-md p-6 block" style="--card-accent: #3b82f6;">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center mb-4 shadow-sm">
                         <i data-lucide="help-circle" class="w-6 h-6 text-blue-600"></i>
                     </div>
                     <h3 class="font-bold text-gray-800 mb-2">Hypothesis Testing</h3>
                     <p class="text-sm text-gray-600">Null vs alternative hypotheses, Type I & II errors</p>
-                    <span class="inline-block mt-3 text-blue-600 text-sm font-medium">Open full page →</span>
+                    <span class="inline-flex items-center mt-3 text-blue-600 text-sm font-medium">Open full page <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i></span>
                 </a>
-               
-                <a href="/learning/regression/regression-analysis.html" class="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition block">
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+
+                <a href="/learning/regression/regression-analysis.html" class="learning-card bg-white rounded-xl shadow-md p-6 block" style="--card-accent: #8b5cf6;">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-100 to-violet-100 rounded-xl flex items-center justify-center mb-4 shadow-sm">
                         <i data-lucide="trending-up" class="w-6 h-6 text-purple-600"></i>
                     </div>
                     <h3 class="font-bold text-gray-800 mb-2">Regression Analysis</h3>
                     <p class="text-sm text-gray-600">Linear and logistic regression for dental outcomes</p>
-                    <span class="inline-block mt-3 text-purple-600 text-sm font-medium">Open full page →</span>
+                    <span class="inline-flex items-center mt-3 text-purple-600 text-sm font-medium">Open full page <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i></span>
                 </a>
             </div>
         </section> 
@@ -646,19 +678,223 @@
     <script src="{% static 'js/script.js' %}"></script>
     <script>
         lucide.createIcons();
-       
-        // Initialize with beginner level
+
+        // ═══════════════════════════════════════════════════
+        // ANIMATED HERO CANVAS — floating particles + curves
+        // ═══════════════════════════════════════════════════
+        (function() {
+            const canvas = document.getElementById('hero-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            let W, H, mouse = { x: -1000, y: -1000 };
+            const particles = [];
+            const curves = [];
+            const PARTICLE_COUNT = 60;
+
+            function resize() {
+                const rect = canvas.parentElement.getBoundingClientRect();
+                W = rect.width; H = rect.height;
+                canvas.width = W * dpr;
+                canvas.height = H * dpr;
+                canvas.style.width = W + 'px';
+                canvas.style.height = H + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+
+            // Particle types: dots, small bell-curve icons, plus signs, circles
+            function createParticle() {
+                const types = ['dot', 'dot', 'dot', 'ring', 'plus', 'curve'];
+                return {
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.3,
+                    size: Math.random() * 3 + 1.5,
+                    alpha: Math.random() * 0.3 + 0.08,
+                    type: types[Math.floor(Math.random() * types.length)],
+                    phase: Math.random() * Math.PI * 2
+                };
+            }
+
+            // Floating bell curves in the background
+            function createCurve() {
+                return {
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    width: Math.random() * 80 + 40,
+                    height: Math.random() * 30 + 15,
+                    alpha: Math.random() * 0.06 + 0.02,
+                    vx: (Math.random() - 0.5) * 0.2,
+                    vy: (Math.random() - 0.5) * 0.15,
+                    rotation: Math.random() * 0.3 - 0.15
+                };
+            }
+
+            function init() {
+                resize();
+                particles.length = 0;
+                curves.length = 0;
+                for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(createParticle());
+                for (let i = 0; i < 5; i++) curves.push(createCurve());
+            }
+
+            function drawBellCurve(cx, cy, w, h, alpha) {
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.strokeStyle = '#5eead4';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                for (let i = -1; i <= 1; i += 0.02) {
+                    const px = cx + i * w / 2;
+                    const py = cy - Math.exp(-0.5 * (i * 3) ** 2) * h;
+                    if (i === -1) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            function animate(time) {
+                ctx.clearRect(0, 0, W, H);
+
+                // Draw floating bell curves
+                curves.forEach(c => {
+                    c.x += c.vx;
+                    c.y += c.vy;
+                    if (c.x < -100 || c.x > W + 100) c.vx *= -1;
+                    if (c.y < -50 || c.y > H + 50) c.vy *= -1;
+                    drawBellCurve(c.x, c.y, c.width, c.height, c.alpha);
+                });
+
+                // Draw and update particles
+                particles.forEach(p => {
+                    p.phase += 0.008;
+                    p.x += p.vx;
+                    p.y += p.vy + Math.sin(p.phase) * 0.15;
+
+                    // Wrap around
+                    if (p.x < -10) p.x = W + 10;
+                    if (p.x > W + 10) p.x = -10;
+                    if (p.y < -10) p.y = H + 10;
+                    if (p.y > H + 10) p.y = -10;
+
+                    // Mouse repulsion
+                    const dx = p.x - mouse.x;
+                    const dy = p.y - mouse.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        const force = (120 - dist) / 120 * 0.8;
+                        p.x += (dx / dist) * force;
+                        p.y += (dy / dist) * force;
+                    }
+
+                    ctx.save();
+                    ctx.globalAlpha = p.alpha + Math.sin(p.phase) * 0.05;
+
+                    if (p.type === 'dot') {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        ctx.fillStyle = '#99f6e4';
+                        ctx.fill();
+                    } else if (p.type === 'ring') {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
+                        ctx.strokeStyle = '#5eead4';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    } else if (p.type === 'plus') {
+                        const s = p.size * 1.5;
+                        ctx.strokeStyle = '#a7f3d0';
+                        ctx.lineWidth = 1.2;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x - s, p.y); ctx.lineTo(p.x + s, p.y);
+                        ctx.moveTo(p.x, p.y - s); ctx.lineTo(p.x, p.y + s);
+                        ctx.stroke();
+                    } else if (p.type === 'curve') {
+                        drawBellCurve(p.x, p.y, 20, 10, p.alpha * 2);
+                    }
+
+                    ctx.restore();
+                });
+
+                // Draw connections between nearby particles
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 100) {
+                            ctx.save();
+                            ctx.globalAlpha = (1 - dist / 100) * 0.06;
+                            ctx.strokeStyle = '#5eead4';
+                            ctx.lineWidth = 0.5;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                            ctx.restore();
+                        }
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            // Track mouse over hero
+            document.getElementById('hero-section').addEventListener('mousemove', e => {
+                const rect = canvas.getBoundingClientRect();
+                mouse.x = e.clientX - rect.left;
+                mouse.y = e.clientY - rect.top;
+            });
+            document.getElementById('hero-section').addEventListener('mouseleave', () => {
+                mouse.x = -1000; mouse.y = -1000;
+            });
+
+            window.addEventListener('resize', init);
+            init();
+            requestAnimationFrame(animate);
+        })();
+
+        // ═══════════════════════════════════════════════════
+        // SCROLL REVEAL OBSERVER
+        // ═══════════════════════════════════════════════════
+        (function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+            document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .stagger-children, .section-title').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Re-observe dynamically added concept cards
+            const conceptsGrid = document.getElementById('concepts-grid');
+            if (conceptsGrid) {
+                const gridObserver = new MutationObserver(() => {
+                    conceptsGrid.classList.add('visible');
+                });
+                gridObserver.observe(conceptsGrid, { childList: true });
+            }
+        })();
+
+        // ═══════════════════════════════════════════════════
+        // INITIALIZATION
+        // ═══════════════════════════════════════════════════
         window.onload = function() {
             setDifficulty('beginner');
             initializeCharts();
             initCLTCanvas();
             initLLNChart();
             initCICanvas();
-           
-            // Handle window resize for canvas
+
             window.addEventListener('resize', () => {
                 initCLTCanvas();
-                if (simState.probability.chart) {
+                if (simState.probability && simState.probability.chart) {
                     simState.probability.chart.resize();
                 }
             });

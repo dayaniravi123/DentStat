@@ -952,7 +952,10 @@ function drawPopulationDistribution() {
     pts.forEach(p => ctx.lineTo(PAD.left + p.t * pw, PAD.top + ph - p.y * ph * 0.88));
     ctx.lineTo(PAD.left + pw, PAD.top + ph);
     ctx.closePath();
-    ctx.fillStyle = 'rgba(13,148,136,0.10)';
+    const fillGrad = ctx.createLinearGradient(0, PAD.top, 0, PAD.top + ph);
+    fillGrad.addColorStop(0, 'rgba(13,148,136,0.18)');
+    fillGrad.addColorStop(1, 'rgba(13,148,136,0.03)');
+    ctx.fillStyle = fillGrad;
     ctx.fill();
 
     // Draw curve
@@ -1537,23 +1540,40 @@ function drawCICanvas() {
     const canvas = document.getElementById('ciDanceCanvas');
     if (!canvas) return;
     const dpr = window.devicePixelRatio || 1;
-    const W = canvas.width / dpr;
-    const H = canvas.height / dpr;
+    const dw = canvas.offsetWidth;
+    const dh = canvas.offsetHeight;
+    if (dw === 0 || dh === 0) return;
+    canvas.width = dw * dpr;
+    canvas.height = dh * dpr;
     const ctx = canvas.getContext('2d');
     ctx.save();
     ctx.scale(dpr, dpr);
+    const W = dw, H = dh;
 
     const PAD = { top: 36, right: 20, bottom: 28, left: 20 };
     const pw = W - PAD.left - PAD.right;
     const ph = H - PAD.top - PAD.bottom;
 
     ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#fafafa';
+
+    // Soft background
+    ctx.fillStyle = '#f8fafe';
     ctx.fillRect(0, 0, W, H);
 
-    // Convert value to x pixel
     const toX = v => PAD.left + ((v - CI_SCALE[0]) / (CI_SCALE[1] - CI_SCALE[0])) * pw;
     const tx = toX(CI_TRUE_MEAN);
+
+    // Subtle vertical grid
+    ctx.strokeStyle = '#f0f0f5';
+    ctx.lineWidth = 0.5;
+    for (let v = 20; v <= 80; v += 5) {
+        const x = toX(v);
+        ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + ph); ctx.stroke();
+    }
+
+    // True mean highlight band (subtle)
+    ctx.fillStyle = 'rgba(220, 38, 38, 0.04)';
+    ctx.fillRect(tx - 1.5, PAD.top, 3, ph);
 
     // True mean vertical line
     ctx.strokeStyle = '#dc2626';
@@ -1564,23 +1584,39 @@ function drawCICanvas() {
     ctx.lineTo(tx, PAD.top + ph);
     ctx.stroke();
 
-    // True mean label
+    // True mean label with badge
     ctx.fillStyle = '#dc2626';
-    ctx.font = 'bold 11px Inter,sans-serif';
+    const labelW = 48, labelH = 18;
+    ctx.beginPath();
+    ctx.fillRect(tx - labelW / 2, PAD.top - 28, labelW, labelH);
+    ctx.fill();
+    // Triangle pointer
+    ctx.beginPath();
+    ctx.moveTo(tx - 5, PAD.top - 10); ctx.lineTo(tx + 5, PAD.top - 10); ctx.lineTo(tx, PAD.top - 4); ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 10px Inter,system-ui,sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('μ = 50', tx, PAD.top - 18);
+    ctx.fillText('\u03BC = 50', tx, PAD.top - 15);
 
     // Legend
-    ctx.font = '10px Inter,sans-serif';
+    ctx.font = '10px Inter,system-ui,sans-serif';
+    const legendY = 10;
+    // Blue captures
+    ctx.fillStyle = 'rgba(59,130,246,0.15)';
+    ctx.fillRect(PAD.left, legendY - 2, 70, 16);
     ctx.fillStyle = '#3b82f6';
-    ctx.fillRect(PAD.left, 8, 10, 10);
+    ctx.beginPath(); ctx.arc(PAD.left + 8, legendY + 5, 4, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#374151';
     ctx.textAlign = 'left';
-    ctx.fillText('Captures μ', PAD.left + 14, 17);
+    ctx.fillText('Captures \u03BC', PAD.left + 16, legendY + 9);
+    // Red misses
+    ctx.fillStyle = 'rgba(239,68,68,0.15)';
+    ctx.fillRect(PAD.left + 80, legendY - 2, 60, 16);
     ctx.fillStyle = '#ef4444';
-    ctx.fillRect(PAD.left + 110, 8, 10, 10);
+    ctx.beginPath(); ctx.arc(PAD.left + 88, legendY + 5, 4, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#374151';
-    ctx.fillText('Misses μ', PAD.left + 124, 17);
+    ctx.fillText('Misses \u03BC', PAD.left + 96, legendY + 9);
 
     // Draw intervals
     if (ciData.length > 0) {
@@ -1590,18 +1626,27 @@ function drawCICanvas() {
             const lx = Math.max(PAD.left, toX(d.lower));
             const ux = Math.min(PAD.left + pw, toX(d.upper));
             const mx = Math.max(lx + 1, Math.min(ux - 1, toX(d.mean)));
-            const color = d.captures ? '#3b82f6' : '#ef4444';
 
-            ctx.globalAlpha = 0.85;
-            ctx.strokeStyle = color;
-            ctx.lineWidth = rowH > 5 ? 2 : 1.5;
+            if (d.captures) {
+                // Blue with subtle gradient
+                ctx.globalAlpha = 0.7;
+                ctx.strokeStyle = '#3b82f6';
+                ctx.lineWidth = rowH > 5 ? 2.5 : 1.8;
+            } else {
+                // Red — more prominent
+                ctx.globalAlpha = 0.9;
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = rowH > 5 ? 2.5 : 2;
+            }
+
+            // Interval line
             ctx.beginPath();
             ctx.moveTo(lx, y);
             ctx.lineTo(ux, y);
             ctx.stroke();
 
             // End caps
-            const cap = Math.min(rowH * 0.4, 3);
+            const cap = Math.min(rowH * 0.45, 4);
             ctx.beginPath();
             ctx.moveTo(lx, y - cap); ctx.lineTo(lx, y + cap); ctx.stroke();
             ctx.beginPath();
@@ -1609,29 +1654,44 @@ function drawCICanvas() {
 
             // Centre dot
             ctx.globalAlpha = 1;
-            ctx.fillStyle = color;
+            ctx.fillStyle = d.captures ? '#3b82f6' : '#ef4444';
             ctx.beginPath();
-            ctx.arc(mx, y, rowH > 5 ? 2.5 : 1.5, 0, Math.PI * 2);
+            ctx.arc(mx, y, rowH > 5 ? 3 : 2, 0, Math.PI * 2);
             ctx.fill();
+
+            // Newest interval glow effect
+            if (i === ciData.length - 1) {
+                ctx.globalAlpha = 0.25;
+                ctx.fillStyle = d.captures ? '#3b82f6' : '#ef4444';
+                ctx.fillRect(lx, y - rowH / 2, ux - lx, rowH);
+                ctx.globalAlpha = 1;
+            }
         });
     } else {
-        // Placeholder text
+        // Placeholder
         ctx.globalAlpha = 1;
         ctx.fillStyle = '#9ca3af';
-        ctx.font = '13px Inter,sans-serif';
+        ctx.font = '14px Inter,system-ui,sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('Click "Run 100 Samples" to see confidence intervals in action', W / 2, H / 2);
+        ctx.fillText('Click "Run 100 Samples" to watch the dance', W / 2, H / 2 - 10);
+        ctx.font = '11px Inter,system-ui,sans-serif';
+        ctx.fillStyle = '#c0c0c0';
+        ctx.fillText('Each line is a 95% confidence interval — blue captures the true mean, red misses it', W / 2, H / 2 + 12);
     }
 
     ctx.globalAlpha = 1;
 
     // X-axis tick labels
     ctx.fillStyle = '#9ca3af';
-    ctx.font = '10px Inter,sans-serif';
+    ctx.font = '9px Inter,system-ui,sans-serif';
     ctx.textAlign = 'center';
     for (let v = 20; v <= 80; v += 10) {
         const x = toX(v);
         ctx.fillText(v, x, PAD.top + ph + 16);
+        // Tick mark
+        ctx.strokeStyle = '#d1d5db';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x, PAD.top + ph); ctx.lineTo(x, PAD.top + ph + 4); ctx.stroke();
     }
 
     ctx.restore();
@@ -1640,9 +1700,6 @@ function drawCICanvas() {
 function initCICanvas() {
     const canvas = document.getElementById('ciDanceCanvas');
     if (!canvas) return;
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = canvas.offsetWidth * dpr;
-    canvas.height = canvas.offsetHeight * dpr;
     drawCICanvas();
 }
 
