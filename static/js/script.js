@@ -922,7 +922,7 @@ function drawPopulationDistribution() {
         if (type === 'uniform') {
             y = 0.6;
         } else if (type === 'exponential') {
-            y = Math.exp(-t * 4);
+            y = Math.exp(-t * 2);
         } else if (type === 'bimodal') {
             y = (Math.exp(-Math.pow((t - 0.3) * 9, 2)) + Math.exp(-Math.pow((t - 0.7) * 9, 2))) / 2;
         } else {
@@ -1065,30 +1065,44 @@ function drawSample() {
     const n = parseInt(document.getElementById('clt-n').value);
     const type = document.getElementById('clt-distribution').value;
     let sum = 0;
-   
+
     for (let i = 0; i < n; i++) {
         let val;
         if (type === 'uniform') {
             val = Math.random();
         } else if (type === 'exponential') {
-            val = -Math.log(1 - Math.random()) / 3;
-            if (val > 1) val = 1;
+            // Exponential with rate λ=2, no clipping — proper right-skewed distribution
+            val = -Math.log(1 - Math.random()) / 2;
         } else if (type === 'bimodal') {
-            val = Math.random() > 0.5 ? 0.3 + (Math.random() * 0.15) : 0.7 + (Math.random() * 0.15);
+            // Two well-separated peaks with some spread
+            if (Math.random() > 0.5) {
+                val = 0.3 + gaussianRandom() * 0.08;
+            } else {
+                val = 0.7 + gaussianRandom() * 0.08;
+            }
         } else if (type === 'dental') {
+            // Right-skewed DMFT-like distribution
             val = Math.pow(Math.random(), 2) * 0.8;
         }
         sum += val;
     }
-   
+
     const mean = sum / n;
     simState.centralLimit.means.push(mean);
     simState.centralLimit.draws++;
-   
+
     document.getElementById('clt-count').textContent = simState.centralLimit.draws;
-   
+
     const grandMean = simState.centralLimit.means.reduce((a, b) => a + b, 0) / simState.centralLimit.means.length;
     document.getElementById('clt-grand-mean').textContent = grandMean.toFixed(3);
+}
+
+// Helper: generate a standard normal random variable (Box-Muller)
+function gaussianRandom() {
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
 }
 
 function animateCLT() {
@@ -1102,7 +1116,6 @@ function drawCLTHistogram() {
     const canvas = document.getElementById('cltCanvas');
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
-    // Re-sync canvas pixel size to current display size
     const dw = canvas.offsetWidth;
     const dh = canvas.offsetHeight;
     canvas.width = dw * dpr;
@@ -1117,15 +1130,42 @@ function drawCLTHistogram() {
 
     ctx.clearRect(0, 0, w, h);
 
-    // Calculate histogram
-    const bins = 30;
+    const means = simState.centralLimit.means;
+    if (means.length === 0) { ctx.restore(); return; }
+
+    // Dynamic range based on actual data so the bell curve is always visible
+    let dataMin = means[0], dataMax = means[0];
+    for (let i = 1; i < means.length; i++) {
+        if (means[i] < dataMin) dataMin = means[i];
+        if (means[i] > dataMax) dataMax = means[i];
+    }
+    let dataRange = dataMax - dataMin;
+    if (dataRange < 0.02) {
+        // Very tight cluster — widen to show shape
+        const center = (dataMin + dataMax) / 2;
+        dataMin = center - 0.05;
+        dataMax = center + 0.05;
+        dataRange = 0.1;
+    } else {
+        // Add 10% padding on each side
+        dataMin -= dataRange * 0.1;
+        dataMax += dataRange * 0.1;
+        dataRange = dataMax - dataMin;
+    }
+
+    // Calculate histogram with dynamic range
+    const bins = 35;
     const counts = new Array(bins).fill(0);
-    const binWidth = 1 / bins;
-    simState.centralLimit.means.forEach(mean => {
-        const bin = Math.min(Math.floor(mean / binWidth), bins - 1);
+    const binWidth = dataRange / bins;
+    means.forEach(mean => {
+        const bin = Math.min(Math.max(Math.floor((mean - dataMin) / binWidth), 0), bins - 1);
         counts[bin]++;
     });
-    const maxCount = Math.max(...counts, 10);
+    const maxCount = Math.max(...counts, 1);
+
+    // Background
+    ctx.fillStyle = '#fafafa';
+    ctx.fillRect(PAD.left, PAD.top, pw, ph);
 
     // Horizontal grid lines
     ctx.strokeStyle = '#f0f0f0';
@@ -1150,23 +1190,30 @@ function drawCLTHistogram() {
 
     // Bars
     counts.forEach((count, i) => {
+        if (count === 0) return;
         const barH = (count / maxCount) * ph;
         const x = PAD.left + (i / bins) * pw;
-        const bw = pw / bins - 1;
+        const bw = Math.max(1, pw / bins - 1);
         const grad = ctx.createLinearGradient(0, PAD.top + ph - barH, 0, PAD.top + ph);
         grad.addColorStop(0, '#0d9488');
         grad.addColorStop(1, '#ccfbf1');
         ctx.fillStyle = grad;
-        ctx.fillRect(x, PAD.top + ph - barH, Math.max(1, bw), barH);
+        ctx.fillRect(x, PAD.top + ph - barH, bw, barH);
+        // Subtle bar border
+        ctx.strokeStyle = 'rgba(13,148,136,0.3)';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(x, PAD.top + ph - barH, bw, barH);
     });
 
-    // X-axis tick labels
+    // X-axis tick labels (dynamic range)
     ctx.fillStyle = '#6b7280';
     ctx.font = '10px Inter,sans-serif';
     ctx.textAlign = 'center';
-    for (let i = 0; i <= 5; i++) {
-        const x = PAD.left + (i / 5) * pw;
-        ctx.fillText((i / 5).toFixed(1), x, PAD.top + ph + 14);
+    const numTicks = 6;
+    for (let i = 0; i <= numTicks; i++) {
+        const x = PAD.left + (i / numTicks) * pw;
+        const val = dataMin + (i / numTicks) * dataRange;
+        ctx.fillText(val.toFixed(2), x, PAD.top + ph + 14);
     }
 
     // Axis labels
@@ -1177,71 +1224,81 @@ function drawCLTHistogram() {
     ctx.save();
     ctx.translate(12, PAD.top + ph / 2);
     ctx.rotate(-Math.PI / 2);
-    ctx.fillText('Count', 0, 0);
+    ctx.fillText('Frequency', 0, 0);
     ctx.restore();
 
-    // Normal curve overlay (from 30 samples)
-    if (simState.centralLimit.draws >= 30) {
-        const mean = simState.centralLimit.means.reduce((a, b) => a + b, 0) / simState.centralLimit.means.length;
-        const variance = simState.centralLimit.means.reduce((s, v) => s + (v - mean) ** 2, 0) / simState.centralLimit.means.length;
-        const std = Math.sqrt(variance);
+    // Compute stats
+    const grandMean = means.reduce((a, b) => a + b, 0) / means.length;
+    const variance = means.reduce((s, v) => s + (v - grandMean) ** 2, 0) / means.length;
+    const std = Math.sqrt(variance);
+
+    // Normal curve overlay (from 20+ samples)
+    if (means.length >= 20 && std > 0) {
+        const totalArea = means.length * binWidth;
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        let first = true;
+        for (let px = 0; px <= pw; px += 2) {
+            const val = dataMin + (px / pw) * dataRange;
+            const z = (val - grandMean) / std;
+            const y = Math.exp(-0.5 * z * z) / (std * Math.sqrt(2 * Math.PI));
+            const sy = PAD.top + ph - (y * totalArea / maxCount) * ph;
+            const clamped = Math.max(PAD.top, Math.min(PAD.top + ph, sy));
+            if (first) { ctx.moveTo(PAD.left + px, clamped); first = false; }
+            else ctx.lineTo(PAD.left + px, clamped);
+        }
+        ctx.stroke();
 
         // Compute median
-        const sorted = [...simState.centralLimit.means].sort((a, b) => a - b);
+        const sorted = [...means].sort((a, b) => a - b);
         const mid = Math.floor(sorted.length / 2);
         const median = sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
 
-        // Compute mode (center of highest-count bin)
+        // Mode: center of the tallest bin
         const maxBin = counts.indexOf(Math.max(...counts));
-        const mode = (maxBin + 0.5) / bins;
+        const mode = dataMin + (maxBin + 0.5) * binWidth;
 
-        if (std > 0) {
-            const totalArea = simState.centralLimit.draws * binWidth;
-            ctx.strokeStyle = '#ef4444';
-            ctx.lineWidth = 2.5;
-            ctx.setLineDash([]);
-            ctx.beginPath();
-            let first = true;
-            for (let px = 0; px <= pw; px += 2) {
-                const val = px / pw;
-                const y = Math.exp(-0.5 * ((val - mean) / std) ** 2) / (std * Math.sqrt(2 * Math.PI));
-                const sy = PAD.top + ph - (y * totalArea / maxCount) * ph;
-                if (first) { ctx.moveTo(PAD.left + px, sy); first = false; }
-                else ctx.lineTo(PAD.left + px, sy);
-            }
-            ctx.stroke();
-
-            // Dashed vertical lines: mode (purple), median (orange), mean (red)
-            const lines = [
-                { val: mode,   color: '#8b5cf6', label: 'Mode' },
-                { val: median, color: '#f59e0b', label: 'Median' },
-                { val: mean,   color: '#ef4444', label: 'Mean' },
-            ];
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([5, 4]);
-            lines.forEach(({ val, color }) => {
+        // Dashed vertical lines: mode (purple), median (orange), mean (red)
+        const statLines = [
+            { val: mode,      color: '#8b5cf6', label: 'Mode' },
+            { val: median,    color: '#f59e0b', label: 'Median' },
+            { val: grandMean, color: '#ef4444', label: 'Mean' },
+        ];
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 4]);
+        statLines.forEach(({ val, color }) => {
+            const xPos = PAD.left + ((val - dataMin) / dataRange) * pw;
+            if (xPos >= PAD.left && xPos <= PAD.left + pw) {
                 ctx.strokeStyle = color;
                 ctx.beginPath();
-                ctx.moveTo(PAD.left + val * pw, PAD.top);
-                ctx.lineTo(PAD.left + val * pw, PAD.top + ph);
+                ctx.moveTo(xPos, PAD.top);
+                ctx.lineTo(xPos, PAD.top + ph);
                 ctx.stroke();
-            });
-            ctx.setLineDash([]);
+            }
+        });
+        ctx.setLineDash([]);
 
-            // Legend
-            ctx.font = '10px Inter,sans-serif';
-            ctx.textAlign = 'left';
-            const legendItems = [
-                { color: '#ef4444', label: '▬ Normal curve' },
-                { color: '#ef4444', label: `— Mean: ${mean.toFixed(3)}` },
-                { color: '#f59e0b', label: `— Median: ${median.toFixed(3)}` },
-                { color: '#8b5cf6', label: `— Mode: ${mode.toFixed(3)}` },
-            ];
-            legendItems.forEach(({ color, label }, i) => {
-                ctx.fillStyle = color;
-                ctx.fillText(label, PAD.left + 4, PAD.top + 14 + i * 14);
-            });
-        }
+        // Legend
+        ctx.font = '10px Inter,sans-serif';
+        ctx.textAlign = 'left';
+        const legendItems = [
+            { color: '#ef4444', label: '▬ Normal curve' },
+            { color: '#ef4444', label: `— Mean: ${grandMean.toFixed(3)}` },
+            { color: '#f59e0b', label: `— Median: ${median.toFixed(3)}` },
+            { color: '#8b5cf6', label: `— Mode: ${mode.toFixed(3)}` },
+        ];
+        legendItems.forEach(({ color, label }, i) => {
+            ctx.fillStyle = color;
+            ctx.fillText(label, PAD.left + 4, PAD.top + 14 + i * 14);
+        });
+
+        // Sample count & std in top-right
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '10px Inter,sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(`n=${means.length}  σ=${std.toFixed(4)}`, PAD.left + pw - 4, PAD.top + 14);
     }
     ctx.restore();
 }
