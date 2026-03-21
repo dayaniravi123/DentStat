@@ -1037,6 +1037,47 @@ function updateCLTParams() {
     simState.centralLimit.sampleSize = parseInt(n);
 }
 
+// Helper: generate a standard normal random variable (Box-Muller)
+function gaussianRandom() {
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+}
+
+// Generate one random value from the selected population distribution
+function generateCLTValue(type) {
+    if (type === 'uniform') {
+        return Math.random();
+    } else if (type === 'exponential') {
+        return -Math.log(1 - Math.random()) / 2;
+    } else if (type === 'bimodal') {
+        return Math.random() > 0.5
+            ? 0.3 + gaussianRandom() * 0.08
+            : 0.7 + gaussianRandom() * 0.08;
+    } else { // dental
+        return Math.pow(Math.random(), 2) * 0.8;
+    }
+}
+
+// Get a stable expected range for each distribution type so the axis doesn't jump
+function getCLTExpectedRange(type, sampleSize) {
+    const popStats = {
+        uniform:     { mean: 0.5,   std: 1 / Math.sqrt(12) },
+        exponential: { mean: 0.5,   std: 0.5 },
+        bimodal:     { mean: 0.5,   std: 0.22 },
+        dental:      { mean: 0.267, std: 0.22 }
+    };
+    const s = popStats[type] || popStats.uniform;
+    const seMean = s.std / Math.sqrt(Math.max(1, sampleSize));
+    // Show ±4.5 standard errors around the expected mean
+    const halfWidth = Math.max(seMean * 4.5, 0.08);
+    return { min: s.mean - halfWidth, max: s.mean + halfWidth };
+}
+
+// Falling dots for visual feedback
+let cltFallingDots = [];
+
 function startCLTSimulation() {
     if (simState.centralLimit.running) {
         simState.centralLimit.running = false;
@@ -1052,44 +1093,32 @@ function startCLTSimulation() {
     lucide.createIcons();
 
     const speed = parseInt(document.getElementById('clt-speed').value);
-    const interval = Math.max(50, 1000 / speed);
+    const samplesPerSec = speed <= 5 ? speed : speed * 2;
+    const interval = Math.max(30, 1000 / samplesPerSec);
 
     simState.centralLimit.intervalId = setInterval(() => {
-        drawSample();
+        drawOneSample();
     }, interval);
 
     animateCLT();
 }
 
-function drawSample() {
+function drawOneSample() {
     const n = parseInt(document.getElementById('clt-n').value);
     const type = document.getElementById('clt-distribution').value;
     let sum = 0;
 
     for (let i = 0; i < n; i++) {
-        let val;
-        if (type === 'uniform') {
-            val = Math.random();
-        } else if (type === 'exponential') {
-            // Exponential with rate λ=2, no clipping — proper right-skewed distribution
-            val = -Math.log(1 - Math.random()) / 2;
-        } else if (type === 'bimodal') {
-            // Two well-separated peaks with some spread
-            if (Math.random() > 0.5) {
-                val = 0.3 + gaussianRandom() * 0.08;
-            } else {
-                val = 0.7 + gaussianRandom() * 0.08;
-            }
-        } else if (type === 'dental') {
-            // Right-skewed DMFT-like distribution
-            val = Math.pow(Math.random(), 2) * 0.8;
-        }
-        sum += val;
+        sum += generateCLTValue(type);
     }
 
     const mean = sum / n;
     simState.centralLimit.means.push(mean);
     simState.centralLimit.draws++;
+
+    // Animated falling dot
+    cltFallingDots.push({ x: mean, y: 0, vy: 0, age: 0 });
+    if (cltFallingDots.length > 25) cltFallingDots.shift();
 
     document.getElementById('clt-count').textContent = simState.centralLimit.draws;
 
@@ -1097,34 +1126,26 @@ function drawSample() {
     document.getElementById('clt-grand-mean').textContent = grandMean.toFixed(3);
 }
 
-// Helper: generate a standard normal random variable (Box-Muller)
-function gaussianRandom() {
-    let u = 0, v = 0;
-    while (u === 0) u = Math.random();
-    while (v === 0) v = Math.random();
-    return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-}
-
 function animateCLT() {
     if (!simState.centralLimit.running) return;
-   
     drawCLTHistogram();
     requestAnimationFrame(animateCLT);
 }
 
 function drawCLTHistogram() {
     const canvas = document.getElementById('cltCanvas');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
     const dw = canvas.offsetWidth;
     const dh = canvas.offsetHeight;
+    if (dw === 0 || dh === 0) return;
     canvas.width = dw * dpr;
     canvas.height = dh * dpr;
     ctx.save();
     ctx.scale(dpr, dpr);
-    const w = dw;
-    const h = dh;
-    const PAD = { top: 20, right: 20, bottom: 44, left: 48 };
+    const w = dw, h = dh;
+    const PAD = { top: 24, right: 16, bottom: 44, left: 48 };
     const pw = w - PAD.left - PAD.right;
     const ph = h - PAD.top - PAD.bottom;
 
@@ -1133,115 +1154,155 @@ function drawCLTHistogram() {
     const means = simState.centralLimit.means;
     if (means.length === 0) { ctx.restore(); return; }
 
-    // Dynamic range based on actual data so the bell curve is always visible
-    let dataMin = means[0], dataMax = means[0];
-    for (let i = 1; i < means.length; i++) {
-        if (means[i] < dataMin) dataMin = means[i];
-        if (means[i] > dataMax) dataMax = means[i];
-    }
-    let dataRange = dataMax - dataMin;
-    if (dataRange < 0.02) {
-        // Very tight cluster — widen to show shape
-        const center = (dataMin + dataMax) / 2;
-        dataMin = center - 0.05;
-        dataMax = center + 0.05;
-        dataRange = 0.1;
-    } else {
-        // Add 10% padding on each side
-        dataMin -= dataRange * 0.1;
-        dataMax += dataRange * 0.1;
-        dataRange = dataMax - dataMin;
-    }
+    // Stable range based on distribution type & sample size (no axis jumping)
+    const type = document.getElementById('clt-distribution').value;
+    const sampleSize = parseInt(document.getElementById('clt-n').value);
+    const expectedRange = getCLTExpectedRange(type, sampleSize);
+    let rangeMin = expectedRange.min;
+    let rangeMax = expectedRange.max;
 
-    // Calculate histogram with dynamic range
-    const bins = 35;
+    // Expand if any data falls outside
+    for (let i = 0; i < means.length; i++) {
+        if (means[i] < rangeMin) rangeMin = means[i] - 0.02;
+        if (means[i] > rangeMax) rangeMax = means[i] + 0.02;
+    }
+    const dataRange = rangeMax - rangeMin;
+
+    // Build histogram
+    const bins = 40;
     const counts = new Array(bins).fill(0);
     const binWidth = dataRange / bins;
-    means.forEach(mean => {
-        const bin = Math.min(Math.max(Math.floor((mean - dataMin) / binWidth), 0), bins - 1);
+    means.forEach(m => {
+        const bin = Math.min(Math.max(Math.floor((m - rangeMin) / binWidth), 0), bins - 1);
         counts[bin]++;
     });
     const maxCount = Math.max(...counts, 1);
 
     // Background
-    ctx.fillStyle = '#fafafa';
+    ctx.fillStyle = '#f8fffe';
     ctx.fillRect(PAD.left, PAD.top, pw, ph);
 
-    // Horizontal grid lines
-    ctx.strokeStyle = '#f0f0f0';
-    ctx.lineWidth = 1;
-    for (let i = 1; i <= 4; i++) {
-        const y = PAD.top + ph - (i / 4) * ph;
-        ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + pw, y); ctx.stroke();
+    // Grid lines
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.lineWidth = 0.5;
+    const gridLines = 5;
+    for (let i = 1; i <= gridLines; i++) {
+        const y = PAD.top + ph - (i / gridLines) * ph;
+        ctx.beginPath();
+        ctx.moveTo(PAD.left, y);
+        ctx.lineTo(PAD.left + pw, y);
+        ctx.stroke();
         ctx.fillStyle = '#9ca3af';
-        ctx.font = '10px Inter,sans-serif';
+        ctx.font = '9px Inter,system-ui,sans-serif';
         ctx.textAlign = 'right';
-        ctx.fillText(Math.round((i / 4) * maxCount), PAD.left - 5, y + 4);
+        ctx.fillText(Math.round((i / gridLines) * maxCount), PAD.left - 6, y + 3);
     }
 
     // Axes
-    ctx.strokeStyle = '#d1d5db';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#9ca3af';
+    ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(PAD.left, PAD.top);
     ctx.lineTo(PAD.left, PAD.top + ph);
     ctx.lineTo(PAD.left + pw, PAD.top + ph);
     ctx.stroke();
 
-    // Bars
+    // Histogram bars with rounded tops
+    const barGap = 1;
+    const barW = Math.max(2, pw / bins - barGap);
     counts.forEach((count, i) => {
         if (count === 0) return;
         const barH = (count / maxCount) * ph;
-        const x = PAD.left + (i / bins) * pw;
-        const bw = Math.max(1, pw / bins - 1);
-        const grad = ctx.createLinearGradient(0, PAD.top + ph - barH, 0, PAD.top + ph);
-        grad.addColorStop(0, '#0d9488');
-        grad.addColorStop(1, '#ccfbf1');
+        const x = PAD.left + (i / bins) * pw + barGap / 2;
+        const yTop = PAD.top + ph - barH;
+
+        const grad = ctx.createLinearGradient(0, yTop, 0, PAD.top + ph);
+        grad.addColorStop(0, 'rgba(13,148,136,0.85)');
+        grad.addColorStop(0.5, 'rgba(13,148,136,0.65)');
+        grad.addColorStop(1, 'rgba(204,251,241,0.9)');
         ctx.fillStyle = grad;
-        ctx.fillRect(x, PAD.top + ph - barH, bw, barH);
-        // Subtle bar border
-        ctx.strokeStyle = 'rgba(13,148,136,0.3)';
+
+        const r = Math.min(3, barW / 2, barH / 2);
+        ctx.beginPath();
+        ctx.moveTo(x, PAD.top + ph);
+        ctx.lineTo(x, yTop + r);
+        ctx.quadraticCurveTo(x, yTop, x + r, yTop);
+        ctx.lineTo(x + barW - r, yTop);
+        ctx.quadraticCurveTo(x + barW, yTop, x + barW, yTop + r);
+        ctx.lineTo(x + barW, PAD.top + ph);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(13,148,136,0.25)';
         ctx.lineWidth = 0.5;
-        ctx.strokeRect(x, PAD.top + ph - barH, bw, barH);
+        ctx.stroke();
     });
 
-    // X-axis tick labels (dynamic range)
+    // X-axis tick labels
     ctx.fillStyle = '#6b7280';
-    ctx.font = '10px Inter,sans-serif';
+    ctx.font = '9px Inter,system-ui,sans-serif';
     ctx.textAlign = 'center';
     const numTicks = 6;
     for (let i = 0; i <= numTicks; i++) {
-        const x = PAD.left + (i / numTicks) * pw;
-        const val = dataMin + (i / numTicks) * dataRange;
-        ctx.fillText(val.toFixed(2), x, PAD.top + ph + 14);
+        const xPos = PAD.left + (i / numTicks) * pw;
+        const val = rangeMin + (i / numTicks) * dataRange;
+        ctx.fillText(val.toFixed(2), xPos, PAD.top + ph + 14);
+        ctx.strokeStyle = '#d1d5db';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(xPos, PAD.top + ph);
+        ctx.lineTo(xPos, PAD.top + ph + 4);
+        ctx.stroke();
     }
 
     // Axis labels
-    ctx.fillStyle = '#6b7280';
-    ctx.font = '11px Inter,sans-serif';
+    ctx.fillStyle = '#374151';
+    ctx.font = '11px Inter,system-ui,sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Sample Mean', PAD.left + pw / 2, h - 4);
+    ctx.fillText('Sample Mean (\u0078\u0304)', PAD.left + pw / 2, h - 4);
     ctx.save();
     ctx.translate(12, PAD.top + ph / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.fillText('Frequency', 0, 0);
     ctx.restore();
 
-    // Compute stats
+    // Compute statistics
     const grandMean = means.reduce((a, b) => a + b, 0) / means.length;
     const variance = means.reduce((s, v) => s + (v - grandMean) ** 2, 0) / means.length;
     const std = Math.sqrt(variance);
 
-    // Normal curve overlay (from 20+ samples)
-    if (means.length >= 20 && std > 0) {
+    // Falling dots animation
+    cltFallingDots.forEach(dot => {
+        dot.vy += 0.8;
+        dot.y += dot.vy;
+        dot.age++;
+        const xPos = PAD.left + ((dot.x - rangeMin) / dataRange) * pw;
+        const targetY = PAD.top + ph;
+        const drawY = Math.min(PAD.top + dot.y, targetY);
+
+        if (xPos >= PAD.left && xPos <= PAD.left + pw) {
+            const alpha = Math.max(0, 1 - dot.age / 60);
+            ctx.beginPath();
+            ctx.arc(xPos, drawY, 4, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(239,68,68,${alpha})`;
+            ctx.fill();
+            ctx.strokeStyle = `rgba(239,68,68,${alpha * 0.5})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+    });
+    cltFallingDots = cltFallingDots.filter(d => d.age < 60);
+
+    // Normal curve overlay (after 25 samples)
+    if (means.length >= 25 && std > 0) {
         const totalArea = means.length * binWidth;
         ctx.strokeStyle = '#ef4444';
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = 2;
         ctx.setLineDash([]);
         ctx.beginPath();
         let first = true;
-        for (let px = 0; px <= pw; px += 2) {
-            const val = dataMin + (px / pw) * dataRange;
+        for (let px = 0; px <= pw; px += 1.5) {
+            const val = rangeMin + (px / pw) * dataRange;
             const z = (val - grandMean) / std;
             const y = Math.exp(-0.5 * z * z) / (std * Math.sqrt(2 * Math.PI));
             const sy = PAD.top + ph - (y * totalArea / maxCount) * ph;
@@ -1258,20 +1319,20 @@ function drawCLTHistogram() {
 
         // Mode: center of the tallest bin
         const maxBin = counts.indexOf(Math.max(...counts));
-        const mode = dataMin + (maxBin + 0.5) * binWidth;
+        const mode = rangeMin + (maxBin + 0.5) * binWidth;
 
-        // Dashed vertical lines: mode (purple), median (orange), mean (red)
+        // Dashed vertical stat lines
         const statLines = [
-            { val: mode,      color: '#8b5cf6', label: 'Mode' },
-            { val: median,    color: '#f59e0b', label: 'Median' },
-            { val: grandMean, color: '#ef4444', label: 'Mean' },
+            { val: mode,      color: '#8b5cf6', dash: [3, 3] },
+            { val: median,    color: '#f59e0b', dash: [6, 3] },
+            { val: grandMean, color: '#ef4444', dash: [4, 4] },
         ];
-        ctx.lineWidth = 1.5;
-        ctx.setLineDash([5, 4]);
-        statLines.forEach(({ val, color }) => {
-            const xPos = PAD.left + ((val - dataMin) / dataRange) * pw;
+        statLines.forEach(({ val, color, dash }) => {
+            const xPos = PAD.left + ((val - rangeMin) / dataRange) * pw;
             if (xPos >= PAD.left && xPos <= PAD.left + pw) {
                 ctx.strokeStyle = color;
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash(dash);
                 ctx.beginPath();
                 ctx.moveTo(xPos, PAD.top);
                 ctx.lineTo(xPos, PAD.top + ph);
@@ -1280,26 +1341,42 @@ function drawCLTHistogram() {
         });
         ctx.setLineDash([]);
 
-        // Legend
-        ctx.font = '10px Inter,sans-serif';
+        // Legend box (top-left, semi-transparent)
+        const legendX = PAD.left + 6, legendY = PAD.top + 6;
+        const lw = 138, lh = 62;
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.fillRect(legendX, legendY, lw, lh);
+        ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(legendX, legendY, lw, lh);
+
+        ctx.font = '9px Inter,system-ui,sans-serif';
         ctx.textAlign = 'left';
         const legendItems = [
-            { color: '#ef4444', label: '▬ Normal curve' },
-            { color: '#ef4444', label: `— Mean: ${grandMean.toFixed(3)}` },
-            { color: '#f59e0b', label: `— Median: ${median.toFixed(3)}` },
-            { color: '#8b5cf6', label: `— Mode: ${mode.toFixed(3)}` },
+            { color: '#ef4444', label: '\u2501 Normal curve' },
+            { color: '#ef4444', label: '\u250A Mean: ' + grandMean.toFixed(3) },
+            { color: '#f59e0b', label: '\u250A Median: ' + median.toFixed(3) },
+            { color: '#8b5cf6', label: '\u250A Mode: ' + mode.toFixed(3) },
         ];
         legendItems.forEach(({ color, label }, i) => {
             ctx.fillStyle = color;
-            ctx.fillText(label, PAD.left + 4, PAD.top + 14 + i * 14);
+            ctx.fillText(label, legendX + 6, legendY + 14 + i * 13);
         });
 
-        // Sample count & std in top-right
-        ctx.fillStyle = '#6b7280';
-        ctx.font = '10px Inter,sans-serif';
+        // Stats box (top-right)
+        const statsText = 'Samples=' + means.length + '  \u03C3=' + std.toFixed(4);
+        ctx.font = '9px Inter,system-ui,sans-serif';
+        const tw = ctx.measureText(statsText).width + 16;
+        const sx = PAD.left + pw - tw;
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.fillRect(sx, legendY, tw + 4, 20);
+        ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+        ctx.strokeRect(sx, legendY, tw + 4, 20);
+        ctx.fillStyle = '#374151';
         ctx.textAlign = 'right';
-        ctx.fillText(`n=${means.length}  σ=${std.toFixed(4)}`, PAD.left + pw - 4, PAD.top + 14);
+        ctx.fillText(statsText, PAD.left + pw - 4, legendY + 14);
     }
+
     ctx.restore();
 }
 
@@ -1308,16 +1385,19 @@ function resetCLT() {
     simState.centralLimit.means = [];
     simState.centralLimit.draws = 0;
     clearInterval(simState.centralLimit.intervalId);
-   
+    cltFallingDots = [];
+
     document.getElementById('clt-count').textContent = '0';
     document.getElementById('clt-grand-mean').textContent = '-';
     document.getElementById('clt-start').innerHTML = '<i data-lucide="play" class="w-4 h-4 mr-1"></i> Start';
     document.getElementById('clt-overlay').classList.remove('hidden');
-   
+
     const canvas = document.getElementById('cltCanvas');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-   
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
     lucide.createIcons();
 }
 
