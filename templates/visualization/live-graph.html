@@ -443,6 +443,104 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        /* Info tooltip system */
+        .info-tip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #e0f2fe;
+            color: #0284c7;
+            font-size: 0.65rem;
+            font-weight: 800;
+            cursor: help;
+            margin-left: 6px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            border: 1px solid #bae6fd;
+        }
+        .info-tip:hover {
+            background: #0284c7;
+            color: white;
+            transform: scale(1.15);
+        }
+        .info-tip .tip-text {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: #f1f5f9;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 400;
+            line-height: 1.5;
+            width: 260px;
+            text-align: left;
+            z-index: 100;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+            transition: all 0.25s ease;
+            pointer-events: none;
+        }
+        .info-tip .tip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #0f172a;
+        }
+        .info-tip:hover .tip-text {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(-4px);
+        }
+        /* Right-aligned variant for left-edge tooltips */
+        .info-tip.tip-right .tip-text {
+            left: 0;
+            transform: translateX(0);
+        }
+        .info-tip.tip-right .tip-text::after {
+            left: 12px;
+            transform: none;
+        }
+        .info-tip.tip-right:hover .tip-text {
+            transform: translateX(0) translateY(-4px);
+        }
+
+        .beginner-banner {
+            background: linear-gradient(135deg, #eff6ff, #f0fdf4);
+            border: 1px solid #bae6fd;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            font-size: 0.82rem;
+            line-height: 1.6;
+            color: #1e40af;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .beginner-banner strong { color: #0f766e; }
+
+        .chart-hint {
+            background: #fefce8;
+            border: 1px dashed #fbbf24;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            color: #92400e;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -471,12 +569,15 @@
     <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.6;margin-bottom:8px;">Interactive Tool</div>
     <h1 style="font-size:2.2rem;font-weight:800;margin-bottom:10px;letter-spacing:-0.02em;">📊 Statistical Analysis Playground</h1>
     <p style="opacity:0.8;font-size:0.95rem;max-width:600px;line-height:1.6;">Explore statistical methods interactively — Law of Large Numbers, Confidence Intervals, Hypothesis Testing, and more. Use dental presets or set your own parameters.</p>
+    <div style="margin-top:14px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:10px;padding:12px 16px;max-width:680px;font-size:0.82rem;line-height:1.6;opacity:0.9;">
+      <strong style="color:#5eead4;">New here?</strong> Start by clicking a <strong>Quick Load</strong> preset below, then explore the 3 charts that appear. Hover over the <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,0.25);font-size:0.6rem;font-weight:800;">?</span> icons anywhere on the page for beginner-friendly explanations.
+    </div>
     <!-- Dental Preset buttons -->
     <div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:10px;">
       <span style="font-size:0.75rem;font-weight:600;opacity:0.7;align-self:center;text-transform:uppercase;letter-spacing:0.05em;">Quick Load:</span>
-      <button onclick="loadPreset('dmft')" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:7px 16px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;">🦷 DMFT Study (n=200, p=35%)</button>
-      <button onclick="loadPreset('implant')" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:7px 16px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;">🔩 Implant Success (n=150, p=92%)</button>
-      <button onclick="loadPreset('perio')" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:7px 16px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;">🩺 Periodontal BOP (n=300, p=60%)</button>
+      <button onclick="loadPreset('dmft')" title="DMFT = Decayed, Missing, Filled Teeth index. This simulates a study of 200 patients where 35% have high DMFT scores." style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:7px 16px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">🦷 DMFT Study (n=200, p=35%)</button>
+      <button onclick="loadPreset('implant')" title="Simulates an implant success rate study. 150 patients, with 92% expected success rate — a high-probability scenario." style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:7px 16px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">🔩 Implant Success (n=150, p=92%)</button>
+      <button onclick="loadPreset('perio')" title="BOP = Bleeding on Probing, a periodontal disease indicator. Simulates 300 patients where 60% show BOP positive." style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:7px 16px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">🩺 Periodontal BOP (n=300, p=60%)</button>
     </div>
   </div>
 </div>
@@ -485,14 +586,23 @@
     <div class="main-grid">
         <!-- Control Panel -->
         <div class="control-panel">
+            <div class="beginner-banner">
+                <span style="font-size:1.1rem;">💡</span>
+                <span>Adjust the sliders below, then hit <strong>Generate Data</strong> to simulate a dental study and see the stats update live!</span>
+            </div>
+
             <div class="control-group">
-                <label class="control-label">Sample Size</label>
+                <label class="control-label" style="display:flex;align-items:center;">Sample Size
+                    <span class="info-tip tip-right">?<span class="tip-text"><strong>Sample Size (n)</strong> — How many patients or observations are in your study. Larger samples give more reliable results. Try changing from 50 to 500 and watch how the convergence chart stabilizes!</span></span>
+                </label>
                 <input type="range" id="sampleSize" class="slider" min="10" max="1000" value="100">
                 <div class="slider-value"><span id="sampleSizeValue">100</span></div>
             </div>
 
             <div class="control-group">
-                <label class="control-label">True Probability (%)</label>
+                <label class="control-label" style="display:flex;align-items:center;">True Probability (%)
+                    <span class="info-tip tip-right">?<span class="tip-text"><strong>True Probability (p)</strong> — The actual chance of success in the population. For example, 35% means 35 out of 100 patients would have the condition. The simulation generates random data based on this value.</span></span>
+                </label>
                 <input type="range" id="trueProb" class="slider" min="5" max="95" value="30">
                 <div class="slider-value"><span id="trueProbValue">30</span>%</div>
             </div>
@@ -501,32 +611,58 @@
                 <button class="btn btn-primary" onclick="generateData()">📈 Generate Data</button>
                 <button class="btn" onclick="resetData()">🔄 Reset</button>
             </div>
+            <div style="font-size:0.7rem;color:#94a3b8;margin-top:6px;text-align:center;">Click Generate to simulate a study with your settings</div>
 
             <div class="method-selector">
-                <div class="control-label">Statistical Methods</div>
-                <div class="method-item active" onclick="selectMethod(this, 'lln')">Law of Large Numbers</div>
-                <div class="method-item" onclick="selectMethod(this, 'mle')">Maximum Likelihood Est.</div>
-                <div class="method-item" onclick="selectMethod(this, 'ci')">Confidence Interval</div>
-                <div class="method-item" onclick="selectMethod(this, 'hypothesis')">Hypothesis Testing</div>
-                <div class="method-item" onclick="selectMethod(this, 'regression')">Linear Regression</div>
-                <div class="method-item" onclick="selectMethod(this, 'distribution')">Distribution Analysis</div>
+                <div class="control-label" style="display:flex;align-items:center;">Statistical Methods
+                    <span class="info-tip tip-right">?<span class="tip-text">Click any method below to see its analysis in the <strong>Method Analysis</strong> card. Each method examines your data from a different statistical perspective.</span></span>
+                </div>
+                <div class="method-item active" onclick="selectMethod(this, 'lln')">Law of Large Numbers
+                    <div style="font-size:0.65rem;font-weight:400;color:#94a3b8;margin-top:2px;">More data → closer to truth</div>
+                </div>
+                <div class="method-item" onclick="selectMethod(this, 'mle')">Maximum Likelihood Est.
+                    <div style="font-size:0.65rem;font-weight:400;color:#94a3b8;margin-top:2px;">Best guess for the true parameter</div>
+                </div>
+                <div class="method-item" onclick="selectMethod(this, 'ci')">Confidence Interval
+                    <div style="font-size:0.65rem;font-weight:400;color:#94a3b8;margin-top:2px;">Range where the true value likely falls</div>
+                </div>
+                <div class="method-item" onclick="selectMethod(this, 'hypothesis')">Hypothesis Testing
+                    <div style="font-size:0.65rem;font-weight:400;color:#94a3b8;margin-top:2px;">Is the difference real or by chance?</div>
+                </div>
+                <div class="method-item" onclick="selectMethod(this, 'regression')">Linear Regression
+                    <div style="font-size:0.65rem;font-weight:400;color:#94a3b8;margin-top:2px;">Find the trend line in your data</div>
+                </div>
+                <div class="method-item" onclick="selectMethod(this, 'distribution')">Distribution Analysis
+                    <div style="font-size:0.65rem;font-weight:400;color:#94a3b8;margin-top:2px;">Shape & spread of your results</div>
+                </div>
             </div>
 
             <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
+                <div class="control-label" style="display:flex;align-items:center;margin-bottom:10px;">Live Stats
+                    <span class="info-tip tip-right">?<span class="tip-text">These numbers update every time you generate data. They summarize your simulated study at a glance — just like a real research paper's results section!</span></span>
+                </div>
                 <div class="stats-box">
-                    <div class="stats-label">Total Samples</div>
+                    <div class="stats-label" style="display:flex;align-items:center;">Total Samples
+                        <span class="info-tip" style="width:14px;height:14px;font-size:0.55rem;margin-left:4px;">?<span class="tip-text">The number of patients/observations in your simulated study. In real research, this is your <strong>n</strong>.</span></span>
+                    </div>
                     <div class="stats-value"><span id="statsTotal">0</span></div>
                 </div>
                 <div class="stats-box">
-                    <div class="stats-label">Success Count</div>
+                    <div class="stats-label" style="display:flex;align-items:center;">Success Count
+                        <span class="info-tip" style="width:14px;height:14px;font-size:0.55rem;margin-left:4px;">?<span class="tip-text">How many patients had a positive outcome (e.g., cavity present, implant successful). This is your <strong>x</strong> in x/n.</span></span>
+                    </div>
                     <div class="stats-value"><span id="statsSuccess">0</span></div>
                 </div>
                 <div class="stats-box">
-                    <div class="stats-label">Observed Rate</div>
+                    <div class="stats-label" style="display:flex;align-items:center;">Observed Rate
+                        <span class="info-tip" style="width:14px;height:14px;font-size:0.55rem;margin-left:4px;">?<span class="tip-text">Success Count ÷ Total Samples × 100. This is your <strong>sample proportion (p̂)</strong> — your best estimate of the true probability from the data you collected.</span></span>
+                    </div>
                     <div class="stats-value"><span id="statsRate">0</span>%</div>
                 </div>
                 <div class="stats-box">
-                    <div class="stats-label">Error Margin</div>
+                    <div class="stats-label" style="display:flex;align-items:center;">Error Margin
+                        <span class="info-tip" style="width:14px;height:14px;font-size:0.55rem;margin-left:4px;">?<span class="tip-text">The gap between what you <strong>observed</strong> and the <strong>true value</strong>. Smaller error = more accurate study. Try increasing sample size to see this shrink!</span></span>
+                    </div>
                     <div class="stats-value"><span id="statsError">0</span>%</div>
                 </div>
             </div>
@@ -536,31 +672,42 @@
         <div class="main-content">
             <!-- Data Distribution Chart -->
             <div class="card">
-                <div class="card-title">📊 Data Distribution</div>
+                <div class="card-title">📊 Data Distribution
+                    <span class="info-tip">?<span class="tip-text"><strong>What is this?</strong> A bar chart showing how many successes vs failures occurred in your simulated study. Think of it like: "Out of 200 patients, how many had cavities vs didn't?" Hover over bars for exact counts.</span></span>
+                </div>
                 <div class="chart-container">
                     <canvas id="distributionChart"></canvas>
                 </div>
+                <div class="chart-hint">💡 <strong>How to read:</strong> The green bar = successes (e.g., patients with condition). Red bar = failures. Hover over each bar to see the count and percentage.</div>
             </div>
 
             <!-- Convergence Chart -->
             <div class="card">
-                <div class="card-title">📈 Convergence Analysis</div>
+                <div class="card-title">📈 Convergence Analysis
+                    <span class="info-tip">?<span class="tip-text"><strong>What is this?</strong> Shows how your observed probability changes as you add more patients. The blue line (observed) should gradually approach the red dashed line (true value). This is the <strong>Law of Large Numbers</strong> in action!</span></span>
+                </div>
                 <div class="chart-container">
                     <canvas id="convergenceChart"></canvas>
                 </div>
+                <div class="chart-hint">💡 <strong>How to read:</strong> Blue line = your running estimate. Red dashed line = the true probability. Notice how early samples are "noisy" but the line stabilizes with more data — that's why bigger studies are more reliable!</div>
             </div>
 
             <!-- Normal Approximation Chart -->
             <div class="card">
-                <div class="card-title">🔔 Normal Approximation</div>
+                <div class="card-title">🔔 Normal Approximation
+                    <span class="info-tip">?<span class="tip-text"><strong>What is this?</strong> Shows the bell curve (normal distribution) that approximates where your success count should fall. The red triangle marks where your actual result landed. If it's near the peak, your result is typical; if it's far out in the tails, it's unusual!</span></span>
+                </div>
                 <div class="chart-container">
                     <canvas id="normalChart"></canvas>
                 </div>
+                <div class="chart-hint">💡 <strong>How to read:</strong> The purple bell curve shows expected outcomes. The red triangle (▲) is your actual result. If the triangle is near the center → typical result. If far from center → unusual/surprising result.</div>
             </div>
 
             <!-- Method Results -->
             <div class="card full-width">
-                <div class="card-title">🔬 Method Analysis &amp; Results</div>
+                <div class="card-title">🔬 Method Analysis &amp; Results
+                    <span class="info-tip">?<span class="tip-text"><strong>What is this?</strong> Detailed statistical analysis of your data using the method selected in the left panel. Each method looks at the same data differently — try switching between them to see how statisticians interpret results from multiple angles.</span></span>
+                </div>
                 <div id="methodContent"></div>
             </div>
         </div>
@@ -611,11 +758,23 @@
                 plugins: {
                     legend: { display: false },
                     tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 12,
+                        cornerRadius: 8,
                         callbacks: {
+                            title: (items) => {
+                                return items[0].label === '✓ Success' ? '✓ Success (Positive Outcome)' : '✗ Failure (Negative Outcome)';
+                            },
                             label: (ctx) => {
                                 const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
                                 const pct = total > 0 ? (ctx.raw / total * 100).toFixed(1) : 0;
-                                return `${ctx.raw} (${pct}%)`;
+                                return `Count: ${ctx.raw} out of ${total} (${pct}%)`;
+                            },
+                            afterLabel: (ctx) => {
+                                if (ctx.dataIndex === 0) return 'e.g., patients with cavities / positive diagnosis';
+                                return 'e.g., patients without the condition';
                             }
                         }
                     }
@@ -674,16 +833,41 @@
                     legend: {
                         position: 'top',
                         labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 8, font: { size: 11 } }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            title: (items) => `After ${items[0].label} patients`,
+                            label: (ctx) => {
+                                if (ctx.datasetIndex === 0) return `Observed rate: ${ctx.raw.toFixed(2)}%`;
+                                return `True probability: ${ctx.raw}%`;
+                            },
+                            afterBody: (items) => {
+                                const obs = items[0].raw;
+                                const tru = items[1] ? items[1].raw : null;
+                                if (tru !== null) {
+                                    const diff = Math.abs(obs - tru).toFixed(2);
+                                    return [`Gap: ${diff}%`, diff < 3 ? '→ Very close! LLN is working.' : diff < 8 ? '→ Getting closer with more data.' : '→ Still far — try increasing sample size.'];
+                                }
+                                return [];
+                            }
+                        }
                     }
                 },
                 scales: {
                     x: {
+                        title: { display: true, text: 'Patient # (sample count)', font: { size: 11 }, color: '#64748b' },
                         grid: { color: 'rgba(0,0,0,0.04)' },
                         ticks: { maxTicksLimit: 10, font: { size: 10 } }
                     },
                     y: {
                         beginAtZero: true,
                         max: 100,
+                        title: { display: true, text: 'Observed Probability (%)', font: { size: 11 }, color: '#64748b' },
                         grid: { color: 'rgba(0,0,0,0.06)' },
                         ticks: { callback: v => v + '%', font: { size: 10 } }
                     }
@@ -733,11 +917,23 @@
                         labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } }
                     },
                     tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 12,
+                        cornerRadius: 8,
+                        filter: (item) => item.raw !== null,
                         callbacks: {
+                            title: (items) => `${items[0].label} successes`,
                             label: (ctx) => {
-                                if (ctx.datasetIndex === 0) return `Density: ${ctx.raw.toFixed(5)}`;
-                                if (ctx.raw !== null) return `Observed: ${ctx.label} successes`;
+                                if (ctx.datasetIndex === 0) return `Expected likelihood: ${(ctx.raw * 100).toFixed(3)}%`;
+                                if (ctx.raw !== null) return `▲ YOUR result landed here!`;
                                 return null;
+                            },
+                            afterBody: (items) => {
+                                const item = items.find(i => i.datasetIndex === 1 && i.raw !== null);
+                                if (item) return ['This triangle shows where your', 'actual data fell on the bell curve.'];
+                                return ['Higher curve = more likely outcome.', 'Tails = rare/unusual results.'];
                             }
                         }
                     }
@@ -865,6 +1061,9 @@
                         <strong>Law of Large Numbers Theorem:</strong> States that as the number of trials increases,
                         the empirical probability approaches the theoretical probability.
                     </div>
+                    <div class="chart-hint" style="margin-bottom:12px;">
+                        🎓 <strong>Beginner tip:</strong> Imagine flipping a coin. After 5 flips you might get 80% heads — that's not close to 50%. But after 1000 flips, you'll almost certainly be near 50%. That's what this law proves! Try it: set sample size to 50, generate data, then set it to 500 and compare.
+                    </div>
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-card-label">True Probability</div>
@@ -885,7 +1084,7 @@
                     </div>
                     <div class="success-box">
                         <strong>Interpretation:</strong> With ${total} samples, the observed probability (${observed.toFixed(2)}%)
-                        is very close to the true probability (${trueProb}%). This demonstrates the Law of Large Numbers.
+                        is ${Math.abs(observed - trueProb) < 3 ? 'very close to' : Math.abs(observed - trueProb) < 8 ? 'reasonably close to' : 'still away from'} the true probability (${trueProb}%). ${Math.abs(observed - trueProb) < 3 ? 'The Law of Large Numbers is clearly at work!' : 'Try increasing the sample size to see convergence improve.'}
                     </div>
                 `;
             }
@@ -904,6 +1103,9 @@
                     <div class="method-description">
                         <strong>Maximum Likelihood Estimation (MLE):</strong> Finds the parameter value that makes
                         the observed data most probable.
+                    </div>
+                    <div class="chart-hint" style="margin-bottom:12px;">
+                        🎓 <strong>Beginner tip:</strong> MLE asks: "If I had to guess the true probability, what value would make my observed data the <em>most likely</em> outcome?" For a coin, if you saw 7 heads in 10 flips, the MLE says the coin's probability of heads is 70%. It's simply successes ÷ total!
                     </div>
                     <div class="stats-grid">
                         <div class="stat-card">
@@ -924,8 +1126,9 @@
                         </div>
                     </div>
                     <div class="method-description">
-                        <strong>Result:</strong> The MLE of parameter p is ${mleEstimate.toFixed(4)}, which is obtained by
-                        finding the value that maximizes the likelihood function L(p) = p^k(1-p)^(n-k), where k is the number of successes.
+                        <strong>Result:</strong> The MLE of parameter p is ${mleEstimate.toFixed(4)}% (= ${success} successes ÷ ${total} trials).
+                        <br><br><strong>What does Log Likelihood mean?</strong> It measures how "surprised" we'd be to see this data given our estimate. More negative = less likely. The MLE gives the <em>least negative</em> (best) value possible.
+                        <br><br><strong>What is Bias?</strong> The difference between our estimate and the truth. Positive = we overestimated; negative = we underestimated. With more samples, bias tends toward zero.
                     </div>
                 `;
             }
@@ -949,9 +1152,12 @@
                         <strong>Confidence Interval (95%):</strong> We are 95% confident that the true parameter
                         lies within this interval.
                     </div>
+                    <div class="chart-hint" style="margin-bottom:12px;">
+                        🎓 <strong>Beginner tip:</strong> A confidence interval is like saying "I'm 95% sure the true answer is somewhere between X and Y." It's not a single guess — it's a <em>range</em>. Wider range = less certain. Larger sample size = narrower (more precise) range. Try it!
+                    </div>
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-card-label">Point Estimate</div>
+                            <div class="stat-card-label">Point Estimate (p̂)</div>
                             <div class="stat-card-value">${(p * 100).toFixed(2)}%</div>
                         </div>
                         <div class="stat-card danger">
@@ -970,6 +1176,8 @@
                     <div class="success-box">
                         <strong>Interpretation:</strong> We are 95% confident that the true proportion lies between
                         ${lower.toFixed(2)}% and ${upper.toFixed(2)}%.
+                        <br><br><strong>In dental terms:</strong> If this were a real study on cavity prevalence, you'd report: <em>"The cavity rate was ${(p*100).toFixed(1)}% (95% CI: ${lower.toFixed(1)}%–${upper.toFixed(1)}%)"</em> in your research paper.
+                        <br><br><strong>Formula used:</strong> p̂ ± z × SE, where z=1.96 for 95% confidence and SE = √(p̂(1−p̂)/n)
                     </div>
                 `;
             }
@@ -994,7 +1202,12 @@
                 return `
                     <div class="method-description">
                         <strong>Hypothesis Test (Two-tailed):</strong>
-                        <br>H0: p = ${(trueProb * 100).toFixed(1)}% vs H1: p ≠ ${(trueProb * 100).toFixed(1)}%
+                        <br>H₀ (null): p = ${(trueProb * 100).toFixed(1)}% &nbsp;vs&nbsp; H₁ (alternative): p ≠ ${(trueProb * 100).toFixed(1)}%
+                    </div>
+                    <div class="chart-hint" style="margin-bottom:12px;">
+                        🎓 <strong>Beginner tip:</strong> Hypothesis testing asks: "Could my results be due to random chance, or is something real going on?"
+                        <br>• <strong>H₀ (null hypothesis)</strong> = "Nothing special is happening" (the default assumption)
+                        <br>• <strong>P-value</strong> = probability of seeing your results IF H₀ is true. Small p-value (< 0.05) = unlikely by chance alone → reject H₀!
                     </div>
                     <div class="stats-grid">
                         <div class="stat-card">
@@ -1016,6 +1229,8 @@
                     </div>
                     <div class="${pValue < 0.05 ? 'warning-box' : 'success-box'}">
                         <strong>Result:</strong> With p-value = ${pValue.toFixed(4)} ${pValue < 0.05 ? '< 0.05, we reject the null hypothesis. The data provides significant evidence that p ≠ ' + (trueProb * 100).toFixed(1) + '%.' : '≥ 0.05, we fail to reject the null hypothesis. No significant difference detected.'}
+                        <br><br><strong>What does this mean in simple terms?</strong> ${pValue < 0.05 ? 'Your observed result is <em>unlikely</em> to have happened by pure chance. Something real is going on — like a treatment actually working differently than expected.' : 'Your observed result <em>could easily have happened by chance</em>. There\'s not enough evidence to claim the true probability is different from ' + (trueProb * 100).toFixed(1) + '%.'}
+                        <br><br><strong>Z-statistic explained:</strong> Measures how many standard deviations your result is from what was expected. |Z| > 1.96 → statistically significant at 95% confidence.
                     </div>
                 `;
             }
@@ -1055,6 +1270,12 @@
                     <div class="method-description">
                         <strong>Linear Regression:</strong> Models the trend of convergence over samples.
                     </div>
+                    <div class="chart-hint" style="margin-bottom:12px;">
+                        🎓 <strong>Beginner tip:</strong> Regression finds the "best fit line" through your data points.
+                        <br>• <strong>Slope</strong> = how much the line goes up/down per sample (close to 0 = stable)
+                        <br>• <strong>Intercept</strong> = where the line starts (when x=0)
+                        <br>• <strong>R²</strong> = how well the line fits (0 = terrible, 1 = perfect). Here it measures how much the convergence follows a straight-line trend.
+                    </div>
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-card-label">Slope</div>
@@ -1075,7 +1296,9 @@
                     </div>
                     <div class="method-description">
                         <strong>Interpretation:</strong> The regression line shows that as sample size increases by 1,
-                        the observed probability changes by ${slope.toFixed(4)}%. The R² = ${r2.toFixed(4)} indicates the goodness of fit.
+                        the observed probability changes by ${slope.toFixed(4)}%.
+                        <br><br><strong>What does R² = ${r2.toFixed(4)} mean?</strong> ${r2 > 0.7 ? 'The convergence follows a clear linear trend — the line fits well.' : r2 > 0.3 ? 'There is a moderate linear trend. Some variability isn\'t captured by a straight line.' : 'The data doesn\'t follow a straight line very well — which makes sense since convergence curves are non-linear!'}
+                        <br><br><strong>Is slope near 0?</strong> ${Math.abs(slope) < 0.01 ? 'Yes! This means the observed rate has stabilized — your estimate is no longer changing much with more data.' : 'Not yet — the estimate is still changing, meaning more samples would help stabilize it.'}
                     </div>
                 `;
             }
@@ -1099,6 +1322,12 @@
                 return `
                     <div class="method-description">
                         <strong>Binomial Distribution Analysis:</strong> The number of successes follows a binomial distribution.
+                    </div>
+                    <div class="chart-hint" style="margin-bottom:12px;">
+                        🎓 <strong>Beginner tip:</strong> A distribution shows how your results are spread out.
+                        <br>• <strong>Mean (μ)</strong> = the average/expected number of successes = n × p
+                        <br>• <strong>Std Dev (σ)</strong> = how much results typically vary from the mean. Smaller σ = more consistent results
+                        <br>• <strong>Skewness</strong> = is the data lopsided? 0 = perfectly symmetric, positive = tail on the right, negative = tail on the left
                     </div>
                     <div class="stats-grid">
                         <div class="stat-card">
@@ -1131,8 +1360,9 @@
                         </div>
                     </div>
                     <div class="success-box">
-                        <strong>Summary:</strong> With n=${total} trials and p=${p.toFixed(4)}, the distribution has
-                        mean=${mean.toFixed(2)}, std.dev=${stdDev.toFixed(2)}.
+                        <strong>Summary:</strong> With n=${total} trials and p=${p.toFixed(4)}, we expect about <strong>${mean.toFixed(0)} successes</strong> on average, give or take <strong>${stdDev.toFixed(1)}</strong>.
+                        <br><br><strong>68-95-99.7 Rule:</strong> About 68% of the time, you'd see between ${Math.round(mean - stdDev)} and ${Math.round(mean + stdDev)} successes. About 95% of the time, between ${Math.round(mean - 2*stdDev)} and ${Math.round(mean + 2*stdDev)}.
+                        <br><br><strong>Skewness = ${skewness.toFixed(2)}:</strong> ${Math.abs(skewness) < 0.3 ? 'Nearly symmetric — the bell curve fits well here.' : skewness > 0 ? 'Right-skewed — there\'s a longer tail of high success counts.' : 'Left-skewed — there\'s a longer tail of low success counts.'}
                     </div>
                 `;
             }
