@@ -7,124 +7,1123 @@
   <title>Hypothesis Testing — DentalStats Learning</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+
+    .hero-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 55%, #0f766e 100%);
+      border-radius: 16px;
+      padding: 40px 32px;
+      color: white;
+    }
+
+    .stat-card {
+      border-radius: 14px;
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.08);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+    .stat-card:hover::before { opacity: 1; }
+    .stat-card .icon { font-size: 2rem; margin-bottom: 10px; }
+    .stat-card .label { font-size: 1rem; font-weight: 700; }
+    .stat-card .sublabel { font-size: 0.75rem; opacity: 0.82; margin-top: 4px; }
+    .stat-card .try-hint { font-size: 0.7rem; margin-top: 10px; opacity: 0.65; }
+
+    .card-h0h1   { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    .card-alpha   { background: linear-gradient(135deg, #10b981, #047857); }
+    .card-pval    { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+    .card-errors  { background: linear-gradient(135deg, #ef4444, #d97706); }
+    .card-power   { background: linear-gradient(135deg, #0f766e, #0e4f5c); }
+    .card-tests   { background: linear-gradient(135deg, #ec4899, #9d174d); }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .section-title .dot { width: 10px; height: 10px; border-radius: 50%; background: #0f766e; flex-shrink: 0; }
+
+    .info-pill {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: white;
+      border-radius: 12px;
+      padding: 16px 18px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border-left: 4px solid #0f766e;
+    }
+    .info-pill .emoji { font-size: 1.4rem; flex-shrink: 0; }
+    .info-pill p { margin: 0; font-size: 0.875rem; color: #374151; line-height: 1.5; }
+
+    /* MODAL */
+    #statModal { display: none; }
+    #statModal.open {
+      display: flex;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.6);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-box {
+      background: #f8fafc;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 620px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.3);
+      animation: modalIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(30px) scale(0.95); }
+      to   { opacity: 1; transform: translateY(0)    scale(1); }
+    }
+    .modal-header {
+      padding: 28px 28px 22px;
+      border-radius: 20px 20px 0 0;
+      color: white;
+      position: relative;
+    }
+    .modal-header .header-icon {
+      width: 52px; height: 52px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 14px;
+    }
+    .modal-header h2 { font-size: 1.5rem; font-weight: 800; margin: 0 0 6px; letter-spacing: -0.01em; }
+    .modal-header p  { font-size: 0.875rem; opacity: 0.85; margin: 0; line-height: 1.5; max-width: 440px; }
+    .modal-close {
+      position: absolute;
+      top: 18px; right: 18px;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.3); }
+    .modal-body { padding: 22px 24px 28px; }
+
+    .example-badge {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 0.85rem;
+      color: #166534;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .example-badge strong { display: block; margin-bottom: 4px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: #15803d; }
+
+    .calc-btn {
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 22px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.01em;
+    }
+    .calc-btn:hover  { opacity: 0.9; }
+    .calc-btn:active { transform: scale(0.97); }
+
+    .result-box {
+      margin-top: 16px;
+      background: white;
+      border-radius: 12px;
+      padding: 14px 18px;
+      text-align: center;
+      border: 1.5px solid #e2e8f0;
+      font-size: 1.1rem;
+      color: #374151;
+      display: none;
+    }
+    .result-box.show { display: block; }
+    .result-val { font-weight: 800; color: #0f766e; font-size: 1.3rem; }
+
+    .number-box, .patient-box {
+      padding: 9px 14px;
+      background: #3b82f6;
+      color: white;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      animation: drop 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes drop {
+      from { transform: translateY(-16px) scale(0.85); opacity: 0; }
+      to   { transform: translateY(0)     scale(1);    opacity: 1; }
+    }
+    .highlight { background: #22c55e !important; }
+
+    .visual-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; min-height: 44px; }
+    .step-log { margin-top: 10px; background: white; border-radius: 10px; padding: 10px 12px; border: 1px solid #e2e8f0; }
+    .step-log div { font-size: 0.8rem; color: #64748b; padding: 3px 0; border-bottom: 1px dashed #f1f5f9; }
+    .step-log div:last-child { border-bottom: none; }
+
+    .report-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    .report-table th { background: #f1f5f9; padding: 10px 14px; text-align: left; font-weight: 600; color: #334155; }
+    .report-table td { padding: 10px 14px; color: #475569; border-top: 1px solid #f1f5f9; }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: #0f766e; font-size: 0.875rem; font-weight: 500;
+      text-decoration: none; margin-bottom: 24px; transition: gap 0.15s;
+    }
+    .back-link:hover { gap: 10px; }
+
+    .sim-panel {
+      background: white;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    }
+
+    /* P-value Explorer */
+    .pval-bar-track {
+      width: 100%; height: 36px; border-radius: 18px;
+      background: linear-gradient(90deg, #22c55e 0%, #22c55e 1%, #eab308 4%, #ef4444 10%, #6b7280 50%, #6b7280 100%);
+      position: relative; margin: 20px 0 10px; overflow: visible;
+    }
+    .pval-marker {
+      position: absolute; top: -6px; width: 4px; height: 48px;
+      background: #0f172a; border-radius: 2px; transition: left 0.15s;
+    }
+    .pval-threshold {
+      position: absolute; top: -8px; height: 52px; width: 2px;
+      border-left: 2px dashed rgba(255,255,255,0.9);
+    }
+    .pval-threshold-label {
+      position: absolute; top: -26px; font-size: 0.65rem; font-weight: 700;
+      color: #334155; white-space: nowrap; transform: translateX(-50%);
+    }
+    .pval-display {
+      text-align: center; font-size: 2rem; font-weight: 800; margin: 10px 0;
+      transition: color 0.2s;
+    }
+    .pval-interpretation {
+      text-align: center; font-size: 0.9rem; padding: 12px 16px;
+      border-radius: 10px; transition: all 0.2s; font-weight: 600;
+    }
+
+    /* Error Matrix */
+    .error-matrix {
+      display: grid; grid-template-columns: auto 1fr 1fr;
+      gap: 0; border-radius: 14px; overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    }
+    .error-cell {
+      padding: 18px 14px; text-align: center; font-size: 0.82rem;
+      cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+      position: relative; line-height: 1.45;
+    }
+    .error-cell:hover { transform: scale(1.03); box-shadow: 0 8px 20px rgba(0,0,0,0.15); z-index: 2; }
+    .error-cell-header {
+      padding: 14px; text-align: center; font-weight: 700; font-size: 0.78rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .cell-correct { background: #f0fdf4; border: 1px solid #bbf7d0; }
+    .cell-type1   { background: #fef2f2; border: 1px solid #fecaca; }
+    .cell-type2   { background: #fffbeb; border: 1px solid #fde68a; }
+    .cell-correct-neg { background: #f0f9ff; border: 1px solid #bae6fd; }
+
+    /* Decision Simulator Steps */
+    .decision-step {
+      background: white; border-radius: 12px; padding: 18px;
+      border: 1.5px solid #e2e8f0; margin-bottom: 12px;
+      opacity: 0; transform: translateX(-20px);
+      transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .decision-step.visible {
+      opacity: 1; transform: translateX(0);
+    }
+    .decision-step .step-number {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #0f766e; color: white; font-size: 0.8rem; font-weight: 700;
+      margin-right: 10px; flex-shrink: 0;
+    }
+    .decision-step .step-title { font-weight: 700; color: #0f172a; font-size: 0.95rem; }
+    .decision-step .step-content { margin-top: 8px; font-size: 0.85rem; color: #475569; line-height: 1.6; }
+
+    .verdict-box {
+      text-align: center; padding: 28px; border-radius: 14px; margin-top: 16px;
+      animation: verdictPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes verdictPop {
+      from { transform: scale(0.6); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .verdict-icon { font-size: 3rem; margin-bottom: 10px; }
+    .verdict-title { font-size: 1.3rem; font-weight: 800; }
+    .verdict-desc { font-size: 0.85rem; margin-top: 6px; opacity: 0.85; }
+
+    /* Power Visualization */
+    .power-bar {
+      height: 30px; border-radius: 15px; transition: width 0.5s ease;
+      display: flex; align-items: center; padding-left: 12px;
+      font-size: 0.8rem; font-weight: 700; color: white;
+    }
+
+    /* Clinical Trial Simulation */
+    .trial-phase {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+      animation: drop 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .pulsing { animation: pulse 1s ease-in-out infinite; }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+    .slide-up { animation: slideUp 0.4s ease forwards; }
+
+    /* Preset buttons */
+    .preset-btn {
+      background: #f1f5f9; border: 1.5px solid #e2e8f0; border-radius: 8px;
+      padding: 8px 14px; font-size: 0.8rem; cursor: pointer; color: #334155;
+      transition: all 0.15s; font-weight: 500;
+    }
+    .preset-btn:hover { background: #e2e8f0; border-color: #cbd5e1; }
+    .preset-btn.active { background: #0f766e; color: white; border-color: #0f766e; }
+  </style>
 </head>
-<body class="bg-gray-50">
-  <div class="max-w-4xl mx-auto py-12 px-4">
-    <a href="/index.html#concepts" class="inline-block mb-6 text-sm text-teal-600">← Back to Concepts</a>
-    <h1 class="text-3xl font-bold mb-4">Hypothesis Testing Framework</h1>
+<body>
+<div class="max-w-4xl mx-auto py-10 px-4">
 
-    <p class="text-gray-700 mb-4">Hypothesis testing is a statistical method used to make decisions about a population based on sample data. In dental research it helps determine whether a treatment, intervention, or clinical observation has a real effect or whether the observed result occurred by chance.</p>
+  <a href="{% url 'index' %}" class="back-link">&larr; Back to Home</a>
 
-    <h2 class="text-xl font-semibold mt-6 mb-2">Why use hypothesis testing?</h2>
-    <p class="text-gray-700 mb-4">For example, a researcher may ask whether a new fluoride treatment reduces dental caries more effectively than standard treatment. Hypothesis testing provides a structured way to evaluate such questions using sample data.</p>
+  <!-- ══════════════ HERO ══════════════ -->
+  <div class="hero-banner mb-10">
+    <div class="text-xs font-semibold uppercase tracking-widest opacity-60 mb-2">Learning Module</div>
+    <h1 class="text-3xl font-bold mb-3">Hypothesis Testing Framework</h1>
+    <p class="opacity-85 text-sm leading-relaxed max-w-xl">
+      Learn to make evidence-based decisions from dental research data. Explore every step of hypothesis testing with interactive examples.
+    </p>
+    <div class="flex flex-wrap gap-3 mt-6">
+      <span class="bg-white/20 text-white text-xs font-medium px-3 py-1 rounded-full">H&#8320; vs H&#8321;</span>
+      <span class="bg-white/20 text-white text-xs font-medium px-3 py-1 rounded-full">Type I / II Errors</span>
+      <span class="bg-white/20 text-white text-xs font-medium px-3 py-1 rounded-full">P-values</span>
+      <span class="bg-white/20 text-white text-xs font-medium px-3 py-1 rounded-full">Statistical Power</span>
+    </div>
+  </div>
 
-    <h2 class="text-xl font-semibold mt-6 mb-2">The Hypothesis Testing Process</h2>
-    <p class="text-gray-700 mb-4">Hypothesis testing typically follows this sequence of steps:</p>
+  <!-- ══════════════ INTRO PILLS ══════════════ -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+    <div class="info-pill">
+      <div class="emoji">&#x1F9EA;</div>
+      <p><strong>Test claims</strong><br>Determine whether a treatment truly works or the result is just chance.</p>
+    </div>
+    <div class="info-pill">
+      <div class="emoji">&#x1F9B7;</div>
+      <p><strong>Dental research</strong><br>Compare fluoride treatments, evaluate new materials, assess therapies.</p>
+    </div>
+    <div class="info-pill">
+      <div class="emoji">&#x1F4CA;</div>
+      <p><strong>Make decisions</strong><br>Use p-values and significance levels to draw reliable conclusions.</p>
+    </div>
+  </div>
 
-    <ol class="list-decimal pl-6 space-y-3 text-gray-700">
-      <li>
-        <strong>State the hypotheses</strong>
-        <div class="mt-1 text-sm text-gray-600">
-          <p><strong>Null hypothesis (H<sub>0</sub>)</strong>: the default assumption that there is no effect, difference, or relationship.</p>
-          <p><strong>Alternative hypothesis (H<sub>1</sub> or H<sub>a</sub>)</strong>: the statement that a real effect or difference exists (what the researcher wants to show).</p>
-          <p class="mt-2">Example: Testing whether a new toothpaste reduces plaque more than the standard toothpaste. H<sub>0</sub>: no difference. H<sub>1</sub>: new toothpaste reduces plaque more.</p>
+  <!-- ══════════════ CONCEPT CARDS ══════════════ -->
+  <div class="section-title"><span class="dot"></span> Core Concepts</div>
+  <p class="text-gray-500 text-sm mb-5">Click any card to explore with interactive examples.</p>
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+    <div class="stat-card card-h0h1"  onclick="openModal('h0h1')">
+      <div class="icon">&#x2696;&#xFE0F;</div>
+      <div class="label">H&#8320; & H&#8321;</div>
+      <div class="sublabel">Null vs Alternative</div>
+      <div class="try-hint">Tap to explore &rarr;</div>
+    </div>
+    <div class="stat-card card-alpha" onclick="openModal('alpha')">
+      <div class="icon">&#x1F3AF;</div>
+      <div class="label">Significance (&alpha;)</div>
+      <div class="sublabel">Threshold level</div>
+      <div class="try-hint">Tap to explore &rarr;</div>
+    </div>
+    <div class="stat-card card-pval"  onclick="openModal('pval')">
+      <div class="icon">&#x1F4C9;</div>
+      <div class="label">P-value</div>
+      <div class="sublabel">Probability of chance</div>
+      <div class="try-hint">Tap to explore &rarr;</div>
+    </div>
+    <div class="stat-card card-errors" onclick="openModal('errors')">
+      <div class="icon">&#x26A0;&#xFE0F;</div>
+      <div class="label">Type I & II Errors</div>
+      <div class="sublabel">False decisions</div>
+      <div class="try-hint">Tap to explore &rarr;</div>
+    </div>
+    <div class="stat-card card-power" onclick="openModal('power')">
+      <div class="icon">&#x26A1;</div>
+      <div class="label">Statistical Power</div>
+      <div class="sublabel">Detecting real effects</div>
+      <div class="try-hint">Tap to explore &rarr;</div>
+    </div>
+    <div class="stat-card card-tests" onclick="openModal('tests')">
+      <div class="icon">&#x1F4D0;</div>
+      <div class="label">Test Statistics</div>
+      <div class="sublabel">t, &chi;&sup2;, F values</div>
+      <div class="try-hint">Tap to explore &rarr;</div>
+    </div>
+  </div>
+
+  <!-- ══════════════ DECISION SIMULATOR ══════════════ -->
+  <div class="mb-10">
+    <div class="section-title"><span class="dot"></span> Hypothesis Testing Decision Machine</div>
+    <p class="text-gray-500 text-sm mb-4">Choose a dental scenario and watch the full testing process step-by-step.</p>
+    <div class="sim-panel">
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button class="preset-btn" onclick="runDecisionSim('toothpaste')">&#x1F9F4; New Toothpaste vs Standard</button>
+        <button class="preset-btn" onclick="runDecisionSim('fluoride')">&#x1F48E; Fluoride Varnish Study</button>
+        <button class="preset-btn" onclick="runDecisionSim('implant')">&#x1FA7A; Implant Success Rate</button>
+      </div>
+      <div id="decisionSteps"></div>
+      <div id="decisionVerdict"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════ P-VALUE EXPLORER ══════════════ -->
+  <div class="mb-10">
+    <div class="section-title"><span class="dot"></span> Live P-value Explorer</div>
+    <p class="text-gray-500 text-sm mb-4">Drag the slider and see how p-value interpretation changes in real time.</p>
+    <div class="sim-panel">
+      <div class="pval-display" id="pvalDisplay">p = 0.05</div>
+      <input type="range" min="0" max="100" value="5" id="pvalSlider" style="width:100%;cursor:pointer;accent-color:#0f766e" oninput="updatePval(this.value)">
+      <div class="pval-bar-track" id="pvalTrack">
+        <div class="pval-threshold" style="left:1%" id="thresh001">
+          <span class="pval-threshold-label">&alpha;=0.01</span>
         </div>
-      </li>
-
-      <li>
-        <strong>Select the significance level (α)</strong>
-        <div class="mt-1 text-sm text-gray-600">α is the probability of making a Type I error (false positive). Common choices: 0.05 (5%), 0.01, or 0.001 for stricter evidence.</div>
-      </li>
-
-      <li>
-        <strong>Calculate the test statistic</strong>
-        <div class="mt-1 text-sm text-gray-600">Compute a statistic from the sample (e.g., t value, χ², F) appropriate for the chosen test (t-test, chi-square, ANOVA, regression).</div>
-      </li>
-
-      <li>
-        <strong>Determine the p-value</strong>
-        <div class="mt-1 text-sm text-gray-600">The p-value is the probability of observing the data (or more extreme) assuming H<sub>0</sub> is true. If p ≤ α, reject H<sub>0</sub>; otherwise fail to reject H<sub>0</sub>.</div>
-      </li>
-
-      <li>
-        <strong>Draw the conclusion</strong>
-        <div class="mt-1 text-sm text-gray-600">Decide whether the evidence is strong enough to reject H<sub>0</sub>. Remember, failing to reject H<sub>0</sub> does not prove H<sub>0</sub> is true; it only indicates insufficient evidence.</div>
-      </li>
-    </ol>
-
-    <h2 class="text-xl font-semibold mt-6 mb-2">Test statistic examples</h2>
-    <div class="text-sm text-gray-600 mb-4">
-      <ul class="list-disc pl-5">
-        <li><strong>t-test</strong> &ndash; t value (compare means)</li>
-        <li><strong>Chi-square</strong> &ndash; χ² value (categorical associations)</li>
-        <li><strong>ANOVA</strong> &ndash; F value (compare >2 group means)</li>
-        <li><strong>Regression</strong> &ndash; t or F (effect of predictors)</li>
-      </ul>
+        <div class="pval-threshold" style="left:5%" id="thresh005">
+          <span class="pval-threshold-label">&alpha;=0.05</span>
+        </div>
+        <div class="pval-threshold" style="left:10%" id="thresh010">
+          <span class="pval-threshold-label">&alpha;=0.10</span>
+        </div>
+        <div class="pval-marker" id="pvalMarker" style="left:5%"></div>
+      </div>
+      <div class="flex justify-between text-xs text-gray-400 mt-1 mb-4">
+        <span>0.00</span>
+        <span>0.25</span>
+        <span>0.50</span>
+        <span>0.75</span>
+        <span>1.00</span>
+      </div>
+      <div class="pval-interpretation" id="pvalInterpretation">
+        Borderline significant at &alpha; = 0.05. Evidence warrants careful review.
+      </div>
+      <div id="pvalDentalExample" class="example-badge mt-4" style="display:none"></div>
     </div>
+  </div>
 
-    <h2 class="text-xl font-semibold mt-6 mb-2">Interpreting p-values</h2>
-    <p class="text-gray-700 mb-3">Compare p-value to α:</p>
-    <ul class="list-disc pl-5 text-gray-700 mb-4">
-      <li>If p ≤ α &rarr; reject H<sub>0</sub> (evidence supports H<sub>1</sub>).</li>
-      <li>If p &gt; α &rarr; fail to reject H<sub>0</sub> (insufficient evidence).</li>
-    </ul>
-
-    <h2 class="text-xl font-semibold mt-6 mb-2">Types of errors</h2>
-    <div class="text-sm text-gray-600 mb-4">
-      <p><strong>Type I error (α):</strong> false positive (rejecting a true H<sub>0</sub>). Example: concluding a fluoride varnish prevents caries when it does not.</p>
-      <p class="mt-2"><strong>Type II error (β):</strong> false negative (failing to reject a false H<sub>0</sub>). Example: missing a real benefit of a periodontal therapy due to small sample size or high variability.</p>
+  <!-- ══════════════ ERROR TYPE MATRIX ══════════════ -->
+  <div class="mb-10">
+    <div class="section-title"><span class="dot"></span> Error Type Interactive Matrix</div>
+    <p class="text-gray-500 text-sm mb-4">Click each cell to see dental examples. Understand how decisions can go wrong.</p>
+    <div class="sim-panel">
+      <div class="error-matrix">
+        <!-- Header row -->
+        <div class="error-cell-header" style="background:#f8fafc;"></div>
+        <div class="error-cell-header" style="background:#dcfce7;color:#166534;">H&#8320; is TRUE<br><span style="font-weight:400;font-size:0.7rem">No real effect</span></div>
+        <div class="error-cell-header" style="background:#fef9c3;color:#854d0e;">H&#8320; is FALSE<br><span style="font-weight:400;font-size:0.7rem">Real effect exists</span></div>
+        <!-- Row 1: Reject H0 -->
+        <div class="error-cell-header" style="background:#dbeafe;color:#1e40af;">Reject H&#8320;</div>
+        <div class="error-cell cell-type1" onclick="showErrorDetail('type1')" id="cellType1">
+          <div style="font-size:1.5rem;margin-bottom:6px">&#x274C;</div>
+          <div style="font-weight:700;color:#dc2626">TYPE I ERROR</div>
+          <div style="font-size:0.75rem;color:#9ca3af;margin-top:4px">False Positive (&alpha;)</div>
+          <div style="font-size:0.7rem;color:#d1d5db;margin-top:6px">Click for example</div>
+        </div>
+        <div class="error-cell cell-correct" onclick="showErrorDetail('correct_reject')" id="cellCorrectReject">
+          <div style="font-size:1.5rem;margin-bottom:6px">&#x2705;</div>
+          <div style="font-weight:700;color:#16a34a">CORRECT</div>
+          <div style="font-size:0.75rem;color:#9ca3af;margin-top:4px">True Positive (Power)</div>
+          <div style="font-size:0.7rem;color:#d1d5db;margin-top:6px">Click for example</div>
+        </div>
+        <!-- Row 2: Fail to reject H0 -->
+        <div class="error-cell-header" style="background:#dbeafe;color:#1e40af;">Fail to reject H&#8320;</div>
+        <div class="error-cell cell-correct-neg" onclick="showErrorDetail('correct_fail')" id="cellCorrectFail">
+          <div style="font-size:1.5rem;margin-bottom:6px">&#x2705;</div>
+          <div style="font-weight:700;color:#0284c7">CORRECT</div>
+          <div style="font-size:0.75rem;color:#9ca3af;margin-top:4px">True Negative (1-&alpha;)</div>
+          <div style="font-size:0.7rem;color:#d1d5db;margin-top:6px">Click for example</div>
+        </div>
+        <div class="error-cell cell-type2" onclick="showErrorDetail('type2')" id="cellType2">
+          <div style="font-size:1.5rem;margin-bottom:6px">&#x26A0;&#xFE0F;</div>
+          <div style="font-weight:700;color:#d97706">TYPE II ERROR</div>
+          <div style="font-size:0.75rem;color:#9ca3af;margin-top:4px">False Negative (&beta;)</div>
+          <div style="font-size:0.7rem;color:#d1d5db;margin-top:6px">Click for example</div>
+        </div>
+      </div>
+      <div id="errorDetail" class="mt-4" style="display:none">
+        <div class="example-badge" id="errorDetailContent"></div>
+      </div>
     </div>
+  </div>
 
-    <h2 class="text-xl font-semibold mt-6 mb-2">Statistical power</h2>
-    <p class="text-gray-700 mb-3">Power = 1 − β is the probability of detecting a true effect. Common targets: 0.80 (80%) or 0.90 (90%). Low power increases the risk of Type II errors.</p>
-
-    <h2 class="text-xl font-semibold mt-6 mb-2">Practical examples</h2>
-    <div class="text-sm text-gray-700 mb-4">
-      <p>Example 1: A study comparing two periodontal treatments reports p = 0.03 (α = 0.05). Since 0.03 &lt; 0.05, the result is statistically significant and H<sub>0</sub> is rejected.</p>
-      <p class="mt-2">Example 2: A whitening gel study finds p = 0.20 (α = 0.05). Since 0.20 &gt; 0.05, the result is not statistically significant and there is insufficient evidence to claim a treatment effect.</p>
+  <!-- ══════════════ CLINICAL TRIAL SIMULATION ══════════════ -->
+  <div class="mb-10">
+    <div class="section-title"><span class="dot"></span> Dental Research Simulation</div>
+    <p class="text-gray-500 text-sm mb-4">Run a simulated clinical trial and watch every step of the hypothesis testing process.</p>
+    <div class="sim-panel text-center">
+      <button onclick="runClinicalTrial()" class="calc-btn" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)">&#x25B6; Run a Fluoride Clinical Trial</button>
+      <div id="trialVisual" class="flex flex-wrap justify-center gap-2 mt-5"></div>
+      <div id="trialOutput" class="mt-4 text-gray-700 text-sm space-y-2 text-left"></div>
+      <div id="trialVerdict"></div>
     </div>
+  </div>
 
-    <h2 class="text-xl font-semibold mt-6 mb-2">Summary table</h2>
-    <div class="overflow-auto mb-4">
-      <table class="table-auto w-full text-sm border-collapse">
+  <!-- ══════════════ SUMMARY TABLE ══════════════ -->
+  <div class="mb-10">
+    <div class="section-title"><span class="dot"></span> Summary Reference Table</div>
+    <div class="sim-panel p-0 overflow-hidden">
+      <table class="report-table">
         <thead>
-          <tr class="bg-gray-100">
-            <th class="px-3 py-2 text-left">Concept</th>
-            <th class="px-3 py-2 text-left">Meaning</th>
+          <tr>
+            <th>Concept</th>
+            <th>Symbol</th>
+            <th>Meaning</th>
+            <th>Common Values</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td class="px-3 py-2">Null Hypothesis (H<sub>0</sub>)</td>
-            <td class="px-3 py-2">Assumes no effect or difference</td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="px-3 py-2">Alternative Hypothesis (H<sub>1</sub>)</td>
-            <td class="px-3 py-2">Suggests a real effect exists</td>
+            <td><strong>Null Hypothesis</strong></td>
+            <td>H&#8320;</td>
+            <td>No effect or difference exists</td>
+            <td>-</td>
           </tr>
           <tr>
-            <td class="px-3 py-2">Significance level (α)</td>
-            <td class="px-3 py-2">Probability of Type I error (commonly 0.05)</td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="px-3 py-2">p-value</td>
-            <td class="px-3 py-2">Probability results occurred by chance under H<sub>0</sub></td>
+            <td><strong>Alternative Hypothesis</strong></td>
+            <td>H&#8321;</td>
+            <td>A real effect or difference exists</td>
+            <td>-</td>
           </tr>
           <tr>
-            <td class="px-3 py-2">Type I / Type II error</td>
-            <td class="px-3 py-2">False positive / False negative</td>
+            <td><strong>Significance Level</strong></td>
+            <td>&alpha;</td>
+            <td>Max acceptable probability of Type I error</td>
+            <td>0.05, 0.01, 0.001</td>
           </tr>
-          <tr class="bg-gray-50">
-            <td class="px-3 py-2">Power (1 − β)</td>
-            <td class="px-3 py-2">Probability of detecting a true effect (commonly 0.80)</td>
+          <tr>
+            <td><strong>P-value</strong></td>
+            <td>p</td>
+            <td>Probability of data given H&#8320; is true</td>
+            <td>p &lt; 0.05 = significant</td>
+          </tr>
+          <tr>
+            <td><strong>Type I Error</strong></td>
+            <td>&alpha;</td>
+            <td>Rejecting a true H&#8320; (false positive)</td>
+            <td>5% when &alpha; = 0.05</td>
+          </tr>
+          <tr>
+            <td><strong>Type II Error</strong></td>
+            <td>&beta;</td>
+            <td>Failing to reject a false H&#8320; (false negative)</td>
+            <td>20% when Power = 0.80</td>
+          </tr>
+          <tr>
+            <td><strong>Statistical Power</strong></td>
+            <td>1 - &beta;</td>
+            <td>Probability of detecting a real effect</td>
+            <td>0.80, 0.90</td>
           </tr>
         </tbody>
       </table>
     </div>
-
-    <p class="text-sm text-gray-600">Notes: Choose appropriate tests, ensure adequate sample size to achieve desired power, and report both effect sizes and p-values for transparent interpretation.</p>
-
-    <div class="mt-8 text-sm text-gray-500">© DentalStats — educational content</div>
   </div>
+
+  <!-- ══════════════ KEY REMINDERS ══════════════ -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+    <div class="info-pill" style="border-color:#3b82f6">
+      <div class="emoji">&#x1F4DD;</div>
+      <p><strong>Always report</strong><br>Effect size + p-value + confidence intervals for transparent research.</p>
+    </div>
+    <div class="info-pill" style="border-color:#f59e0b">
+      <div class="emoji">&#x1F50D;</div>
+      <p><strong>Sample size matters</strong><br>Small samples reduce power. Plan adequate n before your study.</p>
+    </div>
+    <div class="info-pill" style="border-color:#8b5cf6">
+      <div class="emoji">&#x1F6AB;</div>
+      <p><strong>Not proof</strong><br>Failing to reject H&#8320; does not prove it true &mdash; only insufficient evidence.</p>
+    </div>
+  </div>
+
+  <div class="pt-6 border-t border-gray-100 text-center text-xs text-gray-400">
+    DentalStats &mdash; educational content &nbsp;&middot;&nbsp; <a href="{% url 'index' %}" class="text-teal-600 hover:underline">Back to Home</a>
+  </div>
+
+</div><!-- /max-w -->
+
+<!-- ══════════════ MODAL ══════════════ -->
+<div id="statModal">
+  <div class="modal-box">
+    <div id="modalHeader" class="modal-header">
+      <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+      <div class="header-icon" id="modalIcon"></div>
+      <h2 id="modalTitle"></h2>
+      <p id="modalDesc"></p>
+    </div>
+    <div class="modal-body">
+      <div id="modalExample" class="example-badge"></div>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCRIPTS ══════════════ -->
+<script>
+  function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  /* ── Modal config per concept ── */
+  const CONCEPTS = {
+    h0h1: {
+      title: 'Null & Alternative Hypotheses', icon: '\u2696\uFE0F',
+      color: 'linear-gradient(135deg,#3b82f6,#1d4ed8)',
+      desc: 'Every hypothesis test starts with two competing statements about the population.',
+      example: '<strong>\uD83E\uDDB7 Dental Example: Fluoride Varnish Trial</strong><br>A researcher wants to test whether fluoride varnish reduces cavity rates in children compared to no treatment.',
+      content: function() {
+        return `
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+            <div style="background:#eff6ff;border:2px solid #3b82f6;border-radius:12px;padding:16px;text-align:center">
+              <div style="font-size:1.6rem;margin-bottom:6px">\uD83D\uDFE6</div>
+              <div style="font-weight:800;color:#1d4ed8;font-size:1.1rem">H\u2080 (Null)</div>
+              <div style="font-size:0.82rem;color:#475569;margin-top:6px">Fluoride varnish has <strong>no effect</strong> on cavity rates.</div>
+              <div style="font-size:0.75rem;color:#94a3b8;margin-top:4px">\u03BC\u2081 = \u03BC\u2082</div>
+            </div>
+            <div style="background:#f0fdf4;border:2px solid #22c55e;border-radius:12px;padding:16px;text-align:center">
+              <div style="font-size:1.6rem;margin-bottom:6px">\uD83D\uDFE9</div>
+              <div style="font-weight:800;color:#16a34a;font-size:1.1rem">H\u2081 (Alternative)</div>
+              <div style="font-size:0.82rem;color:#475569;margin-top:6px">Fluoride varnish <strong>reduces</strong> cavity rates.</div>
+              <div style="font-size:0.75rem;color:#94a3b8;margin-top:4px">\u03BC\u2081 < \u03BC\u2082</div>
+            </div>
+          </div>
+          <div style="background:#f8fafc;border-radius:10px;padding:14px;border:1px solid #e2e8f0;font-size:0.82rem;color:#475569;line-height:1.6">
+            <strong style="color:#0f172a">Key Rules:</strong><br>
+            \u2022 H\u2080 always contains the "=" (no difference, no effect)<br>
+            \u2022 H\u2081 is what the researcher hopes to demonstrate<br>
+            \u2022 We never "accept" H\u2080 \u2014 we only "fail to reject" it<br>
+            \u2022 The burden of proof falls on H\u2081
+          </div>
+        `;
+      }
+    },
+    alpha: {
+      title: 'Significance Level (\u03B1)', icon: '\uD83C\uDFAF',
+      color: 'linear-gradient(135deg,#10b981,#047857)',
+      desc: 'The threshold you set before testing that determines how strong evidence must be to reject H\u2080.',
+      example: '<strong>\uD83E\uDDB7 Dental Example</strong><br>Before comparing two periodontal treatments, you set \u03B1 = 0.05, meaning you accept a 5% risk of concluding the new treatment works when it actually does not.',
+      content: function() {
+        return `
+          <div style="margin-bottom:16px">
+            <div style="font-size:0.8rem;font-weight:600;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">Choose your significance level:</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="calc-btn" style="background:#10b981;flex:1;min-width:80px" onclick="selectAlpha(0.10)">Lenient<br><span style="font-size:1.2rem">\u03B1 = 0.10</span></button>
+              <button class="calc-btn" style="background:#047857;flex:1;min-width:80px" onclick="selectAlpha(0.05)">Standard<br><span style="font-size:1.2rem">\u03B1 = 0.05</span></button>
+              <button class="calc-btn" style="background:#064e3b;flex:1;min-width:80px" onclick="selectAlpha(0.01)">Strict<br><span style="font-size:1.2rem">\u03B1 = 0.01</span></button>
+            </div>
+          </div>
+          <div id="alphaVisual" style="margin-top:12px">
+            <div style="background:#ecfdf5;border-radius:10px;padding:14px;text-align:center;font-size:0.85rem;color:#047857">
+              Select a level above to see the visualization.
+            </div>
+          </div>
+          <div style="background:#f8fafc;border-radius:10px;padding:14px;border:1px solid #e2e8f0;font-size:0.82rem;color:#475569;line-height:1.6;margin-top:14px">
+            <strong style="color:#0f172a">When to use which:</strong><br>
+            \u2022 <strong>\u03B1 = 0.10</strong> \u2014 Exploratory or preliminary studies<br>
+            \u2022 <strong>\u03B1 = 0.05</strong> \u2014 Most dental research (standard)<br>
+            \u2022 <strong>\u03B1 = 0.01</strong> \u2014 Drug trials, critical safety decisions
+          </div>
+        `;
+      }
+    },
+    pval: {
+      title: 'P-value', icon: '\uD83D\uDCC9',
+      color: 'linear-gradient(135deg,#8b5cf6,#6d28d9)',
+      desc: 'The probability of observing your data (or more extreme) if the null hypothesis were true.',
+      example: '<strong>\uD83E\uDDB7 Dental Example</strong><br>A whitening gel study finds p = 0.02. This means there is only a 2% chance of seeing this difference if the gel truly had no effect.',
+      content: function() {
+        return `
+          <div style="display:grid;gap:10px;margin-bottom:16px">
+            <div style="background:#faf5ff;border:2px solid #8b5cf6;border-radius:12px;padding:14px" onclick="showPvalExample('pex1')" class="error-cell">
+              <strong style="color:#6d28d9">p = 0.003</strong><br>
+              <span style="font-size:0.82rem;color:#475569">Comparing two periodontal treatments &rarr; <strong style="color:#16a34a">Highly significant</strong></span>
+            </div>
+            <div style="background:#faf5ff;border:2px solid #8b5cf6;border-radius:12px;padding:14px" onclick="showPvalExample('pex2')" class="error-cell">
+              <strong style="color:#6d28d9">p = 0.04</strong><br>
+              <span style="font-size:0.82rem;color:#475569">New bonding agent vs standard &rarr; <strong style="color:#eab308">Significant at \u03B1=0.05</strong></span>
+            </div>
+            <div style="background:#faf5ff;border:2px solid #8b5cf6;border-radius:12px;padding:14px" onclick="showPvalExample('pex3')" class="error-cell">
+              <strong style="color:#6d28d9">p = 0.35</strong><br>
+              <span style="font-size:0.82rem;color:#475569">Mouthwash brand comparison &rarr; <strong style="color:#ef4444">Not significant</strong></span>
+            </div>
+          </div>
+          <div id="pvalExampleDetail" style="display:none" class="example-badge"></div>
+          <div style="background:#fef2f2;border-radius:10px;padding:14px;border:1px solid #fecaca;font-size:0.82rem;color:#991b1b;line-height:1.6;margin-top:10px">
+            <strong>Common Misconception:</strong> A p-value is NOT the probability that H\u2080 is true. It is the probability of the observed data assuming H\u2080 is true.
+          </div>
+        `;
+      }
+    },
+    errors: {
+      title: 'Type I & Type II Errors', icon: '\u26A0\uFE0F',
+      color: 'linear-gradient(135deg,#ef4444,#d97706)',
+      desc: 'Two ways a hypothesis test can lead to an incorrect conclusion.',
+      example: '<strong>\uD83E\uDDB7 Dental Context</strong><br>Errors in hypothesis testing have real consequences in clinical practice. Understanding them helps you evaluate research critically.',
+      content: function() {
+        return `
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+            <div style="background:#fef2f2;border:2px solid #ef4444;border-radius:12px;padding:16px">
+              <div style="font-size:1.4rem;text-align:center;margin-bottom:8px">\u274C</div>
+              <div style="font-weight:800;color:#dc2626;text-align:center;font-size:1rem">Type I Error (\u03B1)</div>
+              <div style="font-size:0.82rem;color:#475569;margin-top:8px;line-height:1.5">
+                <strong>False Positive</strong><br>
+                Rejecting H\u2080 when it is actually true.<br><br>
+                <em style="color:#9ca3af">Example: Concluding a new fluoride varnish prevents cavities when it actually has no effect. Patients receive an unnecessary treatment.</em>
+              </div>
+            </div>
+            <div style="background:#fffbeb;border:2px solid #f59e0b;border-radius:12px;padding:16px">
+              <div style="font-size:1.4rem;text-align:center;margin-bottom:8px">\u26A0\uFE0F</div>
+              <div style="font-weight:800;color:#d97706;text-align:center;font-size:1rem">Type II Error (\u03B2)</div>
+              <div style="font-size:0.82rem;color:#475569;margin-top:8px;line-height:1.5">
+                <strong>False Negative</strong><br>
+                Failing to reject H\u2080 when it is actually false.<br><br>
+                <em style="color:#9ca3af">Example: Missing a real benefit of a periodontal therapy due to small sample size. Patients miss out on an effective treatment.</em>
+              </div>
+            </div>
+          </div>
+          <div style="background:#f8fafc;border-radius:10px;padding:14px;border:1px solid #e2e8f0;font-size:0.82rem;color:#475569;line-height:1.6">
+            <strong style="color:#0f172a">Trade-off:</strong> Lowering \u03B1 (reducing Type I errors) increases \u03B2 (more Type II errors), unless you increase sample size. There is always a balance between the two.
+          </div>
+        `;
+      }
+    },
+    power: {
+      title: 'Statistical Power', icon: '\u26A1',
+      color: 'linear-gradient(135deg,#0f766e,#0e4f5c)',
+      desc: 'The probability of correctly detecting a real effect when one exists. Power = 1 \u2212 \u03B2.',
+      example: '<strong>\uD83E\uDDB7 Dental Example</strong><br>A clinical trial with Power = 0.80 has an 80% chance of detecting a true difference between treatments, if one exists.',
+      content: function() {
+        return `
+          <div style="margin-bottom:16px">
+            <div style="font-size:0.8rem;font-weight:600;color:#64748b;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em">Adjust sample size to see power change:</div>
+            <input type="range" min="10" max="200" value="30" id="powerSlider" style="width:100%;cursor:pointer;accent-color:#0f766e" oninput="updatePower(this.value)">
+            <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:#94a3b8;margin-top:2px">
+              <span>n = 10</span><span>n = 100</span><span>n = 200</span>
+            </div>
+          </div>
+          <div id="powerVisual" style="margin-bottom:16px">
+            <div style="font-weight:700;font-size:0.85rem;color:#334155;margin-bottom:6px">Sample size: n = 30</div>
+            <div style="background:#e2e8f0;border-radius:15px;overflow:hidden;height:30px">
+              <div class="power-bar" id="powerBar" style="width:52%;background:linear-gradient(90deg,#0f766e,#14b8a6)">52%</div>
+            </div>
+            <div style="text-align:center;margin-top:8px;font-size:0.85rem;color:#64748b" id="powerLabel">Power = 0.52 - <span style="color:#d97706;font-weight:600">Underpowered (target 0.80)</span></div>
+          </div>
+          <div style="background:#f0fdfa;border-radius:10px;padding:14px;border:1px solid #99f6e4;font-size:0.82rem;color:#134e4a;line-height:1.6">
+            <strong>Factors that increase power:</strong><br>
+            \u2022 Larger sample size (n)<br>
+            \u2022 Larger effect size (real difference is bigger)<br>
+            \u2022 Higher \u03B1 level (more lenient threshold)<br>
+            \u2022 Lower variability in data
+          </div>
+        `;
+      }
+    },
+    tests: {
+      title: 'Test Statistics', icon: '\uD83D\uDCD0',
+      color: 'linear-gradient(135deg,#ec4899,#9d174d)',
+      desc: 'Different statistical tests produce different test statistics. Choose based on your data type and research question.',
+      example: '<strong>\uD83E\uDDB7 Dental Research</strong><br>Selecting the right test is critical. Using the wrong one leads to invalid conclusions about treatments and procedures.',
+      content: function() {
+        return `
+          <div style="display:grid;gap:10px">
+            <div style="background:#fdf2f8;border:2px solid #ec4899;border-radius:12px;padding:14px">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+                <span style="background:#ec4899;color:white;padding:4px 10px;border-radius:6px;font-weight:800;font-size:0.9rem">t</span>
+                <strong style="color:#9d174d">t-test</strong>
+              </div>
+              <div style="font-size:0.82rem;color:#475569;line-height:1.5">
+                Compare means of <strong>2 groups</strong>.<br>
+                <em style="color:#9ca3af">Example: Mean plaque score in fluoride group vs control group.</em>
+              </div>
+            </div>
+            <div style="background:#fdf2f8;border:2px solid #ec4899;border-radius:12px;padding:14px">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+                <span style="background:#ec4899;color:white;padding:4px 10px;border-radius:6px;font-weight:800;font-size:0.9rem">\u03C7\u00B2</span>
+                <strong style="color:#9d174d">Chi-square test</strong>
+              </div>
+              <div style="font-size:0.82rem;color:#475569;line-height:1.5">
+                Test associations between <strong>categorical</strong> variables.<br>
+                <em style="color:#9ca3af">Example: Is smoking status associated with periodontal disease severity?</em>
+              </div>
+            </div>
+            <div style="background:#fdf2f8;border:2px solid #ec4899;border-radius:12px;padding:14px">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+                <span style="background:#ec4899;color:white;padding:4px 10px;border-radius:6px;font-weight:800;font-size:0.9rem">F</span>
+                <strong style="color:#9d174d">ANOVA (F-test)</strong>
+              </div>
+              <div style="font-size:0.82rem;color:#475569;line-height:1.5">
+                Compare means of <strong>3+ groups</strong>.<br>
+                <em style="color:#9ca3af">Example: Comparing bond strength across 3 different adhesive systems.</em>
+              </div>
+            </div>
+            <div style="background:#fdf2f8;border:2px solid #ec4899;border-radius:12px;padding:14px">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+                <span style="background:#ec4899;color:white;padding:4px 10px;border-radius:6px;font-weight:800;font-size:0.9rem">r / R\u00B2</span>
+                <strong style="color:#9d174d">Regression</strong>
+              </div>
+              <div style="font-size:0.82rem;color:#475569;line-height:1.5">
+                Predict outcomes and assess <strong>predictor effects</strong>.<br>
+                <em style="color:#9ca3af">Example: Does sugar intake predict DMFT score after controlling for age?</em>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+  };
+
+  /* ── Open / Close Modal ── */
+  function openModal(type) {
+    const c = CONCEPTS[type];
+    document.getElementById('modalHeader').style.background = c.color;
+    document.getElementById('modalIcon').textContent = c.icon;
+    document.getElementById('modalTitle').textContent = c.title;
+    document.getElementById('modalDesc').textContent = c.desc;
+    document.getElementById('modalExample').innerHTML = c.example;
+    document.getElementById('modalContent').innerHTML = c.content();
+    document.getElementById('statModal').classList.add('open');
+  }
+  function closeModal() { document.getElementById('statModal').classList.remove('open'); }
+  document.getElementById('statModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  /* ── Alpha Selector in Modal ── */
+  function selectAlpha(a) {
+    const el = document.getElementById('alphaVisual');
+    const pct = (a * 100).toFixed(0);
+    const rejectW = pct;
+    const failW = 100 - pct;
+    el.innerHTML = `
+      <div style="display:flex;border-radius:10px;overflow:hidden;height:40px;margin-bottom:10px;animation:drop 0.35s cubic-bezier(0.34,1.56,0.64,1)">
+        <div style="width:${rejectW}%;background:#ef4444;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.8rem">Reject (${pct}%)</div>
+        <div style="width:${failW}%;background:#22c55e;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.8rem">Fail to Reject (${failW}%)</div>
+      </div>
+      <div style="text-align:center;font-size:0.85rem;color:#475569">
+        With <strong>\u03B1 = ${a}</strong>, you accept a <strong>${pct}%</strong> chance of a false positive (Type I error).
+      </div>
+    `;
+  }
+
+  /* ── P-value examples in Modal ── */
+  function showPvalExample(id) {
+    const el = document.getElementById('pvalExampleDetail');
+    const examples = {
+      pex1: '<strong>p = 0.003 (Periodontal Treatments)</strong><br>Highly significant result. Very strong evidence against H\u2080. The new treatment is very likely effective. Less than 0.3% probability this occurred by chance.',
+      pex2: '<strong>p = 0.04 (Bonding Agent)</strong><br>Significant at \u03B1 = 0.05 but not at \u03B1 = 0.01. Moderate evidence the new agent is better. Consider replicating with larger sample.',
+      pex3: '<strong>p = 0.35 (Mouthwash Comparison)</strong><br>Not significant. A 35% chance of seeing this difference by random variation. Insufficient evidence to claim either brand is superior.'
+    };
+    el.innerHTML = examples[id];
+    el.style.display = 'block';
+    el.style.animation = 'drop 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+  }
+
+  /* ── Power Slider in Modal ── */
+  function updatePower(n) {
+    n = parseInt(n);
+    // Simulated power curve: power = 1 - e^(-0.018*n) approximately
+    const power = Math.min(0.99, 1 - Math.exp(-0.018 * n));
+    const pct = Math.round(power * 100);
+    document.getElementById('powerBar').style.width = pct + '%';
+    document.getElementById('powerBar').textContent = pct + '%';
+    let status;
+    if (power < 0.5) status = '<span style="color:#dc2626;font-weight:600">Very underpowered</span>';
+    else if (power < 0.8) status = '<span style="color:#d97706;font-weight:600">Underpowered (target 0.80)</span>';
+    else if (power < 0.9) status = '<span style="color:#16a34a;font-weight:600">Adequately powered</span>';
+    else status = '<span style="color:#0f766e;font-weight:600">Well powered</span>';
+    document.getElementById('powerLabel').innerHTML = `Power = ${power.toFixed(2)} - ${status}`;
+    const label = document.getElementById('powerVisual').querySelector('div');
+    label.innerHTML = `<strong>Sample size: n = ${n}</strong>`;
+  }
+
+  /* ══════════════ P-VALUE EXPLORER ══════════════ */
+  function updatePval(val) {
+    const p = val / 100;
+    document.getElementById('pvalDisplay').textContent = 'p = ' + p.toFixed(2);
+    document.getElementById('pvalMarker').style.left = val + '%';
+    const interp = document.getElementById('pvalInterpretation');
+    const example = document.getElementById('pvalDentalExample');
+    example.style.display = 'block';
+
+    if (p <= 0.001) {
+      interp.style.background = '#dcfce7'; interp.style.color = '#166534';
+      interp.innerHTML = '<strong>Extremely significant.</strong> Very strong evidence against H\u2080. Result unlikely due to chance.';
+      document.getElementById('pvalDisplay').style.color = '#16a34a';
+      example.innerHTML = '<strong>\uD83E\uDDB7 Example</strong><br>A new implant coating shows infection rates of 2% vs 18% (p < 0.001). Overwhelming evidence the coating works.';
+    } else if (p <= 0.01) {
+      interp.style.background = '#dcfce7'; interp.style.color = '#166534';
+      interp.innerHTML = '<strong>Highly significant</strong> at both \u03B1 = 0.05 and \u03B1 = 0.01. Strong evidence to reject H\u2080.';
+      document.getElementById('pvalDisplay').style.color = '#16a34a';
+      example.innerHTML = '<strong>\uD83E\uDDB7 Example</strong><br>A periodontal gel reduces pocket depth by 2.1 mm vs placebo (p = ' + p.toFixed(2) + '). Strong evidence of treatment effect.';
+    } else if (p <= 0.05) {
+      interp.style.background = '#fef9c3'; interp.style.color = '#854d0e';
+      interp.innerHTML = '<strong>Significant at \u03B1 = 0.05</strong> but NOT at \u03B1 = 0.01. Moderate evidence against H\u2080.';
+      document.getElementById('pvalDisplay').style.color = '#ca8a04';
+      example.innerHTML = '<strong>\uD83E\uDDB7 Example</strong><br>A new composite material shows slightly better wear resistance (p = ' + p.toFixed(2) + '). Significant, but consider replication.';
+    } else if (p <= 0.10) {
+      interp.style.background = '#fff7ed'; interp.style.color = '#9a3412';
+      interp.innerHTML = '<strong>Marginally significant.</strong> Sometimes noted as a "trend" but does NOT meet the standard \u03B1 = 0.05 threshold.';
+      document.getElementById('pvalDisplay').style.color = '#ea580c';
+      example.innerHTML = '<strong>\uD83E\uDDB7 Example</strong><br>A whitening strip shows a slight color improvement (p = ' + p.toFixed(2) + '). Not enough evidence at the standard threshold.';
+    } else {
+      interp.style.background = '#fef2f2'; interp.style.color = '#991b1b';
+      interp.innerHTML = '<strong>Not significant.</strong> Insufficient evidence to reject H\u2080. The observed effect could easily be due to chance.';
+      document.getElementById('pvalDisplay').style.color = '#dc2626';
+      example.innerHTML = '<strong>\uD83E\uDDB7 Example</strong><br>Two mouthwash brands show similar plaque reduction (p = ' + p.toFixed(2) + '). No evidence that one is better.';
+    }
+  }
+
+  /* ══════════════ ERROR MATRIX DETAILS ══════════════ */
+  function showErrorDetail(type) {
+    const el = document.getElementById('errorDetail');
+    const content = document.getElementById('errorDetailContent');
+    const details = {
+      type1: '<strong style="color:#dc2626">\u274C Type I Error (False Positive)</strong><br><br><strong>\uD83E\uDDB7 Dental Scenario:</strong> A study concludes that a new fluoride varnish prevents cavities better than the standard treatment (rejects H\u2080). In reality, both treatments are equally effective. Patients are switched to a more expensive treatment that offers no additional benefit.<br><br><strong>Probability:</strong> This occurs with probability \u03B1 (typically 5%).',
+      type2: '<strong style="color:#d97706">\u26A0\uFE0F Type II Error (False Negative)</strong><br><br><strong>\uD83E\uDDB7 Dental Scenario:</strong> A study fails to detect that a new periodontal therapy is superior (fails to reject H\u2080). In reality, the therapy does help. Patients miss out on a better treatment because the study had too few participants to detect the effect.<br><br><strong>Probability:</strong> This occurs with probability \u03B2. Reduced by increasing sample size.',
+      correct_reject: '<strong style="color:#16a34a">\u2705 Correct Decision (True Positive)</strong><br><br><strong>\uD83E\uDDB7 Dental Scenario:</strong> A study correctly identifies that a new bonding agent has stronger adhesion than the current standard. The real difference is detected and clinicians can adopt the superior material.<br><br><strong>Probability:</strong> This is the statistical Power = 1 \u2212 \u03B2.',
+      correct_fail: '<strong style="color:#0284c7">\u2705 Correct Decision (True Negative)</strong><br><br><strong>\uD83E\uDDB7 Dental Scenario:</strong> A study correctly finds no difference between two brands of dental floss, because they are indeed equally effective. Resources are not wasted on an unnecessary product switch.<br><br><strong>Probability:</strong> This occurs with probability 1 \u2212 \u03B1.'
+    };
+    content.innerHTML = details[type];
+    el.style.display = 'block';
+    el.style.animation = 'drop 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+
+    // Highlight selected cell
+    ['cellType1','cellType2','cellCorrectReject','cellCorrectFail'].forEach(id => {
+      document.getElementById(id).style.outline = 'none';
+    });
+    const cellMap = { type1:'cellType1', type2:'cellType2', correct_reject:'cellCorrectReject', correct_fail:'cellCorrectFail' };
+    document.getElementById(cellMap[type]).style.outline = '3px solid #0f172a';
+  }
+
+  /* ══════════════ DECISION SIMULATOR ══════════════ */
+  const SCENARIOS = {
+    toothpaste: {
+      name: 'New Toothpaste vs Standard',
+      h0: 'The new toothpaste reduces plaque no better than the standard toothpaste.',
+      h1: 'The new toothpaste reduces plaque significantly more than the standard toothpaste.',
+      alpha: 0.05,
+      testType: 'Independent samples t-test',
+      nControl: 45, nTreatment: 45,
+      meanControl: 2.8, meanTreatment: 2.1,
+      tStat: 3.24, pValue: 0.002,
+      conclusion: 'reject'
+    },
+    fluoride: {
+      name: 'Fluoride Varnish Effectiveness',
+      h0: 'Fluoride varnish does not reduce the incidence of new cavities in children.',
+      h1: 'Fluoride varnish reduces the incidence of new cavities in children.',
+      alpha: 0.05,
+      testType: 'Independent samples t-test',
+      nControl: 60, nTreatment: 60,
+      meanControl: 3.4, meanTreatment: 2.9,
+      tStat: 1.56, pValue: 0.12,
+      conclusion: 'fail'
+    },
+    implant: {
+      name: 'Implant Success Rate Comparison',
+      h0: 'The new implant surface has the same success rate as the conventional surface.',
+      h1: 'The new implant surface has a higher success rate than the conventional surface.',
+      alpha: 0.01,
+      testType: 'Chi-square test for proportions',
+      nControl: 80, nTreatment: 80,
+      meanControl: '87.5%', meanTreatment: '96.3%',
+      tStat: 8.41, pValue: 0.004,
+      conclusion: 'reject'
+    }
+  };
+
+  async function runDecisionSim(scenarioKey) {
+    const s = SCENARIOS[scenarioKey];
+    const stepsEl = document.getElementById('decisionSteps');
+    const verdictEl = document.getElementById('decisionVerdict');
+    stepsEl.innerHTML = ''; verdictEl.innerHTML = '';
+
+    // Highlight active preset
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+
+    const steps = [
+      { num: 1, title: 'State the Hypotheses', content: `<strong>H\u2080:</strong> ${s.h0}<br><strong>H\u2081:</strong> ${s.h1}` },
+      { num: 2, title: 'Choose Significance Level', content: `\u03B1 = ${s.alpha} (${s.alpha === 0.01 ? 'strict' : 'standard'} threshold)` },
+      { num: 3, title: 'Collect Data', content: `Control group: n = ${s.nControl} (mean = ${s.meanControl})<br>Treatment group: n = ${s.nTreatment} (mean = ${s.meanTreatment})` },
+      { num: 4, title: 'Calculate Test Statistic', content: `Test: ${s.testType}<br>Test statistic = <strong>${s.tStat}</strong>` },
+      { num: 5, title: 'Determine P-value', content: `p-value = <strong>${s.pValue}</strong><br>Compare: p = ${s.pValue} ${s.pValue <= s.alpha ? '\u2264' : '>'} \u03B1 = ${s.alpha}` },
+    ];
+
+    for (let i = 0; i < steps.length; i++) {
+      const step = steps[i];
+      const div = document.createElement('div');
+      div.className = 'decision-step';
+      div.innerHTML = `
+        <div style="display:flex;align-items:center">
+          <span class="step-number">${step.num}</span>
+          <span class="step-title">${step.title}</span>
+        </div>
+        <div class="step-content">${step.content}</div>
+      `;
+      stepsEl.appendChild(div);
+      await delay(100);
+      div.classList.add('visible');
+      await delay(600);
+    }
+
+    await delay(400);
+    if (s.conclusion === 'reject') {
+      verdictEl.innerHTML = `
+        <div class="verdict-box" style="background:#dcfce7;border:2px solid #22c55e">
+          <div class="verdict-icon">\u2705</div>
+          <div class="verdict-title" style="color:#166534">Reject H\u2080</div>
+          <div class="verdict-desc" style="color:#15803d">p = ${s.pValue} \u2264 \u03B1 = ${s.alpha}. There is statistically significant evidence to support H\u2081.<br>The ${s.name.toLowerCase()} shows a real effect.</div>
+        </div>`;
+    } else {
+      verdictEl.innerHTML = `
+        <div class="verdict-box" style="background:#fef2f2;border:2px solid #ef4444">
+          <div class="verdict-icon">\u274C</div>
+          <div class="verdict-title" style="color:#991b1b">Fail to Reject H\u2080</div>
+          <div class="verdict-desc" style="color:#b91c1c">p = ${s.pValue} > \u03B1 = ${s.alpha}. Insufficient evidence to support H\u2081.<br>Cannot conclude the ${s.name.toLowerCase()} has a significant effect.</div>
+        </div>`;
+    }
+  }
+
+  /* ══════════════ CLINICAL TRIAL SIMULATION ══════════════ */
+  async function runClinicalTrial() {
+    const visual = document.getElementById('trialVisual');
+    const output = document.getElementById('trialOutput');
+    const verdict = document.getElementById('trialVerdict');
+    visual.innerHTML = ''; output.innerHTML = ''; verdict.innerHTML = '';
+
+    // Phase 1: State Hypotheses
+    const phase1 = document.createElement('span');
+    phase1.className = 'trial-phase'; phase1.style.background = '#3b82f6'; phase1.style.color = 'white';
+    phase1.textContent = '\uD83D\uDCCB Phase 1: Hypotheses';
+    visual.appendChild(phase1);
+    await delay(600);
+    output.innerHTML += '<div class="slide-up"><strong>H\u2080:</strong> Fluoride varnish does not reduce DMFT scores.</div>';
+    await delay(500);
+    output.innerHTML += '<div class="slide-up"><strong>H\u2081:</strong> Fluoride varnish reduces DMFT scores.</div>';
+    await delay(500);
+    output.innerHTML += '<div class="slide-up"><strong>\u03B1 = 0.05</strong> | Two-tailed t-test</div>';
+    await delay(800);
+
+    // Phase 2: Recruit patients
+    const phase2 = document.createElement('span');
+    phase2.className = 'trial-phase'; phase2.style.background = '#10b981'; phase2.style.color = 'white';
+    phase2.textContent = '\uD83D\uDC65 Phase 2: Recruitment';
+    visual.appendChild(phase2);
+    await delay(600);
+    output.innerHTML += '<div class="slide-up">\u2500\u2500\u2500</div>';
+    output.innerHTML += '<div class="slide-up pulsing">Recruiting 40 patients per group...</div>';
+    await delay(1200);
+
+    // Show patient icons
+    const patientRow = document.createElement('div');
+    patientRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:8px 0';
+    visual.appendChild(patientRow);
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement('div');
+      p.className = 'patient-box';
+      p.style.cssText = 'padding:4px 6px;font-size:0.65rem;border-radius:4px';
+      p.style.background = i < 10 ? '#3b82f6' : '#10b981';
+      p.textContent = i < 10 ? 'C' : 'F';
+      patientRow.appendChild(p);
+      await delay(60);
+    }
+    output.innerHTML += '<div class="slide-up">\uD83D\uDD35 Control (C): 40 patients | \uD83D\uDFE2 Fluoride (F): 40 patients</div>';
+    await delay(800);
+
+    // Phase 3: Data Collection
+    const phase3 = document.createElement('span');
+    phase3.className = 'trial-phase'; phase3.style.background = '#8b5cf6'; phase3.style.color = 'white';
+    phase3.textContent = '\uD83D\uDCCA Phase 3: Data Collection';
+    visual.appendChild(phase3);
+    await delay(600);
+    output.innerHTML += '<div class="slide-up">\u2500\u2500\u2500</div>';
+    output.innerHTML += '<div class="slide-up">After 12 months of follow-up...</div>';
+    await delay(800);
+    output.innerHTML += '<div class="slide-up">\uD83D\uDD35 Control group: Mean DMFT = <strong>4.2 \u00B1 1.8</strong></div>';
+    await delay(600);
+    output.innerHTML += '<div class="slide-up">\uD83D\uDFE2 Fluoride group: Mean DMFT = <strong>2.9 \u00B1 1.5</strong></div>';
+    await delay(800);
+
+    // Phase 4: Analysis
+    const phase4 = document.createElement('span');
+    phase4.className = 'trial-phase'; phase4.style.background = '#f59e0b'; phase4.style.color = 'white';
+    phase4.textContent = '\uD83E\uDDEE Phase 4: Analysis';
+    visual.appendChild(phase4);
+    await delay(600);
+    output.innerHTML += '<div class="slide-up">\u2500\u2500\u2500</div>';
+    output.innerHTML += '<div class="slide-up">Running independent samples t-test...</div>';
+    await delay(1000);
+    output.innerHTML += '<div class="slide-up">t-statistic = <strong>3.51</strong></div>';
+    await delay(600);
+    output.innerHTML += '<div class="slide-up">Degrees of freedom = 78</div>';
+    await delay(400);
+    output.innerHTML += '<div class="slide-up">p-value = <strong>0.0007</strong></div>';
+    await delay(600);
+    output.innerHTML += '<div class="slide-up">Effect size (Cohen\'s d) = <strong>0.78</strong> (medium-large)</div>';
+    await delay(800);
+
+    // Verdict
+    verdict.innerHTML = `
+      <div class="verdict-box" style="background:#dcfce7;border:2px solid #22c55e">
+        <div class="verdict-icon">\u2705</div>
+        <div class="verdict-title" style="color:#166534">Reject H\u2080 (p = 0.0007 < \u03B1 = 0.05)</div>
+        <div class="verdict-desc" style="color:#15803d">
+          Strong statistical evidence that fluoride varnish reduces DMFT scores.<br>
+          Mean difference: 1.3 fewer decayed/missing/filled teeth (95% CI: 0.6 \u2013 2.0).<br>
+          <strong>Clinical implication:</strong> Fluoride varnish is effective and should be considered for caries prevention programs.
+        </div>
+      </div>`;
+  }
+
+  // Initialize p-value explorer
+  updatePval(5);
+</script>
 </body>
 </html>

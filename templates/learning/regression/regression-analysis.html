@@ -7,85 +7,1375 @@
   <title>Regression Analysis — DentalStats Learning</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+
+    .hero-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 55%, #0f766e 100%);
+      border-radius: 16px;
+      padding: 40px 32px;
+      color: white;
+    }
+
+    .stat-card {
+      border-radius: 14px;
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.08);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+    .stat-card:hover::before { opacity: 1; }
+    .stat-card .icon { font-size: 2rem; margin-bottom: 10px; }
+    .stat-card .label { font-size: 1rem; font-weight: 700; }
+    .stat-card .sublabel { font-size: 0.75rem; opacity: 0.82; margin-top: 4px; }
+    .stat-card .try-hint { font-size: 0.7rem; margin-top: 10px; opacity: 0.65; }
+
+    .card-linear   { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    .card-multiple { background: linear-gradient(135deg, #10b981, #047857); }
+    .card-logistic { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+    .card-odds     { background: linear-gradient(135deg, #f59e0b, #b45309); }
+    .card-assume   { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+    .card-fit      { background: linear-gradient(135deg, #ec4899, #9d174d); }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .section-title .dot { width: 10px; height: 10px; border-radius: 50%; background: #0f766e; flex-shrink: 0; }
+
+    .info-pill {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: white;
+      border-radius: 12px;
+      padding: 16px 18px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border-left: 4px solid #0f766e;
+    }
+    .info-pill .emoji { font-size: 1.4rem; flex-shrink: 0; }
+    .info-pill p { margin: 0; font-size: 0.875rem; color: #374151; line-height: 1.5; }
+
+    /* MODAL */
+    #statModal { display: none; }
+    #statModal.open {
+      display: flex;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.6);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-box {
+      background: #f8fafc;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 620px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.3);
+      animation: modalIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(30px) scale(0.95); }
+      to   { opacity: 1; transform: translateY(0)    scale(1); }
+    }
+    .modal-header {
+      padding: 28px 28px 22px;
+      border-radius: 20px 20px 0 0;
+      color: white;
+      position: relative;
+    }
+    .modal-header .header-icon {
+      width: 52px; height: 52px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 14px;
+    }
+    .modal-header h2 { font-size: 1.5rem; font-weight: 800; margin: 0 0 6px; letter-spacing: -0.01em; }
+    .modal-header p  { font-size: 0.875rem; opacity: 0.85; margin: 0; line-height: 1.5; max-width: 420px; }
+    .modal-close {
+      position: absolute;
+      top: 18px; right: 18px;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.3); }
+    .modal-body { padding: 22px 24px 28px; }
+
+    .example-badge {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 0.85rem;
+      color: #166534;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .example-badge strong { display: block; margin-bottom: 4px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: #15803d; }
+
+    .calc-input {
+      width: 100%;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 0.9rem;
+      outline: none;
+      background: white;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      color: #1e293b;
+    }
+    .calc-input:focus { border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15,118,110,0.1); }
+
+    .calc-btn {
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 22px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.01em;
+    }
+    .calc-btn:hover  { opacity: 0.9; }
+    .calc-btn:active { transform: scale(0.97); }
+
+    .result-box {
+      margin-top: 16px;
+      background: white;
+      border-radius: 12px;
+      padding: 14px 18px;
+      text-align: center;
+      border: 1.5px solid #e2e8f0;
+      font-size: 1.1rem;
+      color: #374151;
+      display: none;
+    }
+    .result-box.show { display: block; }
+    .result-val { font-weight: 800; color: #0f766e; font-size: 1.3rem; }
+
+    .number-box {
+      padding: 9px 14px;
+      background: #3b82f6;
+      color: white;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      animation: drop 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes drop {
+      from { transform: translateY(-16px) scale(0.85); opacity: 0; }
+      to   { transform: translateY(0)     scale(1);    opacity: 1; }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(15,118,110,0.3); }
+      50% { box-shadow: 0 0 0 8px rgba(15,118,110,0); }
+    }
+
+    .visual-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; min-height: 44px; }
+    .step-log { margin-top: 10px; background: white; border-radius: 10px; padding: 10px 12px; border: 1px solid #e2e8f0; }
+    .step-log div { font-size: 0.8rem; color: #64748b; padding: 3px 0; border-bottom: 1px dashed #f1f5f9; animation: fadeUp 0.3s ease; }
+    .step-log div:last-child { border-bottom: none; }
+
+    .report-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    .report-table th { background: #f1f5f9; padding: 10px 14px; text-align: left; font-weight: 600; color: #334155; }
+    .report-table td { padding: 10px 14px; color: #475569; border-top: 1px solid #f1f5f9; }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: #0f766e; font-size: 0.875rem; font-weight: 500;
+      text-decoration: none; margin-bottom: 24px; transition: gap 0.15s;
+    }
+    .back-link:hover { gap: 10px; }
+
+    .sim-panel {
+      background: white;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    }
+
+    /* Playground canvas */
+    .playground-canvas {
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      cursor: crosshair;
+      background: white;
+      display: block;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 560px;
+    }
+
+    /* Toggle switch for predictors */
+    .pred-toggle {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 14px; background: white; border-radius: 10px;
+      border: 1.5px solid #e2e8f0; margin-bottom: 8px;
+      transition: border-color 0.2s, background 0.2s;
+      cursor: pointer;
+    }
+    .pred-toggle.active { border-color: #10b981; background: #f0fdf4; }
+    .pred-toggle input[type=checkbox] { accent-color: #10b981; width: 18px; height: 18px; cursor: pointer; }
+    .pred-toggle label { font-size: 0.85rem; font-weight: 600; color: #334155; cursor: pointer; }
+    .pred-toggle .coeff { font-size: 0.75rem; color: #64748b; margin-left: auto; }
+
+    /* Gauge */
+    .gauge-wrapper { text-align: center; margin: 16px 0; }
+
+    /* Checklist */
+    .check-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 14px; background: white; border-radius: 10px;
+      border: 1.5px solid #e2e8f0; margin-bottom: 8px;
+      animation: fadeUp 0.3s ease;
+    }
+    .check-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .check-text { font-size: 0.85rem; color: #374151; line-height: 1.5; }
+    .check-text strong { display: block; color: #0f172a; margin-bottom: 2px; }
+
+    /* OR bars */
+    .or-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .or-bar-label { font-size: 0.8rem; font-weight: 600; color: #334155; width: 100px; text-align: right; flex-shrink: 0; }
+    .or-bar-track { flex: 1; height: 28px; background: #f1f5f9; border-radius: 8px; position: relative; overflow: hidden; }
+    .or-bar-fill { height: 100%; border-radius: 8px; transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1); display: flex; align-items: center; padding-left: 10px; font-size: 0.75rem; font-weight: 700; color: white; }
+
+    /* R2 fill */
+    .r2-track { width: 100%; height: 32px; background: #f1f5f9; border-radius: 10px; overflow: hidden; margin: 12px 0; }
+    .r2-fill { height: 100%; background: linear-gradient(90deg, #ec4899, #9d174d); border-radius: 10px; transition: width 0.6s ease; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.85rem; }
+
+    /* Slider styling */
+    .styled-slider {
+      -webkit-appearance: none; appearance: none;
+      width: 100%; height: 8px; border-radius: 4px;
+      background: #e2e8f0; outline: none;
+      transition: background 0.2s;
+    }
+    .styled-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #8b5cf6; cursor: pointer;
+      box-shadow: 0 2px 8px rgba(139,92,246,0.4);
+      transition: transform 0.15s;
+    }
+    .styled-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+    /* Dataset tabs */
+    .dataset-tab {
+      padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+      border: 1.5px solid #e2e8f0; background: white; color: #64748b;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .dataset-tab.active { background: #0f766e; color: white; border-color: #0f766e; }
+    .dataset-tab:hover:not(.active) { border-color: #0f766e; color: #0f766e; }
+
+    /* Summary cards */
+    .summary-card {
+      background: white; border-radius: 14px; padding: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border-top: 4px solid #0f766e;
+      transition: transform 0.2s;
+    }
+    .summary-card:hover { transform: translateY(-3px); }
+    .summary-card h4 { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0 0 6px; }
+    .summary-card p { font-size: 0.8rem; color: #64748b; margin: 0; line-height: 1.5; }
+  </style>
 </head>
-<body class="bg-gray-50">
-  <div class="max-w-4xl mx-auto py-12 px-4">
-    <a href="/index.html#concepts" class="inline-block mb-6 text-sm text-teal-600">← Back to Concepts</a>
-    <h1 class="text-3xl font-bold mb-4">Regression Models in Dental Research</h1>
+<body>
+<div class="max-w-4xl mx-auto py-10 px-4">
 
-    <p class="text-gray-700 mb-4">Regression analysis examines relationships between variables and predicts outcomes. In dental research, regression helps estimate how risk factors such as age, smoking, oral hygiene, or systemic conditions influence oral health outcomes.</p>
+  <a href="{% url 'index' %}" class="back-link">&larr; Back to Home</a>
 
-    <h2 class="text-xl font-semibold mt-6 mb-2">Why use regression?</h2>
-    <p class="text-gray-700 mb-4">Regression models answer causal or predictive questions, for example: Does smoking increase the risk of periodontal disease? Does age predict clinical attachment loss? What factors influence implant failure?</p>
-
-    <h2 class="text-xl font-semibold mt-6 mb-2">Linear Regression</h2>
-    <p class="text-gray-700 mb-3">Use linear regression when the outcome is continuous (e.g., pocket depth, plaque index, salivary biomarker levels).</p>
-    <div class="bg-white border rounded-lg p-4 mb-3">
-      <p class="text-sm text-gray-600">Model form: <code>Y = β₀ + β₁X + ε</code></p>
-      <p class="text-sm text-gray-600 mt-2">Interpretation: β₁ is the change in Y for a one-unit change in X. Example: If β₁ = 0.04 for age predicting CAL, each additional year of age increases attachment loss by 0.04 mm on average.</p>
+  <!-- Hero -->
+  <div class="hero-banner mb-10">
+    <div class="text-xs font-semibold uppercase tracking-widest opacity-60 mb-2">Learning Module</div>
+    <h1 class="text-3xl font-bold mb-3">Regression Analysis</h1>
+    <p class="opacity-85 text-sm leading-relaxed max-w-xl">
+      Predict outcomes and find relationships in dental data. Click any card below to explore each concept interactively.
+    </p>
+    <div class="flex flex-wrap gap-3 mt-6">
+      <span class="bg-white/20 text-white text-xs font-medium px-3 py-1 rounded-full">Linear</span>
+      <span class="bg-white/20 text-white text-xs font-medium px-3 py-1 rounded-full">Logistic</span>
+      <span class="bg-white/20 text-white text-xs font-medium px-3 py-1 rounded-full">Multiple</span>
+      <span class="bg-white/20 text-white text-xs font-medium px-3 py-1 rounded-full">Assumptions</span>
     </div>
+  </div>
 
-    <h2 class="text-xl font-semibold mt-6 mb-2">Multiple Linear Regression</h2>
-    <p class="text-gray-700 mb-3">When multiple predictors are relevant, use multiple linear regression to estimate independent effects while adjusting for confounders.</p>
-    <div class="bg-white border rounded-lg p-4 mb-3">
-      <p class="text-sm text-gray-600">Example: <code>PocketDepth = β₀ + β₁(Age) + β₂(Smoking) + β₃(PlaqueIndex) + ε</code></p>
-      <p class="text-sm text-gray-600 mt-2">This model estimates the effect of each predictor holding the others constant.</p>
+  <!-- Intro pills -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+    <div class="info-pill">
+      <div class="emoji">📈</div>
+      <p><strong>Predict outcomes</strong><br>Estimate pocket depth from age, smoking status, and plaque levels.</p>
     </div>
-
-    <h2 class="text-xl font-semibold mt-6 mb-2">Logistic Regression</h2>
-    <p class="text-gray-700 mb-3">Use logistic regression when the outcome is binary (e.g., implant success vs failure, disease present vs absent). The model estimates log-odds and yields odds ratios (OR).</p>
-    <div class="bg-white border rounded-lg p-4 mb-3">
-      <p class="text-sm text-gray-600">Model form: <code>ln(P / (1−P)) = β₀ + β₁X</code></p>
-      <p class="text-sm text-gray-600 mt-2">Interpretation: An OR > 1 indicates higher odds of the outcome per unit increase in the predictor. Example: OR for smoking = 2.5 → smokers have 2.5× the odds of implant failure vs non-smokers.</p>
+    <div class="info-pill">
+      <div class="emoji">🦷</div>
+      <p><strong>Dental research</strong><br>Identify which risk factors truly influence implant failure or caries.</p>
     </div>
+    <div class="info-pill">
+      <div class="emoji">📋</div>
+      <p><strong>Report results</strong><br>Present coefficients, odds ratios, and confidence intervals in papers.</p>
+    </div>
+  </div>
 
-    <h2 class="text-xl font-semibold mt-6 mb-2">Model Assumptions</h2>
-    <ul class="list-disc pl-5 text-gray-700 space-y-2 mb-4">
-      <li><strong>Independence:</strong> Observations should be independent (use clustered or multilevel models when they are not).</li>
-      <li><strong>Linearity (for linear regression):</strong> Relationship between predictors and outcome should be linear; otherwise consider transformations or nonlinear models.</li>
-      <li><strong>No multicollinearity:</strong> Predictors should not be highly correlated. Use VIF to detect multicollinearity (rule of thumb: VIF &lt; 10).</li>
-      <li><strong>Adequate sample size:</strong> Small samples produce unstable estimates; for logistic regression follow EPV ≥ 10 (events per predictor).</li>
-    </ul>
+  <!-- Grid Cards -->
+  <div class="section-title"><span class="dot"></span> Core Regression Concepts</div>
+  <p class="text-gray-500 text-sm mb-5">Click a card to learn and try it.</p>
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+    <div class="stat-card card-linear" onclick="openModal('linear')">
+      <div class="icon">📉</div>
+      <div class="label">Linear Regression</div>
+      <div class="sublabel">Continuous outcomes</div>
+      <div class="try-hint">Tap to try &rarr;</div>
+    </div>
+    <div class="stat-card card-multiple" onclick="openModal('multiple')">
+      <div class="icon">🔀</div>
+      <div class="label">Multiple Regression</div>
+      <div class="sublabel">Many predictors</div>
+      <div class="try-hint">Tap to try &rarr;</div>
+    </div>
+    <div class="stat-card card-logistic" onclick="openModal('logistic')">
+      <div class="icon">🎲</div>
+      <div class="label">Logistic Regression</div>
+      <div class="sublabel">Binary outcomes</div>
+      <div class="try-hint">Tap to try &rarr;</div>
+    </div>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+    <div class="stat-card card-odds" onclick="openModal('odds')">
+      <div class="icon">⚖️</div>
+      <div class="label">Odds Ratio</div>
+      <div class="sublabel">Effect size for logistic</div>
+      <div class="try-hint">Tap to try &rarr;</div>
+    </div>
+    <div class="stat-card card-assume" onclick="openModal('assumptions')">
+      <div class="icon">✅</div>
+      <div class="label">Assumptions</div>
+      <div class="sublabel">Validity checks</div>
+      <div class="try-hint">Tap to try &rarr;</div>
+    </div>
+    <div class="stat-card card-fit" onclick="openModal('fit')">
+      <div class="icon">🎯</div>
+      <div class="label">Model Fit (R²)</div>
+      <div class="sublabel">How good is the model?</div>
+      <div class="try-hint">Tap to try &rarr;</div>
+    </div>
+  </div>
 
-    <h2 class="text-xl font-semibold mt-6 mb-2">Practical guidance</h2>
-    <p class="text-gray-700 mb-3">Check assumptions, report regression coefficients (β) with confidence intervals, and for logistic models report odds ratios (OR) with 95% CIs. Adjust for confounders and consider interaction terms when appropriate.</p>
+  <!-- Interactive Regression Playground -->
+  <div class="mb-10">
+    <div class="section-title"><span class="dot"></span> Interactive Regression Playground</div>
+    <p class="text-gray-500 text-sm mb-4">Click the chart to add data points, then fit a regression line. Try preset dental datasets.</p>
+    <div class="sim-panel">
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button class="dataset-tab active" onclick="loadDataset('custom')">Custom (click to add)</button>
+        <button class="dataset-tab" onclick="loadDataset('dmft')">DMFT vs Age</button>
+        <button class="dataset-tab" onclick="loadDataset('plaque')">Plaque vs Brushing</button>
+        <button class="dataset-tab" onclick="loadDataset('pocket')">Pocket Depth vs Smoking Yrs</button>
+      </div>
+      <canvas id="playgroundCanvas" class="playground-canvas" width="560" height="360"></canvas>
+      <div class="flex flex-wrap gap-3 mt-4 justify-center items-center">
+        <button class="calc-btn" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)" onclick="fitPlaygroundLine()">📐 Fit Regression Line</button>
+        <button class="calc-btn" style="background:linear-gradient(135deg,#ef4444,#b91c1c)" onclick="clearPlayground()">🗑 Clear All</button>
+      </div>
+      <div id="playgroundEquation" class="result-box mt-4" style="display:none"></div>
+    </div>
+  </div>
 
-    <h2 class="text-xl font-semibold mt-6 mb-2">Applications in dental research</h2>
-    <p class="text-gray-700 mb-3">Common applications include identifying risk factors for periodontal disease, predicting implant outcomes, studying determinants of caries, and evaluating the effect of oral hygiene behaviors while controlling for sociodemographic factors.</p>
+  <!-- Logistic Regression Live Demo -->
+  <div class="mb-10">
+    <div class="section-title"><span class="dot"></span> Logistic Regression Live Demo</div>
+    <p class="text-gray-500 text-sm mb-4">Adjust the slider to see how smoking affects implant failure probability.</p>
+    <div class="sim-panel">
+      <div class="text-center mb-2">
+        <span class="text-sm font-semibold text-gray-700">Scenario: Predicting Implant Failure from Cigarettes/Day</span>
+      </div>
+      <div class="flex items-center gap-4 mb-2 justify-center">
+        <span class="text-sm text-gray-500">0</span>
+        <input type="range" id="logisticSlider" min="0" max="40" value="10" class="styled-slider" style="max-width:320px" oninput="updateLogisticDemo(this.value)">
+        <span class="text-sm text-gray-500">40</span>
+      </div>
+      <div class="text-center text-lg font-bold text-purple-700 mb-2" id="logisticCigLabel">10 cigarettes/day</div>
 
-    <h2 class="text-xl font-semibold mt-6 mb-2">Summary</h2>
-    <div class="overflow-auto mb-4">
-      <table class="table-auto w-full text-sm border-collapse">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="px-3 py-2 text-left">Concept</th>
-            <th class="px-3 py-2 text-left">Description</th>
-          </tr>
-        </thead>
+      <!-- SVG Gauge -->
+      <div class="gauge-wrapper">
+        <svg width="220" height="130" viewBox="0 0 220 130" id="gaugesvg">
+          <defs>
+            <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#10b981"/>
+              <stop offset="50%" stop-color="#f59e0b"/>
+              <stop offset="100%" stop-color="#ef4444"/>
+            </linearGradient>
+          </defs>
+          <!-- background arc -->
+          <path d="M 20 120 A 90 90 0 0 1 200 120" fill="none" stroke="#e2e8f0" stroke-width="16" stroke-linecap="round"/>
+          <!-- filled arc -->
+          <path id="gaugeArc" d="M 20 120 A 90 90 0 0 1 200 120" fill="none" stroke="url(#gaugeGrad)" stroke-width="16" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="200" style="transition: stroke-dashoffset 0.5s ease"/>
+          <!-- needle -->
+          <line id="gaugeNeedle" x1="110" y1="120" x2="110" y2="38" stroke="#0f172a" stroke-width="3" stroke-linecap="round" style="transition: transform 0.5s ease; transform-origin: 110px 120px;"/>
+          <!-- center dot -->
+          <circle cx="110" cy="120" r="6" fill="#0f172a"/>
+          <!-- probability text -->
+          <text id="gaugeText" x="110" y="105" text-anchor="middle" font-size="22" font-weight="800" fill="#0f172a">24%</text>
+        </svg>
+      </div>
+      <div id="logisticInterpretation" class="text-center text-sm text-gray-600 mt-1" style="min-height:40px"></div>
+
+      <!-- S-Curve canvas -->
+      <div class="mt-4">
+        <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 text-center">S-Curve (Sigmoid Function)</div>
+        <canvas id="sigmoidCanvas" width="560" height="200" style="width:100%;max-width:560px;display:block;margin:0 auto;border:1.5px solid #e2e8f0;border-radius:10px;background:white"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dental Research Simulation -->
+  <div class="mb-10">
+    <div class="section-title"><span class="dot"></span> Dental Research Simulation</div>
+    <p class="text-gray-500 text-sm mb-4">Watch a regression study unfold step-by-step: recruit patients, collect data, fit the model, interpret results.</p>
+    <div class="sim-panel text-center">
+      <button onclick="runRegressionSimulation()" class="calc-btn" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)">▶ Run Regression Study</button>
+      <canvas id="simCanvas" width="560" height="300" style="width:100%;max-width:560px;display:block;margin:16px auto 0;border:1.5px solid #e2e8f0;border-radius:10px;background:white"></canvas>
+      <div id="simOutput" class="mt-4 text-gray-700 text-sm space-y-2 text-left"></div>
+    </div>
+  </div>
+
+  <!-- How to Report -->
+  <div class="mb-10">
+    <div class="section-title"><span class="dot"></span> How to Report in a Paper</div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="info-pill">
+        <div class="emoji">📐</div>
+        <p><strong>Linear Regression</strong><br>Report: B (95% CI), p-value<br><span class="text-xs text-gray-400">e.g. B=0.04 (0.02-0.06), p=0.001</span></p>
+      </div>
+      <div class="info-pill" style="border-color:#8b5cf6">
+        <div class="emoji">🎲</div>
+        <p><strong>Logistic Regression</strong><br>Report: OR (95% CI), p-value<br><span class="text-xs text-gray-400">e.g. OR=2.5 (1.3-4.8), p=0.006</span></p>
+      </div>
+      <div class="info-pill" style="border-color:#f59e0b">
+        <div class="emoji">📋</div>
+        <p><strong>Model Summary</strong><br>Report: R², Adjusted R², F-stat<br><span class="text-xs text-gray-400">e.g. R²=0.42, F(3,96)=23.1, p&lt;0.001</span></p>
+      </div>
+    </div>
+    <div class="sim-panel p-0 overflow-hidden">
+      <table class="report-table">
+        <thead><tr><th>Model Type</th><th>Coefficient</th><th>95% CI</th><th>p-value</th><th>Interpretation</th></tr></thead>
         <tbody>
-          <tr>
-            <td class="px-3 py-2">Linear Regression</td>
-            <td class="px-3 py-2">Used for continuous outcomes</td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="px-3 py-2">Logistic Regression</td>
-            <td class="px-3 py-2">Used for binary outcomes; reports OR</td>
-          </tr>
-          <tr>
-            <td class="px-3 py-2">Multicollinearity / VIF</td>
-            <td class="px-3 py-2">High correlation between predictors; check VIF</td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="px-3 py-2">EPV</td>
-            <td class="px-3 py-2">Events per variable for logistic regression (recommend ≥10)</td>
-          </tr>
+          <tr><td><strong>Linear</strong><br><span class="text-xs text-gray-400">Age &rarr; CAL</span></td><td>B = 0.04</td><td>0.02 &ndash; 0.06</td><td>0.001</td><td class="text-xs">Each year of age increases CAL by 0.04 mm</td></tr>
+          <tr><td><strong>Multiple</strong><br><span class="text-xs text-gray-400">Age + Smoking &rarr; PD</span></td><td>B<sub>age</sub>=0.03<br>B<sub>smoke</sub>=1.2</td><td>0.01&ndash;0.05<br>0.6&ndash;1.8</td><td>0.004<br>&lt;0.001</td><td class="text-xs">Adjusted for confounders</td></tr>
+          <tr><td><strong>Logistic</strong><br><span class="text-xs text-gray-400">Smoking &rarr; Implant Failure</span></td><td>OR = 2.5</td><td>1.3 &ndash; 4.8</td><td>0.006</td><td class="text-xs">Smokers have 2.5x odds of implant failure</td></tr>
         </tbody>
       </table>
     </div>
-
-    <p class="text-sm text-gray-600">Regression analysis is essential for dental epidemiology and clinical research, enabling investigators to identify predictors, adjust for confounding, and make evidence-based recommendations.</p>
-
-    <div class="mt-8 text-sm text-gray-500">© DentalStats — educational content</div>
   </div>
+
+  <!-- Example Reporting Text -->
+  <div class="mb-10">
+    <div class="section-title"><span class="dot"></span> Example Reporting Text</div>
+    <div class="sim-panel" style="border-left: 4px solid #8b5cf6;">
+      <p class="text-sm text-gray-700 leading-relaxed italic">"Multiple linear regression was performed to examine the effect of age, smoking status, and plaque index on clinical attachment loss. The model was statistically significant, F(3, 96) = 23.1, p &lt; 0.001, R² = 0.42. Age (B = 0.04, 95% CI: 0.02&ndash;0.06, p = 0.001) and smoking (B = 1.2, 95% CI: 0.6&ndash;1.8, p &lt; 0.001) were significant predictors, while plaque index was not (B = 0.15, 95% CI: -0.1&ndash;0.4, p = 0.22)."</p>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="mb-10">
+    <div class="section-title"><span class="dot"></span> Quick Reference Summary</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="summary-card">
+        <h4>📉 Linear Regression</h4>
+        <p>Continuous outcome. Y = B0 + B1*X. Report B with 95% CI and p-value. Check linearity, normality of residuals.</p>
+      </div>
+      <div class="summary-card" style="border-color:#10b981">
+        <h4>🔀 Multiple Regression</h4>
+        <p>Multiple predictors. Adjusts for confounders. Check multicollinearity (VIF &lt; 10). Report adjusted R².</p>
+      </div>
+      <div class="summary-card" style="border-color:#8b5cf6">
+        <h4>🎲 Logistic Regression</h4>
+        <p>Binary outcome (yes/no). Reports odds ratios. Use when predicting implant failure, disease presence.</p>
+      </div>
+      <div class="summary-card" style="border-color:#f59e0b">
+        <h4>⚖️ Odds Ratio</h4>
+        <p>OR = 1 (no effect), OR &gt; 1 (increased risk), OR &lt; 1 (protective). Always report with 95% CI.</p>
+      </div>
+      <div class="summary-card" style="border-color:#ef4444">
+        <h4>✅ Key Assumptions</h4>
+        <p>Independence, linearity, no multicollinearity, adequate sample size. EPV >= 10 for logistic regression.</p>
+      </div>
+      <div class="summary-card" style="border-color:#ec4899">
+        <h4>🎯 Model Fit</h4>
+        <p>R² = proportion of variance explained. Higher is better. Adjusted R² penalizes adding useless predictors.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pt-6 border-t border-gray-100 text-center text-xs text-gray-400">
+    DentalStats &mdash; educational content &nbsp;&middot;&nbsp; <a href="{% url 'index' %}" class="text-teal-600 hover:underline">Back to Home</a>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div id="statModal">
+  <div class="modal-box">
+    <div id="modalHeader" class="modal-header">
+      <button class="modal-close" onclick="closeModal()">&#10005;</button>
+      <div class="header-icon" id="modalIcon"></div>
+      <h2 id="modalTitle"></h2>
+      <p id="modalDesc"></p>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <div id="modalExample" class="example-badge"></div>
+      <div id="modalCalc"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script>
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ================================================================
+   MODAL DEFINITIONS
+   ================================================================ */
+const MODALS = {
+  linear: {
+    title: 'Linear Regression', icon: '📉',
+    color: 'linear-gradient(135deg,#3b82f6,#1d4ed8)',
+    desc: 'Model the relationship between a continuous outcome and one predictor. Best for continuous dental measurements.',
+    example: '<strong>🦷 Dental Example</strong> Age predicting clinical attachment loss (CAL). For every additional year of age, CAL increases by ~0.04 mm. Model: CAL = 0.5 + 0.04 &times; Age'
+  },
+  multiple: {
+    title: 'Multiple Linear Regression', icon: '🔀',
+    color: 'linear-gradient(135deg,#10b981,#047857)',
+    desc: 'Include multiple predictors to estimate independent effects while adjusting for confounders.',
+    example: '<strong>🦷 Dental Example</strong> PocketDepth = 1.2 + 0.03(Age) + 1.5(Smoking) + 0.8(PlaqueIndex). Each coefficient shows the independent effect of that predictor.'
+  },
+  logistic: {
+    title: 'Logistic Regression', icon: '🎲',
+    color: 'linear-gradient(135deg,#8b5cf6,#6d28d9)',
+    desc: 'For binary outcomes (yes/no). Estimates probability using the sigmoid function. Reports odds ratios.',
+    example: '<strong>🦷 Dental Example</strong> Predicting implant failure (yes/no) from smoking. Model: ln(P/(1-P)) = -2.0 + 0.12 &times; cigarettes/day. Smokers of 20 cig/day have ~73% predicted probability of failure.'
+  },
+  odds: {
+    title: 'Odds Ratio (OR)', icon: '⚖️',
+    color: 'linear-gradient(135deg,#f59e0b,#b45309)',
+    desc: 'The odds ratio quantifies how much the odds of the outcome change per unit increase in the predictor.',
+    example: '<strong>🦷 Dental Example</strong> OR for smoking = 2.5 means smokers have 2.5 times the odds of implant failure compared to non-smokers.'
+  },
+  assumptions: {
+    title: 'Regression Assumptions', icon: '✅',
+    color: 'linear-gradient(135deg,#ef4444,#b91c1c)',
+    desc: 'Regression results are only valid when key assumptions are met. Always check before interpreting.',
+    example: '<strong>🦷 Dental Context</strong> Violating assumptions (e.g., non-independent teeth within a patient) can lead to incorrect p-values and misleading conclusions.'
+  },
+  fit: {
+    title: 'Model Fit (R²)', icon: '🎯',
+    color: 'linear-gradient(135deg,#ec4899,#9d174d)',
+    desc: 'R-squared measures how much variance in the outcome is explained by the predictors. Ranges from 0 to 1.',
+    example: '<strong>🦷 Dental Example</strong> R² = 0.42 for a model predicting CAL from age, smoking, and plaque. This means 42% of the variation in attachment loss is explained by these three factors.'
+  }
+};
+
+/* ================================================================
+   MODAL OPEN / CLOSE
+   ================================================================ */
+function openModal(type) {
+  const s = MODALS[type];
+  document.getElementById('modalHeader').style.background = s.color;
+  document.getElementById('modalIcon').textContent = s.icon;
+  document.getElementById('modalTitle').textContent = s.title;
+  document.getElementById('modalDesc').textContent = s.desc;
+  document.getElementById('modalExample').innerHTML = s.example;
+
+  const calc = document.getElementById('modalCalc');
+  calc.innerHTML = '';
+
+  if (type === 'linear') buildLinearModal(calc, s);
+  else if (type === 'multiple') buildMultipleModal(calc, s);
+  else if (type === 'logistic') buildLogisticModal(calc, s);
+  else if (type === 'odds') buildOddsModal(calc);
+  else if (type === 'assumptions') buildAssumptionsModal(calc);
+  else if (type === 'fit') buildFitModal(calc);
+
+  document.getElementById('statModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('statModal').classList.remove('open');
+}
+document.getElementById('statModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+/* ================================================================
+   LINEAR REGRESSION MODAL
+   ================================================================ */
+function buildLinearModal(container, s) {
+  container.innerHTML = `
+    <label style="font-size:0.8rem;font-weight:600;color:#64748b;display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Mini Calculator: Predict CAL from Age</label>
+    <div style="font-size:0.8rem;color:#94a3b8;margin-bottom:8px">Model: CAL = 0.5 + 0.04 &times; Age</div>
+    <input type="number" class="calc-input" id="linearInputX" placeholder="Enter patient age (e.g. 45)" min="18" max="90">
+    <button class="calc-btn" style="background:${s.color};width:100%" onclick="calcLinear()">Predict CAL</button>
+    <div id="linearResult" class="result-box"></div>
+    <div style="margin-top:16px">
+      <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Animated Scatter Plot</div>
+      <canvas id="linearScatter" width="540" height="240" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;background:white"></canvas>
+      <button class="calc-btn mt-2" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);width:100%" onclick="animateLinearScatter()">▶ Animate Scatter + Best-Fit Line</button>
+    </div>
+  `;
+}
+
+function calcLinear() {
+  const x = parseFloat(document.getElementById('linearInputX').value);
+  const res = document.getElementById('linearResult');
+  if (isNaN(x)) { res.classList.add('show'); res.innerHTML = '<span style="color:#ef4444">Please enter a valid age</span>'; return; }
+  const y = 0.5 + 0.04 * x;
+  res.classList.add('show');
+  res.innerHTML = `Predicted CAL = <span class="result-val">${y.toFixed(2)} mm</span><div style="font-size:0.75rem;color:#94a3b8;margin-top:4px">For a ${x}-year-old patient</div>`;
+}
+
+async function animateLinearScatter() {
+  const canvas = document.getElementById('linearScatter');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  // Data: age vs CAL
+  const data = [
+    {x:25,y:1.2},{x:30,y:1.8},{x:35,y:1.5},{x:38,y:2.0},{x:40,y:2.3},
+    {x:42,y:2.1},{x:45,y:2.6},{x:48,y:2.4},{x:50,y:3.0},{x:52,y:2.8},
+    {x:55,y:3.2},{x:58,y:3.5},{x:60,y:3.1},{x:62,y:3.6},{x:65,y:3.8},
+    {x:68,y:4.0},{x:70,y:3.9},{x:72,y:4.2},{x:75,y:4.5},{x:78,y:4.3}
+  ];
+
+  const pad = {t:20,r:20,b:40,l:50};
+  const pw = W-pad.l-pad.r, ph = H-pad.t-pad.b;
+  const xMin=20, xMax=85, yMin=0, yMax=5;
+  const sx = v => pad.l + (v-xMin)/(xMax-xMin)*pw;
+  const sy = v => pad.t + ph - (v-yMin)/(yMax-yMin)*ph;
+
+  // axes
+  ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, H-pad.b); ctx.lineTo(W-pad.r, H-pad.b); ctx.stroke();
+  ctx.fillStyle='#64748b'; ctx.font='11px sans-serif';
+  ctx.fillText('Age (years)', W/2-30, H-8);
+  ctx.save(); ctx.translate(14, H/2+20); ctx.rotate(-Math.PI/2); ctx.fillText('CAL (mm)',0,0); ctx.restore();
+  for (let a=20;a<=80;a+=10) { ctx.fillText(a, sx(a)-8, H-pad.b+16); }
+  for (let v=0;v<=5;v+=1) { ctx.fillText(v, pad.l-22, sy(v)+4); }
+
+  // animate points
+  for (let i=0;i<data.length;i++) {
+    await delay(100);
+    ctx.beginPath();
+    ctx.arc(sx(data[i].x), sy(data[i].y), 5, 0, Math.PI*2);
+    ctx.fillStyle='rgba(59,130,246,0.7)';
+    ctx.fill();
+    ctx.strokeStyle='#1d4ed8'; ctx.lineWidth=1.5; ctx.stroke();
+  }
+
+  // animate best-fit line
+  await delay(400);
+  const b0 = 0.5, b1 = 0.04;
+  const steps = 30;
+  for (let s=1;s<=steps;s++) {
+    const frac = s/steps;
+    const endX = xMin + (xMax-xMin)*frac;
+    ctx.beginPath();
+    ctx.moveTo(sx(xMin), sy(b0+b1*xMin));
+    ctx.lineTo(sx(endX), sy(b0+b1*endX));
+    ctx.strokeStyle='#ef4444'; ctx.lineWidth=2.5;
+    ctx.stroke();
+    await delay(30);
+  }
+
+  // equation label
+  ctx.fillStyle='#ef4444'; ctx.font='bold 13px sans-serif';
+  ctx.fillText('y = 0.5 + 0.04x', sx(50), sy(b0+b1*50)-12);
+}
+
+/* ================================================================
+   MULTIPLE REGRESSION MODAL
+   ================================================================ */
+function buildMultipleModal(container) {
+  container.innerHTML = `
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Toggle Predictors On/Off</div>
+    <div id="predToggles">
+      <div class="pred-toggle active" onclick="togglePred(this, 'age')">
+        <input type="checkbox" checked id="pred_age"><label for="pred_age">Age</label>
+        <span class="coeff">B = 0.03</span>
+      </div>
+      <div class="pred-toggle active" onclick="togglePred(this, 'smoking')">
+        <input type="checkbox" checked id="pred_smoking"><label for="pred_smoking">Smoking (pack-years)</label>
+        <span class="coeff">B = 1.50</span>
+      </div>
+      <div class="pred-toggle active" onclick="togglePred(this, 'plaque')">
+        <input type="checkbox" checked id="pred_plaque"><label for="pred_plaque">Plaque Index</label>
+        <span class="coeff">B = 0.80</span>
+      </div>
+    </div>
+    <div id="multiEquation" style="margin-top:14px;padding:14px 16px;background:white;border-radius:10px;border:1.5px solid #e2e8f0;font-size:0.9rem;color:#0f172a;font-weight:600;text-align:center"></div>
+    <div style="margin-top:16px;text-align:center">
+      <svg width="340" height="160" viewBox="0 0 340 160" id="multiArrowSvg">
+        <rect x="10" y="20" width="90" height="34" rx="8" fill="#3b82f6" id="arrAge"/>
+        <text x="55" y="42" text-anchor="middle" fill="white" font-size="12" font-weight="700">Age</text>
+        <rect x="10" y="65" width="90" height="34" rx="8" fill="#10b981" id="arrSmk"/>
+        <text x="55" y="87" text-anchor="middle" fill="white" font-size="12" font-weight="700">Smoking</text>
+        <rect x="10" y="110" width="90" height="34" rx="8" fill="#f59e0b" id="arrPlq"/>
+        <text x="55" y="132" text-anchor="middle" fill="white" font-size="12" font-weight="700">Plaque</text>
+        <rect x="210" y="55" width="120" height="50" rx="10" fill="#0f172a"/>
+        <text x="270" y="78" text-anchor="middle" fill="white" font-size="11" font-weight="700">Pocket Depth</text>
+        <text x="270" y="94" text-anchor="middle" fill="#94a3b8" font-size="10">(outcome)</text>
+        <line x1="100" y1="37" x2="210" y2="75" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowBlue)" id="lineAge"/>
+        <line x1="100" y1="82" x2="210" y2="80" stroke="#10b981" stroke-width="2" marker-end="url(#arrowGreen)" id="lineSmk"/>
+        <line x1="100" y1="127" x2="210" y2="85" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowAmber)" id="linePlq"/>
+        <defs>
+          <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#3b82f6"/></marker>
+          <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#10b981"/></marker>
+          <marker id="arrowAmber" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#f59e0b"/></marker>
+        </defs>
+      </svg>
+    </div>
+    <div id="multiResult" class="result-box"></div>
+  `;
+  updateMultiEquation();
+}
+
+function togglePred(el, name) {
+  const cb = el.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  el.classList.toggle('active', cb.checked);
+
+  // Update arrow diagram
+  const opacity = cb.checked ? 1 : 0.15;
+  if (name === 'age') { document.getElementById('arrAge').style.opacity=opacity; document.getElementById('lineAge').style.opacity=opacity; }
+  if (name === 'smoking') { document.getElementById('arrSmk').style.opacity=opacity; document.getElementById('lineSmk').style.opacity=opacity; }
+  if (name === 'plaque') { document.getElementById('arrPlq').style.opacity=opacity; document.getElementById('linePlq').style.opacity=opacity; }
+
+  updateMultiEquation();
+}
+
+function updateMultiEquation() {
+  const age = document.getElementById('pred_age').checked;
+  const smk = document.getElementById('pred_smoking').checked;
+  const plq = document.getElementById('pred_plaque').checked;
+  let eq = 'PD = 1.20';
+  if (age) eq += ' + 0.03(Age)';
+  if (smk) eq += ' + 1.50(Smoking)';
+  if (plq) eq += ' + 0.80(Plaque)';
+  document.getElementById('multiEquation').textContent = eq;
+}
+
+/* ================================================================
+   LOGISTIC REGRESSION MODAL
+   ================================================================ */
+function buildLogisticModal(container) {
+  container.innerHTML = `
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Interactive S-Curve</div>
+    <div style="text-align:center;margin-bottom:6px">
+      <label class="text-sm text-gray-600">Cigarettes/day: <strong id="modalCigVal">10</strong></label>
+    </div>
+    <input type="range" min="0" max="40" value="10" class="styled-slider" id="modalLogSlider" oninput="updateModalLogistic(this.value)" style="margin-bottom:12px">
+    <canvas id="modalSigmoid" width="540" height="200" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;background:white"></canvas>
+    <div id="modalLogResult" class="result-box show" style="margin-top:12px"></div>
+  `;
+  setTimeout(() => updateModalLogistic(10), 50);
+}
+
+function updateModalLogistic(val) {
+  val = parseInt(val);
+  document.getElementById('modalCigVal').textContent = val;
+  const b0 = -2.0, b1 = 0.12;
+  const logit = b0 + b1 * val;
+  const prob = 1 / (1 + Math.exp(-logit));
+  const pct = (prob*100).toFixed(1);
+
+  const res = document.getElementById('modalLogResult');
+  let risk = 'Low Risk'; let riskColor = '#10b981';
+  if (prob > 0.6) { risk = 'High Risk'; riskColor = '#ef4444'; }
+  else if (prob > 0.3) { risk = 'Moderate Risk'; riskColor = '#f59e0b'; }
+  res.innerHTML = `P(failure) = <span class="result-val" style="color:${riskColor}">${pct}%</span> <span style="font-size:0.8rem;color:${riskColor};font-weight:600">(${risk})</span>`;
+
+  // draw sigmoid
+  const canvas = document.getElementById('modalSigmoid');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const pad = {l:50,r:20,t:15,b:35};
+  const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+  const sx = v => pad.l + (v/40)*pw;
+  const sy = v => pad.t + ph - v*ph;
+
+  // axes
+  ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,H-pad.b); ctx.lineTo(W-pad.r,H-pad.b); ctx.stroke();
+  ctx.fillStyle='#64748b'; ctx.font='10px sans-serif';
+  for (let a=0;a<=40;a+=10) ctx.fillText(a, sx(a)-5, H-pad.b+14);
+  ctx.fillText('Cig/day', W/2-15, H-5);
+  for (let p=0;p<=1;p+=0.25) ctx.fillText((p*100).toFixed(0)+'%', pad.l-35, sy(p)+4);
+
+  // curve
+  ctx.beginPath();
+  ctx.strokeStyle='#8b5cf6'; ctx.lineWidth=2.5;
+  for (let x=0;x<=40;x+=0.5) {
+    const p = 1/(1+Math.exp(-(b0+b1*x)));
+    if (x===0) ctx.moveTo(sx(x),sy(p)); else ctx.lineTo(sx(x),sy(p));
+  }
+  ctx.stroke();
+
+  // marker
+  ctx.beginPath();
+  ctx.arc(sx(val), sy(prob), 7, 0, Math.PI*2);
+  ctx.fillStyle='#8b5cf6'; ctx.fill();
+  ctx.strokeStyle='white'; ctx.lineWidth=2; ctx.stroke();
+
+  // dashed lines
+  ctx.setLineDash([4,4]);
+  ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(sx(val),sy(prob)); ctx.lineTo(sx(val),H-pad.b); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(sx(val),sy(prob)); ctx.lineTo(pad.l,sy(prob)); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+/* ================================================================
+   ODDS RATIO MODAL
+   ================================================================ */
+function buildOddsModal(container) {
+  container.innerHTML = `
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Visual Explanation</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:100px;text-align:center;padding:12px;border-radius:10px;background:#f0fdf4;border:1.5px solid #bbf7d0">
+        <div style="font-size:1.5rem;font-weight:800;color:#047857">OR &lt; 1</div>
+        <div style="font-size:0.75rem;color:#166534;margin-top:4px">Protective Factor</div>
+      </div>
+      <div style="flex:1;min-width:100px;text-align:center;padding:12px;border-radius:10px;background:#f8fafc;border:1.5px solid #e2e8f0">
+        <div style="font-size:1.5rem;font-weight:800;color:#64748b">OR = 1</div>
+        <div style="font-size:0.75rem;color:#64748b;margin-top:4px">No Effect</div>
+      </div>
+      <div style="flex:1;min-width:100px;text-align:center;padding:12px;border-radius:10px;background:#fef2f2;border:1.5px solid #fecaca">
+        <div style="font-size:1.5rem;font-weight:800;color:#b91c1c">OR &gt; 1</div>
+        <div style="font-size:0.75rem;color:#991b1b;margin-top:4px">Risk Factor</div>
+      </div>
+    </div>
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Dental Examples</div>
+    <div id="oddsBarArea"></div>
+  `;
+  setTimeout(animateOddsBars, 100);
+}
+
+function animateOddsBars() {
+  const area = document.getElementById('oddsBarArea');
+  if (!area) return;
+  const examples = [
+    { label: 'Fluoride Use', or: 0.4, color: '#10b981', interp: 'Protective: 60% lower odds of caries' },
+    { label: 'Diabetes', or: 1.8, color: '#f59e0b', interp: '80% higher odds of periodontal disease' },
+    { label: 'Smoking', or: 2.5, color: '#ef4444', interp: '2.5x odds of implant failure' },
+    { label: 'Sealants', or: 0.3, color: '#10b981', interp: 'Protective: 70% lower odds of pit/fissure caries' },
+  ];
+  const maxOR = 3;
+  area.innerHTML = examples.map(e => `
+    <div class="or-bar-row">
+      <div class="or-bar-label">${e.label}</div>
+      <div class="or-bar-track">
+        <div class="or-bar-fill" style="width:0%;background:${e.color}" data-target="${(e.or/maxOR*100).toFixed(0)}">OR=${e.or}</div>
+      </div>
+    </div>
+    <div style="font-size:0.7rem;color:#64748b;margin-left:110px;margin-bottom:10px">${e.interp}</div>
+  `).join('');
+
+  // animate bars
+  setTimeout(() => {
+    area.querySelectorAll('.or-bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.target + '%';
+    });
+  }, 100);
+}
+
+/* ================================================================
+   ASSUMPTIONS MODAL
+   ================================================================ */
+function buildAssumptionsModal(container) {
+  const items = [
+    { icon: '🔗', title: 'Independence', text: 'Observations must be independent. In dental research, multiple teeth from one patient are NOT independent — use multilevel models or GEE.', status: '✓' },
+    { icon: '📏', title: 'Linearity', text: 'The relationship between predictor and outcome should be linear. Plot residuals vs fitted values. Consider log-transforming skewed variables like plaque index.', status: '✓' },
+    { icon: '🚫', title: 'No Multicollinearity', text: 'Predictors should not be highly correlated (e.g., oral hygiene frequency and plaque index). Check VIF — values above 10 indicate a problem.', status: '!' },
+    { icon: '📊', title: 'Adequate Sample Size', text: 'For linear regression: at least 10-15 observations per predictor. For logistic: EPV (events per variable) should be at least 10.', status: '✓' },
+    { icon: '🔔', title: 'Normality of Residuals', text: 'Residuals (errors) should be approximately normally distributed. Check with Q-Q plot or Shapiro-Wilk test. Often relaxed for large samples (n > 30).', status: '✓' },
+    { icon: '📐', title: 'Homoscedasticity', text: 'Variance of residuals should be constant across predicted values. Violations are common with dental cost data. Use robust standard errors if violated.', status: '!' },
+  ];
+  container.innerHTML = `<div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Assumption Checklist</div>` +
+    items.map(it => `
+      <div class="check-item">
+        <div class="check-icon">${it.icon}</div>
+        <div class="check-text">
+          <strong>${it.title} ${it.status === '!' ? '<span style="color:#f59e0b">&#9888; Watch out</span>' : '<span style="color:#10b981">&#10003; Required</span>'}</strong>
+          ${it.text}
+        </div>
+      </div>
+    `).join('');
+}
+
+/* ================================================================
+   MODEL FIT MODAL
+   ================================================================ */
+function buildFitModal(container) {
+  container.innerHTML = `
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">R² Visualization</div>
+    <div style="text-align:center;margin-bottom:6px">
+      <label class="text-sm text-gray-600">Drag the slider to simulate R²</label>
+    </div>
+    <input type="range" min="0" max="100" value="42" class="styled-slider" id="r2Slider" oninput="updateR2Demo(this.value)" style="margin-bottom:4px">
+    <div class="r2-track">
+      <div class="r2-fill" id="r2Fill" style="width:42%">R² = 0.42</div>
+    </div>
+    <div id="r2Interp" style="text-align:center;font-size:0.85rem;color:#64748b;margin-top:8px"></div>
+
+    <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3 mt-5">What R² Values Mean in Dental Research</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+      <div style="flex:1;min-width:80px;text-align:center;padding:10px;border-radius:8px;background:#fef2f2;font-size:0.8rem;color:#b91c1c"><strong>0-0.1</strong><br>Weak</div>
+      <div style="flex:1;min-width:80px;text-align:center;padding:10px;border-radius:8px;background:#fefce8;font-size:0.8rem;color:#a16207"><strong>0.1-0.3</strong><br>Moderate</div>
+      <div style="flex:1;min-width:80px;text-align:center;padding:10px;border-radius:8px;background:#f0fdf4;font-size:0.8rem;color:#166534"><strong>0.3-0.5</strong><br>Good</div>
+      <div style="flex:1;min-width:80px;text-align:center;padding:10px;border-radius:8px;background:#eff6ff;font-size:0.8rem;color:#1e40af"><strong>0.5+</strong><br>Strong</div>
+    </div>
+    <div id="r2Result" class="result-box show" style="font-size:0.85rem"></div>
+  `;
+  setTimeout(() => updateR2Demo(42), 50);
+}
+
+function updateR2Demo(val) {
+  val = parseInt(val);
+  const r2 = val / 100;
+  const fill = document.getElementById('r2Fill');
+  fill.style.width = val + '%';
+  fill.textContent = 'R\u00B2 = ' + r2.toFixed(2);
+
+  let interp = '', color = '';
+  if (r2 < 0.1) { interp = 'Weak: predictors barely explain the outcome'; color = '#ef4444'; }
+  else if (r2 < 0.3) { interp = 'Moderate: some explanatory power'; color = '#f59e0b'; }
+  else if (r2 < 0.5) { interp = 'Good: meaningful predictive ability'; color = '#10b981'; }
+  else { interp = 'Strong: predictors explain most variance'; color = '#3b82f6'; }
+
+  document.getElementById('r2Interp').innerHTML = `<span style="color:${color};font-weight:600">${interp}</span>`;
+
+  const unexpl = ((1-r2)*100).toFixed(0);
+  document.getElementById('r2Result').innerHTML = `<strong style="color:#0f172a">${val}%</strong> of variance explained<br><span style="font-size:0.75rem;color:#94a3b8">${unexpl}% remains unexplained (other factors, measurement error)</span>`;
+}
+
+/* ================================================================
+   PLAYGROUND (Scatter + Regression)
+   ================================================================ */
+let playgroundPoints = [];
+let playgroundLine = null;
+let currentDataset = 'custom';
+
+const DATASETS = {
+  custom: { label: 'Custom', xLabel: 'X', yLabel: 'Y', points: [] },
+  dmft: {
+    label: 'DMFT vs Age', xLabel: 'Age (years)', yLabel: 'DMFT Index',
+    points: [{x:12,y:1},{x:15,y:2},{x:18,y:3},{x:22,y:4},{x:25,y:5},{x:28,y:5},{x:30,y:6},{x:35,y:7},{x:38,y:8},{x:40,y:7},{x:42,y:9},{x:45,y:10},{x:48,y:9},{x:50,y:11},{x:55,y:12},{x:58,y:11},{x:60,y:13},{x:65,y:14},{x:68,y:13},{x:70,y:15}]
+  },
+  plaque: {
+    label: 'Plaque vs Brushing', xLabel: 'Brushing (times/day)', yLabel: 'Plaque Index',
+    points: [{x:0.5,y:3.2},{x:0.5,y:2.8},{x:1,y:2.5},{x:1,y:2.3},{x:1,y:2.7},{x:1.5,y:2.0},{x:1.5,y:1.8},{x:2,y:1.5},{x:2,y:1.7},{x:2,y:1.3},{x:2,y:1.6},{x:2.5,y:1.2},{x:2.5,y:1.0},{x:3,y:0.9},{x:3,y:1.1},{x:3,y:0.8},{x:3.5,y:0.7},{x:3.5,y:0.9},{x:4,y:0.5},{x:4,y:0.6}]
+  },
+  pocket: {
+    label: 'Pocket Depth vs Smoking', xLabel: 'Smoking Years', yLabel: 'Pocket Depth (mm)',
+    points: [{x:0,y:2.0},{x:0,y:2.2},{x:2,y:2.5},{x:3,y:2.8},{x:5,y:3.0},{x:5,y:2.7},{x:8,y:3.2},{x:10,y:3.5},{x:10,y:3.8},{x:12,y:3.6},{x:15,y:4.0},{x:15,y:3.9},{x:18,y:4.3},{x:20,y:4.5},{x:20,y:4.2},{x:22,y:4.8},{x:25,y:5.0},{x:25,y:4.7},{x:28,y:5.2},{x:30,y:5.5}]
+  }
+};
+
+function loadDataset(name) {
+  currentDataset = name;
+  document.querySelectorAll('.dataset-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  playgroundPoints = [...DATASETS[name].points];
+  playgroundLine = null;
+  drawPlayground();
+  const eq = document.getElementById('playgroundEquation');
+  eq.style.display = 'none';
+}
+
+function getPlaygroundBounds() {
+  if (playgroundPoints.length === 0) return { xMin:0, xMax:100, yMin:0, yMax:10 };
+  const xs = playgroundPoints.map(p=>p.x), ys = playgroundPoints.map(p=>p.y);
+  let xMin = Math.min(...xs), xMax = Math.max(...xs);
+  let yMin = Math.min(...ys), yMax = Math.max(...ys);
+  const xPad = (xMax-xMin)*0.15 || 5, yPad = (yMax-yMin)*0.15 || 1;
+  return { xMin: xMin-xPad, xMax: xMax+xPad, yMin: yMin-yPad, yMax: yMax+yPad };
+}
+
+function drawPlayground() {
+  const canvas = document.getElementById('playgroundCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  const pad = {l:55,r:20,t:20,b:45};
+  const pw = W-pad.l-pad.r, ph = H-pad.t-pad.b;
+  const b = getPlaygroundBounds();
+  const sx = v => pad.l + (v-b.xMin)/(b.xMax-b.xMin)*pw;
+  const sy = v => pad.t + ph - (v-b.yMin)/(b.yMax-b.yMin)*ph;
+
+  // grid lines
+  ctx.strokeStyle='#f1f5f9'; ctx.lineWidth=1;
+  for (let i=0;i<=5;i++) {
+    const y = pad.t + ph*i/5;
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke();
+  }
+
+  // axes
+  ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,H-pad.b); ctx.lineTo(W-pad.r,H-pad.b); ctx.stroke();
+
+  // labels
+  const ds = DATASETS[currentDataset];
+  ctx.fillStyle='#64748b'; ctx.font='11px sans-serif';
+  ctx.fillText(ds.xLabel || 'X', W/2-20, H-6);
+  ctx.save(); ctx.translate(14, H/2+15); ctx.rotate(-Math.PI/2); ctx.fillText(ds.yLabel || 'Y',0,0); ctx.restore();
+
+  // tick labels
+  for (let i=0;i<=5;i++) {
+    const xv = b.xMin + (b.xMax-b.xMin)*i/5;
+    const yv = b.yMin + (b.yMax-b.yMin)*i/5;
+    ctx.fillText(xv.toFixed(1), sx(xv)-12, H-pad.b+16);
+    ctx.fillText(yv.toFixed(1), pad.l-35, sy(yv)+4);
+  }
+
+  // points
+  for (const p of playgroundPoints) {
+    ctx.beginPath();
+    ctx.arc(sx(p.x), sy(p.y), 5, 0, Math.PI*2);
+    ctx.fillStyle='rgba(15,118,110,0.7)';
+    ctx.fill();
+    ctx.strokeStyle='#0f766e'; ctx.lineWidth=1.5; ctx.stroke();
+  }
+
+  // line
+  if (playgroundLine) {
+    ctx.beginPath();
+    ctx.moveTo(sx(b.xMin), sy(playgroundLine.b0 + playgroundLine.b1*b.xMin));
+    ctx.lineTo(sx(b.xMax), sy(playgroundLine.b0 + playgroundLine.b1*b.xMax));
+    ctx.strokeStyle='#ef4444'; ctx.lineWidth=2.5;
+    ctx.stroke();
+  }
+}
+
+// Click to add point
+document.getElementById('playgroundCanvas').addEventListener('click', function(e) {
+  if (currentDataset !== 'custom' && playgroundPoints.length > 0 && DATASETS[currentDataset].points.length === playgroundPoints.length) {
+    // allow adding to preset too
+  }
+  const rect = this.getBoundingClientRect();
+  const scaleX = this.width / rect.width;
+  const scaleY = this.height / rect.height;
+  const cx = (e.clientX - rect.left) * scaleX;
+  const cy = (e.clientY - rect.top) * scaleY;
+
+  const pad = {l:55,r:20,t:20,b:45};
+  const pw = this.width-pad.l-pad.r, ph = this.height-pad.t-pad.b;
+  if (cx < pad.l || cy < pad.t || cx > this.width-pad.r || cy > this.height-pad.b) return;
+
+  const b = getPlaygroundBounds();
+  const x = b.xMin + (cx-pad.l)/pw*(b.xMax-b.xMin);
+  const y = b.yMax - (cy-pad.t)/ph*(b.yMax-b.yMin);
+
+  playgroundPoints.push({x: parseFloat(x.toFixed(2)), y: parseFloat(y.toFixed(2))});
+  playgroundLine = null;
+  document.getElementById('playgroundEquation').style.display='none';
+  drawPlayground();
+});
+
+function clearPlayground() {
+  playgroundPoints = [];
+  playgroundLine = null;
+  currentDataset = 'custom';
+  document.querySelectorAll('.dataset-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.dataset-tab').classList.add('active');
+  document.getElementById('playgroundEquation').style.display='none';
+  drawPlayground();
+}
+
+async function fitPlaygroundLine() {
+  if (playgroundPoints.length < 2) { alert('Add at least 2 data points!'); return; }
+  const n = playgroundPoints.length;
+  const xs = playgroundPoints.map(p=>p.x), ys = playgroundPoints.map(p=>p.y);
+  const mx = xs.reduce((a,b)=>a+b,0)/n;
+  const my = ys.reduce((a,b)=>a+b,0)/n;
+  let num=0, den=0;
+  for (let i=0;i<n;i++) { num += (xs[i]-mx)*(ys[i]-my); den += (xs[i]-mx)*(xs[i]-mx); }
+  const b1 = den===0 ? 0 : num/den;
+  const b0 = my - b1*mx;
+
+  // R²
+  const ssTot = ys.reduce((s,y)=>s+(y-my)*(y-my),0);
+  const ssRes = playgroundPoints.reduce((s,p)=>{ const pred=b0+b1*p.x; return s+(p.y-pred)*(p.y-pred); },0);
+  const r2 = ssTot===0 ? 0 : 1 - ssRes/ssTot;
+
+  // Animate line drawing
+  const canvas = document.getElementById('playgroundCanvas');
+  const ctx = canvas.getContext('2d');
+  const pad = {l:55,r:20,t:20,b:45};
+  const pw = canvas.width-pad.l-pad.r, ph = canvas.height-pad.t-pad.b;
+  const bd = getPlaygroundBounds();
+  const sx = v => pad.l + (v-bd.xMin)/(bd.xMax-bd.xMin)*pw;
+  const sy = v => pad.t + ph - (v-bd.yMin)/(bd.yMax-bd.yMin)*ph;
+
+  const steps = 25;
+  for (let s=1;s<=steps;s++) {
+    drawPlayground(); // redraw base
+    const frac = s/steps;
+    const endX = bd.xMin + (bd.xMax-bd.xMin)*frac;
+    ctx.beginPath();
+    ctx.moveTo(sx(bd.xMin), sy(b0+b1*bd.xMin));
+    ctx.lineTo(sx(endX), sy(b0+b1*endX));
+    ctx.strokeStyle='#ef4444'; ctx.lineWidth=2.5;
+    ctx.stroke();
+    await delay(30);
+  }
+
+  playgroundLine = { b0, b1 };
+  drawPlayground();
+
+  const eq = document.getElementById('playgroundEquation');
+  eq.style.display = 'block';
+  eq.classList.add('show');
+  eq.innerHTML = `<div style="font-size:1rem;font-weight:700;color:#0f172a">y = ${b0.toFixed(3)} ${b1>=0?'+':'−'} ${Math.abs(b1).toFixed(3)}x</div>
+    <div style="font-size:0.85rem;color:#64748b;margin-top:4px">R² = <span class="result-val" style="font-size:1.1rem">${r2.toFixed(4)}</span> &nbsp;|&nbsp; n = ${n}</div>
+    <div style="font-size:0.75rem;color:#94a3b8;margin-top:4px">${(r2*100).toFixed(1)}% of variance explained by this model</div>`;
+}
+
+// initial draw
+drawPlayground();
+
+/* ================================================================
+   LOGISTIC DEMO (main page)
+   ================================================================ */
+function updateLogisticDemo(val) {
+  val = parseInt(val);
+  document.getElementById('logisticCigLabel').textContent = val + ' cigarettes/day';
+
+  const b0 = -2.0, b1 = 0.12;
+  const logit = b0 + b1 * val;
+  const prob = 1 / (1 + Math.exp(-logit));
+  const pct = (prob * 100).toFixed(1);
+
+  // Gauge
+  const totalArc = 283;
+  const offset = totalArc - (prob * totalArc);
+  document.getElementById('gaugeArc').setAttribute('stroke-dashoffset', offset);
+
+  // Needle rotation: 0% = -90deg, 100% = +90deg
+  const angle = -90 + prob * 180;
+  document.getElementById('gaugeNeedle').style.transform = `rotate(${angle}deg)`;
+  document.getElementById('gaugeText').textContent = pct + '%';
+
+  // Interpretation
+  let interp = '', cls = '';
+  if (prob < 0.2) { interp = '🟢 Low risk — Minimal concern for implant failure'; cls = 'color:#10b981'; }
+  else if (prob < 0.4) { interp = '🟡 Mild risk — Consider smoking cessation counseling'; cls = 'color:#84cc16'; }
+  else if (prob < 0.6) { interp = '🟠 Moderate risk — Strongly recommend cessation before implant'; cls = 'color:#f59e0b'; }
+  else if (prob < 0.8) { interp = '🔴 High risk — Implant success significantly compromised'; cls = 'color:#ef4444'; }
+  else { interp = '🔴 Very high risk — Implant likely to fail, defer procedure'; cls = 'color:#ef4444'; }
+  document.getElementById('logisticInterpretation').innerHTML = `<span style="${cls};font-weight:600">${interp}</span>`;
+
+  // S-curve
+  drawSigmoid(val, prob);
+}
+
+function drawSigmoid(currentVal, currentProb) {
+  const canvas = document.getElementById('sigmoidCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  const pad = {l:50,r:20,t:15,b:35};
+  const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+  const b0 = -2.0, b1 = 0.12;
+  const sx = v => pad.l + (v/40)*pw;
+  const sy = v => pad.t + ph - v*ph;
+
+  // grid
+  ctx.strokeStyle='#f1f5f9'; ctx.lineWidth=0.5;
+  for (let p=0;p<=1;p+=0.25) { ctx.beginPath(); ctx.moveTo(pad.l,sy(p)); ctx.lineTo(W-pad.r,sy(p)); ctx.stroke(); }
+
+  // axes
+  ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,H-pad.b); ctx.lineTo(W-pad.r,H-pad.b); ctx.stroke();
+  ctx.fillStyle='#64748b'; ctx.font='10px sans-serif';
+  for (let a=0;a<=40;a+=10) ctx.fillText(a, sx(a)-5, H-pad.b+14);
+  ctx.fillText('Cigarettes/day', W/2-30, H-5);
+  for (let p=0;p<=1;p+=0.25) ctx.fillText((p*100).toFixed(0)+'%', pad.l-30, sy(p)+4);
+
+  // 50% threshold line
+  ctx.setLineDash([4,4]); ctx.strokeStyle='#fbbf24'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,sy(0.5)); ctx.lineTo(W-pad.r,sy(0.5)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#fbbf24'; ctx.font='9px sans-serif';
+  ctx.fillText('50% threshold', W-pad.r-65, sy(0.5)-5);
+
+  // curve
+  ctx.beginPath();
+  ctx.strokeStyle='#8b5cf6'; ctx.lineWidth=3;
+  for (let x=0;x<=40;x+=0.5) {
+    const p = 1/(1+Math.exp(-(b0+b1*x)));
+    if (x===0) ctx.moveTo(sx(x),sy(p)); else ctx.lineTo(sx(x),sy(p));
+  }
+  ctx.stroke();
+
+  // current point
+  ctx.beginPath();
+  ctx.arc(sx(currentVal), sy(currentProb), 8, 0, Math.PI*2);
+  ctx.fillStyle='#8b5cf6'; ctx.fill();
+  ctx.strokeStyle='white'; ctx.lineWidth=2.5; ctx.stroke();
+
+  // dashed crosshair
+  ctx.setLineDash([3,3]); ctx.strokeStyle='rgba(139,92,246,0.4)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(sx(currentVal),sy(currentProb)); ctx.lineTo(sx(currentVal),H-pad.b); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(sx(currentVal),sy(currentProb)); ctx.lineTo(pad.l,sy(currentProb)); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+// init logistic demo
+updateLogisticDemo(10);
+
+/* ================================================================
+   REGRESSION STUDY SIMULATION
+   ================================================================ */
+async function runRegressionSimulation() {
+  const canvas = document.getElementById('simCanvas');
+  const ctx = canvas.getContext('2d');
+  const output = document.getElementById('simOutput');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  output.innerHTML = '';
+
+  // Data: age vs CAL (50 patients simulated)
+  const data = [];
+  const rng = (min,max) => min + Math.random()*(max-min);
+  for (let i=0;i<50;i++) {
+    const age = rng(20,75);
+    const cal = 0.5 + 0.04*age + rng(-0.8,0.8);
+    data.push({x:age, y:Math.max(0.2, cal)});
+  }
+
+  const pad = {l:55,r:20,t:20,b:40};
+  const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+  const xMin=15, xMax=80, yMin=0, yMax=5;
+  const sx = v => pad.l + (v-xMin)/(xMax-xMin)*pw;
+  const sy = v => pad.t + ph - (v-yMin)/(yMax-yMin)*ph;
+
+  // Step 1: Recruit
+  output.innerHTML += '<div style="animation:fadeUp 0.3s ease">🏥 <strong>Step 1:</strong> Recruiting 50 dental patients...</div>';
+  await delay(1000);
+
+  // Draw axes
+  ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,H-pad.b); ctx.lineTo(W-pad.r,H-pad.b); ctx.stroke();
+  ctx.fillStyle='#64748b'; ctx.font='11px sans-serif';
+  ctx.fillText('Age (years)', W/2-30, H-6);
+  ctx.save(); ctx.translate(14,H/2+20); ctx.rotate(-Math.PI/2); ctx.fillText('CAL (mm)',0,0); ctx.restore();
+  for (let a=20;a<=80;a+=10) ctx.fillText(a, sx(a)-8, H-pad.b+16);
+  for (let v=0;v<=5;v+=1) ctx.fillText(v, pad.l-22, sy(v)+4);
+
+  // Step 2: Collect data (plot points)
+  output.innerHTML += '<div style="animation:fadeUp 0.3s ease">📋 <strong>Step 2:</strong> Measuring clinical attachment loss...</div>';
+  await delay(500);
+
+  for (let i=0;i<data.length;i++) {
+    ctx.beginPath();
+    ctx.arc(sx(data[i].x), sy(data[i].y), 4, 0, Math.PI*2);
+    ctx.fillStyle='rgba(15,118,110,0.5)';
+    ctx.fill();
+    ctx.strokeStyle='#0f766e'; ctx.lineWidth=1; ctx.stroke();
+    if (i % 5 === 0) await delay(80);
+  }
+  await delay(600);
+
+  // Step 3: Fit model
+  output.innerHTML += '<div style="animation:fadeUp 0.3s ease">📐 <strong>Step 3:</strong> Fitting linear regression model...</div>';
+  await delay(800);
+
+  // Calculate regression
+  const n = data.length;
+  const xs = data.map(p=>p.x), ys = data.map(p=>p.y);
+  const mx = xs.reduce((a,b)=>a+b,0)/n;
+  const my = ys.reduce((a,b)=>a+b,0)/n;
+  let num=0, den=0;
+  for (let i=0;i<n;i++) { num += (xs[i]-mx)*(ys[i]-my); den += (xs[i]-mx)*(xs[i]-mx); }
+  const b1 = num/den;
+  const b0 = my - b1*mx;
+  const ssTot = ys.reduce((s,y)=>s+(y-my)*(y-my),0);
+  const ssRes = data.reduce((s,p)=>{ const pred=b0+b1*p.x; return s+(p.y-pred)*(p.y-pred); },0);
+  const r2 = 1 - ssRes/ssTot;
+
+  // Animate line
+  const steps = 30;
+  for (let s=1;s<=steps;s++) {
+    const frac = s/steps;
+    const endX = xMin + (xMax-xMin)*frac;
+    ctx.beginPath();
+    ctx.moveTo(sx(xMin), sy(b0+b1*xMin));
+    ctx.lineTo(sx(endX), sy(b0+b1*endX));
+    ctx.strokeStyle='#ef4444'; ctx.lineWidth=2.5;
+    ctx.stroke();
+    await delay(30);
+  }
+
+  // Equation on canvas
+  ctx.fillStyle='#ef4444'; ctx.font='bold 12px sans-serif';
+  ctx.fillText(`y = ${b0.toFixed(2)} + ${b1.toFixed(4)}x`, sx(50), sy(b0+b1*50)-14);
+
+  await delay(600);
+
+  // Step 4: Results
+  output.innerHTML += '<div style="animation:fadeUp 0.3s ease">📊 <strong>Step 4:</strong> Results:</div>';
+  await delay(400);
+  output.innerHTML += `<div style="animation:fadeUp 0.3s ease;padding:10px 14px;background:white;border-radius:10px;border:1.5px solid #e2e8f0;margin-top:6px">
+    <div style="font-weight:700;color:#0f172a;margin-bottom:6px">Regression Output</div>
+    <div style="font-size:0.85rem;color:#334155">Intercept (B<sub>0</sub>) = <strong>${b0.toFixed(3)}</strong></div>
+    <div style="font-size:0.85rem;color:#334155">Slope (B<sub>1</sub>) = <strong>${b1.toFixed(4)}</strong> mm/year</div>
+    <div style="font-size:0.85rem;color:#334155">R<sup>2</sup> = <strong>${r2.toFixed(3)}</strong></div>
+    <div style="font-size:0.85rem;color:#334155">n = <strong>${n}</strong> patients</div>
+    <div style="font-size:0.75rem;color:#64748b;margin-top:8px;border-top:1px solid #f1f5f9;padding-top:8px">
+      <strong>Interpretation:</strong> For each additional year of age, clinical attachment loss increases by approximately ${b1.toFixed(3)} mm (R<sup>2</sup> = ${r2.toFixed(2)}, meaning ${(r2*100).toFixed(0)}% of variance in CAL is explained by age alone).
+    </div>
+  </div>`;
+}
+
+</script>
 </body>
 </html>
