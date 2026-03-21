@@ -4,59 +4,77 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Basic Probability — DentalStats</title>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@300;400;600&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --navy:   #1e2d40;
-      --blue:   #3b82f6;
+      --navy:   #0f172a;
+      --navy2:  #1e3a5f;
       --teal:   #0d9488;
+      --teal-light: #14b8a6;
       --green:  #22c55e;
       --red:    #ef4444;
+      --amber:  #f59e0b;
+      --indigo: #6366f1;
       --bg:     #f0f4f8;
       --white:  #ffffff;
       --border: #e2e8f0;
       --text:   #334155;
       --muted:  #64748b;
+      --sans:   'Inter', system-ui, sans-serif;
       --serif:  'Source Serif 4', Georgia, serif;
-      --sans:   'Source Sans 3', system-ui, sans-serif;
     }
 
     html { scroll-behavior: smooth; }
     body { font-family: var(--sans); background: var(--bg); color: var(--text); overflow-x: hidden; }
 
-    /* ── NAV ── */
+    /* ── GRADIENT NAV (site-wide) ── */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-      height: 56px;
-      background: var(--navy);
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f766e 100%);
+      box-shadow: 0 4px 20px rgba(0,0,0,.35);
+    }
+    .nav-inner {
+      max-width: 1280px; margin: 0 auto;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 1.5rem;
-      box-shadow: 0 2px 12px rgba(0,0,0,.35);
+      padding: 0 1.5rem; height: 64px;
     }
-    .nav-left { display: flex; align-items: center; gap: 0.75rem; }
-    .nav-logo  { font-family: var(--serif); font-size: 1.1rem; color: #fff; font-weight: 600; }
-    .nav-sep   { color: rgba(255,255,255,.3); }
-    .nav-chapter { font-size: 0.85rem; color: rgba(255,255,255,.65); }
-    .nav-back {
-      font-size: 0.8rem; color: rgba(255,255,255,.7); text-decoration: none;
-      padding: 0.3rem 0.9rem; border: 1px solid rgba(255,255,255,.25);
-      border-radius: 20px; transition: all .2s;
+    .nav-brand { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+    .nav-brand svg { width: 32px; height: 32px; color: #5eead4; }
+    .nav-brand-text h1 { font-size: 1.15rem; font-weight: 700; color: #fff; line-height: 1.2; }
+    .nav-brand-text p { font-size: 0.65rem; color: #99f6e4; letter-spacing: 0.5px; }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-links a {
+      color: rgba(255,255,255,.85); text-decoration: none; font-size: 0.9rem;
+      font-weight: 500; transition: color .2s;
     }
-    .nav-back:hover { background: rgba(255,255,255,.1); color: #fff; }
+    .nav-links a:hover { color: #5eead4; }
+    .nav-breadcrumb {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.8rem; color: rgba(255,255,255,.5);
+    }
+    .nav-breadcrumb a { color: rgba(255,255,255,.7); text-decoration: none; }
+    .nav-breadcrumb a:hover { color: #5eead4; }
+    .nav-breadcrumb .sep { margin: 0 0.25rem; }
+    .nav-breadcrumb .current { color: #99f6e4; font-weight: 600; }
+    #mobileMenuBtn {
+      display: none; background: none; border: none; color: white; cursor: pointer;
+      padding: 0.5rem;
+    }
+    #mobileMenuBtn svg { width: 24px; height: 24px; }
 
     /* ── LAYOUT ── */
     .page-wrapper {
       display: flex;
-      height: calc(100vh - 56px);
-      margin-top: 56px;
+      height: calc(100vh - 64px);
+      margin-top: 64px;
     }
 
     /* LEFT: scrollable text */
     .text-panel {
       width: 42%;
-      min-width: 320px;
+      min-width: 340px;
       overflow-y: auto;
       background: var(--white);
       border-right: 1px solid var(--border);
@@ -69,29 +87,55 @@
     .viz-panel {
       flex: 1;
       position: sticky;
-      top: 56px;
-      height: calc(100vh - 56px);
+      top: 64px;
+      height: calc(100vh - 64px);
       background: var(--bg);
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      position: relative;
+    }
+
+    /* Floating particles background for viz panel */
+    #vizParticles {
+      position: absolute; inset: 0; z-index: 0; pointer-events: none;
     }
 
     /* ── SECTION ── */
     .section {
-      padding: 3.5rem 2.5rem;
-      min-height: calc(100vh - 56px);
+      padding: 3rem 2.5rem;
+      min-height: calc(100vh - 64px);
       border-bottom: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
 
-    .section-tag {
-      font-size: 0.7rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 3px;
-      color: var(--blue); margin-bottom: 0.6rem;
+    /* Section number badge */
+    .section-badge {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      margin-bottom: 1rem;
     }
+    .section-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700; color: white;
+      background: linear-gradient(135deg, var(--teal), var(--indigo));
+      box-shadow: 0 4px 12px rgba(13,148,136,0.3);
+      animation: pulseNum 3s ease-in-out infinite;
+    }
+    @keyframes pulseNum {
+      0%, 100% { box-shadow: 0 4px 12px rgba(13,148,136,0.3); }
+      50% { box-shadow: 0 4px 20px rgba(13,148,136,0.5); }
+    }
+    .section-label {
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 2.5px;
+      background: linear-gradient(90deg, var(--teal), var(--indigo));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
     .section h2 {
       font-family: var(--serif);
       font-size: 2rem; font-weight: 600;
@@ -101,22 +145,46 @@
       font-size: 0.95rem; line-height: 1.75;
       color: var(--text); margin-bottom: 0.9rem;
     }
-    .section p:last-child { margin-bottom: 0; }
+    .section p:last-of-type { margin-bottom: 0; }
 
-    /* Formula */
+    /* Formula box with gradient */
     .formula {
-      background: #f8fafc;
-      border-left: 4px solid var(--blue);
-      border-radius: 0 8px 8px 0;
-      padding: 0.9rem 1.25rem;
+      background: linear-gradient(135deg, rgba(13,148,136,0.06), rgba(99,102,241,0.06));
+      border-left: 4px solid;
+      border-image: linear-gradient(to bottom, var(--teal), var(--indigo)) 1;
+      border-radius: 0 12px 12px 0;
+      padding: 1rem 1.25rem;
       margin: 1.25rem 0;
       font-family: 'Georgia', serif;
       font-size: 1.05rem;
       color: var(--navy);
+      backdrop-filter: blur(4px);
     }
-    .formula .sym { color: var(--blue); font-weight: 700; }
+    .formula .sym { color: var(--teal); font-weight: 700; }
 
-    /* ── DRAGGABLE PROBABILITY BARS (Seeing Theory style) ── */
+    /* Preset buttons */
+    .preset-row {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    .preset-btn {
+      padding: 0.4rem 0.9rem; border-radius: 20px;
+      font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; transition: all .2s;
+      border: 1.5px solid var(--border);
+      background: var(--white); color: var(--text);
+    }
+    .preset-btn:hover {
+      border-color: var(--teal); color: var(--teal);
+      transform: translateY(-1px); box-shadow: 0 4px 12px rgba(13,148,136,0.15);
+    }
+    .preset-btn.active {
+      background: linear-gradient(135deg, var(--teal), #0f766e);
+      color: white; border-color: transparent;
+      box-shadow: 0 4px 12px rgba(13,148,136,0.3);
+    }
+
+    /* ── DRAGGABLE PROBABILITY BARS ── */
     .prob-bars-label {
       font-size: 0.78rem; font-weight: 600; color: var(--muted);
       margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 1px;
@@ -131,18 +199,22 @@
     }
     .bar-track {
       flex: 1; width: 100%; background: #e2e8f0;
-      border-radius: 6px; position: relative; cursor: ns-resize; overflow: hidden;
+      border-radius: 8px; position: relative; cursor: ns-resize; overflow: hidden;
+      transition: box-shadow 0.2s;
     }
+    .bar-track:hover { box-shadow: 0 0 0 2px rgba(13,148,136,0.2); }
     .bar-fill {
       position: absolute; bottom: 0; left: 0; right: 0;
-      background: var(--blue); border-radius: 6px;
+      border-radius: 8px;
       transition: height 0.08s;
     }
-    .bar-pct  { font-size: 0.68rem; color: var(--muted); }
+    .bar-pct  { font-size: 0.68rem; color: var(--muted); font-weight: 600; }
     .bar-name { font-size: 0.72rem; color: var(--navy); font-weight: 600; }
 
-    /* Die face bars */
-    .die-bars .bar-fill { background: var(--teal); }
+    /* Die bars gradient */
+    .die-bars .bar-fill {
+      background: linear-gradient(to top, var(--teal), var(--teal-light));
+    }
 
     /* Slider row */
     .slider-row { margin: 1rem 0; }
@@ -151,53 +223,100 @@
       font-size: 0.82rem; font-weight: 600; color: var(--muted);
       margin-bottom: 0.35rem;
     }
-    .slider-row label span { color: var(--blue); }
+    .slider-row label span {
+      color: var(--teal); font-weight: 700;
+    }
     input[type=range] {
-      width: 100%; accent-color: var(--blue);
-      height: 4px; cursor: pointer;
+      width: 100%; accent-color: var(--teal);
+      height: 6px; cursor: pointer; border-radius: 3px;
     }
 
     /* Buttons */
-    .btn-row { display: flex; gap: 0.6rem; margin-top: 1.1rem; }
+    .btn-row { display: flex; gap: 0.6rem; margin-top: 1.1rem; flex-wrap: wrap; }
     .btn {
-      padding: 0.45rem 1.1rem; border: none; border-radius: 6px;
+      padding: 0.5rem 1.2rem; border: none; border-radius: 8px;
       font-family: var(--sans); font-size: 0.85rem; font-weight: 600;
-      cursor: pointer; transition: all .18s;
+      cursor: pointer; transition: all .2s; min-height: 44px;
+      position: relative; overflow: hidden;
     }
-    .btn-primary  { background: var(--blue);  color: #fff; }
-    .btn-primary:hover  { background: #2563eb; }
-    .btn-batch    { background: #eff6ff; color: var(--blue); border: 1px solid #bfdbfe; }
-    .btn-batch:hover    { background: #dbeafe; }
-    .btn-reset    { background: #f1f5f9; color: var(--muted); }
-    .btn-reset:hover    { background: #e2e8f0; }
+    .btn::after {
+      content: ''; position: absolute; top: 50%; left: 50%;
+      width: 0; height: 0; background: rgba(255,255,255,0.3);
+      border-radius: 50%; transform: translate(-50%, -50%);
+      transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+      opacity: 0;
+    }
+    .btn:active::after { width: 200px; height: 200px; opacity: 0; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--teal), #0f766e);
+      color: #fff; box-shadow: 0 4px 12px rgba(13,148,136,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(13,148,136,0.4); }
+    .btn-batch {
+      background: rgba(13,148,136,0.08); color: var(--teal);
+      border: 1.5px solid rgba(13,148,136,0.25);
+    }
+    .btn-batch:hover { background: rgba(13,148,136,0.14); }
+    .btn-auto {
+      background: rgba(99,102,241,0.08); color: var(--indigo);
+      border: 1.5px solid rgba(99,102,241,0.25);
+    }
+    .btn-auto:hover { background: rgba(99,102,241,0.14); }
+    .btn-auto.playing {
+      background: linear-gradient(135deg, var(--indigo), #4f46e5);
+      color: white; border-color: transparent;
+    }
+    .btn-reset {
+      background: #f1f5f9; color: var(--muted);
+      border: 1.5px solid var(--border);
+    }
+    .btn-reset:hover { background: #e2e8f0; }
 
-    /* Stats grid */
+    /* Stats grid with gradient cards */
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 1rem; }
     .stat-box {
-      background: #f8fafc; border: 1px solid var(--border);
-      border-radius: 10px; padding: 0.75rem; text-align: center;
+      background: linear-gradient(135deg, rgba(13,148,136,0.04), rgba(99,102,241,0.04));
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 0.75rem; text-align: center;
+      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease;
     }
-    .stat-box .s-label { font-size: 0.68rem; color: var(--muted); margin-bottom: 2px; }
-    .stat-box .s-value { font-size: 1.5rem; font-weight: 700; color: var(--navy); }
+    .stat-box:hover {
+      transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+    .stat-box .s-label { font-size: 0.68rem; color: var(--muted); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-box .s-value {
+      font-size: 1.5rem; font-weight: 700; color: var(--navy);
+      transition: transform 0.2s ease;
+    }
+    .stat-box .s-value.bump { transform: scale(1.2); }
 
-    /* Card toggles */
+    /* Card toggles (Section 3) */
     .card-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 1rem 0; }
     .card-toggle {
-      width: 44px; height: 60px; border-radius: 6px;
+      width: 48px; height: 64px; border-radius: 8px;
       border: 2px solid var(--border);
-      background: #f8fafc; cursor: pointer;
+      background: var(--white); cursor: pointer;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      font-size: 0.75rem; font-weight: 700;
-      transition: all .18s; color: var(--text);
+      font-size: 0.8rem; font-weight: 700;
+      transition: all .25s cubic-bezier(0.16,1,0.3,1);
+      color: var(--text); position: relative; overflow: hidden;
     }
+    .card-toggle::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(13,148,136,0.1), rgba(99,102,241,0.1));
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .card-toggle:hover::before { opacity: 1; }
+    .card-toggle:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
     .card-toggle.active {
-      background: var(--blue); border-color: var(--blue);
-      color: white; box-shadow: 0 2px 8px rgba(59,130,246,.35);
+      background: linear-gradient(135deg, var(--teal), #0f766e);
+      border-color: transparent;
+      color: white; box-shadow: 0 4px 12px rgba(13,148,136,0.35);
     }
-    .card-toggle .suit { font-size: 1rem; }
-    .card-toggle.red-card { color: #dc2626; }
-    .card-toggle.red-card.active { color: white; background: #dc2626; border-color: #dc2626; }
+    .card-toggle .suit { font-size: 1.1rem; }
+    .card-toggle .score-label { font-size: 0.6rem; color: var(--muted); margin-top: 2px; }
+    .card-toggle.active .score-label { color: rgba(255,255,255,0.7); }
 
     /* ── VISUALIZATION SECTIONS ── */
     .viz-section {
@@ -205,112 +324,142 @@
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       padding: 2rem;
-      opacity: 0; transition: opacity 0.35s ease;
+      opacity: 0; transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1);
       pointer-events: none;
+      z-index: 1;
     }
     .viz-section.active { opacity: 1; pointer-events: all; }
 
     .viz-title {
-      font-family: var(--serif); font-size: 1rem;
+      font-family: var(--serif); font-size: 1.05rem;
       color: var(--muted); margin-bottom: 1.25rem;
       text-align: center; letter-spacing: 0.5px;
     }
+    .viz-title span { color: var(--teal); font-weight: 600; }
 
-    /* ─ VIZ 1: Coin ─ */
+    /* ─ VIZ 1: Tooth flip ─ */
     #coin-viz {
       display: flex; flex-direction: column;
-      align-items: center; gap: 1.5rem; width: 100%;
+      align-items: center; gap: 1.2rem; width: 100%;
     }
 
-    .coin-display {
-      perspective: 600px;
-    }
-    .coin-inner {
-      width: 110px; height: 110px;
+    .tooth-display { perspective: 800px; }
+    .tooth-inner {
+      width: 120px; height: 120px;
       position: relative; transform-style: preserve-3d;
       transition: transform 0.5s ease;
     }
-    .coin-inner.flipping { animation: coinFlip 0.5s ease; }
-    @keyframes coinFlip {
-      0%   { transform: rotateY(0deg); }
-      50%  { transform: rotateY(900deg); }
-      100% { transform: rotateY(1800deg); }
+    .tooth-inner.flipping { animation: toothFlip 0.6s ease; }
+    @keyframes toothFlip {
+      0%   { transform: rotateY(0deg) scale(1); }
+      25%  { transform: rotateY(450deg) scale(1.1); }
+      50%  { transform: rotateY(900deg) scale(1.05); }
+      100% { transform: rotateY(1800deg) scale(1); }
     }
-    .coin-face {
+    .tooth-face {
       position: absolute; inset: 0; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 2rem; font-weight: 700;
-      box-shadow: 0 6px 20px rgba(0,0,0,.15);
+      flex-direction: column;
+      font-size: 2.5rem;
+      box-shadow: 0 8px 25px rgba(0,0,0,.15);
+      backface-visibility: hidden;
     }
-    .coin-heads {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
+    .tooth-success {
+      background: linear-gradient(135deg, #10b981, #059669);
       color: white;
     }
-    .coin-tails {
-      background: linear-gradient(135deg, #64748b, #475569);
+    .tooth-failure {
+      background: linear-gradient(135deg, #f87171, #dc2626);
       color: white;
+    }
+    .tooth-face .face-label {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; margin-top: 2px; opacity: 0.9;
+    }
+
+    /* Particle burst */
+    .particle-burst {
+      position: absolute; pointer-events: none;
+    }
+    .burst-dot {
+      position: absolute; width: 6px; height: 6px; border-radius: 50%;
+      animation: burstOut 0.6s ease-out forwards;
+    }
+    @keyframes burstOut {
+      0% { transform: translate(0,0) scale(1); opacity: 1; }
+      100% { opacity: 0; }
     }
 
     .coin-history {
       display: flex; flex-wrap: wrap; gap: 4px;
       justify-content: center; max-height: 80px;
-      overflow: hidden; width: 100%; max-width: 280px;
+      overflow: hidden; width: 100%; max-width: 320px;
     }
     .coin-dot {
-      width: 14px; height: 14px; border-radius: 50%;
-      animation: popIn 0.2s ease;
+      width: 16px; height: 16px; border-radius: 50%;
+      animation: dotPop 0.25s cubic-bezier(0.16,1,0.3,1);
+      cursor: default; position: relative;
     }
-    @keyframes popIn {
-      from { transform: scale(0); opacity: 0; }
-      to   { transform: scale(1); opacity: 1; }
+    @keyframes dotPop {
+      from { transform: scale(0) rotate(-90deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg); opacity: 1; }
     }
-    .coin-dot.h { background: #f59e0b; }
-    .coin-dot.t { background: #64748b; }
+    .coin-dot.s { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 2px 6px rgba(16,185,129,0.3); }
+    .coin-dot.f { background: linear-gradient(135deg, #f87171, #dc2626); box-shadow: 0 2px 6px rgba(248,113,113,0.3); }
+    .coin-dot[title]:hover { transform: scale(1.3); }
 
     .coin-stats {
       display: grid; grid-template-columns: 1fr 1fr 1fr;
-      gap: 0.75rem; width: 100%; max-width: 320px;
+      gap: 0.75rem; width: 100%; max-width: 360px;
     }
     .coin-stat { text-align: center; }
     .coin-stat .cs-val {
       font-size: 1.6rem; font-weight: 700; color: var(--navy);
     }
     .coin-stat .cs-lab {
-      font-size: 0.68rem; color: var(--muted); margin-top: 2px;
+      font-size: 0.7rem; color: var(--muted); margin-top: 2px;
+      text-transform: uppercase; letter-spacing: 0.5px;
     }
 
-    /* Convergence mini chart */
+    /* Convergence band label */
+    .convergence-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.3rem 0.7rem; border-radius: 20px;
+      font-size: 0.72rem; font-weight: 600;
+      background: rgba(13,148,136,0.08); color: var(--teal);
+      border: 1px solid rgba(13,148,136,0.15);
+      transition: all 0.3s;
+    }
+    .convergence-badge.converged { background: rgba(16,185,129,0.12); color: #059669; border-color: rgba(16,185,129,0.25); }
 
-
-    /* ─ VIZ 2: Die ─ */
+    /* ─ VIZ 2: DMFT Tooth Health ─ */
     #die-viz {
       display: flex; flex-direction: column;
-      align-items: center; gap: 1.2rem; width: 100%;
+      align-items: center; gap: 1rem; width: 100%;
     }
 
-    .die-face {
-      width: 100px; height: 100px;
-      background: white; border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.15), 0 0 0 3px #e2e8f0;
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
-      padding: 14px; gap: 6px;
+    .tooth-health-indicator {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      font-size: 2.2rem; font-weight: 800;
+      color: white;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
       position: relative;
     }
-    .die-dot {
-      width: 100%; aspect-ratio: 1;
-      border-radius: 50%; background: var(--navy);
-      transition: opacity 0.2s;
+    .tooth-health-indicator .dmft-label {
+      font-size: 0.55rem; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; margin-top: 2px; opacity: 0.85;
     }
-    .die-dot.empty { background: transparent; }
-
-    .die-rolling { animation: dieShake 0.35s ease; }
-    @keyframes dieShake {
-      0%,100% { transform: rotate(0deg); }
-      25%  { transform: rotate(-8deg) scale(1.05); }
-      75%  { transform: rotate(8deg)  scale(1.05); }
+    .tooth-health-indicator.rolling { animation: healthPulse 0.4s ease; }
+    @keyframes healthPulse {
+      0%,100% { transform: scale(1) rotate(0deg); }
+      25% { transform: scale(1.08) rotate(-5deg); }
+      50% { transform: scale(1.05) rotate(5deg); }
+      75% { transform: scale(1.08) rotate(-3deg); }
     }
-
-
 
     .exp-display {
       display: flex; gap: 1.5rem; text-align: center;
@@ -318,63 +467,113 @@
     .exp-val { font-size: 0.85rem; color: var(--muted); }
     .exp-val strong { display: block; font-size: 1.3rem; color: var(--navy); }
 
-    /* ─ VIZ 3: Cards ─ */
+    /* ─ VIZ 3: Satisfaction score ─ */
     #card-viz {
       display: flex; flex-direction: column;
-      align-items: center; gap: 1.2rem; width: 100%;
+      align-items: center; gap: 1rem; width: 100%;
     }
 
-    .drawn-card-display {
-      width: 80px; height: 110px;
-      background: white; border-radius: 10px;
-      box-shadow: 0 6px 20px rgba(0,0,0,.15);
+    .score-card-display {
+      width: 90px; height: 120px;
+      background: var(--white); border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,.12);
       display: flex; align-items: center; justify-content: center;
-      flex-direction: column; font-size: 1.6rem; font-weight: 700;
+      flex-direction: column;
+      font-size: 2rem; font-weight: 800;
       border: 2px solid var(--border);
-      transition: all 0.3s;
+      transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+      position: relative; overflow: hidden;
     }
-    .drawn-card-display .card-suit { font-size: 1rem; }
-    .drawn-card-display.red { color: #dc2626; }
-
-
+    .score-card-display::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--teal), var(--indigo));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .score-card-display.revealed::before { opacity: 1; }
+    .score-card-display .score-emoji { font-size: 1.2rem; }
+    .score-card-display .score-text {
+      font-size: 0.55rem; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;
+    }
+    .score-card-display.flip-anim {
+      animation: cardFlip3D 0.5s ease;
+    }
+    @keyframes cardFlip3D {
+      0% { transform: perspective(600px) rotateY(0deg); }
+      50% { transform: perspective(600px) rotateY(90deg) scale(0.9); }
+      100% { transform: perspective(600px) rotateY(0deg) scale(1); }
+    }
 
     /* ── SECTION NAV DOTS ── */
     .dot-nav {
       position: fixed; right: 1.2rem; top: 50%;
       transform: translateY(-50%); z-index: 100;
-      display: flex; flex-direction: column; gap: 10px;
+      display: flex; flex-direction: column; gap: 12px;
     }
     .dot-nav a {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: #cbd5e1; display: block; transition: all .2s;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #cbd5e1; display: block; transition: all .25s cubic-bezier(0.16,1,0.3,1);
       border: 2px solid transparent;
     }
     .dot-nav a.active {
-      background: var(--blue); border-color: rgba(59,130,246,.3);
-      box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+      background: var(--teal);
+      border-color: rgba(13,148,136,.25);
+      box-shadow: 0 0 0 4px rgba(13,148,136,.12);
+      transform: scale(1.2);
     }
-    .dot-nav a:hover { background: var(--blue); transform: scale(1.2); }
+    .dot-nav a:hover { background: var(--teal); transform: scale(1.15); }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       .page-wrapper { flex-direction: column; height: auto; }
-      .text-panel { width: 100%; min-height: auto; overflow: visible; }
-      .viz-panel { position: relative; top: 0; height: 60vh; width: 100%; }
+      .text-panel { width: 100%; min-width: auto; min-height: auto; overflow: visible; }
+      .viz-panel { position: relative; top: 0; height: 65vh; width: 100%; }
       .dot-nav { display: none; }
+      .nav-links { display: none; }
+      #mobileMenuBtn { display: block; }
+      .section { padding: 2rem 1.5rem; }
+      .nav-breadcrumb { display: none; }
     }
+
+    /* Speed control */
+    .speed-control {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .speed-control label { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+    .speed-control input[type=range] { width: 100px; }
+    .speed-val { font-size: 0.72rem; color: var(--teal); font-weight: 700; min-width: 28px; }
   </style>
 </head>
 
 <body>
 
-<!-- NAV -->
+<!-- GRADIENT NAV -->
 <nav>
-  <div class="nav-left">
-    <span class="nav-logo">DentalStats</span>
-    <span class="nav-sep">/</span>
-    <span class="nav-chapter">Chapter 1 · Basic Probability</span>
+  <div class="nav-inner">
+    <a class="nav-brand" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+      </svg>
+      <div class="nav-brand-text">
+        <h1>DentalStats</h1>
+        <p>Biostatistics for Dental Research</p>
+      </div>
+    </a>
+    <div class="nav-links">
+      <div class="nav-breadcrumb">
+        <a href="/">Home</a>
+        <span class="sep">/</span>
+        <a href="/#concepts">Concepts</a>
+        <span class="sep">/</span>
+        <span class="current">Chapter 1 · Basic Probability</span>
+      </div>
+    </div>
+    <button id="mobileMenuBtn" onclick="history.back()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    </button>
   </div>
-  <a href="/index.html#concepts" class="nav-back">← Back</a>
 </nav>
 
 <!-- SECTION DOTS -->
@@ -392,41 +591,51 @@
 
     <!-- SECTION 1: CHANCE EVENTS -->
     <div class="section" id="s1" data-section="0">
-      <div class="section-tag">Section 1</div>
-      <h2>Chance Events</h2>
+      <div class="section-badge">
+        <div class="section-num">1</div>
+        <span class="section-label">Chance Events</span>
+      </div>
+      <h2>Dental Implant Success Simulator</h2>
       <p>
-        Probability is a number indicating how likely an event will occur. This number is always
-        between <strong>0</strong> and <strong>1</strong>, where 0 indicates impossibility and 1 indicates certainty.
+        Probability is a number between <strong>0</strong> and <strong>1</strong> indicating how
+        likely an event will occur. In dentistry, implant procedures, root canals, and fillings
+        each carry specific success rates backed by clinical research.
       </p>
       <p>
-        In dentistry, we deal with chance every day. Will this patient develop caries this year?
-        Does a positive screening test truly indicate disease? These are questions of probability.
+        Will this implant integrate successfully? Will a root canal relieve the patient's pain?
+        These are questions of probability. By simulating many outcomes, we observe the
+        <strong>Law of Large Numbers</strong> in action.
       </p>
       <div class="formula">
-        <span class="sym">0 ≤ P(A) ≤ 1</span>
-        &nbsp;&nbsp;·&nbsp;&nbsp;
-        <span class="sym">P(Aᶜ) = 1 − P(A)</span>
+        <span class="sym">0 &le; P(A) &le; 1</span>
+        &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+        <span class="sym">P(A&#x1d9c;) = 1 &minus; P(A)</span>
       </div>
-      <p>
-        Adjust the coin's weight below to set the probability of a patient having active caries.
-        Then flip — observe how repeated trials reveal the underlying probability over time
-        (Law of Large Numbers).
-      </p>
 
-      <!-- Coin weight control -->
+      <!-- Preset scenarios -->
+      <div class="prob-bars-label">Clinical Scenarios</div>
+      <div class="preset-row" id="coinPresets">
+        <button class="preset-btn active" onclick="setCoinPreset(95,'implant')">Implant (95%)</button>
+        <button class="preset-btn" onclick="setCoinPreset(90,'filling')">Filling (90%)</button>
+        <button class="preset-btn" onclick="setCoinPreset(85,'rootcanal')">Root Canal (85%)</button>
+        <button class="preset-btn" onclick="setCoinPreset(92,'extraction')">Extraction (92%)</button>
+        <button class="preset-btn" onclick="setCoinPreset(50,'custom')">Custom</button>
+      </div>
+
+      <!-- Probability slider -->
       <div class="slider-row">
-        <label>P(Caries +) <span id="coin-p-label">50%</span></label>
-        <input type="range" id="coin-p" min="5" max="95" value="50">
+        <label>P(Success) <span id="coin-p-label">95%</span></label>
+        <input type="range" id="coin-p" min="5" max="99" value="95">
       </div>
 
       <div class="stats-grid">
         <div class="stat-box">
-          <div class="s-label">Caries +</div>
-          <div class="s-value" id="c-heads" style="color:var(--blue)">0</div>
+          <div class="s-label">Success</div>
+          <div class="s-value" id="c-heads" style="color:var(--teal)">0</div>
         </div>
         <div class="stat-box">
-          <div class="s-label">Caries −</div>
-          <div class="s-value" id="c-tails" style="color:var(--muted)">0</div>
+          <div class="s-label">Failure</div>
+          <div class="s-value" id="c-tails" style="color:var(--red)">0</div>
         </div>
         <div class="stat-box">
           <div class="s-label">Total Patients</div>
@@ -439,35 +648,55 @@
       </div>
 
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="flipCoin()">Flip</button>
-        <button class="btn btn-batch"   onclick="flipMany()">Flip 100×</button>
-        <button class="btn btn-reset"   onclick="resetCoin()">Reset</button>
+        <button class="btn btn-primary" onclick="flipCoin()">Simulate</button>
+        <button class="btn btn-batch" onclick="flipMany()">100 Patients</button>
+        <button class="btn btn-auto" id="autoPlayBtn" onclick="toggleAutoPlay()">Auto-Play</button>
+        <button class="btn btn-reset" onclick="resetCoin()">Reset</button>
+      </div>
+      <div class="speed-control" id="speedControl" style="display:none">
+        <label>Speed:</label>
+        <input type="range" id="autoSpeed" min="1" max="10" value="5">
+        <span class="speed-val" id="speedVal">5x</span>
       </div>
     </div>
 
     <!-- SECTION 2: EXPECTATION -->
     <div class="section" id="s2" data-section="1">
-      <div class="section-tag">Section 2</div>
-      <h2>Expectation</h2>
+      <div class="section-badge">
+        <div class="section-num">2</div>
+        <span class="section-label">Expectation</span>
+      </div>
+      <h2>DMFT Score Distribution</h2>
       <p>
-        The <strong>expected value</strong> (or mean) of a random variable is the long-run average
-        of its outcomes, weighted by their probabilities.
+        The <strong>expected value</strong> (mean) is the long-run average of outcomes, weighted
+        by their probabilities. The DMFT index tracks Decayed, Missing, and Filled Teeth —
+        a key measure in dental epidemiology.
       </p>
       <p>
-        In dental research, the DMFT index (Decayed, Missing, Filled Teeth) is a random variable.
-        If we know the distribution of DMFT scores in a population, we can compute the expected
-        DMFT a randomly selected patient will have.
+        Different populations show different DMFT distributions. A healthy group clusters near 0,
+        while a high-risk group skews toward higher scores.
       </p>
       <div class="formula">
-        <span class="sym">E[X] = Σ x · P(x)</span>
+        <span class="sym">E[X] = &Sigma; x &middot; P(x)</span>
       </div>
-      <p>
-        Adjust the probability bars to set the likelihood of each DMFT score (0–5).
-        Then roll the die — watch the running sample mean converge to the true expected value.
+
+      <!-- Preset distributions -->
+      <div class="prob-bars-label">Population Presets</div>
+      <div class="preset-row" id="diePresets">
+        <button class="preset-btn" onclick="setDiePreset('healthy')">Healthy</button>
+        <button class="preset-btn" onclick="setDiePreset('highrisk')">High-Risk</button>
+        <button class="preset-btn" onclick="setDiePreset('mixed')">Mixed Community</button>
+        <button class="preset-btn" onclick="setDiePreset('post')">Post-Treatment</button>
+        <button class="preset-btn active" onclick="setDiePreset('uniform')">Uniform</button>
+      </div>
+
+      <p style="margin-top:0.5rem">
+        Drag the bars below to customize DMFT score probabilities, or select a preset.
+        Then roll to see the sample mean converge to E[X].
       </p>
 
       <!-- Die face probability bars -->
-      <div class="prob-bars-label">DMFT Score Distribution</div>
+      <div class="prob-bars-label" style="margin-top:0.8rem">DMFT Score Distribution</div>
       <div class="prob-bars die-bars" id="dieBars">
         <!-- generated by JS -->
       </div>
@@ -493,36 +722,47 @@
 
       <div class="btn-row">
         <button class="btn btn-primary" onclick="rollDie()">Roll</button>
-        <button class="btn btn-batch"   onclick="rollMany()">Roll 100×</button>
-        <button class="btn btn-reset"   onclick="resetDie()">Reset</button>
+        <button class="btn btn-batch" onclick="rollMany()">Roll 100&times;</button>
+        <button class="btn btn-reset" onclick="resetDie()">Reset</button>
       </div>
     </div>
 
     <!-- SECTION 3: VARIANCE -->
     <div class="section" id="s3" data-section="2">
-      <div class="section-tag">Section 3</div>
-      <h2>Variance</h2>
+      <div class="section-badge">
+        <div class="section-num">3</div>
+        <span class="section-label">Variance</span>
+      </div>
+      <h2>Patient Satisfaction Scores</h2>
       <p>
-        Variance measures how spread out a distribution is — how much values deviate from
-        the expected value on average. A high variance means outcomes are unpredictable; low
-        variance means they are consistent.
+        <strong>Variance</strong> measures how spread out outcomes are from the expected value.
+        In dentistry, patient satisfaction varies widely — some patients report excellent outcomes,
+        others experience complications.
       </p>
       <p>
-        In clinical dentistry, treatment outcomes vary: some patients heal quickly, others
-        have complications. Variance helps quantify this spread — essential for informed consent
-        and treatment planning.
+        A low variance means consistent satisfaction; high variance signals unpredictable results.
+        Understanding this spread is crucial for <strong>informed consent</strong> and treatment planning.
       </p>
       <div class="formula">
-        <span class="sym">Var(X) = E[(X − E[X])²]</span>
+        <span class="sym">Var(X) = E[(X &minus; E[X])&sup2;]</span>
       </div>
-      <p>
-        Toggle cards to include or exclude them from the deck. Each card represents a
-        treatment outcome score (1–10). Draw cards and watch the running variance converge
-        to the true population variance.
+
+      <!-- Preset scenarios -->
+      <div class="prob-bars-label">Outcome Scenarios</div>
+      <div class="preset-row" id="cardPresets">
+        <button class="preset-btn active" onclick="setCardPreset('all')">All Scores</button>
+        <button class="preset-btn" onclick="setCardPreset('consistent')">Consistent Results</button>
+        <button class="preset-btn" onclick="setCardPreset('variable')">Variable Results</button>
+        <button class="preset-btn" onclick="setCardPreset('bimodal')">Bimodal Outcomes</button>
+      </div>
+
+      <p style="margin-top:0.5rem">
+        Toggle scores to include/exclude them from the population. Each score (1–10) represents
+        a patient satisfaction rating. Draw samples and watch variance converge.
       </p>
 
       <!-- Card toggles -->
-      <div class="prob-bars-label">Outcome Deck (click to toggle)</div>
+      <div class="prob-bars-label" style="margin-top:0.8rem">Satisfaction Scores (click to toggle)</div>
       <div class="card-grid" id="cardGrid">
         <!-- generated by JS -->
       </div>
@@ -530,7 +770,7 @@
       <div class="stats-grid">
         <div class="stat-box">
           <div class="s-label">True Var(X)</div>
-          <div class="s-value" id="v-true" style="color:var(--green)">—</div>
+          <div class="s-value" id="v-true" style="color:var(--indigo)">—</div>
         </div>
         <div class="stat-box">
           <div class="s-label">Running Var</div>
@@ -541,15 +781,15 @@
           <div class="s-value" id="v-draws">0</div>
         </div>
         <div class="stat-box">
-          <div class="s-label">Last Draw</div>
-          <div class="s-value" id="v-last" style="color:var(--green)">—</div>
+          <div class="s-label">Last Score</div>
+          <div class="s-value" id="v-last" style="color:var(--indigo)">—</div>
         </div>
       </div>
 
       <div class="btn-row">
         <button class="btn btn-primary" onclick="drawCard()">Draw</button>
-        <button class="btn btn-batch"   onclick="drawMany()">Draw 100×</button>
-        <button class="btn btn-reset"   onclick="resetCards()">Reset</button>
+        <button class="btn btn-batch" onclick="drawMany()">Draw 100&times;</button>
+        <button class="btn btn-reset" onclick="resetCards()">Reset</button>
       </div>
     </div>
 
@@ -558,15 +798,19 @@
 
   <!-- ═══════════════════ RIGHT VIZ PANEL ═══════════════════ -->
   <div class="viz-panel" id="vizPanel">
+    <canvas id="vizParticles"></canvas>
 
-    <!-- VIZ 1: COIN -->
+    <!-- VIZ 1: IMPLANT SUCCESS -->
     <div class="viz-section active" id="viz1">
-      <div class="viz-title">Simulating Patient Caries Screening</div>
+      <div class="viz-title">Simulating <span>Dental Implant</span> Outcomes</div>
 
       <div id="coin-viz">
-        <div class="coin-display">
-          <div class="coin-inner" id="coinInner">
-            <div class="coin-face coin-heads" id="coinFace">+</div>
+        <div class="tooth-display" id="toothBurstContainer" style="position:relative">
+          <div class="tooth-inner" id="coinInner">
+            <div class="tooth-face tooth-success" id="coinFace">
+              <span>&#x1F9B7;</span>
+              <span class="face-label">Success</span>
+            </div>
           </div>
         </div>
 
@@ -574,32 +818,35 @@
 
         <div class="coin-stats">
           <div class="coin-stat">
-            <div class="cs-val" id="cv-heads" style="color:var(--blue)">0</div>
-            <div class="cs-lab">Caries +</div>
+            <div class="cs-val" id="cv-heads" style="color:var(--teal)">0</div>
+            <div class="cs-lab">Success</div>
           </div>
           <div class="coin-stat">
             <div class="cs-val" id="cv-pct">0%</div>
             <div class="cs-lab">Observed P</div>
           </div>
           <div class="coin-stat">
-            <div class="cs-val" id="cv-tails" style="color:var(--muted)">0</div>
-            <div class="cs-lab">Caries −</div>
+            <div class="cs-val" id="cv-tails" style="color:var(--red)">0</div>
+            <div class="cs-lab">Failure</div>
           </div>
         </div>
 
-        <canvas id="coinChart" width="520" height="200" style="width:100%;border-radius:10px;background:white;"></canvas>
+        <div id="convergenceBadge" class="convergence-badge" style="margin-bottom:0.5rem">
+          Distance from true P: <strong id="convDist">—</strong>
+        </div>
+
+        <canvas id="coinChart" width="540" height="210" style="width:100%;max-width:540px;border-radius:12px;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.06);"></canvas>
       </div>
     </div>
 
-    <!-- VIZ 2: DIE -->
+    <!-- VIZ 2: DMFT -->
     <div class="viz-section" id="viz2">
-      <div class="viz-title">Rolling DMFT Distribution</div>
+      <div class="viz-title">Rolling <span>DMFT</span> Distribution</div>
 
       <div id="die-viz">
-        <div class="die-face" id="dieFace">
-          <div class="die-dot empty"></div><div class="die-dot empty"></div><div class="die-dot empty"></div>
-          <div class="die-dot empty"></div><div class="die-dot empty"></div><div class="die-dot empty"></div>
-          <div class="die-dot empty"></div><div class="die-dot empty"></div><div class="die-dot empty"></div>
+        <div class="tooth-health-indicator" id="healthIndicator" style="background: linear-gradient(135deg, #10b981, #059669);">
+          <span>?</span>
+          <span class="dmft-label">DMFT</span>
         </div>
 
         <div class="exp-display">
@@ -608,26 +855,27 @@
           <div class="exp-val"><strong id="dv-rolls">0</strong>Rolls</div>
         </div>
 
-        <canvas id="dieChart" width="520" height="200" style="width:100%;border-radius:10px;background:white;"></canvas>
+        <canvas id="dieChart" width="540" height="220" style="width:100%;max-width:540px;border-radius:12px;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.06);"></canvas>
       </div>
     </div>
 
-    <!-- VIZ 3: CARDS -->
+    <!-- VIZ 3: SATISFACTION -->
     <div class="viz-section" id="viz3">
-      <div class="viz-title">Drawing Treatment Outcome Scores</div>
+      <div class="viz-title">Drawing <span>Patient Satisfaction</span> Scores</div>
 
       <div id="card-viz">
-        <div class="drawn-card-display" id="drawnCard">
+        <div class="score-card-display" id="drawnCard">
           <span style="font-size:2rem; color:#cbd5e1">?</span>
+          <span class="score-text">Score</span>
         </div>
 
         <div class="exp-display">
-          <div class="exp-val"><strong id="vv-true" style="color:var(--green)">—</strong>True Var(X)</div>
+          <div class="exp-val"><strong id="vv-true" style="color:var(--indigo)">—</strong>True Var(X)</div>
           <div class="exp-val"><strong id="vv-sample">—</strong>Running Var</div>
           <div class="exp-val"><strong id="vv-draws">0</strong>Draws</div>
         </div>
 
-        <canvas id="varChart" width="520" height="200" style="width:100%;border-radius:10px;background:white;"></canvas>
+        <canvas id="varChart" width="540" height="220" style="width:100%;max-width:540px;border-radius:12px;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.06);"></canvas>
       </div>
     </div>
 
@@ -648,6 +896,90 @@ function drawLine(ctx, x1,y1,x2,y2, color, dash=[]) {
   ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); ctx.restore();
 }
 
+function makeHiDPI(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = canvas.width;
+  const h = canvas.height;
+  canvas.width  = w * dpr;
+  canvas.height = h * dpr;
+  const ctx = canvas.getContext('2d', { alpha: false });
+  ctx.scale(dpr, dpr);
+  ctx.imageSmoothingEnabled = false;
+  ctx.textBaseline = 'middle';
+  return ctx;
+}
+
+// Bump animation for stat values
+function bumpValue(el) {
+  el.classList.add('bump');
+  setTimeout(() => el.classList.remove('bump'), 200);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   VIZ PANEL FLOATING PARTICLES
+═══════════════════════════════════════════════════════════ */
+(function initVizParticles() {
+  const canvas = document.getElementById('vizParticles');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const COUNT = 30;
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < COUNT; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2 + 1,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      alpha: Math.random() * 0.15 + 0.05,
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(13, 148, 136, ${p.alpha})`;
+      ctx.fill();
+    });
+
+    // Connection lines
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 80) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(13, 148, 136, ${0.06 * (1 - dist/80)})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
 /* ═══════════════════════════════════════════════════════════
    SCROLL DETECTION → active section
 ═══════════════════════════════════════════════════════════ */
@@ -666,6 +998,11 @@ function setActiveSection(idx) {
   activeSection = idx;
   vizSections.forEach((v,i) => v.classList.toggle('active', i===idx));
   dotLinks.forEach((d,i) => d.classList.toggle('active', i===idx));
+  // Update viz title based on section
+  const titles = ['Dental Implant', 'DMFT', 'Patient Satisfaction'];
+  document.querySelectorAll('.viz-title span').forEach((s,i) => {
+    if (i === idx) s.parentElement.parentElement.classList.contains('active');
+  });
 }
 
 const textSections = document.querySelectorAll('.section');
@@ -681,43 +1018,102 @@ const observer = new IntersectionObserver(entries => {
 textSections.forEach(s => observer.observe(s));
 
 /* ═══════════════════════════════════════════════════════════
-   SECTION 1 — COIN FLIP
+   PARTICLE BURST EFFECT
+═══════════════════════════════════════════════════════════ */
+function createBurst(container, success) {
+  const colors = success
+    ? ['#10b981','#059669','#34d399','#6ee7b7']
+    : ['#ef4444','#dc2626','#f87171','#fca5a5'];
+  const count = 12;
+  for (let i = 0; i < count; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'burst-dot';
+    const angle = (Math.PI * 2 / count) * i;
+    const dist = 40 + Math.random() * 30;
+    const tx = Math.cos(angle) * dist;
+    const ty = Math.sin(angle) * dist;
+    dot.style.cssText = `
+      background: ${colors[i % colors.length]};
+      left: 50%; top: 50%;
+      animation: burstOut 0.6s ease-out forwards;
+      transform: translate(${tx}px, ${ty}px) scale(0);
+    `;
+    // Override keyframes inline
+    dot.style.setProperty('--tx', tx + 'px');
+    dot.style.setProperty('--ty', ty + 'px');
+    dot.animate([
+      { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(0)`, opacity: 0 }
+    ], { duration: 500, easing: 'ease-out', fill: 'forwards' });
+    container.appendChild(dot);
+    setTimeout(() => dot.remove(), 600);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 1 — IMPLANT SUCCESS SIMULATOR
 ═══════════════════════════════════════════════════════════ */
 let cHeads = 0, cTails = 0;
 const cHistory = [];
+let autoPlayInterval = null;
 
 const coinP       = document.getElementById('coin-p');
 const coinPLabel  = document.getElementById('coin-p-label');
 const coinInner   = document.getElementById('coinInner');
 const coinFace    = document.getElementById('coinFace');
 const coinHistory = document.getElementById('coinHistory');
-
-// Coin convergence chart
-// ── HiDPI canvas setup (fixes blurry text on retina screens) ──
-function makeHiDPI(canvas) {
-  const dpr = window.devicePixelRatio || 1;
-  const w = canvas.width;
-  const h = canvas.height;
-  canvas.width  = w * dpr;
-  canvas.height = h * dpr;
-  const ctx = canvas.getContext('2d', { alpha: false });
-  ctx.scale(dpr, dpr);
-  ctx.imageSmoothingEnabled = false;
-  ctx.textBaseline = 'middle';
-  return ctx;
-}
+const burstContainer = document.getElementById('toothBurstContainer');
 
 const coinCtx = makeHiDPI(document.getElementById('coinChart'));
 const coinChartData = { labels:[], obs:[], trueP:[] };
 
 coinP.addEventListener('input', () => {
   coinPLabel.textContent = coinP.value + '%';
+  // Deactivate preset buttons when slider is manually changed
+  document.querySelectorAll('#coinPresets .preset-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('#coinPresets .preset-btn:last-child').classList.add('active');
 });
 
+document.getElementById('autoSpeed').addEventListener('input', e => {
+  document.getElementById('speedVal').textContent = e.target.value + 'x';
+});
+
+function setCoinPreset(prob, name) {
+  coinP.value = prob;
+  coinPLabel.textContent = prob + '%';
+  document.querySelectorAll('#coinPresets .preset-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  // Update viz title
+  const names = { implant: 'Dental Implant', filling: 'Dental Filling', rootcanal: 'Root Canal', extraction: 'Extraction Healing', custom: 'Custom Procedure' };
+  const vizTitle = document.querySelector('#viz1 .viz-title');
+  vizTitle.innerHTML = `Simulating <span>${names[name] || name}</span> Outcomes`;
+}
+
+function toggleAutoPlay() {
+  const btn = document.getElementById('autoPlayBtn');
+  const ctrl = document.getElementById('speedControl');
+  if (autoPlayInterval) {
+    clearInterval(autoPlayInterval);
+    autoPlayInterval = null;
+    btn.classList.remove('playing');
+    btn.textContent = 'Auto-Play';
+    ctrl.style.display = 'none';
+  } else {
+    btn.classList.add('playing');
+    btn.textContent = 'Stop';
+    ctrl.style.display = 'flex';
+    const speed = parseInt(document.getElementById('autoSpeed').value);
+    autoPlayInterval = setInterval(() => {
+      const sp = parseInt(document.getElementById('autoSpeed').value);
+      for (let i = 0; i < sp; i++) doFlip(true);
+    }, 100);
+  }
+}
+
 function renderCoinChart() {
-  const W=520, H=200, PL=52, PR=16, PT=18, PB=38;
+  const W=540, H=210, PL=52, PR=16, PT=20, PB=38;
   const cW = W-PL-PR, cH = H-PT-PB;
-  const FONT = '500 9px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  const FONT = '500 9.5px Inter, -apple-system, sans-serif';
 
   coinCtx.clearRect(0,0,W,H);
   coinCtx.fillStyle='#fff'; coinCtx.fillRect(0,0,W,H);
@@ -726,26 +1122,24 @@ function renderCoinChart() {
   const xScale = i => PL + (i/Math.max(n-1,1))*cW;
   const yScale = v => PT + (1-v)*cH;
 
-  // horizontal grid lines + Y labels
+  // Grid lines
   [0, 0.25, 0.5, 0.75, 1].forEach(v => {
     const y = Math.round(yScale(v)) + 0.5;
-    coinCtx.strokeStyle = v===0||v===1 ? '#cbd5e1' : '#e2e8f0';
+    coinCtx.strokeStyle = v===0||v===1 ? '#cbd5e1' : '#f1f5f9';
     coinCtx.lineWidth=1; coinCtx.setLineDash([]);
     coinCtx.beginPath(); coinCtx.moveTo(PL,y); coinCtx.lineTo(PL+cW,y); coinCtx.stroke();
     coinCtx.fillStyle='#94a3b8'; coinCtx.font=FONT; coinCtx.textAlign='right';
     coinCtx.fillText(Math.round(v*100)+'%', PL-6, y);
   });
 
-  // Y axis line
-  coinCtx.strokeStyle='#94a3b8'; coinCtx.lineWidth=1; coinCtx.setLineDash([]);
+  // Axes
+  coinCtx.strokeStyle='#cbd5e1'; coinCtx.lineWidth=1; coinCtx.setLineDash([]);
   coinCtx.beginPath(); coinCtx.moveTo(PL,PT); coinCtx.lineTo(PL,PT+cH); coinCtx.stroke();
-
-  // X axis line
   coinCtx.beginPath(); coinCtx.moveTo(PL,PT+cH); coinCtx.lineTo(PL+cW,PT+cH); coinCtx.stroke();
 
   if(n<2){ coinCtx.textAlign='left'; return; }
 
-  // X axis labels
+  // X labels
   coinCtx.fillStyle='#94a3b8'; coinCtx.font=FONT; coinCtx.textAlign='center';
   [0,0.25,0.5,0.75,1].forEach(t=>{
     const i=Math.round(t*(n-1));
@@ -754,79 +1148,132 @@ function renderCoinChart() {
   });
   coinCtx.textAlign='left';
 
-  // True P — red dashed horizontal
+  // True P line
   const tp = parseInt(coinP.value)/100;
   drawLine(coinCtx, PL, yScale(tp), PL+cW, yScale(tp), '#ef4444', [6,4]);
 
-  // Observed proportion — gradient fill + blue line
+  // ±2 SE convergence band
+  if (n > 5) {
+    const total = cHeads + cTails;
+    const se2 = 2 * Math.sqrt(tp * (1-tp) / Math.max(total, 1));
+    coinCtx.save();
+    coinCtx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const trial = coinChartData.labels[i];
+      const upperSE = Math.min(1, tp + 2 * Math.sqrt(tp * (1-tp) / Math.max(trial, 1)));
+      const lowerSE = Math.max(0, tp - 2 * Math.sqrt(tp * (1-tp) / Math.max(trial, 1)));
+      if (i === 0) coinCtx.moveTo(xScale(i), yScale(upperSE));
+      else coinCtx.lineTo(xScale(i), yScale(upperSE));
+    }
+    for (let i = n-1; i >= 0; i--) {
+      const trial = coinChartData.labels[i];
+      const lowerSE = Math.max(0, tp - 2 * Math.sqrt(tp * (1-tp) / Math.max(trial, 1)));
+      coinCtx.lineTo(xScale(i), yScale(lowerSE));
+    }
+    coinCtx.closePath();
+    coinCtx.fillStyle = 'rgba(239,68,68,0.06)';
+    coinCtx.fill();
+    coinCtx.restore();
+  }
+
+  // Observed proportion — gradient fill + teal line
   coinCtx.save();
   coinCtx.lineJoin='round'; coinCtx.beginPath();
   coinChartData.obs.forEach((v,i)=>{
     i===0 ? coinCtx.moveTo(xScale(i),yScale(v)) : coinCtx.lineTo(xScale(i),yScale(v));
   });
-  // area fill
   coinCtx.lineTo(xScale(n-1), PT+cH);
   coinCtx.lineTo(xScale(0), PT+cH);
   coinCtx.closePath();
   const coinGrad = coinCtx.createLinearGradient(0, PT, 0, PT+cH);
-  coinGrad.addColorStop(0, 'rgba(59,130,246,0.18)');
-  coinGrad.addColorStop(1, 'rgba(59,130,246,0)');
+  coinGrad.addColorStop(0, 'rgba(13,148,136,0.18)');
+  coinGrad.addColorStop(1, 'rgba(13,148,136,0)');
   coinCtx.fillStyle = coinGrad; coinCtx.fill();
-  // line on top
   coinCtx.beginPath();
   coinChartData.obs.forEach((v,i)=>{
     i===0 ? coinCtx.moveTo(xScale(i),yScale(v)) : coinCtx.lineTo(xScale(i),yScale(v));
   });
-  coinCtx.strokeStyle='#3b82f6'; coinCtx.lineWidth=2.5; coinCtx.setLineDash([]);
+  coinCtx.strokeStyle='#0d9488'; coinCtx.lineWidth=2.5; coinCtx.setLineDash([]);
   coinCtx.stroke(); coinCtx.restore();
 
-  // Legend (top-right, white bg to prevent overlap with data line)
-  const lx=PL+cW-130, ly=PT+10;
-  coinCtx.fillStyle='rgba(255,255,255,0.9)';
-  coinCtx.fillRect(lx-4, ly-8, 136, 26);
-  coinCtx.fillStyle='#3b82f6'; coinCtx.fillRect(lx, ly-3, 18, 3);
+  // Legend
+  const lx=PL+cW-155, ly=PT+10;
+  coinCtx.fillStyle='rgba(255,255,255,0.92)';
+  coinCtx.fillRect(lx-4, ly-8, 162, 38);
+  coinCtx.fillStyle='#0d9488'; coinCtx.fillRect(lx, ly-3, 18, 3);
   coinCtx.fillStyle='#475569'; coinCtx.font=FONT;
   coinCtx.fillText('Observed P', lx+22, ly);
   drawLine(coinCtx,lx,ly+10,lx+18,ly+10,'#ef4444',[5,3]);
   coinCtx.fillText('True P', lx+22, ly+10);
+  coinCtx.fillStyle='rgba(239,68,68,0.15)'; coinCtx.fillRect(lx, ly+17, 18, 8);
+  coinCtx.fillStyle='#475569';
+  coinCtx.fillText('\u00b12 SE Band', lx+22, ly+22);
 }
 
 function updateCoinUI() {
   const total = cHeads+cTails;
-  ['c-heads','cv-heads'].forEach(id => document.getElementById(id).textContent = cHeads);
-  ['c-tails','cv-tails'].forEach(id => document.getElementById(id).textContent = cTails);
-  ['c-total'].forEach(id => document.getElementById(id).textContent = total);
+  document.getElementById('c-heads').textContent = cHeads;
+  document.getElementById('cv-heads').textContent = cHeads;
+  document.getElementById('c-tails').textContent = cTails;
+  document.getElementById('cv-tails').textContent = cTails;
+  document.getElementById('c-total').textContent = total;
   const obs = total ? (cHeads/total*100).toFixed(1)+'%' : '—';
   document.getElementById('c-obs').textContent = obs;
   document.getElementById('cv-pct').textContent = total ? (cHeads/total*100).toFixed(1)+'%' : '0%';
+
+  // Convergence distance
+  const tp = parseInt(coinP.value)/100;
+  const badge = document.getElementById('convergenceBadge');
+  const distEl = document.getElementById('convDist');
+  if (total > 0) {
+    const dist = Math.abs(cHeads/total - tp);
+    distEl.textContent = (dist * 100).toFixed(1) + '%';
+    badge.classList.toggle('converged', dist < 0.02);
+  } else {
+    distEl.textContent = '—';
+    badge.classList.remove('converged');
+  }
 }
 
-function doFlip() {
+function doFlip(silent) {
   const p = parseInt(coinP.value)/100;
-  const isH = Math.random() < p;
-  if(isH) cHeads++; else cTails++;
+  const isSuccess = Math.random() < p;
+  if(isSuccess) cHeads++; else cTails++;
 
-  coinFace.textContent = isH ? '+' : '−';
-  coinFace.className = 'coin-face ' + (isH ? 'coin-heads' : 'coin-tails');
+  if (!silent) {
+    // Update face
+    coinFace.innerHTML = isSuccess
+      ? '<span>&#x1F9B7;</span><span class="face-label">Success</span>'
+      : '<span>&#x2717;</span><span class="face-label">Failure</span>';
+    coinFace.className = 'tooth-face ' + (isSuccess ? 'tooth-success' : 'tooth-failure');
 
-  // animate
-  coinInner.classList.remove('flipping');
-  void coinInner.offsetWidth;
-  coinInner.classList.add('flipping');
-  setTimeout(() => coinInner.classList.remove('flipping'), 520);
+    // Flip animation
+    coinInner.classList.remove('flipping');
+    void coinInner.offsetWidth;
+    coinInner.classList.add('flipping');
+    setTimeout(() => coinInner.classList.remove('flipping'), 620);
 
-  // history dot
+    // Particle burst
+    createBurst(burstContainer, isSuccess);
+
+    // Bump stat values
+    bumpValue(document.getElementById('c-heads'));
+    bumpValue(document.getElementById('c-total'));
+  }
+
+  // History dot
   const dot = document.createElement('div');
-  dot.className = 'coin-dot ' + (isH?'h':'t');
+  dot.className = 'coin-dot ' + (isSuccess?'s':'f');
+  dot.title = `Trial ${cHeads+cTails}: ${isSuccess ? 'Success' : 'Failure'}`;
   coinHistory.appendChild(dot);
-  if(coinHistory.children.length > 60) coinHistory.firstChild.remove();
+  if(coinHistory.children.length > 80) coinHistory.firstChild.remove();
 
-  // chart data
+  // Chart data
   const total = cHeads+cTails;
   coinChartData.labels.push(total);
   coinChartData.obs.push(cHeads/total);
   coinChartData.trueP.push(p);
-  if(coinChartData.labels.length > 300) {
+  if(coinChartData.labels.length > 400) {
     coinChartData.labels.shift(); coinChartData.obs.shift(); coinChartData.trueP.shift();
   }
 
@@ -834,35 +1281,40 @@ function doFlip() {
   renderCoinChart();
 }
 
-function flipCoin() { doFlip(); }
-
-async function flipMany() {
-  for(let i=0;i<100;i++) { doFlip(); await delay(20); }
-}
+function flipCoin() { doFlip(false); }
+async function flipMany() { for(let i=0;i<100;i++) { doFlip(i>0); await delay(15); } }
 
 function resetCoin() {
+  if (autoPlayInterval) { toggleAutoPlay(); }
   cHeads=0; cTails=0;
   coinHistory.innerHTML='';
-  coinFace.textContent='+'; coinFace.className='coin-face coin-heads';
+  coinFace.innerHTML='<span>&#x1F9B7;</span><span class="face-label">Success</span>';
+  coinFace.className='tooth-face tooth-success';
   coinChartData.labels=[]; coinChartData.obs=[]; coinChartData.trueP=[];
   updateCoinUI(); renderCoinChart();
 }
 
 
 /* ═══════════════════════════════════════════════════════════
-   SECTION 2 — DIE / EXPECTATION
+   SECTION 2 — DMFT EXPECTATION
 ═══════════════════════════════════════════════════════════ */
-// Die shows DMFT scores 0-5 (using a 6-sided die)
-// Probabilities are draggable via bars
-
 const DIE_LABELS = ['0','1','2','3','4','5'];
-let dieProbs = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6]; // uniform start
+let dieProbs = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6];
 
 let dRolls = 0, dSum = 0;
 const dHistory = [];
-let dFreq = [0,0,0,0,0,0]; // frequency count per DMFT face
+let dFreq = [0,0,0,0,0,0];
 
-// Build draggable bars
+// DMFT score to color gradient
+const DMFT_COLORS = [
+  ['#10b981','#059669'], // 0: excellent
+  ['#34d399','#10b981'], // 1: good
+  ['#f59e0b','#d97706'], // 2: moderate
+  ['#f97316','#ea580c'], // 3: concerning
+  ['#ef4444','#dc2626'], // 4: poor
+  ['#dc2626','#b91c1c'], // 5: severe
+];
+
 const dieBarsCont = document.getElementById('dieBars');
 DIE_LABELS.forEach((label, i) => {
   const col = document.createElement('div');
@@ -872,7 +1324,7 @@ DIE_LABELS.forEach((label, i) => {
       <div class="bar-fill" style="height:${Math.round(dieProbs[i]*100)}%"></div>
     </div>
     <div class="bar-pct" id="dp${i}">${Math.round(dieProbs[i]*100)}%</div>
-    <div class="bar-name">DMFT ${label}</div>
+    <div class="bar-name">${label}</div>
   `;
   dieBarsCont.appendChild(col);
 });
@@ -890,12 +1342,14 @@ dieBarsCont.querySelectorAll('.bar-track').forEach(track => {
     normalizeDieProbs();
     updateDieBars();
     updateDieExpected();
+    // Clear preset highlight
+    document.querySelectorAll('#diePresets .preset-btn').forEach(b => b.classList.remove('active'));
   };
-  track.addEventListener('mousedown',  e => { draggingBar=track; onMove(e); });
+  track.addEventListener('mousedown', e => { draggingBar=track; onMove(e); });
   track.addEventListener('touchstart', e => { draggingBar=track; onMove(e); }, {passive:true});
-  document.addEventListener('mousemove',  onMove);
-  document.addEventListener('touchmove',  onMove, {passive:true});
-  document.addEventListener('mouseup',  () => draggingBar=null);
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('touchmove', onMove, {passive:true});
+  document.addEventListener('mouseup', () => draggingBar=null);
   document.addEventListener('touchend', () => draggingBar=null);
 });
 
@@ -923,135 +1377,135 @@ function updateDieExpected() {
   document.getElementById('dv-true').textContent = e;
 }
 
-updateDieExpected();
-
-// Die face dot layouts (9 slots, which are on/off)
-const DIE_PATTERNS = {
-  0: [0,0,0, 0,0,0, 0,0,0],
-  1: [0,0,0, 0,1,0, 0,0,0],
-  2: [1,0,0, 0,0,0, 0,0,1],
-  3: [1,0,0, 0,1,0, 0,0,1],
-  4: [1,0,1, 0,0,0, 1,0,1],
-  5: [1,0,1, 0,1,0, 1,0,1],
-};
-
-function renderDieFace(val) {
-  const dots = document.getElementById('dieFace').querySelectorAll('.die-dot');
-  const pat = DIE_PATTERNS[val] || DIE_PATTERNS[1];
-  dots.forEach((d,i) => d.className = 'die-dot' + (pat[i] ? '' : ' empty'));
+function setDiePreset(name) {
+  const presets = {
+    healthy:  [0.40, 0.30, 0.15, 0.10, 0.04, 0.01],
+    highrisk: [0.05, 0.08, 0.12, 0.20, 0.30, 0.25],
+    mixed:    [0.15, 0.20, 0.25, 0.20, 0.12, 0.08],
+    post:     [0.10, 0.25, 0.35, 0.20, 0.08, 0.02],
+    uniform:  [1/6, 1/6, 1/6, 1/6, 1/6, 1/6],
+  };
+  dieProbs = presets[name] ? [...presets[name]] : [1/6,1/6,1/6,1/6,1/6,1/6];
+  document.querySelectorAll('#diePresets .preset-btn').forEach(b => b.classList.remove('active'));
+  if (event && event.target) event.target.classList.add('active');
+  updateDieBars();
+  updateDieExpected();
+  resetDie();
 }
 
-// Die convergence chart
+updateDieExpected();
+
+// Die chart
 const dieCtx = makeHiDPI(document.getElementById('dieChart'));
 const dieChartData = { obs:[], trueE:[] };
 
 function renderDieChart() {
-  // Seeing Theory style: FREQUENCY BAR CHART (x=DMFT score, y=proportion)
-  // + teal dashed vertical line at E[X]
-  const W=520, H=200, PL=52, PR=20, PT=18, PB=38;
+  const W=540, H=220, PL=52, PR=20, PT=20, PB=40;
   const cW = W-PL-PR, cH = H-PT-PB;
-  const FONT = '500 9px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  const FONT = '500 9.5px Inter, -apple-system, sans-serif';
 
   dieCtx.clearRect(0,0,W,H);
   dieCtx.fillStyle='#fff'; dieCtx.fillRect(0,0,W,H);
 
   const total = dRolls;
   const props = dFreq.map(f => total ? f/total : 0);
-  const maxProp = Math.max(...props, 1/6 + 0.05);
+  const maxProp = Math.max(...props, ...dieProbs, 0.2) * 1.15;
   const numBars = 6;
   const slotW = cW / numBars;
-  const barW  = slotW * 0.6;
+  const barW  = slotW * 0.55;
 
-  const xCenter = i => PL + (i + 0.5) * slotW;  // center of bar i
+  const xCenter = i => PL + (i + 0.5) * slotW;
   const yScale  = v => PT + (1 - v/maxProp) * cH;
 
-  // Horizontal grid lines + Y labels
+  // Grid
   [0, 0.25, 0.5, 0.75, 1].forEach(t => {
     const v = t * maxProp;
     const y = Math.round(yScale(v)) + 0.5;
-    dieCtx.strokeStyle = t===0||t===1 ? '#cbd5e1' : '#e2e8f0';
+    dieCtx.strokeStyle = t===0||t===1 ? '#cbd5e1' : '#f1f5f9';
     dieCtx.lineWidth=1; dieCtx.setLineDash([]);
     dieCtx.beginPath(); dieCtx.moveTo(PL,y); dieCtx.lineTo(PL+cW,y); dieCtx.stroke();
     dieCtx.fillStyle='#94a3b8'; dieCtx.font=FONT; dieCtx.textAlign='right';
     dieCtx.fillText((v*100).toFixed(0)+'%', PL-6, y);
   });
 
-  // Y axis line
-  dieCtx.strokeStyle='#94a3b8'; dieCtx.lineWidth=1; dieCtx.setLineDash([]);
+  // Axes
+  dieCtx.strokeStyle='#cbd5e1'; dieCtx.lineWidth=1; dieCtx.setLineDash([]);
   dieCtx.beginPath(); dieCtx.moveTo(PL,PT); dieCtx.lineTo(PL,PT+cH); dieCtx.stroke();
-  // X axis line
   dieCtx.beginPath(); dieCtx.moveTo(PL,PT+cH); dieCtx.lineTo(PL+cW,PT+cH); dieCtx.stroke();
 
-  // Theoretical distribution bars (light gray, rounded top)
+  // Theoretical bars (light, rounded)
   dieProbs.forEach((p,i) => {
     const barH = Math.max(p/maxProp * cH, 1);
     const x = xCenter(i) - barW/2;
     const y = PT+cH-barH;
-    dieCtx.fillStyle='rgba(203,213,225,0.55)';
+    dieCtx.fillStyle='rgba(203,213,225,0.45)';
     dieCtx.beginPath();
-    dieCtx.roundRect ? dieCtx.roundRect(x,y,barW,barH,3) : dieCtx.rect(x,y,barW,barH);
+    dieCtx.roundRect ? dieCtx.roundRect(x,y,barW,barH,4) : dieCtx.rect(x,y,barW,barH);
     dieCtx.fill();
   });
 
-  // Empirical frequency bars (gradient blue, rounded top)
+  // Empirical bars (gradient per DMFT score)
   props.forEach((p,i) => {
     if(p===0) return;
     const barH = p/maxProp * cH;
     const x = xCenter(i) - barW/2;
     const y = PT+cH-barH;
     const grad = dieCtx.createLinearGradient(0,y,0,y+barH);
-    grad.addColorStop(0,'rgba(59,130,246,0.95)');
-    grad.addColorStop(1,'rgba(99,157,255,0.7)');
+    grad.addColorStop(0, DMFT_COLORS[i][0] + 'e6');
+    grad.addColorStop(1, DMFT_COLORS[i][1] + 'b3');
     dieCtx.fillStyle=grad;
     dieCtx.beginPath();
-    dieCtx.roundRect ? dieCtx.roundRect(x,y,barW,barH,3) : dieCtx.rect(x,y,barW,barH);
+    dieCtx.roundRect ? dieCtx.roundRect(x,y,barW,barH,4) : dieCtx.rect(x,y,barW,barH);
     dieCtx.fill();
-    // proportion label above bar — only if enough vertical room
-    if(barH > 16) {
-      dieCtx.fillStyle='#1e40af'; dieCtx.font=FONT; dieCtx.textAlign='center';
+    if(barH > 18) {
+      dieCtx.fillStyle='#1e293b'; dieCtx.font=FONT; dieCtx.textAlign='center';
       dieCtx.fillText((p*100).toFixed(0)+'%', xCenter(i), y-5);
     }
   });
 
-  // X axis labels (DMFT 0-5)
+  // X labels
   dieCtx.fillStyle='#475569'; dieCtx.font=FONT; dieCtx.textAlign='center';
   [0,1,2,3,4,5].forEach(i => {
-    dieCtx.fillText(i, xCenter(i), PT+cH+14);
+    dieCtx.fillText('DMFT '+i, xCenter(i), PT+cH+14);
   });
-  // X axis title
   dieCtx.fillStyle='#94a3b8'; dieCtx.textAlign='center';
-  dieCtx.fillText('DMFT Score', PL+cW/2, PT+cH+26);
+  dieCtx.fillText('DMFT Score', PL+cW/2, PT+cH+28);
   dieCtx.textAlign='left';
 
-  // E[X] vertical dashed line (teal) — label inside chart on right side
+  // E[X] dashed line
   if(total > 0) {
     const trueE = getDieExpected();
     const ex = PL + (trueE/5) * cW;
     drawLine(dieCtx, ex, PT, ex, PT+cH, '#0d9488', [5,4]);
-    // label placed just to the right of the line, inside chart
-    const labelX = ex + 4;
-    const labelY = PT + 14;
-    dieCtx.fillStyle='#0d9488'; dieCtx.font=FONT; dieCtx.textAlign='left';
-    dieCtx.fillText('E[X]='+trueE.toFixed(2), labelX, labelY);
+    dieCtx.fillStyle='#0d9488'; dieCtx.font='600 10px Inter, sans-serif'; dieCtx.textAlign='left';
+    dieCtx.fillText('E[X]='+trueE.toFixed(2), ex + 4, PT + 14);
   }
 
-  // Legend — top-right corner
-  const lx=PL+cW-160, ly=PT+6;
+  // Legend
+  const lx=PL+cW-168, ly=PT+6;
   dieCtx.fillStyle='rgba(255,255,255,0.92)';
-  dieCtx.fillRect(lx-6, ly-8, 172, 22);
-  dieCtx.fillStyle='rgba(59,130,246,0.85)'; dieCtx.fillRect(lx, ly-3, 12, 8);
+  dieCtx.fillRect(lx-6, ly-8, 178, 22);
+  dieCtx.fillStyle='rgba(13,148,136,0.8)'; dieCtx.fillRect(lx, ly-3, 12, 8);
   dieCtx.fillStyle='#475569'; dieCtx.font=FONT;
   dieCtx.fillText('Observed', lx+16, ly+1);
-  dieCtx.fillStyle='rgba(203,213,225,0.9)'; dieCtx.fillRect(lx+78, ly-3, 12, 8);
+  dieCtx.fillStyle='rgba(203,213,225,0.8)'; dieCtx.fillRect(lx+82, ly-3, 12, 8);
   dieCtx.fillStyle='#475569';
-  dieCtx.fillText('True prob.', lx+94, ly+1);
+  dieCtx.fillText('True prob.', lx+98, ly+1);
 }
 
-renderDieFace(0);
+function updateHealthIndicator(val) {
+  const indicator = document.getElementById('healthIndicator');
+  indicator.innerHTML = `<span>${val}</span><span class="dmft-label">DMFT</span>`;
+  indicator.style.background = `linear-gradient(135deg, ${DMFT_COLORS[val][0]}, ${DMFT_COLORS[val][1]})`;
+  indicator.classList.remove('rolling');
+  void indicator.offsetWidth;
+  indicator.classList.add('rolling');
+  setTimeout(() => indicator.classList.remove('rolling'), 420);
+}
+
 renderDieChart();
 
 function doRoll() {
-  // weighted random from dieProbs
   const r = Math.random();
   let cum=0, val=0;
   for(let i=0;i<6;i++) { cum+=dieProbs[i]; if(r<cum){val=i;break;} }
@@ -1070,17 +1524,15 @@ function doRoll() {
   document.getElementById('d-sample').textContent = sampleMean.toFixed(2);
   document.getElementById('dv-sample').textContent = sampleMean.toFixed(2);
 
-  // animate die
-  const dieFaceEl = document.getElementById('dieFace');
-  dieFaceEl.classList.remove('die-rolling');
-  void dieFaceEl.offsetWidth;
-  dieFaceEl.classList.add('die-rolling');
-  renderDieFace(val);
+  bumpValue(document.getElementById('d-rolls'));
+  bumpValue(document.getElementById('d-last'));
+
+  updateHealthIndicator(val);
   renderDieChart();
 }
 
 function rollDie()  { doRoll(); }
-async function rollMany() { for(let i=0;i<100;i++){doRoll();await delay(20);} }
+async function rollMany() { for(let i=0;i<100;i++){doRoll();await delay(18);} }
 
 function resetDie() {
   dRolls=0; dSum=0; dFreq=[0,0,0,0,0,0]; dieChartData.obs=[]; dieChartData.trueE=[];
@@ -1089,30 +1541,27 @@ function resetDie() {
   document.getElementById('d-last').textContent='—';
   document.getElementById('d-sample').textContent='—';
   document.getElementById('dv-sample').textContent='—';
-  renderDieFace(0); renderDieChart();
+  const indicator = document.getElementById('healthIndicator');
+  indicator.innerHTML = '<span>?</span><span class="dmft-label">DMFT</span>';
+  indicator.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+  renderDieChart();
 }
 
 
 /* ═══════════════════════════════════════════════════════════
-   SECTION 3 — CARDS / VARIANCE
+   SECTION 3 — PATIENT SATISFACTION / VARIANCE
 ═══════════════════════════════════════════════════════════ */
-const CARD_SUITS = ['♠','♥','♦','♣'];
-const CARD_VALUES = [
-  {val:1,label:'A'},{val:2,label:'2'},{val:3,label:'3'},{val:4,label:'4'},
-  {val:5,label:'5'},{val:6,label:'6'},{val:7,label:'7'},{val:8,label:'8'},
-  {val:9,label:'9'},{val:10,label:'10'}
-];
+const SCORE_EMOJIS = ['','😣','😟','😕','😐','🙂','😊','😃','😁','🤩','🌟'];
+const SCORE_LABELS = ['','Poor','Low','Fair','Avg','OK','Good','Great','Excel','Top','Star'];
 
-// Build a small deck: 10 cards (A-10 of Spades, scaled to outcome scores 1-10)
-const deck = CARD_VALUES.map((c,i) => ({
-  val: c.val, label: c.label,
-  suit: CARD_SUITS[i%2],  // alternating black/red
-  red: i%2===1,
-  active: true
-}));
+// 10 scores (1-10)
+const deck = [];
+for (let i = 1; i <= 10; i++) {
+  deck.push({ val: i, label: String(i), emoji: SCORE_EMOJIS[i], active: true });
+}
 
 let vDraws=0, vSumX=0, vSumX2=0;
-let vDrawnValues = []; // for dot plot
+let vDrawnValues = [];
 
 const cardGrid = document.getElementById('cardGrid');
 
@@ -1120,17 +1569,34 @@ function buildCardGrid() {
   cardGrid.innerHTML='';
   deck.forEach((card,i) => {
     const el = document.createElement('div');
-    el.className = 'card-toggle' + (card.red?' red-card':'') + (card.active?' active':'');
-    el.innerHTML = `<span class="suit">${card.suit}</span><span>${card.label}</span>`;
+    el.className = 'card-toggle' + (card.active?' active':'');
+    el.innerHTML = `<span class="suit">${card.emoji}</span><span>${card.label}</span><span class="score-label">pts</span>`;
     el.onclick = () => {
       const activeCount = deck.filter(c=>c.active).length;
-      if(card.active && activeCount<=1) return; // keep at least 1
+      if(card.active && activeCount<=2) return;
       card.active = !card.active;
       el.classList.toggle('active', card.active);
       updateCardVariance();
+      document.querySelectorAll('#cardPresets .preset-btn').forEach(b => b.classList.remove('active'));
     };
     cardGrid.appendChild(el);
   });
+}
+
+function setCardPreset(name) {
+  const presets = {
+    all:        [1,1,1,1,1,1,1,1,1,1],
+    consistent: [0,0,0,0,0,1,1,1,1,0], // scores 6-9
+    variable:   [1,1,0,0,0,0,0,0,1,1], // extremes only
+    bimodal:    [1,1,1,0,0,0,0,1,1,1], // 1-3 and 8-10
+  };
+  const pattern = presets[name] || presets.all;
+  deck.forEach((card, i) => { card.active = !!pattern[i]; });
+  document.querySelectorAll('#cardPresets .preset-btn').forEach(b => b.classList.remove('active'));
+  if (event && event.target) event.target.classList.add('active');
+  buildCardGrid();
+  resetCards();
+  updateCardVariance();
 }
 
 function getActiveDeck() { return deck.filter(c=>c.active); }
@@ -1154,10 +1620,8 @@ const varCtx  = makeHiDPI(document.getElementById('varChart'));
 const varData  = { sample:[], trueV:[] };
 
 function renderVarChart() {
-  // Seeing Theory style: TOP = dot plot on number line, BOTTOM = variance convergence
-  const W=520, H=200, PL=52, PR=16, FONT='500 9px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  const W=540, H=220, PL=52, PR=16, FONT='500 9.5px Inter, -apple-system, sans-serif';
 
-  // Split: top dot-plot zone, bottom convergence zone
   const DOT_TOP=8, DOT_H=62, DOT_BOT=DOT_TOP+DOT_H;
   const CV_TOP=DOT_BOT+14, CV_BOT=H-28, CV_H=CV_BOT-CV_TOP;
   const cW = W-PL-PR;
@@ -1167,60 +1631,61 @@ function renderVarChart() {
 
   // Soft background for dot-plot zone
   varCtx.fillStyle='rgba(248,250,252,0.8)';
-  varCtx.fillRect(PL, DOT_TOP, W-PL-PR, DOT_H);
+  varCtx.fillRect(PL, DOT_TOP, cW, DOT_H);
 
-  // ── DOT PLOT (number line 1–10) ──────────────────────────
+  // DOT PLOT (1–10)
   const active = getActiveDeck();
   const vals = active.map(c=>c.val);
-  const minVal = vals.length ? Math.min(...vals) : 1;
-  const maxVal = vals.length ? Math.max(...vals) : 10;
-  const dotXScale = v => PL + ((v-minVal)/Math.max(maxVal-minVal,1))*cW;
+  const minVal = 1, maxVal = 10;
+  const dotXScale = v => PL + ((v - minVal) / (maxVal - minVal)) * cW;
   const lineY = DOT_TOP + DOT_H * 0.65;
 
-  // axis line for dot plot
-  varCtx.strokeStyle='#94a3b8'; varCtx.lineWidth=1; varCtx.setLineDash([]);
+  // Axis line
+  varCtx.strokeStyle='#cbd5e1'; varCtx.lineWidth=1; varCtx.setLineDash([]);
   varCtx.beginPath(); varCtx.moveTo(PL,lineY); varCtx.lineTo(PL+cW,lineY); varCtx.stroke();
 
-  // tick marks + labels for each active card value
+  // Ticks + labels
   varCtx.fillStyle='#94a3b8'; varCtx.font=FONT; varCtx.textAlign='center';
-  vals.forEach(v => {
+  for (let v = 1; v <= 10; v++) {
     const x = dotXScale(v);
+    const isActive = vals.includes(v);
+    varCtx.strokeStyle = isActive ? '#94a3b8' : '#e2e8f0';
     varCtx.beginPath(); varCtx.moveTo(x,lineY-3); varCtx.lineTo(x,lineY+3); varCtx.stroke();
+    varCtx.fillStyle = isActive ? '#64748b' : '#cbd5e1';
     varCtx.fillText(v, x, lineY+12);
-  });
+  }
   varCtx.textAlign='left';
 
-  // dot plot section label — left of axis, rotated
+  // Label
   varCtx.save();
-  varCtx.fillStyle='#94a3b8'; varCtx.font='500 7.5px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'; varCtx.textAlign='center';
+  varCtx.fillStyle='#94a3b8'; varCtx.font='500 7.5px Inter, sans-serif'; varCtx.textAlign='center';
   varCtx.translate(9, lineY - 6);
   varCtx.rotate(-Math.PI/2);
   varCtx.fillText('Draws', 0, 0);
   varCtx.restore();
 
-  // count dots per value (stacking)
+  // Stacked dots
   const dotCounts = {};
   vDrawnValues.forEach(v => { dotCounts[v]=(dotCounts[v]||0)+1; });
 
-  // draw dots (stacked upward from axis) with white outline for separation
   const DOT_R = 4, DOT_GAP = 1;
   const maxDotsPerCol = Math.floor((lineY - DOT_TOP - 4) / (DOT_R*2+DOT_GAP));
   Object.entries(dotCounts).forEach(([v,cnt]) => {
     const x = dotXScale(+v);
-    const isRed = deck.find(c=>c.val===+v)?.red;
-    const fillCol  = isRed ? '#ef4444' : '#3b82f6';
+    // Color based on score
+    const score = +v;
+    const hue = (score - 1) / 9 * 120; // 0=red to 120=green
+    const fillCol = `hsl(${hue}, 65%, 50%)`;
     const visible = Math.min(cnt, maxDotsPerCol);
     for(let k=0;k<visible;k++){
       const y = lineY - DOT_R - k*(DOT_R*2+DOT_GAP) - 2;
-      // white outline
       varCtx.fillStyle='#fff';
       varCtx.beginPath(); varCtx.arc(x,y,DOT_R+1,0,Math.PI*2); varCtx.fill();
-      // coloured dot
       varCtx.fillStyle=fillCol;
       varCtx.beginPath(); varCtx.arc(x,y,DOT_R,0,Math.PI*2); varCtx.fill();
     }
     if(cnt>visible){
-      const SMALL='500 7.5px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      const SMALL='500 7.5px Inter, sans-serif';
       const labelY = Math.max(DOT_TOP+7, lineY-DOT_R-visible*(DOT_R*2+DOT_GAP)-9);
       varCtx.fillStyle='rgba(255,255,255,0.92)';
       varCtx.fillRect(x-10, labelY-6, 20, 9);
@@ -1230,7 +1695,7 @@ function renderVarChart() {
     }
   });
 
-  // ── VARIANCE CONVERGENCE CHART ────────────────────────────
+  // VARIANCE CONVERGENCE
   const n = varData.sample.length;
   const trueV = getTrueVariance();
   const allV = [...varData.sample, trueV];
@@ -1239,27 +1704,27 @@ function renderVarChart() {
   const xScale = i => PL + (i/Math.max(n-1,1))*cW;
   const yScale = v => CV_TOP + (1-v/maxV)*CV_H;
 
-  // divider line
+  // Divider
   varCtx.strokeStyle='#e2e8f0'; varCtx.lineWidth=1; varCtx.setLineDash([2,2]);
   varCtx.beginPath(); varCtx.moveTo(PL,DOT_BOT+6); varCtx.lineTo(PL+cW,DOT_BOT+6); varCtx.stroke();
   varCtx.setLineDash([]);
 
-  // Grid + Y labels
+  // Grid
   [0, 0.5, 1].forEach(t => {
     const v=t*maxV;
     const y=Math.round(yScale(v))+0.5;
-    varCtx.strokeStyle='#e2e8f0'; varCtx.lineWidth=1; varCtx.setLineDash([]);
+    varCtx.strokeStyle='#f1f5f9'; varCtx.lineWidth=1; varCtx.setLineDash([]);
     varCtx.beginPath(); varCtx.moveTo(PL,y); varCtx.lineTo(PL+cW,y); varCtx.stroke();
     varCtx.fillStyle='#94a3b8'; varCtx.font=FONT; varCtx.textAlign='right';
     varCtx.fillText(v.toFixed(1), PL-6, y);
   });
 
-  // Y axis + X axis
-  varCtx.strokeStyle='#94a3b8'; varCtx.lineWidth=1; varCtx.setLineDash([]);
+  // Axes
+  varCtx.strokeStyle='#cbd5e1'; varCtx.lineWidth=1; varCtx.setLineDash([]);
   varCtx.beginPath(); varCtx.moveTo(PL,CV_TOP); varCtx.lineTo(PL,CV_BOT); varCtx.stroke();
   varCtx.beginPath(); varCtx.moveTo(PL,CV_BOT); varCtx.lineTo(PL+cW,CV_BOT); varCtx.stroke();
 
-  // X axis labels
+  // X labels
   if(n>0){
     varCtx.fillStyle='#94a3b8'; varCtx.font=FONT; varCtx.textAlign='center';
     [0,0.5,1].forEach(t=>{
@@ -1269,10 +1734,10 @@ function renderVarChart() {
     varCtx.textAlign='left';
   }
 
-  // True variance — green dashed
-  drawLine(varCtx, PL, yScale(trueV), PL+cW, yScale(trueV), '#22c55e', [6,4]);
+  // True variance line
+  drawLine(varCtx, PL, yScale(trueV), PL+cW, yScale(trueV), '#6366f1', [6,4]);
 
-  // Running variance — gradient fill + blue line
+  // Running variance curve
   if(n>1){
     varCtx.save(); varCtx.lineJoin='round'; varCtx.setLineDash([]);
     varCtx.beginPath();
@@ -1281,25 +1746,25 @@ function renderVarChart() {
     });
     varCtx.lineTo(xScale(n-1), CV_BOT); varCtx.lineTo(xScale(0), CV_BOT); varCtx.closePath();
     const vGrad = varCtx.createLinearGradient(0,CV_TOP,0,CV_BOT);
-    vGrad.addColorStop(0,'rgba(59,130,246,0.15)');
-    vGrad.addColorStop(1,'rgba(59,130,246,0)');
+    vGrad.addColorStop(0,'rgba(99,102,241,0.15)');
+    vGrad.addColorStop(1,'rgba(99,102,241,0)');
     varCtx.fillStyle=vGrad; varCtx.fill();
     varCtx.beginPath();
     varData.sample.forEach((v,i)=>{
       i===0 ? varCtx.moveTo(xScale(i),yScale(v)) : varCtx.lineTo(xScale(i),yScale(v));
     });
-    varCtx.strokeStyle='#3b82f6'; varCtx.lineWidth=2.5; varCtx.stroke();
+    varCtx.strokeStyle='#6366f1'; varCtx.lineWidth=2.5; varCtx.stroke();
     varCtx.restore();
   }
 
-  // Convergence legend — top-right of convergence zone (below dot plot, safe from dots)
-  const lx=PL+cW-148, ly=CV_TOP+6;
+  // Legend
+  const lx=PL+cW-155, ly=CV_TOP+6;
   varCtx.fillStyle='rgba(255,255,255,0.94)';
-  varCtx.fillRect(lx-6, ly-5, 158, 28);
-  varCtx.fillStyle='#3b82f6'; varCtx.fillRect(lx, ly, 18, 3);
+  varCtx.fillRect(lx-6, ly-5, 162, 28);
+  varCtx.fillStyle='#6366f1'; varCtx.fillRect(lx, ly, 18, 3);
   varCtx.fillStyle='#475569'; varCtx.font=FONT;
   varCtx.fillText('Running Var(X)', lx+22, ly+3);
-  drawLine(varCtx,lx,ly+13,lx+18,ly+13,'#22c55e',[5,3]);
+  drawLine(varCtx,lx,ly+13,lx+18,ly+13,'#6366f1',[5,3]);
   varCtx.fillText('True Var(X)', lx+22, ly+13);
 }
 
@@ -1310,22 +1775,32 @@ function doDrawCard() {
   const card = active[Math.floor(Math.random()*active.length)];
   vDraws++; vSumX+=card.val; vSumX2+=card.val*card.val;
   vDrawnValues.push(card.val);
-  if(vDrawnValues.length > 200) vDrawnValues.shift();
+  if(vDrawnValues.length > 250) vDrawnValues.shift();
 
   const runMean = vSumX/vDraws;
   const runVar  = vSumX2/vDraws - runMean*runMean;
 
   varData.sample.push(runVar);
   varData.trueV.push(getTrueVariance());
-  if(varData.sample.length>300){varData.sample.shift();varData.trueV.shift();}
+  if(varData.sample.length>400){varData.sample.shift();varData.trueV.shift();}
 
-  // Update drawn card display
+  // Update card display with 3D flip
   const dc = document.getElementById('drawnCard');
   dc.textContent='';
-  dc.className = 'drawn-card-display' + (card.red?' red':'');
-  const suitEl = document.createElement('span'); suitEl.className='card-suit'; suitEl.textContent=card.suit;
-  const valEl  = document.createElement('span'); valEl.textContent=card.label;
-  dc.appendChild(valEl); dc.appendChild(suitEl);
+  dc.className = 'score-card-display revealed flip-anim';
+  // Color based on score
+  const hue = (card.val - 1) / 9 * 120;
+  dc.style.borderColor = `hsl(${hue}, 65%, 50%)`;
+  const valEl = document.createElement('span');
+  valEl.textContent = card.val;
+  valEl.style.color = `hsl(${hue}, 65%, 45%)`;
+  const emojiEl = document.createElement('span');
+  emojiEl.className = 'score-emoji';
+  emojiEl.textContent = card.emoji;
+  const textEl = document.createElement('span');
+  textEl.className = 'score-text';
+  textEl.textContent = SCORE_LABELS[card.val];
+  dc.appendChild(valEl); dc.appendChild(emojiEl); dc.appendChild(textEl);
 
   document.getElementById('v-draws').textContent  = vDraws;
   document.getElementById('vv-draws').textContent  = vDraws;
@@ -1333,17 +1808,21 @@ function doDrawCard() {
   document.getElementById('vv-sample').textContent = runVar.toFixed(2);
   document.getElementById('v-sample').textContent  = runVar.toFixed(2);
 
+  bumpValue(document.getElementById('v-draws'));
+
   renderVarChart();
 }
 
 function drawCard()  { doDrawCard(); }
-async function drawMany() { for(let i=0;i<100;i++){doDrawCard();await delay(20);} }
+async function drawMany() { for(let i=0;i<100;i++){doDrawCard();await delay(15);} }
 
 function resetCards() {
   vDraws=0; vSumX=0; vSumX2=0; vDrawnValues=[];
   varData.sample=[]; varData.trueV=[];
   const dc=document.getElementById('drawnCard');
-  dc.className='drawn-card-display'; dc.innerHTML='<span style="font-size:2rem;color:#cbd5e1">?</span>';
+  dc.className='score-card-display';
+  dc.style.borderColor = '';
+  dc.innerHTML='<span style="font-size:2rem;color:#cbd5e1">?</span><span class="score-text">Score</span>';
   ['v-draws','vv-draws'].forEach(id=>document.getElementById(id).textContent='0');
   ['v-last','v-sample','vv-sample'].forEach(id=>document.getElementById(id).textContent='—');
   renderVarChart();
