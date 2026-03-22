@@ -407,7 +407,17 @@
           responsive:true, maintainAspectRatio:false,
           plugins:{ legend:{display:false} },
           scales:{
-            x:{title:{display:true,text:'z'}},
+            x:{
+              title:{display:true,text:'z'},
+              ticks:{
+                callback:function(val){
+                  const v=parseFloat(this.getLabelForValue(val));
+                  if(Number.isInteger(v) && v>=-4 && v<=4) return v;
+                  return null;
+                },
+                maxTicksLimit:10
+              }
+            },
             y:{display:false}
           }
         }
