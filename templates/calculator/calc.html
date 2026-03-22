@@ -359,7 +359,7 @@
       transition: transform 0.4s ease;
     }
 
-    .stat-item.reveal::after { transform: scaleX(1); }
+    .stat-item.shown::after { transform: scaleX(1); }
 
     .stat-label {
       font-size: 0.68rem;
@@ -1291,7 +1291,7 @@
     document.getElementById('resultsContent').innerHTML = html;
     // Animate reveal
     setTimeout(() => document.querySelectorAll('.stat-item').forEach((el,i) => {
-      setTimeout(() => el.classList.add('reveal'), i*50);
+      setTimeout(() => el.classList.add('shown'), i*50);
     }), 50);
     showToast('Calculations complete!');
   }
