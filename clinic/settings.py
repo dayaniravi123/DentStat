@@ -16,7 +16,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', os.environ.get('DJANGO_SECRET_KEY', 'd
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
-ALLOWED_HOSTS = ['.railway.app']  # Allow all hosts for development; adjust for production
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '.railway.app').split(',')  # Set via env var or defaults to Railway
 #ALLOWED_HOSTS = ['*'] #['.railway.app']  # Allow all hosts for development; adjust for production
 
 # Application definition
