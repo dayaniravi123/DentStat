@@ -1171,8 +1171,8 @@ function drawCLTHistogram() {
     }
     const dataRange = rangeMax - rangeMin;
 
-    // Build histogram
-    const bins = 40;
+    // Build histogram — adaptive bin count based on sample size
+    const bins = Math.max(8, Math.min(40, Math.ceil(Math.sqrt(means.length))));
     const counts = new Array(bins).fill(0);
     const binWidth = dataRange / bins;
     means.forEach(m => {
@@ -1274,9 +1274,9 @@ function drawCLTHistogram() {
     const variance = means.reduce((s, v) => s + (v - grandMean) ** 2, 0) / means.length;
     const std = Math.sqrt(variance);
 
-    // Falling dots animation
+    // Falling dots animation (subtle)
     cltFallingDots.forEach(dot => {
-        dot.vy += 0.8;
+        dot.vy += 1.2;
         dot.y += dot.vy;
         dot.age++;
         const xPos = PAD.left + ((dot.x - rangeMin) / dataRange) * pw;
@@ -1284,20 +1284,17 @@ function drawCLTHistogram() {
         const drawY = Math.min(PAD.top + dot.y, targetY);
 
         if (xPos >= PAD.left && xPos <= PAD.left + pw) {
-            const alpha = Math.max(0, 1 - dot.age / 60);
+            const alpha = Math.max(0, 1 - dot.age / 30);
             ctx.beginPath();
-            ctx.arc(xPos, drawY, 4, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(239,68,68,${alpha})`;
+            ctx.arc(xPos, drawY, 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(239,68,68,${alpha * 0.7})`;
             ctx.fill();
-            ctx.strokeStyle = `rgba(239,68,68,${alpha * 0.5})`;
-            ctx.lineWidth = 1;
-            ctx.stroke();
         }
     });
-    cltFallingDots = cltFallingDots.filter(d => d.age < 60);
+    cltFallingDots = cltFallingDots.filter(d => d.age < 30);
 
-    // Normal curve overlay (after 25 samples)
-    if (means.length >= 25 && std > 0) {
+    // Normal curve overlay (after 15 samples)
+    if (means.length >= 15 && std > 0) {
         const totalArea = means.length * binWidth;
         ctx.strokeStyle = '#ef4444';
         ctx.lineWidth = 2;
