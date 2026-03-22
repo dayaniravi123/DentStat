@@ -630,31 +630,86 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <h3 class="text-lg font-bold mb-4 flex items-center">
-                        <i data-lucide="activity" class="w-5 h-5 mr-2"></i>
-                        DentalStats
-                    </h3>
-                    <p class="text-gray-400 text-sm">Empowering dental researchers with interactive statistical tools and educational resources.</p>
+    <footer class="relative overflow-hidden" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);">
+        <!-- Decorative top border -->
+        <div style="height:3px; background: linear-gradient(90deg, transparent, #0d9488, #6366f1, #0d9488, transparent);"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+
+                <!-- Brand -->
+                <div class="md:col-span-1">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #0d9488, #0f766e);">
+                            <i data-lucide="activity" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white">DentalStats</h3>
+                            <p class="text-[10px] text-teal-400 tracking-wider uppercase">Biostatistics Platform</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-400 leading-relaxed mb-5">
+                        Making biostatistics intuitive and accessible for dental students, clinicians, and researchers worldwide.
+                    </p>
+                    <a href="mailto:rdayani@nuviephotoceuticals.com" class="inline-flex items-center gap-2 text-sm text-teal-400 hover:text-teal-300 transition">
+                        <i data-lucide="mail" class="w-4 h-4"></i>
+                        rdayani@nuviephotoceuticals.com
+                    </a>
                 </div>
+
+                <!-- Explore -->
                 <div>
-                    <h4 class="font-semibold mb-3">Quick Links</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-white transition">Sample Size Guide</a></li>
-                        <li><a href="#" class="hover:text-white transition">Statistical Tests</a></li>
-                        <li><a href="#" class="hover:text-white transition">Glossary</a></li>
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Explore</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="/#concepts" class="text-gray-400 hover:text-teal-400 transition flex items-center gap-2">
+                            <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Concept Lessons
+                        </a></li>
+                        <li><a href="/calculator" class="text-gray-400 hover:text-teal-400 transition flex items-center gap-2">
+                            <i data-lucide="calculator" class="w-3.5 h-3.5"></i> Calculators
+                        </a></li>
+                        <li><a href="/visualization/live-graph" class="text-gray-400 hover:text-teal-400 transition flex items-center gap-2">
+                            <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i> Visualizations
+                        </a></li>
+                        <li><a href="/about" class="text-gray-400 hover:text-teal-400 transition flex items-center gap-2">
+                            <i data-lucide="users" class="w-3.5 h-3.5"></i> About Us
+                        </a></li>
                     </ul>
                 </div>
+
+                <!-- Concepts -->
                 <div>
-                    <h4 class="font-semibold mb-3">Reference</h4>
-                    <p class="text-sm text-gray-400">Built for dental professionals following CONSORT and STROBE guidelines.</p>
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Concepts</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="/concepts/basic-probability" class="text-gray-400 hover:text-teal-400 transition">Basic Probability</a></li>
+                        <li><a href="/#concepts" class="text-gray-400 hover:text-teal-400 transition">Compound Probability</a></li>
+                        <li><a href="/#concepts" class="text-gray-400 hover:text-teal-400 transition">Distributions</a></li>
+                        <li><a href="/#concepts" class="text-gray-400 hover:text-teal-400 transition">Statistical Inference</a></li>
+                    </ul>
+                </div>
+
+                <!-- Built With -->
+                <div>
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Standards</h4>
+                    <p class="text-sm text-gray-400 leading-relaxed mb-4">
+                        Built for dental professionals following CONSORT and STROBE reporting guidelines.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-[11px] font-semibold px-3 py-1 rounded-full border border-gray-700 text-gray-400">CONSORT</span>
+                        <span class="text-[11px] font-semibold px-3 py-1 rounded-full border border-gray-700 text-gray-400">STROBE</span>
+                        <span class="text-[11px] font-semibold px-3 py-1 rounded-full border border-gray-700 text-gray-400">PRISMA</span>
+                        <span class="text-[11px] font-semibold px-3 py-1 rounded-full border border-gray-700 text-gray-400">Evidence-Based</span>
+                    </div>
                 </div>
             </div>
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-500">
-                <p>&copy; 2024 DentalStats Platform. Educational purposes only.</p>
+
+            <!-- Bottom bar -->
+            <div class="border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-gray-500">&copy; 2025 DentalStats. Built for dental education.</p>
+                <div class="flex items-center gap-6">
+                    <a href="/about" class="text-sm text-gray-500 hover:text-gray-300 transition">About</a>
+                    <a href="mailto:rdayani@nuviephotoceuticals.com" class="text-sm text-gray-500 hover:text-gray-300 transition">Contact</a>
+                    <span class="text-sm text-gray-600">Made with care by the DentalStats team</span>
+                </div>
             </div>
         </div>
     </footer>
