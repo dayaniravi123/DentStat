@@ -514,6 +514,9 @@
         },
         options: {
           responsive: true, maintainAspectRatio: false,
+          layout: {
+            padding: { top: 18, right: 18, bottom: 12, left: 10 }
+          },
           scales: {
             x: { min:0.5, max:3.5, ticks:{callback:(v)=>{if(v===1)return'A';if(v===2)return'B';if(v===3)return'C';return''}}, title:{display:true,text:'Treatment'} },
             y: { min:0, max:10, title:{display:true,text:'Sensitivity Score'} }
@@ -552,6 +555,8 @@
             ctx.setLineDash([]);
             ctx.fillStyle = '#6b7280';
             ctx.font = '11px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
             ctx.fillText('Grand Mean = 4.40', x.getPixelForValue(2.6), grandY - 8);
             ctx.restore();
           }

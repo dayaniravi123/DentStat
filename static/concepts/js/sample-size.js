@@ -153,6 +153,9 @@
       },
       options: {
         responsive: true, maintainAspectRatio: false,
+        layout: {
+          padding: { top: 28, right: 18, bottom: 18, left: 10 }
+        },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -210,8 +213,8 @@
             ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 2; ctx.setLineDash([5,3]);
             ctx.beginPath(); ctx.moveTo(meanX, yAxis.top); ctx.lineTo(meanX, yAxis.bottom); ctx.stroke();
             ctx.setLineDash([]);
-            ctx.fillStyle = '#6366f1'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
-            ctx.fillText('Grand Mean=' + m.toFixed(2), meanX, yAxis.top - 5);
+            ctx.fillStyle = '#6366f1'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+            ctx.fillText('Grand Mean=' + m.toFixed(2), meanX, yAxis.top - 8);
           }
 
           ctx.restore();

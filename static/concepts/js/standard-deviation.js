@@ -128,6 +128,9 @@
       },
       options: {
         responsive: true, maintainAspectRatio: false,
+        layout: {
+          padding: { top: 28, right: 18, bottom: 18, left: 10 }
+        },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -163,8 +166,8 @@
           // Mean line
           ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2.5; ctx.setLineDash([]);
           ctx.beginPath(); ctx.moveTo(meanX, yAxis.top); ctx.lineTo(meanX, yAxis.bottom); ctx.stroke();
-          ctx.fillStyle = '#ef4444'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
-          ctx.fillText('Mean=' + sampleMean.toFixed(2), meanX, yAxis.top - 5);
+          ctx.fillStyle = '#ef4444'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+          ctx.fillText('Mean=' + sampleMean.toFixed(2), meanX, yAxis.top - 8);
 
           // ±1 SD bracket lines
           const sdLo = sampleMean - sampleSD;
@@ -176,16 +179,16 @@
             ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
             ctx.beginPath(); ctx.moveTo(xLo, yAxis.top+10); ctx.lineTo(xLo, yAxis.bottom); ctx.stroke();
             ctx.setLineDash([]);
-            ctx.fillStyle = '#6366f1'; ctx.font = '10px Inter, sans-serif';
-            ctx.fillText('-1SD', xLo, yAxis.top + 20);
+            ctx.fillStyle = '#6366f1'; ctx.font = '10px Inter, sans-serif'; ctx.textBaseline = 'top';
+            ctx.fillText('-1SD', xLo, yAxis.top + 16);
           }
           if(sdHiIdx >= 0 && sdHiIdx < labels.length){
             const xHi = xAxis.getPixelForValue(sdHiIdx);
             ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
             ctx.beginPath(); ctx.moveTo(xHi, yAxis.top+10); ctx.lineTo(xHi, yAxis.bottom); ctx.stroke();
             ctx.setLineDash([]);
-            ctx.fillStyle = '#6366f1'; ctx.font = '10px Inter, sans-serif';
-            ctx.fillText('+1SD', xHi, yAxis.top + 20);
+            ctx.fillStyle = '#6366f1'; ctx.font = '10px Inter, sans-serif'; ctx.textBaseline = 'top';
+            ctx.fillText('+1SD', xHi, yAxis.top + 16);
           }
 
           // SD bracket at bottom
@@ -197,7 +200,7 @@
             ctx.beginPath();
             ctx.moveTo(xLo, bracketY-5); ctx.lineTo(xLo, bracketY); ctx.lineTo(xHi, bracketY); ctx.lineTo(xHi, bracketY-5);
             ctx.stroke();
-            ctx.fillStyle = '#6366f1'; ctx.font = 'bold 10px Inter, sans-serif'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#6366f1'; ctx.font = 'bold 10px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
             ctx.fillText('SD='+sampleSD.toFixed(2), (xLo+xHi)/2, bracketY+12);
           }
 

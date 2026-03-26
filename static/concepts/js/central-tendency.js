@@ -149,6 +149,9 @@
       },
       options: {
         responsive: true, maintainAspectRatio: false,
+        layout: {
+          padding: { top: 28, right: 18, bottom: 12, left: 10 }
+        },
         plugins: {
           legend: { display: false },
           tooltip: { callbacks: { title: items => `Bin: ${items[0].label}`, label: item => `Count: ${item.raw}` } },
@@ -173,8 +176,8 @@
           ctx.save();
           ctx.strokeStyle = '#0d9488'; ctx.lineWidth = 2.5; ctx.setLineDash([]);
           ctx.beginPath(); ctx.moveTo(medX, top); ctx.lineTo(medX, bottom); ctx.stroke();
-          ctx.fillStyle = '#0d9488'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
-          ctx.fillText('Median', medX, top - 5);
+          ctx.fillStyle = '#0d9488'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+          ctx.fillText('Median', medX, top - 8);
           ctx.restore();
 
           // Mean dot (red)
@@ -183,8 +186,8 @@
           ctx.save();
           ctx.fillStyle = '#ef4444';
           ctx.beginPath(); ctx.arc(meanX, top + 10, 5, 0, Math.PI*2); ctx.fill();
-          ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
-          ctx.fillText('Mean', meanX, top + 25);
+          ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+          ctx.fillText('Mean', meanX, top + 18);
           ctx.restore();
         }
       }]
@@ -208,6 +211,9 @@
       options: {
         responsive: true, maintainAspectRatio: false,
         indexAxis: 'y',
+        layout: {
+          padding: { top: 18, right: 18, bottom: 26, left: 10 }
+        },
         plugins: { legend: { display: false }, tooltip: { enabled: false } },
         scales: {
           x: { min: mn - padding, max: mx + padding, grid: { color: '#f1f5f9' } },
@@ -272,9 +278,11 @@
 
           // Labels
           ctx.fillStyle = '#64748b'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'center';
-          ctx.fillText('Q1='+q1.toFixed(1), xQ1, cy+boxH/2+14);
-          ctx.fillText('Q3='+q3.toFixed(1), xQ3, cy+boxH/2+14);
-          ctx.fillText('Med='+med.toFixed(1), xMed, cy-boxH/2-6);
+          ctx.textBaseline = 'top';
+          ctx.fillText('Q1='+q1.toFixed(1), xQ1, cy+boxH/2+10);
+          ctx.fillText('Q3='+q3.toFixed(1), xQ3, cy+boxH/2+10);
+          ctx.textBaseline = 'bottom';
+          ctx.fillText('Med='+med.toFixed(1), xMed, cy-boxH/2-8);
 
           ctx.restore();
         }
