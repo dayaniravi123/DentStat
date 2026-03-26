@@ -128,11 +128,26 @@ body { font-family: 'Inter', sans-serif; }
     padding: 8px 14px;
     border-radius: 999px;
     background: rgba(15,118,110,0.09);
+    border: 1px solid transparent;
     color: #0f766e;
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+}
+
+.story-kicker.story-trigger:hover,
+.story-kicker.story-trigger:focus-visible {
+    transform: translateY(-2px);
+    border-color: rgba(15,118,110,0.24);
+    box-shadow: 0 12px 24px rgba(15,23,42,0.08);
+    outline: none;
+}
+
+.story-kicker.is-active {
+    background: linear-gradient(135deg, rgba(15,118,110,0.14), rgba(94,234,212,0.18));
+    border-color: rgba(15,118,110,0.26);
+    color: #0f172a;
 }
 
 .story-chip {
