@@ -161,6 +161,124 @@
             return conceptMap[clean] ? clean : '{{ selected_slug }}';
         }
 
+        function applyEmbeddedStyles(doc) {
+            const path = frame.contentWindow.location.pathname || '';
+            let styleEl = doc.getElementById('concept-hub-embed-style');
+            if (!styleEl) {
+                styleEl = doc.createElement('style');
+                styleEl.id = 'concept-hub-embed-style';
+                doc.head.appendChild(styleEl);
+            }
+
+            let css = `
+                nav, footer, #mobileMenuBtn, .dot-nav { display: none !important; }
+                body {
+                    margin: 0 !important;
+                    padding-top: 0 !important;
+                    overflow-x: hidden !important;
+                    background: #ffffff !important;
+                }
+                html {
+                    overflow-x: hidden !important;
+                    background: #ffffff !important;
+                }
+            `;
+
+            if (path.includes('/concepts/basic-probability')) {
+                css += `
+                    .page-wrapper {
+                        display: grid !important;
+                        grid-template-columns: minmax(0, 1.14fr) minmax(340px, 0.86fr) !important;
+                        align-items: start !important;
+                        height: auto !important;
+                        min-height: 0 !important;
+                        margin-top: 0 !important;
+                    }
+                    .text-panel {
+                        width: auto !important;
+                        min-width: 0 !important;
+                        overflow: visible !important;
+                    }
+                    .section {
+                        min-height: auto !important;
+                        justify-content: flex-start !important;
+                        padding: 2.35rem 2.25rem !important;
+                    }
+                    .section + .section {
+                        border-top: 1px solid #e2e8f0 !important;
+                    }
+                    .viz-panel {
+                        position: sticky !important;
+                        top: 0 !important;
+                        height: 100vh !important;
+                        min-height: 720px !important;
+                        min-width: 0 !important;
+                        border-left: 1px solid #e2e8f0 !important;
+                        background: linear-gradient(180deg, #f8fcfc 0%, #eff6fb 100%) !important;
+                    }
+                    .viz-section {
+                        padding: 1.5rem !important;
+                    }
+                    .viz-title {
+                        margin-bottom: 1rem !important;
+                    }
+                    #coinChart,
+                    #dieChart,
+                    #varChart {
+                        max-width: 100% !important;
+                    }
+                    .exp-display {
+                        flex-wrap: wrap !important;
+                        justify-content: center !important;
+                    }
+                    @media (max-width: 860px) {
+                        .page-wrapper {
+                            flex-direction: column !important;
+                            display: flex !important;
+                        }
+                        .text-panel {
+                            width: 100% !important;
+                            min-width: 0 !important;
+                        }
+                        .viz-panel {
+                            position: relative !important;
+                            top: 0 !important;
+                            height: 68vh !important;
+                            min-height: 520px !important;
+                            width: 100% !important;
+                            border-left: 0 !important;
+                            border-top: 1px solid #e2e8f0 !important;
+                        }
+                    }
+                `;
+            }
+
+            styleEl.textContent = css;
+        }
+
+        function rebindEmbeddedObservers(doc) {
+            const path = frame.contentWindow.location.pathname || '';
+            const win = frame.contentWindow;
+            if (!path.includes('/concepts/basic-probability')) return;
+            if (!win || typeof win.setActiveSection !== 'function' || typeof win.IntersectionObserver !== 'function') return;
+
+            if (win.__conceptHubObserver) {
+                win.__conceptHubObserver.disconnect();
+            }
+
+            const sections = doc.querySelectorAll('.section');
+            const observer = new win.IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        win.setActiveSection(Number(entry.target.dataset.section));
+                    }
+                });
+            }, { root: null, threshold: 0.45 });
+
+            sections.forEach((section) => observer.observe(section));
+            win.__conceptHubObserver = observer;
+        }
+
         function resizeEmbeddedConcept() {
             try {
                 const doc = frame.contentDocument || frame.contentWindow.document;
@@ -187,9 +305,7 @@
                 const doc = frame.contentDocument || frame.contentWindow.document;
                 if (!doc) return;
 
-                doc.querySelectorAll('nav, footer').forEach((el) => {
-                    el.style.display = 'none';
-                });
+                applyEmbeddedStyles(doc);
 
                 doc.querySelectorAll('a, button').forEach((el) => {
                     const text = (el.textContent || '').trim().toLowerCase();
@@ -201,9 +317,8 @@
 
                 doc.body.style.margin = '0';
                 doc.body.style.paddingTop = '0';
-                doc.body.style.overflow = 'hidden';
                 doc.body.style.background = '#ffffff';
-                doc.documentElement.style.overflow = 'hidden';
+                rebindEmbeddedObservers(doc);
                 resizeEmbeddedConcept();
 
                 setTimeout(resizeEmbeddedConcept, 120);
