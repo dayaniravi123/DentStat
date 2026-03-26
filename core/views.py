@@ -3,6 +3,7 @@ from django.http import Http404, JsonResponse
 from django.template import TemplateDoesNotExist
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.clickjacking import xframe_options_sameorigin
+from datetime import date
 import json
 import math
 try:
@@ -57,9 +58,63 @@ CONCEPT_LOOKUP = {
 	for concept in group['concepts']
 }
 
+LEARNING_SITEMAP_PAGES = [
+	{'path': '/learning/descriptive/descriptive-statistics.html', 'changefreq': 'monthly', 'priority': '0.80'},
+	{'path': '/learning/hypothesis/hypothesis-testing.html', 'changefreq': 'monthly', 'priority': '0.80'},
+	{'path': '/learning/regression/regression-analysis.html', 'changefreq': 'monthly', 'priority': '0.80'},
+]
+
+PRIMARY_SITEMAP_PAGES = [
+	{'path': '/', 'changefreq': 'weekly', 'priority': '1.0'},
+	{'path': '/concepts/', 'changefreq': 'weekly', 'priority': '0.95'},
+	{'path': '/calculator/', 'changefreq': 'weekly', 'priority': '0.90'},
+	{'path': '/visualization/live-graph', 'changefreq': 'weekly', 'priority': '0.90'},
+	{'path': '/about/', 'changefreq': 'monthly', 'priority': '0.70'},
+]
+
+
+def build_sitemap_entries(base_url):
+	entries = []
+
+	for page in PRIMARY_SITEMAP_PAGES + LEARNING_SITEMAP_PAGES:
+		entries.append({
+			'loc': f"{base_url}{page['path']}",
+			'changefreq': page['changefreq'],
+			'priority': page['priority'],
+		})
+
+	for group in CONCEPT_GROUPS:
+		for concept in group['concepts']:
+			entries.append({
+				'loc': f"{base_url}/concepts/{concept['slug']}.html",
+				'changefreq': 'monthly',
+				'priority': '0.78',
+			})
+
+	return entries
+
 
 def index(request):
 	return render(request, 'index.html')
+
+
+def robots_txt(request):
+	base_url = request.build_absolute_uri('/').rstrip('/')
+	return render(
+		request,
+		'robots.txt',
+		{'base_url': base_url},
+		content_type='text/plain',
+	)
+
+
+def sitemap_xml(request):
+	base_url = request.build_absolute_uri('/').rstrip('/')
+	context = {
+		'sitemap_entries': build_sitemap_entries(base_url),
+		'lastmod': date.today().isoformat(),
+	}
+	return render(request, 'sitemap.xml', context, content_type='application/xml')
 
 
 def concepts_hub(request):
