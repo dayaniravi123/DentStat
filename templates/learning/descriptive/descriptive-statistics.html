@@ -218,25 +218,17 @@
     .report-table th { background: #f1f5f9; padding: 10px 14px; text-align: left; font-weight: 600; color: #334155; }
     .report-table td { padding: 10px 14px; color: #475569; border-top: 1px solid #f1f5f9; }
 
-    .back-link {
-      display: inline-flex; align-items: center; gap: 6px;
-      color: #0f766e; font-size: 0.875rem; font-weight: 500;
-      text-decoration: none; margin-bottom: 24px; transition: gap 0.15s;
-    }
-    .back-link:hover { gap: 10px; }
-
     .sim-panel {
       background: white;
       border-radius: 14px;
       padding: 24px;
       box-shadow: 0 2px 16px rgba(0,0,0,0.07);
     }
-  </style>
+</style>
 </head>
 <body>
+{% include 'includes/site_nav.html' %}
 <div class="max-w-4xl mx-auto py-10 px-4">
-
-  <a href="{% url 'index' %}" class="back-link">← Back to Home</a>
 
   <!-- Hero -->
   <div class="hero-banner mb-10">
