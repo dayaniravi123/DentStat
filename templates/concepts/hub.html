@@ -96,36 +96,6 @@
         }
         .reader-title { font-size: clamp(1.9rem, 3vw, 2.6rem); font-weight: 800; line-height: 1.05; margin: 0 0 10px; }
         .reader-desc { color: rgba(226,232,240,0.88); font-size: 1rem; line-height: 1.75; max-width: 56rem; margin: 0; }
-        .reader-toolbar {
-            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
-            padding: 18px 24px;
-            border-bottom: 1px solid rgba(226,232,240,0.9);
-            background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.96));
-        }
-        .reader-meta {
-            display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
-            color: #475569; font-size: 0.88rem;
-        }
-        .reader-pill {
-            display: inline-flex; align-items: center;
-            padding: 7px 12px;
-            border-radius: 999px;
-            background: rgba(15,118,110,0.09);
-            color: #0f766e;
-            font-weight: 700;
-        }
-        .reader-open {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 10px 14px;
-            border-radius: 14px;
-            background: #0f172a;
-            color: white;
-            font-size: 0.9rem;
-            font-weight: 700;
-            text-decoration: none;
-            transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
-        }
-        .reader-open:hover { transform: translateY(-1px); background: #12284b; box-shadow: 0 14px 28px rgba(15,23,42,0.14); }
         .frame-wrap {
             padding: 18px;
             background: linear-gradient(180deg, rgba(248,250,252,0.98), rgba(255,255,255,0.98));
@@ -151,7 +121,6 @@
         }
         @media (max-width: 640px) {
             .reader-hero { padding: 24px 20px; }
-            .reader-toolbar { padding: 16px 18px; }
             .frame-wrap { padding: 12px; }
             .sidebar-card { padding: 16px; border-radius: 22px; }
             #concept-frame { height: 68vh; min-height: 620px; }
@@ -212,17 +181,6 @@
                     <p id="reader-desc" class="reader-desc">{{ selected_description }}</p>
                 </div>
 
-                <div class="reader-toolbar">
-                    <div class="reader-meta">
-                        <span class="reader-pill">Documentation View</span>
-                        <span>Use the sidebar to switch concepts without leaving this page.</span>
-                    </div>
-                    <a id="reader-open-link" class="reader-open" href="/concepts/{{ selected_slug }}" target="_blank" rel="noopener">
-                        <i data-lucide="external-link" class="w-4 h-4"></i>
-                        Open Standalone Page
-                    </a>
-                </div>
-
                 <div class="frame-wrap">
                     <div class="frame-stage">
                         <iframe
@@ -247,7 +205,6 @@
         const titleEl = document.getElementById('reader-title');
         const descEl = document.getElementById('reader-desc');
         const groupEl = document.getElementById('reader-group');
-        const openLinkEl = document.getElementById('reader-open-link');
         const conceptButtons = Array.from(document.querySelectorAll('.concept-link'));
 
         function sanitizeSlug(slug) {
@@ -294,7 +251,6 @@
             titleEl.textContent = data.title;
             descEl.textContent = data.description;
             groupEl.textContent = data.group;
-            openLinkEl.href = `/concepts/${slug}`;
 
             const nextSrc = `/concepts/${slug}`;
             if (frame.getAttribute('src') !== nextSrc) {
