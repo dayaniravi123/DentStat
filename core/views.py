@@ -10,8 +10,73 @@ except Exception:
 	scipy_stats = None
 
 
+CONCEPT_GROUPS = [
+	{
+		'label': 'Beginner Concepts',
+		'concepts': [
+			{'slug': 'central-tendency', 'title': 'Measures of Central Tendency', 'description': 'Mean, median, and mode for continuous dental data like DMFT scores.'},
+			{'slug': 'standard-deviation', 'title': 'Standard Deviation', 'description': 'Understand spread and variability in periodontal and implant outcomes.'},
+			{'slug': 'basic-probability', 'title': 'Basic Probability', 'description': 'Build intuition for chance, events, and risk in dental research.'},
+			{'slug': 'two-by-two', 'title': '2×2 Tables', 'description': 'Work with diagnostic test tables, sensitivity, specificity, and predictive values.'},
+			{'slug': 'sample-size', 'title': 'Sample Size Basics', 'description': 'See why sample size matters for precision, power, and normality.'},
+			{'slug': 'confidence-intervals', 'title': 'Confidence Intervals', 'description': 'Explore how precision and uncertainty appear in prevalence estimates.'},
+		],
+	},
+	{
+		'label': 'Intermediate Concepts',
+		'concepts': [
+			{'slug': 'hypothesis-testing', 'title': 'Hypothesis Testing', 'description': 'Understand null and alternative hypotheses with dental examples.'},
+			{'slug': 'pvalues-significance', 'title': 'p-values & Significance', 'description': 'Interpret significance carefully instead of relying on cutoffs alone.'},
+			{'slug': 'chi-square', 'title': 'Chi-Square Test', 'description': 'Compare categorical outcomes such as treatment group versus result.'},
+			{'slug': 'risk-measures', 'title': 'Risk Measures', 'description': 'Work with relative risk, odds ratios, and effect interpretation.'},
+			{'slug': 't-tests', 'title': 't-Tests', 'description': 'Compare means between dental groups or before-and-after conditions.'},
+			{'slug': 'anova', 'title': 'ANOVA Basics', 'description': 'Compare more than two groups with structured variance analysis.'},
+		],
+	},
+	{
+		'label': 'Advanced Concepts',
+		'concepts': [
+			{'slug': 'multiple-regression', 'title': 'Multiple Regression', 'description': 'Model outcomes while controlling for multiple predictors and confounders.'},
+			{'slug': 'logistic-regression', 'title': 'Logistic Regression', 'description': 'Predict binary outcomes such as implant failure or treatment success.'},
+			{'slug': 'survival-analysis', 'title': 'Survival Analysis', 'description': 'Study time-to-event outcomes like implant survival over time.'},
+			{'slug': 'cox-regression', 'title': 'Cox Regression', 'description': 'Interpret hazards and proportional hazards modeling in clinical studies.'},
+			{'slug': 'roc-curves', 'title': 'ROC Curves', 'description': 'Evaluate diagnostic accuracy and threshold selection visually.'},
+			{'slug': 'meta-analysis', 'title': 'Meta-Analysis', 'description': 'Combine evidence across studies to synthesize stronger conclusions.'},
+		],
+	},
+]
+
+CONCEPT_LOOKUP = {
+	concept['slug']: {
+		'title': concept['title'],
+		'description': concept['description'],
+		'group': group['label'],
+	}
+	for group in CONCEPT_GROUPS
+	for concept in group['concepts']
+}
+
+
 def index(request):
 	return render(request, 'index.html')
+
+
+def concepts_hub(request):
+	default_slug = 'central-tendency'
+	selected_slug = request.GET.get('topic', default_slug).replace('.html', '')
+	if selected_slug not in CONCEPT_LOOKUP:
+		selected_slug = default_slug
+
+	selected = CONCEPT_LOOKUP[selected_slug]
+	context = {
+		'concept_groups': CONCEPT_GROUPS,
+		'selected_slug': selected_slug,
+		'selected_title': selected['title'],
+		'selected_description': selected['description'],
+		'selected_group': selected['group'],
+		'concept_lookup': CONCEPT_LOOKUP,
+	}
+	return render(request, 'concepts/hub.html', context)
 
 
 def concept_page(request, page):
@@ -311,4 +376,3 @@ def export_data(request):
 		})
 	except Exception as e:
 		return JsonResponse({'error': str(e)}, status=500)
-

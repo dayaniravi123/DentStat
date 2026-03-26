@@ -675,7 +675,8 @@ function updateConceptsGrid() {
         // Open the full concept page (navigate) instead of modal
         card.onclick = () => {
             if (concept.file) {
-                window.location.href = `concepts/${concept.file}`;
+                const slug = concept.file.replace('.html', '');
+                window.location.href = `/concepts/?topic=${slug}`;
             } else {
                 showConceptDetail(index);
             }

@@ -1,0 +1,327 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse DentalStats concepts in a documentation-style concept library with a left sidebar and live reading panel.">
+    <title>Concept Library - DentalStats</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(180deg, #f8fbff 0%, #eef7f5 100%); }
+        .concepts-shell { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 24px; align-items: start; }
+        .sidebar-card {
+            position: sticky; top: 96px;
+            border-radius: 28px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,250,252,0.98));
+            border: 1px solid rgba(148,163,184,0.18);
+            box-shadow: 0 24px 54px rgba(15,23,42,0.1);
+            padding: 22px;
+        }
+        .sidebar-head {
+            padding: 18px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, #0f172a 0%, #1d4f77 58%, #0f766e 100%);
+            color: white;
+            margin-bottom: 18px;
+        }
+        .sidebar-head h1 { font-size: 1.35rem; font-weight: 800; margin: 0 0 6px; }
+        .sidebar-head p { font-size: 0.9rem; color: rgba(226,232,240,0.88); margin: 0; line-height: 1.6; }
+        .sidebar-group + .sidebar-group { margin-top: 18px; }
+        .sidebar-group-title {
+            font-size: 0.72rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
+            color: #0f766e; margin-bottom: 10px; padding-left: 4px;
+        }
+        .concept-link {
+            width: 100%;
+            text-align: left;
+            padding: 14px 14px 13px;
+            border-radius: 18px;
+            border: 1px solid rgba(226,232,240,0.9);
+            background: rgba(255,255,255,0.78);
+            transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .concept-link:hover, .concept-link:focus-visible {
+            transform: translateY(-2px);
+            border-color: rgba(15,118,110,0.22);
+            box-shadow: 0 14px 28px rgba(15,23,42,0.08);
+            outline: none;
+        }
+        .concept-link.is-active {
+            background: linear-gradient(135deg, rgba(15,118,110,0.13), rgba(94,234,212,0.16));
+            border-color: rgba(15,118,110,0.24);
+            box-shadow: 0 16px 34px rgba(15,23,42,0.1);
+        }
+        .concept-link-title { display: block; color: #0f172a; font-size: 0.96rem; font-weight: 700; margin-bottom: 5px; }
+        .concept-link-desc { display: block; color: #64748b; font-size: 0.82rem; line-height: 1.45; }
+        .reader-shell {
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1px solid rgba(148,163,184,0.18);
+            box-shadow: 0 28px 60px rgba(15,23,42,0.12);
+            background: rgba(255,255,255,0.94);
+        }
+        .reader-hero {
+            position: relative;
+            overflow: hidden;
+            padding: 28px 30px;
+            background: linear-gradient(135deg, #0f172a 0%, #1d4f77 52%, #0f766e 100%);
+            color: white;
+        }
+        .reader-hero::before {
+            content: "";
+            position: absolute;
+            top: -60px; right: -40px;
+            width: 220px; height: 220px; border-radius: 999px;
+            background: radial-gradient(circle, rgba(94,234,212,0.28) 0%, rgba(94,234,212,0) 72%);
+        }
+        .reader-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.12);
+            color: rgba(226,232,240,0.92);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .reader-title { font-size: clamp(1.9rem, 3vw, 2.6rem); font-weight: 800; line-height: 1.05; margin: 0 0 10px; }
+        .reader-desc { color: rgba(226,232,240,0.88); font-size: 1rem; line-height: 1.75; max-width: 56rem; margin: 0; }
+        .reader-toolbar {
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+            padding: 18px 24px;
+            border-bottom: 1px solid rgba(226,232,240,0.9);
+            background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.96));
+        }
+        .reader-meta {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+            color: #475569; font-size: 0.88rem;
+        }
+        .reader-pill {
+            display: inline-flex; align-items: center;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(15,118,110,0.09);
+            color: #0f766e;
+            font-weight: 700;
+        }
+        .reader-open {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 14px;
+            border-radius: 14px;
+            background: #0f172a;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+        }
+        .reader-open:hover { transform: translateY(-1px); background: #12284b; box-shadow: 0 14px 28px rgba(15,23,42,0.14); }
+        .frame-wrap {
+            padding: 18px;
+            background: linear-gradient(180deg, rgba(248,250,252,0.98), rgba(255,255,255,0.98));
+        }
+        .frame-stage {
+            border-radius: 24px;
+            overflow: hidden;
+            background: white;
+            border: 1px solid rgba(226,232,240,0.9);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+        #concept-frame {
+            width: 100%;
+            height: 78vh;
+            min-height: 760px;
+            border: 0;
+            background: white;
+        }
+        @media (max-width: 1024px) {
+            .concepts-shell { grid-template-columns: 1fr; }
+            .sidebar-card { position: static; }
+            #concept-frame { height: 72vh; min-height: 680px; }
+        }
+        @media (max-width: 640px) {
+            .reader-hero { padding: 24px 20px; }
+            .reader-toolbar { padding: 16px 18px; }
+            .frame-wrap { padding: 12px; }
+            .sidebar-card { padding: 16px; border-radius: 22px; }
+            #concept-frame { height: 68vh; min-height: 620px; }
+        }
+    </style>
+</head>
+<body class="smooth-scroll">
+    {% include 'includes/site_nav.html' %}
+
+    <section class="relative overflow-hidden">
+        <div class="absolute inset-0 gradient-bg opacity-95"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
+            <div class="max-w-4xl">
+                <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/15 text-white/90 text-xs font-bold tracking-[0.22em] uppercase">
+                    <span class="w-2 h-2 rounded-full bg-teal-300"></span>
+                    Concepts Library
+                </span>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-5 leading-tight">
+                    Read DentalStats like a docs site, not a scattered list of pages
+                </h1>
+                <p class="text-lg text-slate-200 mt-4 max-w-3xl leading-relaxed">
+                    Browse all core concepts from one place. Use the left sidebar to jump between topics, and read each lesson in the main panel without losing your place.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+        <div class="concepts-shell">
+            <aside class="sidebar-card">
+                <div class="sidebar-head">
+                    <h1>Concept Navigator</h1>
+                    <p>Pick any topic from the left and the reading panel will update in place, just like a documentation page.</p>
+                </div>
+
+                {% for group in concept_groups %}
+                <div class="sidebar-group">
+                    <div class="sidebar-group-title">{{ group.label }}</div>
+                    {% for concept in group.concepts %}
+                    <button
+                        type="button"
+                        class="concept-link{% if concept.slug == selected_slug %} is-active{% endif %}"
+                        data-slug="{{ concept.slug }}"
+                        data-title="{{ concept.title }}"
+                    >
+                        <span class="concept-link-title">{{ concept.title }}</span>
+                        <span class="concept-link-desc">{{ concept.description }}</span>
+                    </button>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </aside>
+
+            <main class="reader-shell">
+                <div class="reader-hero">
+                    <div id="reader-group" class="reader-kicker">{{ selected_group }}</div>
+                    <h2 id="reader-title" class="reader-title">{{ selected_title }}</h2>
+                    <p id="reader-desc" class="reader-desc">{{ selected_description }}</p>
+                </div>
+
+                <div class="reader-toolbar">
+                    <div class="reader-meta">
+                        <span class="reader-pill">Documentation View</span>
+                        <span>Use the sidebar to switch concepts without leaving this page.</span>
+                    </div>
+                    <a id="reader-open-link" class="reader-open" href="/concepts/{{ selected_slug }}" target="_blank" rel="noopener">
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                        Open Standalone Page
+                    </a>
+                </div>
+
+                <div class="frame-wrap">
+                    <div class="frame-stage">
+                        <iframe
+                            id="concept-frame"
+                            title="DentalStats Concept Reader"
+                            src="/concepts/{{ selected_slug }}"
+                            loading="lazy"
+                        ></iframe>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    {{ concept_lookup|json_script:"concept-map" }}
+
+    <script>
+        lucide.createIcons();
+
+        const conceptMap = JSON.parse(document.getElementById('concept-map').textContent);
+        const frame = document.getElementById('concept-frame');
+        const titleEl = document.getElementById('reader-title');
+        const descEl = document.getElementById('reader-desc');
+        const groupEl = document.getElementById('reader-group');
+        const openLinkEl = document.getElementById('reader-open-link');
+        const conceptButtons = Array.from(document.querySelectorAll('.concept-link'));
+
+        function sanitizeSlug(slug) {
+            const clean = (slug || '').replace('.html', '');
+            return conceptMap[clean] ? clean : '{{ selected_slug }}';
+        }
+
+        function cleanEmbeddedConcept() {
+            try {
+                const doc = frame.contentDocument || frame.contentWindow.document;
+                if (!doc) return;
+
+                doc.querySelectorAll('nav, footer').forEach((el) => {
+                    el.style.display = 'none';
+                });
+
+                doc.querySelectorAll('a, button').forEach((el) => {
+                    const text = (el.textContent || '').trim().toLowerCase();
+                    const href = (el.getAttribute('href') || '').toLowerCase();
+                    if (/(^|\\b)back(\\b|$)/.test(text) || href.includes('#concepts') || href.includes('/index.html#concepts')) {
+                        el.style.display = 'none';
+                    }
+                });
+
+                doc.body.style.margin = '0';
+                doc.body.style.paddingTop = '0';
+                doc.body.style.background = '#ffffff';
+            } catch (error) {
+                console.warn('Could not normalize embedded concept view:', error);
+            }
+        }
+
+        function activateConcept(rawSlug, pushState = true) {
+            const slug = sanitizeSlug(rawSlug);
+            const data = conceptMap[slug];
+            if (!data) return;
+
+            conceptButtons.forEach((button) => {
+                const active = button.dataset.slug === slug;
+                button.classList.toggle('is-active', active);
+                button.setAttribute('aria-pressed', active ? 'true' : 'false');
+            });
+
+            titleEl.textContent = data.title;
+            descEl.textContent = data.description;
+            groupEl.textContent = data.group;
+            openLinkEl.href = `/concepts/${slug}`;
+
+            const nextSrc = `/concepts/${slug}`;
+            if (frame.getAttribute('src') !== nextSrc) {
+                frame.setAttribute('src', nextSrc);
+            }
+
+            if (pushState) {
+                const nextUrl = new URL(window.location.href);
+                nextUrl.searchParams.set('topic', slug);
+                window.history.pushState({ slug }, '', nextUrl);
+            }
+        }
+
+        conceptButtons.forEach((button) => {
+            button.addEventListener('click', () => activateConcept(button.dataset.slug, true));
+        });
+
+        frame.addEventListener('load', cleanEmbeddedConcept);
+        activateConcept('{{ selected_slug }}', false);
+        if (frame.contentDocument && frame.contentDocument.readyState === 'complete') {
+            cleanEmbeddedConcept();
+        }
+
+        window.addEventListener('popstate', () => {
+            const url = new URL(window.location.href);
+            activateConcept(url.searchParams.get('topic') || '{{ selected_slug }}', false);
+        });
+    </script>
+</body>
+</html>
