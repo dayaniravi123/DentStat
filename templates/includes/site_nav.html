@@ -1,10 +1,13 @@
+{% load static %}
 <nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between h-16 items-center">
       <a href="/" class="flex items-center space-x-3 group">
-        <svg class="w-8 h-8 text-teal-300 transition-colors group-hover:text-teal-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-        </svg>
+        <img
+          src="{% static 'images/dentalstats-logo.svg' %}"
+          alt="DentalStats logo"
+          class="h-11 w-11 rounded-2xl object-contain shadow-[0_10px_24px_rgba(15,118,110,0.28)] transition-transform duration-300 group-hover:scale-105"
+        >
         <div>
           <h1 class="text-xl font-bold">DentalStats</h1>
           <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
