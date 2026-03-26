@@ -953,15 +953,15 @@ function drawPopulationDistribution() {
     ctx.lineTo(PAD.left + pw, PAD.top + ph);
     ctx.closePath();
     const fillGrad = ctx.createLinearGradient(0, PAD.top, 0, PAD.top + ph);
-    fillGrad.addColorStop(0, 'rgba(13,148,136,0.18)');
-    fillGrad.addColorStop(1, 'rgba(13,148,136,0.03)');
+    fillGrad.addColorStop(0, 'rgba(13,148,136,0.3)');
+    fillGrad.addColorStop(1, 'rgba(13,148,136,0.08)');
     ctx.fillStyle = fillGrad;
     ctx.fill();
 
     // Draw curve
     ctx.beginPath();
     ctx.strokeStyle = '#0d9488';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
     let first = true;
     pts.forEach(p => {
         const x = PAD.left + p.t * pw;
@@ -969,6 +969,11 @@ function drawPopulationDistribution() {
         if (first) { ctx.moveTo(x, y); first = false; } else ctx.lineTo(x, y);
     });
     ctx.stroke();
+
+    ctx.fillStyle = '#64748b';
+    ctx.font = '600 8px Inter,sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('Population preview', PAD.left, 10);
 
     // X axis
     ctx.strokeStyle = '#d1d5db';
