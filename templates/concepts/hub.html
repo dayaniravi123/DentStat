@@ -66,36 +66,6 @@
             box-shadow: 0 28px 60px rgba(15,23,42,0.12);
             background: rgba(255,255,255,0.94);
         }
-        .reader-hero {
-            position: relative;
-            overflow: hidden;
-            padding: 28px 30px;
-            background: linear-gradient(135deg, #0f172a 0%, #1d4f77 52%, #0f766e 100%);
-            color: white;
-        }
-        .reader-hero::before {
-            content: "";
-            position: absolute;
-            top: -60px; right: -40px;
-            width: 220px; height: 220px; border-radius: 999px;
-            background: radial-gradient(circle, rgba(94,234,212,0.28) 0%, rgba(94,234,212,0) 72%);
-        }
-        .reader-kicker {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.12);
-            color: rgba(226,232,240,0.92);
-            font-size: 0.72rem;
-            font-weight: 800;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            margin-bottom: 14px;
-        }
-        .reader-title { font-size: clamp(1.9rem, 3vw, 2.6rem); font-weight: 800; line-height: 1.05; margin: 0 0 10px; }
-        .reader-desc { color: rgba(226,232,240,0.88); font-size: 1rem; line-height: 1.75; max-width: 56rem; margin: 0; }
         .reader-document {
             background: white;
         }
@@ -112,7 +82,6 @@
             #concept-frame { min-height: 960px; }
         }
         @media (max-width: 640px) {
-            .reader-hero { padding: 24px 20px; }
             .sidebar-card { padding: 16px; border-radius: 22px; }
             #concept-frame { min-height: 820px; }
         }
@@ -166,12 +135,6 @@
             </aside>
 
             <main class="reader-shell">
-                <div class="reader-hero">
-                    <div id="reader-group" class="reader-kicker">{{ selected_group }}</div>
-                    <h2 id="reader-title" class="reader-title">{{ selected_title }}</h2>
-                    <p id="reader-desc" class="reader-desc">{{ selected_description }}</p>
-                </div>
-
                 <div class="reader-document">
                     <iframe
                         id="concept-frame"
@@ -191,9 +154,6 @@
 
         const conceptMap = JSON.parse(document.getElementById('concept-map').textContent);
         const frame = document.getElementById('concept-frame');
-        const titleEl = document.getElementById('reader-title');
-        const descEl = document.getElementById('reader-desc');
-        const groupEl = document.getElementById('reader-group');
         const conceptButtons = Array.from(document.querySelectorAll('.concept-link'));
 
         function sanitizeSlug(slug) {
@@ -263,10 +223,6 @@
                 button.classList.toggle('is-active', active);
                 button.setAttribute('aria-pressed', active ? 'true' : 'false');
             });
-
-            titleEl.textContent = data.title;
-            descEl.textContent = data.description;
-            groupEl.textContent = data.group;
 
             const nextSrc = `/concepts/${slug}`;
             if (frame.getAttribute('src') !== nextSrc) {
