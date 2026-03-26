@@ -31,7 +31,13 @@
     }
 
     html { scroll-behavior: smooth; }
-    body { font-family: var(--sans); background: var(--bg); color: var(--text); overflow-x: hidden; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      padding-top: 64px;
+    }
 
     /* ── GRADIENT NAV (site-wide) ── */
     nav {
@@ -548,8 +554,8 @@
     .page-wrapper {
       display: block;
       height: auto;
-      margin-top: 64px;
-      padding: 2rem 1rem 3rem;
+      margin-top: 0;
+      padding: 1.4rem 1rem 3rem;
     }
     .text-panel {
       width: min(1080px, 100%);
@@ -558,6 +564,85 @@
       margin: 0 auto;
       background: transparent;
       border-right: 0;
+    }
+    .chapter-hero {
+      margin: 0 auto 1.5rem;
+      padding: 2rem 2.25rem;
+      border-radius: 28px;
+      color: white;
+      background:
+        radial-gradient(circle at top right, rgba(94,234,212,0.18), transparent 34%),
+        linear-gradient(135deg, #0f172a 0%, #1d4f77 54%, #0f766e 100%);
+      box-shadow: 0 24px 60px rgba(15,23,42,0.18);
+      position: relative;
+      overflow: hidden;
+    }
+    .chapter-hero::after {
+      content: '';
+      position: absolute;
+      inset: auto -10% -28% auto;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(94,234,212,0.22), rgba(94,234,212,0));
+      pointer-events: none;
+    }
+    .chapter-hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.48rem 0.85rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.14);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(226,232,240,0.96);
+    }
+    .chapter-hero__title {
+      margin-top: 1rem;
+      font-family: var(--serif);
+      font-size: clamp(2.3rem, 4vw, 3.6rem);
+      line-height: 1.04;
+      color: #fff;
+    }
+    .chapter-hero__lead {
+      margin-top: 1rem;
+      max-width: 720px;
+      color: rgba(226,232,240,0.92);
+      font-size: 1.02rem;
+      line-height: 1.85;
+    }
+    .chapter-hero__stats {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.9rem;
+      position: relative;
+      z-index: 1;
+    }
+    .chapter-hero__stat {
+      padding: 1rem 1.05rem;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(8px);
+    }
+    .chapter-hero__stat strong {
+      display: block;
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #99f6e4;
+      margin-bottom: 0.35rem;
+    }
+    .chapter-hero__stat span {
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: rgba(241,245,249,0.94);
     }
     .section {
       min-height: auto;
@@ -645,16 +730,20 @@
     }
     .sim-modal__dialog {
       position: relative;
-      width: min(1180px, 100%);
-      max-height: min(90vh, 960px);
+      width: min(1320px, calc(100vw - 1.5rem));
+      max-height: min(88vh, 860px);
       overflow: auto;
-      border-radius: 30px;
+      border-radius: 32px;
       background: #ffffff;
       box-shadow: 0 30px 80px rgba(15,23,42,0.34);
       z-index: 1;
     }
     .sim-modal__header {
-      padding: 1.6rem 1.8rem 0;
+      padding: 1.35rem 1.55rem 1rem;
+      background:
+        radial-gradient(circle at top right, rgba(94,234,212,0.18), transparent 30%),
+        linear-gradient(135deg, #0f172a 0%, #1d4f77 60%, #0f766e 100%);
+      color: white;
     }
     .sim-modal__eyebrow {
       display: inline-flex;
@@ -662,8 +751,8 @@
       gap: 0.45rem;
       padding: 0.45rem 0.85rem;
       border-radius: 999px;
-      background: rgba(13,148,136,0.08);
-      color: var(--teal);
+      background: rgba(255,255,255,0.12);
+      color: #99f6e4;
       font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 0.08em;
@@ -672,11 +761,11 @@
     .sim-modal__header h2 {
       margin-top: 0.9rem;
       font-size: 2rem;
-      color: var(--navy);
+      color: white;
     }
     .sim-modal__header p {
       margin-top: 0.45rem;
-      color: var(--muted);
+      color: rgba(226,232,240,0.92);
       line-height: 1.7;
     }
     .sim-modal__close {
@@ -687,18 +776,20 @@
       height: 44px;
       border: none;
       border-radius: 50%;
-      background: #f1f5f9;
-      color: var(--navy);
+      background: rgba(255,255,255,0.12);
+      color: white;
       font-size: 1.6rem;
       line-height: 1;
       cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.16);
     }
     .sim-modal__body {
       display: grid;
-      grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
-      gap: 1.25rem;
-      padding: 1.35rem 1.8rem 1.8rem;
-      align-items: start;
+      grid-template-columns: minmax(320px, 370px) minmax(0, 1fr);
+      gap: 1.2rem;
+      padding: 1.3rem 1.45rem 1.45rem;
+      align-items: stretch;
+      background: linear-gradient(180deg, #f8fbfe 0%, #eef6f7 100%);
     }
     .sim-modal__controls > [data-sim-source] {
       display: block;
@@ -707,9 +798,12 @@
       border: 1px solid var(--border);
       background: linear-gradient(180deg, #ffffff 0%, #f8fbfc 100%);
       box-shadow: 0 16px 36px rgba(15,23,42,0.08);
+      height: 100%;
     }
     .sim-modal__visual {
       min-width: 0;
+      min-height: 560px;
+      display: flex;
     }
     .sim-modal__visual .viz-section {
       position: relative;
@@ -717,20 +811,35 @@
       opacity: 1;
       pointer-events: all;
       display: none;
-      min-height: 100%;
-      padding: 1.5rem;
+      min-height: 560px;
+      width: 100%;
+      padding: 1.35rem;
       border-radius: 24px;
       border: 1px solid var(--border);
       background: linear-gradient(180deg, #f8fcfc 0%, #eff6fb 100%);
       box-shadow: 0 16px 36px rgba(15,23,42,0.08);
+      justify-content: center;
     }
     .sim-modal__visual .viz-section.active {
       display: flex;
+    }
+    .sim-modal__visual .viz-title {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    .sim-modal__visual #coin-viz,
+    .sim-modal__visual #die-viz,
+    .sim-modal__visual #card-viz {
+      width: 100%;
+      max-width: 780px;
     }
     .sim-modal__visual #coinChart,
     .sim-modal__visual #dieChart,
     .sim-modal__visual #varChart {
       max-width: 100%;
+      width: 100% !important;
+      min-height: 220px;
+      border: 1px solid rgba(148,163,184,0.18);
     }
     .sim-modal__visual .exp-display {
       flex-wrap: wrap;
@@ -743,6 +852,12 @@
     @media (max-width: 900px) {
       .section {
         padding: 2rem 1.5rem;
+      }
+      .chapter-hero {
+        padding: 1.7rem 1.45rem;
+      }
+      .chapter-hero__stats {
+        grid-template-columns: 1fr;
       }
       .sim-launch-card {
         flex-direction: column;
@@ -759,6 +874,10 @@
       }
       .sim-modal__dialog {
         max-height: 92vh;
+      }
+      .sim-modal__visual,
+      .sim-modal__visual .viz-section {
+        min-height: 460px;
       }
     }
 
@@ -814,6 +933,30 @@
 
   <!-- ═══════════════════ LEFT TEXT PANEL ═══════════════════ -->
   <div class="text-panel" id="textPanel">
+
+    <section class="chapter-hero" aria-label="Basic Probability overview">
+      <span class="chapter-hero__badge">Chapter 1 · Basic Probability</span>
+      <h1 class="chapter-hero__title">Build intuition for chance before formulas feel intimidating</h1>
+      <p class="chapter-hero__lead">
+        This chapter explains probability through dental examples that feel real: implant success,
+        DMFT score distributions, and patient satisfaction outcomes. Read the explanation first,
+        then open each simulator when you want to test the idea visually.
+      </p>
+      <div class="chapter-hero__stats">
+        <div class="chapter-hero__stat">
+          <strong>Chance</strong>
+          <span>See how repeated clinical outcomes settle around the true probability.</span>
+        </div>
+        <div class="chapter-hero__stat">
+          <strong>Expectation</strong>
+          <span>Connect distributions to the long-run average with a DMFT example.</span>
+        </div>
+        <div class="chapter-hero__stat">
+          <strong>Spread</strong>
+          <span>Compare score patterns and watch how variance responds to different setups.</span>
+        </div>
+      </div>
+    </section>
 
     <!-- SECTION 1: CHANCE EVENTS -->
     <div class="section" id="s1" data-section="0">
@@ -1171,6 +1314,34 @@ function drawLine(ctx, x1,y1,x2,y2, color, dash=[]) {
   ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); ctx.restore();
 }
 
+function drawCanvasEmptyState(ctx, W, H, title, subtitle, tint = '#0d9488') {
+  ctx.save();
+  const panelX = 26;
+  const panelY = 26;
+  const panelW = W - 52;
+  const panelH = H - 52;
+  ctx.fillStyle = 'rgba(248,250,252,0.92)';
+  ctx.fillRect(panelX, panelY, panelW, panelH);
+  ctx.strokeStyle = 'rgba(148,163,184,0.18)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(panelX, panelY, panelW, panelH);
+
+  ctx.beginPath();
+  ctx.fillStyle = tint;
+  ctx.arc(W / 2, H / 2 - 22, 8, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#0f172a';
+  ctx.font = '700 15px Inter, -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(title, W / 2, H / 2 + 8);
+
+  ctx.fillStyle = '#64748b';
+  ctx.font = '500 11px Inter, -apple-system, sans-serif';
+  ctx.fillText(subtitle, W / 2, H / 2 + 30);
+  ctx.restore();
+}
+
 function makeHiDPI(canvas) {
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
@@ -1370,6 +1541,8 @@ function openSimulator(idx, trigger = null) {
   simModal.setAttribute('aria-hidden', 'false');
   document.body.classList.add('modal-open');
   redrawActiveCharts();
+  requestAnimationFrame(redrawActiveCharts);
+  setTimeout(redrawActiveCharts, 120);
 }
 
 simLaunchButtons.forEach((button) => {
@@ -1507,7 +1680,18 @@ function renderCoinChart() {
   coinCtx.beginPath(); coinCtx.moveTo(PL,PT); coinCtx.lineTo(PL,PT+cH); coinCtx.stroke();
   coinCtx.beginPath(); coinCtx.moveTo(PL,PT+cH); coinCtx.lineTo(PL+cW,PT+cH); coinCtx.stroke();
 
-  if(n<2){ coinCtx.textAlign='left'; return; }
+  if(n<2){
+    drawCanvasEmptyState(
+      coinCtx,
+      W,
+      H,
+      'Start the simulation',
+      'Run a few patient outcomes to see observed probability appear.',
+      '#0d9488'
+    );
+    coinCtx.textAlign='left';
+    return;
+  }
 
   // X labels
   coinCtx.fillStyle='#94a3b8'; coinCtx.font=FONT; coinCtx.textAlign='center';
@@ -1861,6 +2045,17 @@ function renderDieChart() {
   dieCtx.fillStyle='rgba(203,213,225,0.8)'; dieCtx.fillRect(lx+82, ly-3, 12, 8);
   dieCtx.fillStyle='#475569';
   dieCtx.fillText('True prob.', lx+98, ly+1);
+
+  if (total === 0) {
+    drawCanvasEmptyState(
+      dieCtx,
+      W,
+      H,
+      'Roll the DMFT simulator',
+      'Observed bars will appear here as soon as you collect sample scores.',
+      '#0d9488'
+    );
+  }
 }
 
 function updateHealthIndicator(val) {
@@ -2136,6 +2331,17 @@ function renderVarChart() {
   varCtx.fillText('Running Var(X)', lx+22, ly+3);
   drawLine(varCtx,lx,ly+13,lx+18,ly+13,'#6366f1',[5,3]);
   varCtx.fillText('True Var(X)', lx+22, ly+13);
+
+  if (n === 0) {
+    drawCanvasEmptyState(
+      varCtx,
+      W,
+      H,
+      'Draw a few satisfaction scores',
+      'The running variance curve will appear after the first samples.',
+      '#6366f1'
+    );
+  }
 }
 
 function doDrawCard() {
