@@ -40,6 +40,10 @@
             line-height: 1.6;
         }
 
+        body.modal-open {
+            overflow: hidden;
+        }
+
         @keyframes slideDown {
             from {
                 opacity: 0;
@@ -231,6 +235,16 @@
             border: 1px solid #e2e8f0;
         }
 
+        .chart-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 32px rgba(15,23,42,0.1);
+            border-color: #bfdbfe;
+        }
+
         .card-title {
             font-size: 1rem;
             font-weight: 700;
@@ -241,12 +255,84 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .chart-title-text {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-expand-button {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            color: #0f766e;
+            border-radius: 999px;
+            padding: 7px 12px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chart-expand-button:hover {
+            background: #ecfeff;
+            border-color: #0d9488;
+            color: #0f172a;
+        }
+
+        .chart-expand-button svg {
+            width: 14px;
+            height: 14px;
         }
 
         .chart-container {
             position: relative;
             height: 350px;
             margin-bottom: 20px;
+        }
+
+        .chart-expand-trigger {
+            cursor: zoom-in;
+        }
+
+        .chart-expand-trigger::after {
+            content: 'Click chart to expand';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(15,23,42,0.78);
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 7px 10px;
+            border-radius: 999px;
+            pointer-events: none;
+            box-shadow: 0 10px 24px rgba(15,23,42,0.18);
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .chart-card:hover .chart-expand-trigger::after,
+        .chart-expand-trigger:focus-visible::after {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chart-container.is-modal {
+            height: min(70vh, 640px);
+            margin-bottom: 0;
+            cursor: default;
+        }
+
+        .chart-container.is-modal::after {
+            display: none;
         }
 
         .stats-grid {
@@ -545,6 +631,146 @@
             margin-top: 8px;
             line-height: 1.5;
         }
+
+        .chart-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(15,23,42,0.7);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+
+        .chart-modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .chart-modal-dialog {
+            width: min(1200px, calc(100vw - 48px));
+            max-height: calc(100vh - 48px);
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(226,232,240,0.85);
+            box-shadow: 0 30px 80px rgba(15,23,42,0.28);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-modal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 22px 24px 18px;
+            border-bottom: 1px solid #e2e8f0;
+            background: linear-gradient(135deg, #f8fafc, #f0fdfa);
+        }
+
+        .chart-modal-kicker {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #0f766e;
+        }
+
+        .chart-modal-title {
+            margin: 4px 0 0;
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+        }
+
+        .chart-modal-close {
+            border: none;
+            background: #0f172a;
+            color: white;
+            border-radius: 999px;
+            width: 42px;
+            height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .chart-modal-close:hover {
+            background: #1e293b;
+            transform: scale(1.04);
+        }
+
+        .chart-modal-close svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .chart-modal-body {
+            padding: 20px 24px 24px;
+            overflow: auto;
+        }
+
+        .chart-modal-chart-slot {
+            min-height: min(70vh, 640px);
+        }
+
+        .chart-modal-footer {
+            margin-top: 18px;
+        }
+
+        .chart-placeholder {
+            border: 1px dashed #cbd5e1;
+            border-radius: 14px;
+            background: repeating-linear-gradient(
+                -45deg,
+                #f8fafc,
+                #f8fafc 12px,
+                #f1f5f9 12px,
+                #f1f5f9 24px
+            );
+        }
+
+        @media (max-width: 768px) {
+            .chart-expand-button span {
+                display: none;
+            }
+
+            .chart-modal {
+                padding: 12px;
+            }
+
+            .chart-modal-dialog {
+                width: calc(100vw - 24px);
+                max-height: calc(100vh - 24px);
+                border-radius: 18px;
+            }
+
+            .chart-modal-header,
+            .chart-modal-body {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .chart-modal-title {
+                font-size: 1.15rem;
+            }
+
+            .chart-container.is-modal,
+            .chart-modal-chart-slot {
+                height: min(56vh, 480px);
+                min-height: min(56vh, 480px);
+            }
+        }
     </style>
 </head>
 <body>
@@ -675,33 +901,48 @@
         <!-- Main Content -->
         <div class="main-content">
             <!-- Data Distribution Chart -->
-            <div class="card">
-                <div class="card-title">📊 Data Distribution
+            <div class="card chart-card" data-chart-key="distribution">
+                <div class="card-title">
+                    <span class="chart-title-text">📊 Data Distribution</span>
                     <span class="info-tip">?<span class="tip-text"><strong>What is this?</strong> A bar chart showing how many successes vs failures occurred in your simulated study. Think of it like: "Out of 200 patients, how many had cavities vs didn't?" Hover over bars for exact counts.</span></span>
+                    <button type="button" class="chart-expand-button" data-chart-trigger="distribution" aria-label="Expand Data Distribution chart">
+                        <i data-lucide="maximize-2"></i>
+                        <span>Expand</span>
+                    </button>
                 </div>
-                <div class="chart-container">
+                <div class="chart-container chart-expand-trigger" data-chart-trigger="distribution" tabindex="0" role="button" aria-label="Open Data Distribution chart in a larger modal view">
                     <canvas id="distributionChart"></canvas>
                 </div>
                 <div class="chart-hint">💡 <strong>How to read:</strong> The green bar = successes (e.g., patients with condition). Red bar = failures. Hover over each bar to see the count and percentage.</div>
             </div>
 
             <!-- Convergence Chart -->
-            <div class="card">
-                <div class="card-title">📈 Convergence Analysis
+            <div class="card chart-card" data-chart-key="convergence">
+                <div class="card-title">
+                    <span class="chart-title-text">📈 Convergence Analysis</span>
                     <span class="info-tip">?<span class="tip-text"><strong>What is this?</strong> Shows how your observed probability changes as you add more patients. The blue line (observed) should gradually approach the red dashed line (true value). This is the <strong>Law of Large Numbers</strong> in action!</span></span>
+                    <button type="button" class="chart-expand-button" data-chart-trigger="convergence" aria-label="Expand Convergence Analysis chart">
+                        <i data-lucide="maximize-2"></i>
+                        <span>Expand</span>
+                    </button>
                 </div>
-                <div class="chart-container">
+                <div class="chart-container chart-expand-trigger" data-chart-trigger="convergence" tabindex="0" role="button" aria-label="Open Convergence Analysis chart in a larger modal view">
                     <canvas id="convergenceChart"></canvas>
                 </div>
                 <div class="chart-hint">💡 <strong>How to read:</strong> Blue line = your running estimate. Red dashed line = the true probability. Notice how early samples are "noisy" but the line stabilizes with more data — that's why bigger studies are more reliable!</div>
             </div>
 
             <!-- Normal Approximation Chart -->
-            <div class="card">
-                <div class="card-title">🔔 Normal Approximation
+            <div class="card chart-card" data-chart-key="normal">
+                <div class="card-title">
+                    <span class="chart-title-text">🔔 Normal Approximation</span>
                     <span class="info-tip">?<span class="tip-text"><strong>What is this?</strong> Shows the bell curve (normal distribution) that approximates where your success count should fall. The red triangle marks where your actual result landed. If it's near the peak, your result is typical; if it's far out in the tails, it's unusual!</span></span>
+                    <button type="button" class="chart-expand-button" data-chart-trigger="normal" aria-label="Expand Normal Approximation chart">
+                        <i data-lucide="maximize-2"></i>
+                        <span>Expand</span>
+                    </button>
                 </div>
-                <div class="chart-container">
+                <div class="chart-container chart-expand-trigger" data-chart-trigger="normal" tabindex="0" role="button" aria-label="Open Normal Approximation chart in a larger modal view">
                     <canvas id="normalChart"></canvas>
                 </div>
                 <div class="chart-hint">💡 <strong>How to read:</strong> The purple bell curve shows expected outcomes. The red triangle (▲) is your actual result. If the triangle is near the center → typical result. If far from center → unusual/surprising result.</div>
@@ -714,6 +955,24 @@
                 </div>
                 <div id="methodContent"></div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div id="chartModal" class="chart-modal" aria-hidden="true">
+    <div class="chart-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="chartModalTitle">
+        <div class="chart-modal-header">
+            <div>
+                <div class="chart-modal-kicker">Expanded Chart View</div>
+                <h2 id="chartModalTitle" class="chart-modal-title">Chart</h2>
+            </div>
+            <button type="button" id="closeChartModal" class="chart-modal-close" aria-label="Close expanded chart">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="chart-modal-body">
+            <div id="chartModalChartSlot" class="chart-modal-chart-slot"></div>
+            <div id="chartModalHint" class="chart-modal-footer"></div>
         </div>
     </div>
 </div>
@@ -731,6 +990,12 @@
     };
 
     let charts = {};
+    let chartModalState = {
+        activeKey: null,
+        container: null,
+        placeholder: null,
+        chart: null
+    };
 
     // Initialize charts
     function initCharts() {
@@ -959,6 +1224,113 @@
         });
     }
 
+    function setupChartModal() {
+        document.querySelectorAll('[data-chart-trigger]').forEach((trigger) => {
+            trigger.addEventListener('click', (event) => {
+                event.preventDefault();
+                openChartModal(trigger.dataset.chartTrigger);
+            });
+
+            if (trigger.getAttribute('role') === 'button') {
+                trigger.addEventListener('keydown', (event) => {
+                    if (event.key !== 'Enter' && event.key !== ' ') {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    openChartModal(trigger.dataset.chartTrigger);
+                });
+            }
+        });
+
+        document.getElementById('closeChartModal').addEventListener('click', closeChartModal);
+        document.getElementById('chartModal').addEventListener('click', (event) => {
+            if (event.target.id === 'chartModal') {
+                closeChartModal();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeChartModal();
+            }
+        });
+    }
+
+    function openChartModal(chartKey) {
+        if (chartModalState.activeKey === chartKey) {
+            return;
+        }
+
+        if (chartModalState.activeKey) {
+            closeChartModal();
+        }
+
+        const card = document.querySelector(`.chart-card[data-chart-key="${chartKey}"]`);
+        const container = card ? card.querySelector('.chart-container') : null;
+        const chart = charts[chartKey];
+        if (!card || !container || !chart) {
+            return;
+        }
+
+        const placeholder = document.createElement('div');
+        placeholder.className = 'chart-placeholder';
+        placeholder.style.height = `${Math.max(container.offsetHeight, 260)}px`;
+        container.parentNode.insertBefore(placeholder, container);
+
+        document.getElementById('chartModalTitle').textContent =
+            card.querySelector('.chart-title-text')?.textContent.trim() || 'Expanded Chart';
+        document.getElementById('chartModalHint').innerHTML =
+            card.querySelector('.chart-hint')?.outerHTML || '';
+
+        chartModalState = {
+            activeKey: chartKey,
+            container,
+            placeholder,
+            chart
+        };
+
+        container.classList.add('is-modal');
+        document.getElementById('chartModalChartSlot').appendChild(container);
+        document.getElementById('chartModal').classList.add('open');
+        document.getElementById('chartModal').setAttribute('aria-hidden', 'false');
+        document.body.classList.add('modal-open');
+
+        requestAnimationFrame(() => {
+            chart.resize();
+            document.getElementById('closeChartModal').focus();
+        });
+    }
+
+    function closeChartModal() {
+        if (!chartModalState.activeKey || !chartModalState.container || !chartModalState.placeholder) {
+            return;
+        }
+
+        const { chart, container, placeholder } = chartModalState;
+
+        container.classList.remove('is-modal');
+        placeholder.replaceWith(container);
+
+        document.getElementById('chartModal').classList.remove('open');
+        document.getElementById('chartModal').setAttribute('aria-hidden', 'true');
+        document.getElementById('chartModalHint').innerHTML = '';
+        document.body.classList.remove('modal-open');
+
+        chartModalState = {
+            activeKey: null,
+            container: null,
+            placeholder: null,
+            chart: null
+        };
+
+        requestAnimationFrame(() => {
+            if (chart) {
+                chart.resize();
+            }
+        });
+    }
+
     // Generate random data
     function generateData() {
         const sampleSize = parseInt(document.getElementById('sampleSize').value);
@@ -1016,6 +1388,14 @@
         charts.convergence.update();
 
         // Update normal approximation chart
+        if (total === 0) {
+            charts.normal.data.labels = [];
+            charts.normal.data.datasets[0].data = [];
+            charts.normal.data.datasets[1].data = [];
+            charts.normal.update();
+            return;
+        }
+
         updateNormalChart(total, success, trueProb / 100);
     }
 
@@ -1024,7 +1404,13 @@
         const mu = n * p;
         const sigma = Math.sqrt(n * p * (1 - p));
 
-        if (sigma === 0 || n === 0) return;
+        if (sigma === 0 || n === 0) {
+            charts.normal.data.labels = [];
+            charts.normal.data.datasets[0].data = [];
+            charts.normal.data.datasets[1].data = [];
+            charts.normal.update();
+            return;
+        }
 
         // Build curve from mu-4σ to mu+4σ
         const lo = Math.max(0, Math.floor(mu - 4 * sigma));
@@ -1421,6 +1807,9 @@
         data.samples = [];
         data.convergenceHistory = [];
         document.getElementById('sampleSize').value = 100;
+        document.getElementById('trueProb').value = 30;
+        document.getElementById('sampleSizeValue').textContent = '100';
+        document.getElementById('trueProbValue').textContent = '30';
         document.getElementById('statsTotal').textContent = '0';
         document.getElementById('statsSuccess').textContent = '0';
         document.getElementById('statsRate').textContent = '0';
@@ -1455,6 +1844,7 @@
 
     // Initialize
     initCharts();
+    setupChartModal();
     resetData();
 </script>
 <script>lucide.createIcons();</script>
