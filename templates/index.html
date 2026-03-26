@@ -73,7 +73,9 @@
                 <div class="relative z-10">
                     <div class="flex flex-wrap items-center gap-3 mb-4">
                         <span class="story-kicker">The Story Behind DentalStats</span>
-                        <span class="story-chip">Built for students, clinicians, and researchers</span>
+                        <button type="button" class="story-chip story-trigger" onclick="openStoryModal('audience')">
+                            Built for students, clinicians, and researchers
+                        </button>
                     </div>
                     <h2 id="current-level-title" class="text-3xl md:text-4xl font-bold text-slate-900 leading-tight max-w-3xl">
                         It started with one classroom frustration
@@ -83,18 +85,18 @@
                     </p>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-7">
-                        <div class="story-node">
+                        <button type="button" class="story-node story-trigger" onclick="openStoryModal('spark')">
                             <div class="story-node-label">The Spark</div>
                             <p>Dental learners needed a friendlier path into probability and research thinking.</p>
-                        </div>
-                        <div class="story-node">
+                        </button>
+                        <button type="button" class="story-node story-trigger" onclick="openStoryModal('build')">
                             <div class="story-node-label">The Build</div>
                             <p>Concepts became animations, calculators, and lessons you can actually explore.</p>
-                        </div>
-                        <div class="story-node story-node-accent">
+                        </button>
+                        <button type="button" class="story-node story-node-accent story-trigger" onclick="openStoryModal('goal')">
                             <div class="story-node-label">The Goal</div>
                             <p>Help users move from memorizing formulas to confidently reading and using data.</p>
-                        </div>
+                        </button>
                     </div>
                 </div>
 

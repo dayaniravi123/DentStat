@@ -321,6 +321,85 @@ const modalData = {
     }
 };
 
+const storyModalData = {
+    audience: {
+        title: "Built For Students, Clinicians, And Researchers",
+        content: `
+            <p class="text-sm mb-4">DentalStats was designed to serve three groups at once, because biostatistics only becomes powerful when it works in the classroom, in the clinic, and in research.</p>
+            <div class="grid gap-3 mb-4">
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                    <h4 class="font-semibold text-slate-900 mb-1">Students</h4>
+                    <p class="text-sm text-slate-600 mb-0">Need intuition first. Visual simulations, simple explanations, and concrete dental examples help turn abstract formulas into something memorable.</p>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                    <h4 class="font-semibold text-slate-900 mb-1">Clinicians</h4>
+                    <p class="text-sm text-slate-600 mb-0">Need practical interpretation. The goal is not just calculation, but understanding confidence intervals, p-values, and risk measures in real decision-making.</p>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                    <h4 class="font-semibold text-slate-900 mb-1">Researchers</h4>
+                    <p class="text-sm text-slate-600 mb-0">Need a bridge from theory to analysis. DentalStats helps connect study design, descriptive summaries, inference, and visualization into one learning flow.</p>
+                </div>
+            </div>
+            <div class="bg-teal-50 border border-teal-100 rounded-xl p-4">
+                <h4 class="font-semibold text-teal-900 mb-2">Why this matters</h4>
+                <p class="text-sm text-teal-800 mb-0">A good statistics platform should not feel like a spreadsheet first. It should feel like a guided explanation that leads you toward better questions and stronger evidence.</p>
+            </div>
+        `
+    },
+    spark: {
+        title: "The Spark",
+        content: `
+            <p class="text-sm mb-4">The idea for DentalStats came from a common learning problem: statistics was often taught as symbols, formulas, and memorized steps, but not as something students could actually see.</p>
+            <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 mb-4">
+                <h4 class="font-semibold text-amber-900 mb-2">What felt missing</h4>
+                <ul class="list-disc pl-5 text-sm text-amber-800 space-y-1 mb-0">
+                    <li>Too many formulas without intuition</li>
+                    <li>Not enough examples from dental research</li>
+                    <li>Very little interaction or visual feedback</li>
+                </ul>
+            </div>
+            <p class="text-sm mb-0">That frustration became the starting point: build a place where statistical thinking feels visual, guided, and directly connected to the kind of questions dental students actually ask.</p>
+        `
+    },
+    build: {
+        title: "The Build",
+        content: `
+            <p class="text-sm mb-4">Instead of keeping statistics locked inside static notes, DentalStats turns them into interactive pieces you can click, test, and explore at your own pace.</p>
+            <div class="grid gap-3 mb-4">
+                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+                    <h4 class="font-semibold text-indigo-900 mb-1">Visual Simulations</h4>
+                    <p class="text-sm text-indigo-800 mb-0">For ideas like probability, convergence, and sampling distributions.</p>
+                </div>
+                <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
+                    <h4 class="font-semibold text-emerald-900 mb-1">Interactive Calculators</h4>
+                    <p class="text-sm text-emerald-800 mb-0">For quickly testing inputs and seeing what the numbers mean.</p>
+                </div>
+                <div class="bg-violet-50 border border-violet-100 rounded-xl p-4">
+                    <h4 class="font-semibold text-violet-900 mb-1">Learning Modules</h4>
+                    <p class="text-sm text-violet-800 mb-0">For step-by-step explanations with dental context, not generic examples.</p>
+                </div>
+            </div>
+            <p class="text-sm mb-0">The build philosophy is simple: each concept should feel less like a chapter to memorize and more like an idea you can interact with until it makes sense.</p>
+        `
+    },
+    goal: {
+        title: "The Goal",
+        content: `
+            <p class="text-sm mb-4">The long-term goal of DentalStats is to help learners move from fear of statistics to confidence with evidence.</p>
+            <div class="bg-cyan-50 border border-cyan-100 rounded-xl p-4 mb-4">
+                <h4 class="font-semibold text-cyan-900 mb-2">What success looks like</h4>
+                <ul class="list-disc pl-5 text-sm text-cyan-800 space-y-1 mb-0">
+                    <li>Reading study results without feeling lost</li>
+                    <li>Choosing the right statistical tool more confidently</li>
+                    <li>Understanding what outputs actually mean in dental research</li>
+                    <li>Developing intuition before jumping into software</li>
+                </ul>
+            </div>
+            <p class="text-sm mb-0">In other words, the goal is not only to teach statistics. It is to help people become calmer, sharper, and more independent when they work with real data.</p>
+        `
+    }
+};
+
 // Calculator Functions
 function calculateSampleSize() {
     const p1 = parseFloat(document.getElementById('ss-p1').value) / 100;
@@ -695,6 +774,15 @@ function showConceptDetail(index) {
         modal.classList.remove('hidden');
         lucide.createIcons();
     }
+}
+
+function openStoryModal(type) {
+    const data = storyModalData[type];
+    if (!data) return;
+    document.getElementById('modal-title').textContent = data.title;
+    document.getElementById('modal-content').innerHTML = data.content;
+    document.getElementById('info-modal').classList.remove('hidden');
+    lucide.createIcons();
 }
 
 function filterCalculators() {
