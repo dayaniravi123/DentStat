@@ -558,18 +558,18 @@ function setDifficulty(level) {
    
     if (level === 'beginner') {
         banner.style.borderLeftColor = '#10b981';
-        title.textContent = 'Beginner Level';
-        desc.textContent = 'Explore probability through visual simulations. Watch the Central Limit Theorem unfold and see the Law of Large Numbers in action.';
+        title.textContent = 'It started with one classroom frustration';
+        desc.textContent = 'Statistics often felt too abstract for dental students, so DentalStats began as a visual way to make probability, sampling, and confidence feel concrete.';
         document.getElementById('visual-playground').style.display = 'block';
     } else if (level === 'intermediate') {
         banner.style.borderLeftColor = '#f59e0b';
-        title.textContent = 'Intermediate Level';
-        desc.textContent = 'Master sampling distributions and confidence intervals. Understand how sample size affects precision through interaction.';
+        title.textContent = 'Then formulas became guided experiences';
+        desc.textContent = 'The site grew into interactive lessons and calculators so learners could test ideas, compare outcomes, and understand what the numbers are really saying.';
         document.getElementById('visual-playground').style.display = 'block';
     } else {
         banner.style.borderLeftColor = '#ef4444';
-        title.textContent = 'Advanced Level';
-        desc.textContent = 'Deep dive into complex simulations, power analysis visualizations, and advanced sampling theory with real-time parameter manipulation.';
+        title.textContent = 'Now it bridges intuition and research';
+        desc.textContent = 'Today DentalStats connects visual learning with deeper analysis, helping future dental researchers move from raw data to stronger, evidence-based decisions.';
         document.getElementById('visual-playground').style.display = 'block';
     }
    
