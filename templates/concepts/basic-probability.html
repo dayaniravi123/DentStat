@@ -567,7 +567,7 @@
     }
     .chapter-hero {
       margin: 0 auto 1.5rem;
-      padding: 2rem 2.25rem;
+      padding: 2.6rem 2.5rem;
       border-radius: 28px;
       color: white;
       background:
@@ -588,61 +588,21 @@
       pointer-events: none;
     }
     .chapter-hero__badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.55rem;
-      padding: 0.48rem 0.85rem;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.14);
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(226,232,240,0.96);
+      display: none;
     }
     .chapter-hero__title {
-      margin-top: 1rem;
-      font-family: var(--serif);
-      font-size: clamp(2.3rem, 4vw, 3.6rem);
-      line-height: 1.04;
+      margin-top: 0;
+      font-size: clamp(2.5rem, 4vw, 3.9rem);
+      line-height: 1.05;
+      font-weight: 800;
       color: #fff;
     }
     .chapter-hero__lead {
-      margin-top: 1rem;
-      max-width: 720px;
+      margin-top: 1.1rem;
+      max-width: 860px;
       color: rgba(226,232,240,0.92);
-      font-size: 1.02rem;
-      line-height: 1.85;
-    }
-    .chapter-hero__stats {
-      margin-top: 1.5rem;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.9rem;
-      position: relative;
-      z-index: 1;
-    }
-    .chapter-hero__stat {
-      padding: 1rem 1.05rem;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.1);
-      backdrop-filter: blur(8px);
-    }
-    .chapter-hero__stat strong {
-      display: block;
-      font-size: 0.74rem;
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #99f6e4;
-      margin-bottom: 0.35rem;
-    }
-    .chapter-hero__stat span {
-      font-size: 0.88rem;
-      line-height: 1.6;
-      color: rgba(241,245,249,0.94);
+      font-size: 1.08rem;
+      line-height: 1.75;
     }
     .section {
       min-height: auto;
@@ -730,7 +690,7 @@
     }
     .sim-modal__dialog {
       position: relative;
-      width: min(1320px, calc(100vw - 1.5rem));
+      width: min(1460px, calc(100vw - 1rem));
       max-height: min(88vh, 860px);
       overflow: auto;
       border-radius: 32px;
@@ -765,6 +725,7 @@
     }
     .sim-modal__header p {
       margin-top: 0.45rem;
+      max-width: 760px;
       color: rgba(226,232,240,0.92);
       line-height: 1.7;
     }
@@ -785,11 +746,14 @@
     }
     .sim-modal__body {
       display: grid;
-      grid-template-columns: minmax(320px, 370px) minmax(0, 1fr);
-      gap: 1.2rem;
+      grid-template-columns: minmax(360px, 430px) minmax(520px, 1fr);
+      gap: 1.35rem;
       padding: 1.3rem 1.45rem 1.45rem;
       align-items: stretch;
       background: linear-gradient(180deg, #f8fbfe 0%, #eef6f7 100%);
+    }
+    .sim-modal__controls {
+      min-width: 0;
     }
     .sim-modal__controls > [data-sim-source] {
       display: block;
@@ -802,7 +766,7 @@
     }
     .sim-modal__visual {
       min-width: 0;
-      min-height: 560px;
+      min-height: 600px;
       display: flex;
     }
     .sim-modal__visual .viz-section {
@@ -811,7 +775,7 @@
       opacity: 1;
       pointer-events: all;
       display: none;
-      min-height: 560px;
+      min-height: 600px;
       width: 100%;
       padding: 1.35rem;
       border-radius: 24px;
@@ -849,15 +813,12 @@
       overflow: hidden;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 760px) {
       .section {
         padding: 2rem 1.5rem;
       }
       .chapter-hero {
-        padding: 1.7rem 1.45rem;
-      }
-      .chapter-hero__stats {
-        grid-template-columns: 1fr;
+        padding: 1.9rem 1.55rem;
       }
       .sim-launch-card {
         flex-direction: column;
@@ -936,26 +897,12 @@
 
     <section class="chapter-hero" aria-label="Basic Probability overview">
       <span class="chapter-hero__badge">Chapter 1 · Basic Probability</span>
-      <h1 class="chapter-hero__title">Build intuition for chance before formulas feel intimidating</h1>
+      <h1 class="chapter-hero__title">Basic Probability</h1>
       <p class="chapter-hero__lead">
-        This chapter explains probability through dental examples that feel real: implant success,
-        DMFT score distributions, and patient satisfaction outcomes. Read the explanation first,
-        then open each simulator when you want to test the idea visually.
+        Probability tells us how likely an event is to happen. In dental research, it helps us reason
+        about implant success, DMFT outcomes, and patient satisfaction with clearer intuition before
+        moving into more advanced statistical ideas.
       </p>
-      <div class="chapter-hero__stats">
-        <div class="chapter-hero__stat">
-          <strong>Chance</strong>
-          <span>See how repeated clinical outcomes settle around the true probability.</span>
-        </div>
-        <div class="chapter-hero__stat">
-          <strong>Expectation</strong>
-          <span>Connect distributions to the long-run average with a DMFT example.</span>
-        </div>
-        <div class="chapter-hero__stat">
-          <strong>Spread</strong>
-          <span>Compare score patterns and watch how variance responds to different setups.</span>
-        </div>
-      </div>
     </section>
 
     <!-- SECTION 1: CHANCE EVENTS -->
@@ -1440,15 +1387,15 @@ const vizSections = [
 const simConfigs = [
   {
     title: 'Dental Implant Success Simulator',
-    description: 'Change the success rate, simulate more patients, and compare the observed probability with the true value.'
+    description: 'Problem: if an implant succeeds 95% of the time, how quickly does the observed success rate settle near the true probability as more patients are simulated?'
   },
   {
     title: 'DMFT Expected Value Simulator',
-    description: 'Choose or customize a DMFT score distribution and watch the running mean move toward the expected value.'
+    description: 'Problem: given a DMFT score distribution, what long-run average should you expect, and how does the running sample mean move toward it?'
   },
   {
     title: 'Patient Satisfaction Variance Simulator',
-    description: 'Turn score values on or off, then draw repeated samples to see how the spread changes.'
+    description: 'Problem: when the allowed satisfaction scores change, how does the spread of outcomes change, and what happens to the running variance?'
   }
 ];
 
