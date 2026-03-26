@@ -1,6 +1,7 @@
 // Full client-side script (moved from templates/script.js)
 // Global state
 let currentDifficulty = 'beginner';
+let activeStoryFocus = 'spark';
 let mainChart = null;
 let survivalChartInstance = null;
 let simulationIntervals = {};
@@ -321,82 +322,22 @@ const modalData = {
     }
 };
 
-const storyModalData = {
+const storyCopyData = {
     audience: {
-        title: "Built For Students, Clinicians, And Researchers",
-        content: `
-            <p class="text-sm mb-4">DentalStats was designed to serve three groups at once, because biostatistics only becomes powerful when it works in the classroom, in the clinic, and in research.</p>
-            <div class="grid gap-3 mb-4">
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                    <h4 class="font-semibold text-slate-900 mb-1">Students</h4>
-                    <p class="text-sm text-slate-600 mb-0">Need intuition first. Visual simulations, simple explanations, and concrete dental examples help turn abstract formulas into something memorable.</p>
-                </div>
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                    <h4 class="font-semibold text-slate-900 mb-1">Clinicians</h4>
-                    <p class="text-sm text-slate-600 mb-0">Need practical interpretation. The goal is not just calculation, but understanding confidence intervals, p-values, and risk measures in real decision-making.</p>
-                </div>
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                    <h4 class="font-semibold text-slate-900 mb-1">Researchers</h4>
-                    <p class="text-sm text-slate-600 mb-0">Need a bridge from theory to analysis. DentalStats helps connect study design, descriptive summaries, inference, and visualization into one learning flow.</p>
-                </div>
-            </div>
-            <div class="bg-teal-50 border border-teal-100 rounded-xl p-4">
-                <h4 class="font-semibold text-teal-900 mb-2">Why this matters</h4>
-                <p class="text-sm text-teal-800 mb-0">A good statistics platform should not feel like a spreadsheet first. It should feel like a guided explanation that leads you toward better questions and stronger evidence.</p>
-            </div>
-        `
+        title: "Built for students, clinicians, and researchers",
+        description: "Students need intuition, clinicians need clear interpretation, and researchers need a bridge from methods to evidence. DentalStats keeps all three in one guided learning space."
     },
     spark: {
-        title: "The Spark",
-        content: `
-            <p class="text-sm mb-4">The idea for DentalStats came from a common learning problem: statistics was often taught as symbols, formulas, and memorized steps, but not as something students could actually see.</p>
-            <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 mb-4">
-                <h4 class="font-semibold text-amber-900 mb-2">What felt missing</h4>
-                <ul class="list-disc pl-5 text-sm text-amber-800 space-y-1 mb-0">
-                    <li>Too many formulas without intuition</li>
-                    <li>Not enough examples from dental research</li>
-                    <li>Very little interaction or visual feedback</li>
-                </ul>
-            </div>
-            <p class="text-sm mb-0">That frustration became the starting point: build a place where statistical thinking feels visual, guided, and directly connected to the kind of questions dental students actually ask.</p>
-        `
+        title: "It started with one classroom frustration",
+        description: "Statistics often felt too abstract for dental students, so DentalStats began as a visual way to make probability, sampling, and confidence feel concrete."
     },
     build: {
-        title: "The Build",
-        content: `
-            <p class="text-sm mb-4">Instead of keeping statistics locked inside static notes, DentalStats turns them into interactive pieces you can click, test, and explore at your own pace.</p>
-            <div class="grid gap-3 mb-4">
-                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
-                    <h4 class="font-semibold text-indigo-900 mb-1">Visual Simulations</h4>
-                    <p class="text-sm text-indigo-800 mb-0">For ideas like probability, convergence, and sampling distributions.</p>
-                </div>
-                <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-                    <h4 class="font-semibold text-emerald-900 mb-1">Interactive Calculators</h4>
-                    <p class="text-sm text-emerald-800 mb-0">For quickly testing inputs and seeing what the numbers mean.</p>
-                </div>
-                <div class="bg-violet-50 border border-violet-100 rounded-xl p-4">
-                    <h4 class="font-semibold text-violet-900 mb-1">Learning Modules</h4>
-                    <p class="text-sm text-violet-800 mb-0">For step-by-step explanations with dental context, not generic examples.</p>
-                </div>
-            </div>
-            <p class="text-sm mb-0">The build philosophy is simple: each concept should feel less like a chapter to memorize and more like an idea you can interact with until it makes sense.</p>
-        `
+        title: "Then concepts became interactive tools",
+        description: "Animations, calculators, and guided lessons turned formulas into something learners can test, see, and remember instead of just memorizing."
     },
     goal: {
-        title: "The Goal",
-        content: `
-            <p class="text-sm mb-4">The long-term goal of DentalStats is to help learners move from fear of statistics to confidence with evidence.</p>
-            <div class="bg-cyan-50 border border-cyan-100 rounded-xl p-4 mb-4">
-                <h4 class="font-semibold text-cyan-900 mb-2">What success looks like</h4>
-                <ul class="list-disc pl-5 text-sm text-cyan-800 space-y-1 mb-0">
-                    <li>Reading study results without feeling lost</li>
-                    <li>Choosing the right statistical tool more confidently</li>
-                    <li>Understanding what outputs actually mean in dental research</li>
-                    <li>Developing intuition before jumping into software</li>
-                </ul>
-            </div>
-            <p class="text-sm mb-0">In other words, the goal is not only to teach statistics. It is to help people become calmer, sharper, and more independent when they work with real data.</p>
-        `
+        title: "The goal is confidence with real dental data",
+        description: "DentalStats helps users move from memorizing formulas to reading results calmly, asking better questions, and making evidence-based decisions with more clarity."
     }
 };
 
@@ -628,8 +569,6 @@ function setDifficulty(level) {
    
     // Update banner
     const banner = document.getElementById('difficulty-banner');
-    const title = document.getElementById('current-level-title');
-    const desc = document.getElementById('current-level-desc');
     const badge = document.getElementById('level-badge');
    
     badge.className = `difficulty-badge-${level} text-white px-6 py-3 rounded-full font-bold text-lg shadow-lg`;
@@ -637,20 +576,16 @@ function setDifficulty(level) {
    
     if (level === 'beginner') {
         banner.style.borderLeftColor = '#10b981';
-        title.textContent = 'It started with one classroom frustration';
-        desc.textContent = 'Statistics often felt too abstract for dental students, so DentalStats began as a visual way to make probability, sampling, and confidence feel concrete.';
         document.getElementById('visual-playground').style.display = 'block';
     } else if (level === 'intermediate') {
         banner.style.borderLeftColor = '#f59e0b';
-        title.textContent = 'Then formulas became guided experiences';
-        desc.textContent = 'The site grew into interactive lessons and calculators so learners could test ideas, compare outcomes, and understand what the numbers are really saying.';
         document.getElementById('visual-playground').style.display = 'block';
     } else {
         banner.style.borderLeftColor = '#ef4444';
-        title.textContent = 'Now it bridges intuition and research';
-        desc.textContent = 'Today DentalStats connects visual learning with deeper analysis, helping future dental researchers move from raw data to stronger, evidence-based decisions.';
         document.getElementById('visual-playground').style.display = 'block';
     }
+
+    renderStoryFocus();
    
     // Update concepts grid
     updateConceptsGrid();
@@ -777,13 +712,32 @@ function showConceptDetail(index) {
     }
 }
 
+function renderStoryFocus() {
+    const data = storyCopyData[activeStoryFocus];
+    const title = document.getElementById('current-level-title');
+    const desc = document.getElementById('current-level-desc');
+    if (!data || !title || !desc) return;
+
+    title.textContent = data.title;
+    desc.textContent = data.description;
+
+    document.querySelectorAll('[data-story-focus]').forEach(trigger => {
+        const isActive = trigger.getAttribute('data-story-focus') === activeStoryFocus;
+        trigger.classList.toggle('is-active', isActive);
+        trigger.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+}
+
+function setStoryFocus(type) {
+    if (!storyCopyData[type]) return;
+    activeStoryFocus = type;
+    renderStoryFocus();
+}
+
 function openStoryModal(type) {
-    const data = storyModalData[type];
+    const data = storyCopyData[type];
     if (!data) return;
-    document.getElementById('modal-title').textContent = data.title;
-    document.getElementById('modal-content').innerHTML = data.content;
-    document.getElementById('info-modal').classList.remove('hidden');
-    lucide.createIcons();
+    setStoryFocus(type);
 }
 
 function filterCalculators() {

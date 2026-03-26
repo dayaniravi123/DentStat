@@ -147,6 +147,11 @@ body { font-family: 'Inter', sans-serif; }
     font-weight: 600;
 }
 
+.story-copy-shell {
+    max-width: 660px;
+    min-height: 230px;
+}
+
 .story-trigger {
     appearance: none;
     -webkit-appearance: none;
@@ -161,6 +166,13 @@ body { font-family: 'Inter', sans-serif; }
     border-color: rgba(15,118,110,0.28);
     box-shadow: 0 12px 24px rgba(15,23,42,0.08);
     outline: none;
+}
+
+.story-chip.is-active {
+    background: linear-gradient(135deg, rgba(15,118,110,0.12), rgba(94,234,212,0.16));
+    border-color: rgba(15,118,110,0.3);
+    color: #0f172a;
+    box-shadow: 0 14px 28px rgba(15,23,42,0.1);
 }
 
 .story-node {
@@ -191,6 +203,12 @@ body { font-family: 'Inter', sans-serif; }
     border-color: rgba(15,118,110,0.24);
     box-shadow: 0 18px 34px rgba(15,23,42,0.1);
     outline: none;
+}
+
+.story-node.is-active {
+    border-color: rgba(15,118,110,0.34);
+    box-shadow: 0 20px 36px rgba(15,23,42,0.12);
+    transform: translateY(-4px);
 }
 
 .story-node-label {
@@ -300,6 +318,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
 @media (max-width: 640px) {
     .hero { padding: 12px; }
     .story-banner { padding: 22px; border-radius: 22px; }
+    .story-copy-shell { min-height: auto; max-width: 100%; }
     .story-scene { min-height: 280px; }
     .story-badge-wrap { position: relative; top: auto; right: auto; text-align: left; padding: 20px 20px 0; }
 }

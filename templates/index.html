@@ -73,27 +73,29 @@
                 <div class="relative z-10">
                     <div class="flex flex-wrap items-center gap-3 mb-4">
                         <span class="story-kicker">The Story Behind DentalStats</span>
-                        <button type="button" class="story-chip story-trigger" onclick="openStoryModal('audience')">
+                        <button type="button" class="story-chip story-trigger" data-story-focus="audience" aria-pressed="false" onclick="setStoryFocus('audience')">
                             Built for students, clinicians, and researchers
                         </button>
                     </div>
-                    <h2 id="current-level-title" class="text-3xl md:text-4xl font-bold text-slate-900 leading-tight max-w-3xl">
-                        It started with one classroom frustration
-                    </h2>
-                    <p id="current-level-desc" class="text-slate-600 text-lg leading-relaxed mt-4 max-w-3xl">
-                        Statistics often felt too abstract for dental students, so DentalStats was designed to turn formulas into visual intuition, guided lessons, and interactive discovery.
-                    </p>
+                    <div class="story-copy-shell">
+                        <h2 id="current-level-title" class="text-3xl md:text-4xl font-bold text-slate-900 leading-tight max-w-2xl">
+                            It started with one classroom frustration
+                        </h2>
+                        <p id="current-level-desc" class="text-slate-600 text-lg leading-relaxed mt-4 max-w-2xl">
+                            Statistics often felt too abstract for dental students, so DentalStats was designed to turn formulas into visual intuition, guided lessons, and interactive discovery.
+                        </p>
+                    </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-7">
-                        <button type="button" class="story-node story-trigger" onclick="openStoryModal('spark')">
+                        <button type="button" class="story-node story-trigger" data-story-focus="spark" aria-pressed="true" onclick="setStoryFocus('spark')">
                             <div class="story-node-label">The Spark</div>
                             <p>Dental learners needed a friendlier path into probability and research thinking.</p>
                         </button>
-                        <button type="button" class="story-node story-trigger" onclick="openStoryModal('build')">
+                        <button type="button" class="story-node story-trigger" data-story-focus="build" aria-pressed="false" onclick="setStoryFocus('build')">
                             <div class="story-node-label">The Build</div>
                             <p>Concepts became animations, calculators, and lessons you can actually explore.</p>
                         </button>
-                        <button type="button" class="story-node story-node-accent story-trigger" onclick="openStoryModal('goal')">
+                        <button type="button" class="story-node story-node-accent story-trigger" data-story-focus="goal" aria-pressed="false" onclick="setStoryFocus('goal')">
                             <div class="story-node-label">The Goal</div>
                             <p>Help users move from memorizing formulas to confidently reading and using data.</p>
                         </button>
