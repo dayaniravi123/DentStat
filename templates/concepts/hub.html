@@ -155,6 +155,7 @@
         const conceptMap = JSON.parse(document.getElementById('concept-map').textContent);
         const frame = document.getElementById('concept-frame');
         const conceptButtons = Array.from(document.querySelectorAll('.concept-link'));
+        let embeddedInteractionCleanup = null;
 
         function sanitizeSlug(slug) {
             const clean = (slug || '').replace('.html', '');
@@ -210,6 +211,72 @@
             win.__conceptHubObserver = observer;
         }
 
+        function clearEmbeddedInteractionBindings() {
+            try {
+                if (typeof embeddedInteractionCleanup === 'function') {
+                    embeddedInteractionCleanup();
+                    embeddedInteractionCleanup = null;
+                }
+                const win = frame.contentWindow;
+                if (!win) return;
+                if (win.__conceptHubResizeObserver) {
+                    win.__conceptHubResizeObserver.disconnect();
+                    win.__conceptHubResizeObserver = null;
+                }
+                if (win.__conceptHubMutationObserver) {
+                    win.__conceptHubMutationObserver.disconnect();
+                    win.__conceptHubMutationObserver = null;
+                }
+            } catch (error) {
+                console.warn('Could not clear embedded concept bindings:', error);
+            }
+        }
+
+        function scheduleEmbeddedResize() {
+            resizeEmbeddedConcept();
+            requestAnimationFrame(resizeEmbeddedConcept);
+            [140, 320, 650, 1100, 1700].forEach((delay) => {
+                window.setTimeout(resizeEmbeddedConcept, delay);
+            });
+        }
+
+        function bindEmbeddedInteractions(doc) {
+            clearEmbeddedInteractionBindings();
+
+            const win = frame.contentWindow;
+            if (!win) return;
+
+            const events = ['click', 'input', 'change', 'transitionend', 'animationend'];
+            const handler = () => scheduleEmbeddedResize();
+            events.forEach((eventName) => doc.addEventListener(eventName, handler, true));
+
+            if (typeof win.ResizeObserver === 'function') {
+                const resizeObserver = new win.ResizeObserver(() => scheduleEmbeddedResize());
+                if (doc.body) resizeObserver.observe(doc.body);
+                if (doc.documentElement) resizeObserver.observe(doc.documentElement);
+                doc.querySelectorAll('main, section, [id$="steps"], [class*="step"], [class*="panel"]').forEach((el) => {
+                    resizeObserver.observe(el);
+                });
+                win.__conceptHubResizeObserver = resizeObserver;
+            }
+
+            if (typeof win.MutationObserver === 'function') {
+                const mutationObserver = new win.MutationObserver(() => scheduleEmbeddedResize());
+                mutationObserver.observe(doc.body || doc.documentElement, {
+                    subtree: true,
+                    childList: true,
+                    attributes: true,
+                    characterData: false,
+                    attributeFilter: ['class', 'style', 'hidden', 'open', 'aria-expanded']
+                });
+                win.__conceptHubMutationObserver = mutationObserver;
+            }
+
+            embeddedInteractionCleanup = () => {
+                events.forEach((eventName) => doc.removeEventListener(eventName, handler, true));
+            };
+        }
+
         function resizeEmbeddedConcept() {
             try {
                 const doc = frame.contentDocument || frame.contentWindow.document;
@@ -250,6 +317,7 @@
                 doc.body.style.paddingTop = '0';
                 doc.body.style.background = '#ffffff';
                 rebindEmbeddedObservers(doc);
+                bindEmbeddedInteractions(doc);
                 resizeEmbeddedConcept();
 
                 setTimeout(resizeEmbeddedConcept, 120);
