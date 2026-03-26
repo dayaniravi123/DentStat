@@ -1037,12 +1037,49 @@ function drawPopulationDistribution() {
 function updateCLTDistribution() {
     drawPopulationDistribution();
     resetCLT();
+    updateCLTNote();
 }
 
 function updateCLTParams() {
     const n = document.getElementById('clt-n').value;
     document.getElementById('clt-n-val').textContent = `n=${n}`;
     simState.centralLimit.sampleSize = parseInt(n);
+    updateCLTNote();
+}
+
+function updateCLTNote() {
+    const note = document.getElementById('clt-sampling-note');
+    const distributionSelect = document.getElementById('clt-distribution');
+    const sampleSlider = document.getElementById('clt-n');
+    if (!note || !distributionSelect || !sampleSlider) return;
+
+    const type = distributionSelect.value;
+    const n = parseInt(sampleSlider.value, 10);
+    const labels = {
+        uniform: 'Uniform',
+        exponential: 'Exponential',
+        bimodal: 'Bimodal',
+        dental: 'Dental DMFT'
+    };
+    const selectedLabel = labels[type] || 'Selected';
+
+    let detail;
+    if (n <= 3) {
+        detail = `With n=${n}, the right chart still keeps a lot of the ${selectedLabel.toLowerCase()} shape.`;
+    } else if (n <= 15) {
+        detail = `With n=${n}, the right chart starts smoothing out, but you can still see the influence of the ${selectedLabel.toLowerCase()} population.`;
+    } else if (n <= 40) {
+        detail = `With n=${n}, the sample means are already getting noticeably bell-shaped.`;
+    } else {
+        detail = `With n=${n}, it is expected to look close to a bell curve even when the original population is ${selectedLabel.toLowerCase()}.`;
+    }
+
+    note.innerHTML = `
+        <span class="font-semibold text-slate-700">Selected population:</span> ${selectedLabel}.
+        The right chart shows the <span class="font-semibold text-slate-700">sampling distribution of sample means</span>, not the raw population values.
+        ${detail}
+        <span class="block mt-1 text-sky-700 font-medium">If you want the right chart to look more skewed, lower sample size toward n=1 to n=5.</span>
+    `;
 }
 
 // Helper: generate a standard normal random variable (Box-Muller)
@@ -1403,6 +1440,7 @@ function resetCLT() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
+    updateCLTNote();
     lucide.createIcons();
 }
 
@@ -1790,6 +1828,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setDifficulty('beginner');
         initializeCharts();
         initCLTCanvas();
+        updateCLTNote();
         initLLNChart();
     } catch (err) {
         // If some elements are missing, fail silently during partial renders
