@@ -264,33 +264,6 @@
             gap: 8px;
         }
 
-        .chart-expand-button {
-            margin-left: auto;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            border: 1px solid #cbd5e1;
-            background: #f8fafc;
-            color: #0f766e;
-            border-radius: 999px;
-            padding: 7px 12px;
-            font-size: 0.76rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .chart-expand-button:hover {
-            background: #ecfeff;
-            border-color: #0d9488;
-            color: #0f172a;
-        }
-
-        .chart-expand-button svg {
-            width: 14px;
-            height: 14px;
-        }
-
         .chart-container {
             position: relative;
             height: 350px;
@@ -323,16 +296,6 @@
         .chart-expand-trigger:focus-visible::after {
             opacity: 1;
             transform: translateY(0);
-        }
-
-        .chart-container.is-modal {
-            height: min(70vh, 640px);
-            margin-bottom: 0;
-            cursor: default;
-        }
-
-        .chart-container.is-modal::after {
-            display: none;
         }
 
         .stats-grid {
@@ -721,6 +684,12 @@
         }
 
         .chart-modal-chart-slot {
+            width: 100%;
+        }
+
+        .chart-modal-chart-container {
+            position: relative;
+            height: min(70vh, 640px);
             min-height: min(70vh, 640px);
         }
 
@@ -728,23 +697,7 @@
             margin-top: 18px;
         }
 
-        .chart-placeholder {
-            border: 1px dashed #cbd5e1;
-            border-radius: 14px;
-            background: repeating-linear-gradient(
-                -45deg,
-                #f8fafc,
-                #f8fafc 12px,
-                #f1f5f9 12px,
-                #f1f5f9 24px
-            );
-        }
-
         @media (max-width: 768px) {
-            .chart-expand-button span {
-                display: none;
-            }
-
             .chart-modal {
                 padding: 12px;
             }
@@ -765,8 +718,7 @@
                 font-size: 1.15rem;
             }
 
-            .chart-container.is-modal,
-            .chart-modal-chart-slot {
+            .chart-modal-chart-container {
                 height: min(56vh, 480px);
                 min-height: min(56vh, 480px);
             }
@@ -905,10 +857,6 @@
                 <div class="card-title">
                     <span class="chart-title-text">📊 Data Distribution</span>
                     <span class="info-tip">?<span class="tip-text"><strong>What is this?</strong> A bar chart showing how many successes vs failures occurred in your simulated study. Think of it like: "Out of 200 patients, how many had cavities vs didn't?" Hover over bars for exact counts.</span></span>
-                    <button type="button" class="chart-expand-button" data-chart-trigger="distribution" aria-label="Expand Data Distribution chart">
-                        <i data-lucide="maximize-2"></i>
-                        <span>Expand</span>
-                    </button>
                 </div>
                 <div class="chart-container chart-expand-trigger" data-chart-trigger="distribution" tabindex="0" role="button" aria-label="Open Data Distribution chart in a larger modal view">
                     <canvas id="distributionChart"></canvas>
@@ -921,10 +869,6 @@
                 <div class="card-title">
                     <span class="chart-title-text">📈 Convergence Analysis</span>
                     <span class="info-tip">?<span class="tip-text"><strong>What is this?</strong> Shows how your observed probability changes as you add more patients. The blue line (observed) should gradually approach the red dashed line (true value). This is the <strong>Law of Large Numbers</strong> in action!</span></span>
-                    <button type="button" class="chart-expand-button" data-chart-trigger="convergence" aria-label="Expand Convergence Analysis chart">
-                        <i data-lucide="maximize-2"></i>
-                        <span>Expand</span>
-                    </button>
                 </div>
                 <div class="chart-container chart-expand-trigger" data-chart-trigger="convergence" tabindex="0" role="button" aria-label="Open Convergence Analysis chart in a larger modal view">
                     <canvas id="convergenceChart"></canvas>
@@ -937,10 +881,6 @@
                 <div class="card-title">
                     <span class="chart-title-text">🔔 Normal Approximation</span>
                     <span class="info-tip">?<span class="tip-text"><strong>What is this?</strong> Shows the bell curve (normal distribution) that approximates where your success count should fall. The red triangle marks where your actual result landed. If it's near the peak, your result is typical; if it's far out in the tails, it's unusual!</span></span>
-                    <button type="button" class="chart-expand-button" data-chart-trigger="normal" aria-label="Expand Normal Approximation chart">
-                        <i data-lucide="maximize-2"></i>
-                        <span>Expand</span>
-                    </button>
                 </div>
                 <div class="chart-container chart-expand-trigger" data-chart-trigger="normal" tabindex="0" role="button" aria-label="Open Normal Approximation chart in a larger modal view">
                     <canvas id="normalChart"></canvas>
@@ -971,7 +911,11 @@
             </button>
         </div>
         <div class="chart-modal-body">
-            <div id="chartModalChartSlot" class="chart-modal-chart-slot"></div>
+            <div class="chart-modal-chart-slot">
+                <div class="chart-modal-chart-container">
+                    <canvas id="chartModalCanvas"></canvas>
+                </div>
+            </div>
             <div id="chartModalHint" class="chart-modal-footer"></div>
         </div>
     </div>
@@ -992,9 +936,7 @@
     let charts = {};
     let chartModalState = {
         activeKey: null,
-        container: null,
-        placeholder: null,
-        chart: null
+        modalChart: null
     };
 
     // Initialize charts
@@ -1257,6 +1199,49 @@
         });
     }
 
+    function cloneChartConfig(value) {
+        if (Array.isArray(value)) {
+            return value.map(cloneChartConfig);
+        }
+
+        if (typeof value === 'function') {
+            return value;
+        }
+
+        if (value && typeof value === 'object') {
+            const cloned = {};
+            Object.keys(value).forEach((key) => {
+                cloned[key] = cloneChartConfig(value[key]);
+            });
+            return cloned;
+        }
+
+        return value;
+    }
+
+    function buildModalChart(chartKey) {
+        const sourceChart = charts[chartKey];
+        if (!sourceChart) {
+            return null;
+        }
+
+        const sourceConfig = sourceChart.config._config || {
+            type: sourceChart.config.type,
+            data: sourceChart.data,
+            options: sourceChart.options
+        };
+
+        const modalConfig = cloneChartConfig(sourceConfig);
+        modalConfig.options = modalConfig.options || {};
+        modalConfig.options.responsive = true;
+        modalConfig.options.maintainAspectRatio = false;
+
+        const modalCanvas = document.getElementById('chartModalCanvas');
+        const modalContext = modalCanvas.getContext('2d');
+
+        return new Chart(modalContext, modalConfig);
+    }
+
     function openChartModal(chartKey) {
         if (chartModalState.activeKey === chartKey) {
             return;
@@ -1267,68 +1252,50 @@
         }
 
         const card = document.querySelector(`.chart-card[data-chart-key="${chartKey}"]`);
-        const container = card ? card.querySelector('.chart-container') : null;
-        const chart = charts[chartKey];
-        if (!card || !container || !chart) {
+        if (!card || !charts[chartKey]) {
             return;
         }
-
-        const placeholder = document.createElement('div');
-        placeholder.className = 'chart-placeholder';
-        placeholder.style.height = `${Math.max(container.offsetHeight, 260)}px`;
-        container.parentNode.insertBefore(placeholder, container);
 
         document.getElementById('chartModalTitle').textContent =
             card.querySelector('.chart-title-text')?.textContent.trim() || 'Expanded Chart';
         document.getElementById('chartModalHint').innerHTML =
             card.querySelector('.chart-hint')?.outerHTML || '';
 
-        chartModalState = {
-            activeKey: chartKey,
-            container,
-            placeholder,
-            chart
-        };
-
-        container.classList.add('is-modal');
-        document.getElementById('chartModalChartSlot').appendChild(container);
         document.getElementById('chartModal').classList.add('open');
         document.getElementById('chartModal').setAttribute('aria-hidden', 'false');
         document.body.classList.add('modal-open');
+        chartModalState.activeKey = chartKey;
+        chartModalState.modalChart = buildModalChart(chartKey);
 
         requestAnimationFrame(() => {
-            chart.resize();
+            if (chartModalState.modalChart) {
+                chartModalState.modalChart.resize();
+            }
             document.getElementById('closeChartModal').focus();
         });
     }
 
     function closeChartModal() {
-        if (!chartModalState.activeKey || !chartModalState.container || !chartModalState.placeholder) {
+        if (!chartModalState.activeKey) {
             return;
         }
-
-        const { chart, container, placeholder } = chartModalState;
-
-        container.classList.remove('is-modal');
-        placeholder.replaceWith(container);
 
         document.getElementById('chartModal').classList.remove('open');
         document.getElementById('chartModal').setAttribute('aria-hidden', 'true');
         document.getElementById('chartModalHint').innerHTML = '';
         document.body.classList.remove('modal-open');
 
-        chartModalState = {
-            activeKey: null,
-            container: null,
-            placeholder: null,
-            chart: null
-        };
+        if (chartModalState.modalChart) {
+            chartModalState.modalChart.destroy();
+        }
 
-        requestAnimationFrame(() => {
-            if (chart) {
-                chart.resize();
-            }
-        });
+        const returnTarget = document.querySelector(`.chart-container[data-chart-trigger="${chartModalState.activeKey}"]`);
+        chartModalState.activeKey = null;
+        chartModalState.modalChart = null;
+
+        if (returnTarget) {
+            returnTarget.focus();
+        }
     }
 
     // Generate random data
