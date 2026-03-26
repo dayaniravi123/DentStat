@@ -670,7 +670,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
+      padding: 0.75rem;
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
@@ -690,8 +690,9 @@
     }
     .sim-modal__dialog {
       position: relative;
-      width: min(1460px, calc(100vw - 1rem));
-      max-height: min(88vh, 860px);
+      width: min(1660px, calc(100vw - 0.5rem));
+      height: min(94vh, 980px);
+      max-height: min(94vh, 980px);
       overflow: auto;
       border-radius: 32px;
       background: #ffffff;
@@ -746,10 +747,10 @@
     }
     .sim-modal__body {
       display: grid;
-      grid-template-columns: minmax(360px, 430px) minmax(520px, 1fr);
-      gap: 1.35rem;
+      grid-template-columns: minmax(390px, 460px) minmax(760px, 1fr);
+      gap: 1rem;
       padding: 1.3rem 1.45rem 1.45rem;
-      align-items: stretch;
+      align-items: start;
       background: linear-gradient(180deg, #f8fbfe 0%, #eef6f7 100%);
     }
     .sim-modal__controls {
@@ -766,8 +767,11 @@
     }
     .sim-modal__visual {
       min-width: 0;
-      min-height: 600px;
+      min-height: 720px;
       display: flex;
+      position: sticky;
+      top: 0;
+      align-self: start;
     }
     .sim-modal__visual .viz-section {
       position: relative;
@@ -775,7 +779,7 @@
       opacity: 1;
       pointer-events: all;
       display: none;
-      min-height: 600px;
+      min-height: 720px;
       width: 100%;
       padding: 1.35rem;
       border-radius: 24px;
@@ -795,14 +799,14 @@
     .sim-modal__visual #die-viz,
     .sim-modal__visual #card-viz {
       width: 100%;
-      max-width: 780px;
+      max-width: 980px;
     }
     .sim-modal__visual #coinChart,
     .sim-modal__visual #dieChart,
     .sim-modal__visual #varChart {
       max-width: 100%;
       width: 100% !important;
-      min-height: 220px;
+      min-height: 320px;
       border: 1px solid rgba(148,163,184,0.18);
     }
     .sim-modal__visual .exp-display {
@@ -813,7 +817,7 @@
       overflow: hidden;
     }
 
-    @media (max-width: 760px) {
+    @media (max-width: 960px) {
       .section {
         padding: 2rem 1.5rem;
       }
@@ -835,10 +839,14 @@
       }
       .sim-modal__dialog {
         max-height: 92vh;
+        height: auto;
       }
       .sim-modal__visual,
       .sim-modal__visual .viz-section {
-        min-height: 460px;
+        min-height: 520px;
+      }
+      .sim-modal__visual {
+        position: relative;
       }
     }
 
@@ -1184,7 +1192,7 @@
           Distance from true P: <strong id="convDist">—</strong>
         </div>
 
-        <canvas id="coinChart" width="540" height="210" style="width:100%;max-width:540px;border-radius:12px;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.06);"></canvas>
+        <canvas id="coinChart" width="760" height="300" style="width:100%;max-width:760px;border-radius:12px;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.06);"></canvas>
       </div>
     </div>
 
@@ -1204,7 +1212,7 @@
           <div class="exp-val"><strong id="dv-rolls">0</strong>Rolls</div>
         </div>
 
-        <canvas id="dieChart" width="540" height="220" style="width:100%;max-width:540px;border-radius:12px;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.06);"></canvas>
+        <canvas id="dieChart" width="760" height="320" style="width:100%;max-width:760px;border-radius:12px;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.06);"></canvas>
       </div>
     </div>
 
@@ -1224,7 +1232,7 @@
           <div class="exp-val"><strong id="vv-draws">0</strong>Draws</div>
         </div>
 
-        <canvas id="varChart" width="540" height="220" style="width:100%;max-width:540px;border-radius:12px;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.06);"></canvas>
+        <canvas id="varChart" width="760" height="320" style="width:100%;max-width:760px;border-radius:12px;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.06);"></canvas>
       </div>
     </div>
 
@@ -1420,6 +1428,9 @@ vizSections.forEach((panel) => {
 });
 
 function setActiveSection(idx) {
+  if (simModal.classList.contains('is-open') && currentSimVisual) {
+    return;
+  }
   activeSection = idx;
   vizSections.forEach((panel, i) => panel.classList.toggle('active', i === idx));
 }
@@ -1601,7 +1612,7 @@ function toggleAutoPlay() {
 }
 
 function renderCoinChart() {
-  const W=540, H=210, PL=52, PR=16, PT=20, PB=38;
+  const W=760, H=300, PL=60, PR=20, PT=22, PB=46;
   const cW = W-PL-PR, cH = H-PT-PB;
   const FONT = '500 9.5px Inter, -apple-system, sans-serif';
 
@@ -1901,7 +1912,7 @@ const dieCtx = makeHiDPI(document.getElementById('dieChart'));
 const dieChartData = { obs:[], trueE:[] };
 
 function renderDieChart() {
-  const W=540, H=220, PL=52, PR=20, PT=20, PB=40;
+  const W=760, H=320, PL=62, PR=24, PT=22, PB=52;
   const cW = W-PL-PR, cH = H-PT-PB;
   const FONT = '500 9.5px Inter, -apple-system, sans-serif';
 
@@ -2132,10 +2143,10 @@ const varCtx  = makeHiDPI(document.getElementById('varChart'));
 const varData  = { sample:[], trueV:[] };
 
 function renderVarChart() {
-  const W=540, H=220, PL=52, PR=16, FONT='500 9.5px Inter, -apple-system, sans-serif';
+  const W=760, H=320, PL=62, PR=20, FONT='500 9.5px Inter, -apple-system, sans-serif';
 
   const DOT_TOP=8, DOT_H=62, DOT_BOT=DOT_TOP+DOT_H;
-  const CV_TOP=DOT_BOT+14, CV_BOT=H-28, CV_H=CV_BOT-CV_TOP;
+  const CV_TOP=DOT_BOT+16, CV_BOT=H-36, CV_H=CV_BOT-CV_TOP;
   const cW = W-PL-PR;
 
   varCtx.clearRect(0,0,W,H);
