@@ -540,6 +540,228 @@
       .nav-breadcrumb { display: none; }
     }
 
+    /* ── DOCUMENTATION LAYOUT + MODAL SIMULATOR ── */
+    .dot-nav,
+    .viz-panel {
+      display: none;
+    }
+    .page-wrapper {
+      display: block;
+      height: auto;
+      margin-top: 64px;
+      padding: 2rem 1rem 3rem;
+    }
+    .text-panel {
+      width: min(1080px, 100%);
+      min-width: 0;
+      overflow: visible;
+      margin: 0 auto;
+      background: transparent;
+      border-right: 0;
+    }
+    .section {
+      min-height: auto;
+      justify-content: flex-start;
+      padding: 2.4rem 2.5rem;
+      margin-bottom: 1.5rem;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      box-shadow: 0 20px 45px rgba(15,23,42,0.08);
+    }
+    .section:last-child {
+      margin-bottom: 0;
+    }
+    .section h2 {
+      font-size: 2.15rem;
+    }
+    .sim-launch-card {
+      margin-top: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+      padding: 1.25rem 1.35rem;
+      border-radius: 20px;
+      border: 1px solid rgba(13,148,136,0.14);
+      background: linear-gradient(135deg, rgba(13,148,136,0.08), rgba(99,102,241,0.08));
+    }
+    .sim-launch-copy h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.35rem;
+    }
+    .sim-launch-copy p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin: 0;
+    }
+    .sim-open-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 0.9rem 1.4rem;
+      min-width: 150px;
+      background: linear-gradient(135deg, var(--teal), #0f766e);
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 14px 28px rgba(13,148,136,0.22);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .sim-open-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 32px rgba(13,148,136,0.28);
+    }
+    [data-sim-source] {
+      display: none;
+    }
+
+    .sim-modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.22s ease, visibility 0.22s ease;
+      z-index: 300;
+    }
+    .sim-modal.is-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .sim-modal__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15,23,42,0.66);
+      backdrop-filter: blur(5px);
+    }
+    .sim-modal__dialog {
+      position: relative;
+      width: min(1180px, 100%);
+      max-height: min(90vh, 960px);
+      overflow: auto;
+      border-radius: 30px;
+      background: #ffffff;
+      box-shadow: 0 30px 80px rgba(15,23,42,0.34);
+      z-index: 1;
+    }
+    .sim-modal__header {
+      padding: 1.6rem 1.8rem 0;
+    }
+    .sim-modal__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      background: rgba(13,148,136,0.08);
+      color: var(--teal);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .sim-modal__header h2 {
+      margin-top: 0.9rem;
+      font-size: 2rem;
+      color: var(--navy);
+    }
+    .sim-modal__header p {
+      margin-top: 0.45rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .sim-modal__close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 50%;
+      background: #f1f5f9;
+      color: var(--navy);
+      font-size: 1.6rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .sim-modal__body {
+      display: grid;
+      grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
+      gap: 1.25rem;
+      padding: 1.35rem 1.8rem 1.8rem;
+      align-items: start;
+    }
+    .sim-modal__controls > [data-sim-source] {
+      display: block;
+      padding: 1.2rem;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbfc 100%);
+      box-shadow: 0 16px 36px rgba(15,23,42,0.08);
+    }
+    .sim-modal__visual {
+      min-width: 0;
+    }
+    .sim-modal__visual .viz-section {
+      position: relative;
+      inset: auto;
+      opacity: 1;
+      pointer-events: all;
+      display: none;
+      min-height: 100%;
+      padding: 1.5rem;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, #f8fcfc 0%, #eff6fb 100%);
+      box-shadow: 0 16px 36px rgba(15,23,42,0.08);
+    }
+    .sim-modal__visual .viz-section.active {
+      display: flex;
+    }
+    .sim-modal__visual #coinChart,
+    .sim-modal__visual #dieChart,
+    .sim-modal__visual #varChart {
+      max-width: 100%;
+    }
+    .sim-modal__visual .exp-display {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    @media (max-width: 900px) {
+      .section {
+        padding: 2rem 1.5rem;
+      }
+      .sim-launch-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .sim-open-btn {
+        width: 100%;
+      }
+      .sim-modal {
+        padding: 0.9rem;
+      }
+      .sim-modal__body {
+        grid-template-columns: 1fr;
+      }
+      .sim-modal__dialog {
+        max-height: 92vh;
+      }
+    }
+
     /* Speed control */
     .speed-control {
       display: flex; align-items: center; gap: 0.5rem;
@@ -616,51 +838,62 @@
         <span class="sym">P(A&#x1d9c;) = 1 &minus; P(A)</span>
       </div>
 
-      <!-- Preset scenarios -->
-      <div class="prob-bars-label">Clinical Scenarios</div>
-      <div class="preset-row" id="coinPresets">
-        <button class="preset-btn active" onclick="setCoinPreset(95,'implant')">Implant (95%)</button>
-        <button class="preset-btn" onclick="setCoinPreset(90,'filling')">Filling (90%)</button>
-        <button class="preset-btn" onclick="setCoinPreset(85,'rootcanal')">Root Canal (85%)</button>
-        <button class="preset-btn" onclick="setCoinPreset(92,'extraction')">Extraction (92%)</button>
-        <button class="preset-btn" onclick="setCoinPreset(50,'custom')">Custom</button>
+      <div class="sim-launch-card">
+        <div class="sim-launch-copy">
+          <h3>Open the implant probability simulator</h3>
+          <p>
+            Try preset success rates, change the probability slider, and watch the observed rate
+            move closer to the true value as more patients are simulated.
+          </p>
+        </div>
+        <button type="button" class="sim-open-btn" data-open-sim="0">Simulate</button>
       </div>
 
-      <!-- Probability slider -->
-      <div class="slider-row">
-        <label>P(Success) <span id="coin-p-label">95%</span></label>
-        <input type="range" id="coin-p" min="5" max="99" value="95">
-      </div>
+      <div data-sim-source="0">
+        <div class="prob-bars-label">Clinical Scenarios</div>
+        <div class="preset-row" id="coinPresets">
+          <button class="preset-btn active" onclick="setCoinPreset(95,'implant')">Implant (95%)</button>
+          <button class="preset-btn" onclick="setCoinPreset(90,'filling')">Filling (90%)</button>
+          <button class="preset-btn" onclick="setCoinPreset(85,'rootcanal')">Root Canal (85%)</button>
+          <button class="preset-btn" onclick="setCoinPreset(92,'extraction')">Extraction (92%)</button>
+          <button class="preset-btn" onclick="setCoinPreset(50,'custom')">Custom</button>
+        </div>
 
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="s-label">Success</div>
-          <div class="s-value" id="c-heads" style="color:var(--teal)">0</div>
+        <div class="slider-row">
+          <label>P(Success) <span id="coin-p-label">95%</span></label>
+          <input type="range" id="coin-p" min="5" max="99" value="95">
         </div>
-        <div class="stat-box">
-          <div class="s-label">Failure</div>
-          <div class="s-value" id="c-tails" style="color:var(--red)">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="s-label">Total Patients</div>
-          <div class="s-value" id="c-total">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="s-label">Observed P</div>
-          <div class="s-value" id="c-obs" style="font-size:1.1rem">—</div>
-        </div>
-      </div>
 
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="flipCoin()">Simulate</button>
-        <button class="btn btn-batch" onclick="flipMany()">100 Patients</button>
-        <button class="btn btn-auto" id="autoPlayBtn" onclick="toggleAutoPlay()">Auto-Play</button>
-        <button class="btn btn-reset" onclick="resetCoin()">Reset</button>
-      </div>
-      <div class="speed-control" id="speedControl" style="display:none">
-        <label>Speed:</label>
-        <input type="range" id="autoSpeed" min="1" max="10" value="5">
-        <span class="speed-val" id="speedVal">5x</span>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="s-label">Success</div>
+            <div class="s-value" id="c-heads" style="color:var(--teal)">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="s-label">Failure</div>
+            <div class="s-value" id="c-tails" style="color:var(--red)">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="s-label">Total Patients</div>
+            <div class="s-value" id="c-total">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="s-label">Observed P</div>
+            <div class="s-value" id="c-obs" style="font-size:1.1rem">—</div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="flipCoin()">Simulate</button>
+          <button class="btn btn-batch" onclick="flipMany()">100 Patients</button>
+          <button class="btn btn-auto" id="autoPlayBtn" onclick="toggleAutoPlay()">Auto-Play</button>
+          <button class="btn btn-reset" onclick="resetCoin()">Reset</button>
+        </div>
+        <div class="speed-control" id="speedControl" style="display:none">
+          <label>Speed:</label>
+          <input type="range" id="autoSpeed" min="1" max="10" value="5">
+          <span class="speed-val" id="speedVal">5x</span>
+        </div>
       </div>
     </div>
 
@@ -684,50 +917,61 @@
         <span class="sym">E[X] = &Sigma; x &middot; P(x)</span>
       </div>
 
-      <!-- Preset distributions -->
-      <div class="prob-bars-label">Population Presets</div>
-      <div class="preset-row" id="diePresets">
-        <button class="preset-btn" onclick="setDiePreset('healthy')">Healthy</button>
-        <button class="preset-btn" onclick="setDiePreset('highrisk')">High-Risk</button>
-        <button class="preset-btn" onclick="setDiePreset('mixed')">Mixed Community</button>
-        <button class="preset-btn" onclick="setDiePreset('post')">Post-Treatment</button>
-        <button class="preset-btn active" onclick="setDiePreset('uniform')">Uniform</button>
+      <div class="sim-launch-card">
+        <div class="sim-launch-copy">
+          <h3>Explore expected value with DMFT scores</h3>
+          <p>
+            Open the simulator to choose a population, reshape the DMFT probabilities, and watch
+            the running sample mean stabilize around the true expected value.
+          </p>
+        </div>
+        <button type="button" class="sim-open-btn" data-open-sim="1">Simulate</button>
       </div>
 
-      <p style="margin-top:0.5rem">
-        Drag the bars below to customize DMFT score probabilities, or select a preset.
-        Then roll to see the sample mean converge to E[X].
-      </p>
+      <div data-sim-source="1">
+        <div class="prob-bars-label">Population Presets</div>
+        <div class="preset-row" id="diePresets">
+          <button class="preset-btn" onclick="setDiePreset('healthy')">Healthy</button>
+          <button class="preset-btn" onclick="setDiePreset('highrisk')">High-Risk</button>
+          <button class="preset-btn" onclick="setDiePreset('mixed')">Mixed Community</button>
+          <button class="preset-btn" onclick="setDiePreset('post')">Post-Treatment</button>
+          <button class="preset-btn active" onclick="setDiePreset('uniform')">Uniform</button>
+        </div>
 
-      <!-- Die face probability bars -->
-      <div class="prob-bars-label" style="margin-top:0.8rem">DMFT Score Distribution</div>
-      <div class="prob-bars die-bars" id="dieBars">
-        <!-- generated by JS -->
-      </div>
+        <p style="margin-top:0.5rem">
+          Drag the bars below to customize DMFT score probabilities, or select a preset.
+          Then roll to see the sample mean converge to E[X].
+        </p>
 
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="s-label">True E[X]</div>
-          <div class="s-value" id="d-true" style="color:var(--teal)">—</div>
+        <div class="prob-bars-label" style="margin-top:0.8rem">DMFT Score Distribution</div>
+        <div class="prob-bars die-bars" id="dieBars">
+          <!-- generated by JS -->
         </div>
-        <div class="stat-box">
-          <div class="s-label">Sample Mean</div>
-          <div class="s-value" id="d-sample">—</div>
-        </div>
-        <div class="stat-box">
-          <div class="s-label">Rolls</div>
-          <div class="s-value" id="d-rolls">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="s-label">Last Score</div>
-          <div class="s-value" id="d-last" style="color:var(--teal)">—</div>
-        </div>
-      </div>
 
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="rollDie()">Roll</button>
-        <button class="btn btn-batch" onclick="rollMany()">Roll 100&times;</button>
-        <button class="btn btn-reset" onclick="resetDie()">Reset</button>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="s-label">True E[X]</div>
+            <div class="s-value" id="d-true" style="color:var(--teal)">—</div>
+          </div>
+          <div class="stat-box">
+            <div class="s-label">Sample Mean</div>
+            <div class="s-value" id="d-sample">—</div>
+          </div>
+          <div class="stat-box">
+            <div class="s-label">Rolls</div>
+            <div class="s-value" id="d-rolls">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="s-label">Last Score</div>
+            <div class="s-value" id="d-last" style="color:var(--teal)">—</div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="rollDie()">Roll</button>
+          <button class="btn btn-batch" onclick="rollMany()">Roll 100&times;</button>
+          <button class="btn btn-reset" onclick="resetDie()">Reset</button>
+        </div>
       </div>
     </div>
 
@@ -751,49 +995,60 @@
         <span class="sym">Var(X) = E[(X &minus; E[X])&sup2;]</span>
       </div>
 
-      <!-- Preset scenarios -->
-      <div class="prob-bars-label">Outcome Scenarios</div>
-      <div class="preset-row" id="cardPresets">
-        <button class="preset-btn active" onclick="setCardPreset('all')">All Scores</button>
-        <button class="preset-btn" onclick="setCardPreset('consistent')">Consistent Results</button>
-        <button class="preset-btn" onclick="setCardPreset('variable')">Variable Results</button>
-        <button class="preset-btn" onclick="setCardPreset('bimodal')">Bimodal Outcomes</button>
+      <div class="sim-launch-card">
+        <div class="sim-launch-copy">
+          <h3>Test how spread changes from one score setup to another</h3>
+          <p>
+            Launch the simulator to include or remove satisfaction scores, then draw repeated
+            samples and compare the running variance with the true variance.
+          </p>
+        </div>
+        <button type="button" class="sim-open-btn" data-open-sim="2">Simulate</button>
       </div>
 
-      <p style="margin-top:0.5rem">
-        Toggle scores to include/exclude them from the population. Each score (1–10) represents
-        a patient satisfaction rating. Draw samples and watch variance converge.
-      </p>
+      <div data-sim-source="2">
+        <div class="prob-bars-label">Outcome Scenarios</div>
+        <div class="preset-row" id="cardPresets">
+          <button class="preset-btn active" onclick="setCardPreset('all')">All Scores</button>
+          <button class="preset-btn" onclick="setCardPreset('consistent')">Consistent Results</button>
+          <button class="preset-btn" onclick="setCardPreset('variable')">Variable Results</button>
+          <button class="preset-btn" onclick="setCardPreset('bimodal')">Bimodal Outcomes</button>
+        </div>
 
-      <!-- Card toggles -->
-      <div class="prob-bars-label" style="margin-top:0.8rem">Satisfaction Scores (click to toggle)</div>
-      <div class="card-grid" id="cardGrid">
-        <!-- generated by JS -->
-      </div>
+        <p style="margin-top:0.5rem">
+          Toggle scores to include/exclude them from the population. Each score (1–10) represents
+          a patient satisfaction rating. Draw samples and watch variance converge.
+        </p>
 
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="s-label">True Var(X)</div>
-          <div class="s-value" id="v-true" style="color:var(--indigo)">—</div>
+        <div class="prob-bars-label" style="margin-top:0.8rem">Satisfaction Scores (click to toggle)</div>
+        <div class="card-grid" id="cardGrid">
+          <!-- generated by JS -->
         </div>
-        <div class="stat-box">
-          <div class="s-label">Running Var</div>
-          <div class="s-value" id="v-sample">—</div>
-        </div>
-        <div class="stat-box">
-          <div class="s-label">Draws</div>
-          <div class="s-value" id="v-draws">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="s-label">Last Score</div>
-          <div class="s-value" id="v-last" style="color:var(--indigo)">—</div>
-        </div>
-      </div>
 
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="drawCard()">Draw</button>
-        <button class="btn btn-batch" onclick="drawMany()">Draw 100&times;</button>
-        <button class="btn btn-reset" onclick="resetCards()">Reset</button>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="s-label">True Var(X)</div>
+            <div class="s-value" id="v-true" style="color:var(--indigo)">—</div>
+          </div>
+          <div class="stat-box">
+            <div class="s-label">Running Var</div>
+            <div class="s-value" id="v-sample">—</div>
+          </div>
+          <div class="stat-box">
+            <div class="s-label">Draws</div>
+            <div class="s-value" id="v-draws">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="s-label">Last Score</div>
+            <div class="s-value" id="v-last" style="color:var(--indigo)">—</div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="drawCard()">Draw</button>
+          <button class="btn btn-batch" onclick="drawMany()">Draw 100&times;</button>
+          <button class="btn btn-reset" onclick="resetCards()">Reset</button>
+        </div>
       </div>
     </div>
 
@@ -886,6 +1141,22 @@
   </div><!-- /viz-panel -->
 
 </div><!-- /page-wrapper -->
+
+<div class="sim-modal" id="simModal" aria-hidden="true">
+  <div class="sim-modal__backdrop" data-close-sim></div>
+  <div class="sim-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="simModalTitle">
+    <button type="button" class="sim-modal__close" id="simModalClose" aria-label="Close simulator">&times;</button>
+    <div class="sim-modal__header">
+      <span class="sim-modal__eyebrow">Interactive Example</span>
+      <h2 id="simModalTitle">Simulator</h2>
+      <p id="simModalDesc">Open a simulation and experiment with the probability concept step by step.</p>
+    </div>
+    <div class="sim-modal__body">
+      <div class="sim-modal__controls" id="simModalControls"></div>
+      <div class="sim-modal__visual" id="simModalVisual"></div>
+    </div>
+  </div>
+</div>
 
 
 <script>
@@ -985,7 +1256,7 @@ function bumpValue(el) {
 })();
 
 /* ═══════════════════════════════════════════════════════════
-   SCROLL DETECTION → active section
+   MODAL SIMULATOR MANAGEMENT
 ═══════════════════════════════════════════════════════════ */
 let activeSection = 0;
 
@@ -995,31 +1266,126 @@ const vizSections = [
   document.getElementById('viz3')
 ];
 
-const dotLinks = document.querySelectorAll('.dot-nav a');
+const simConfigs = [
+  {
+    title: 'Dental Implant Success Simulator',
+    description: 'Change the success rate, simulate more patients, and compare the observed probability with the true value.'
+  },
+  {
+    title: 'DMFT Expected Value Simulator',
+    description: 'Choose or customize a DMFT score distribution and watch the running mean move toward the expected value.'
+  },
+  {
+    title: 'Patient Satisfaction Variance Simulator',
+    description: 'Turn score values on or off, then draw repeated samples to see how the spread changes.'
+  }
+];
+
+const simModal = document.getElementById('simModal');
+const simModalTitle = document.getElementById('simModalTitle');
+const simModalDesc = document.getElementById('simModalDesc');
+const simModalClose = document.getElementById('simModalClose');
+const simModalControls = document.getElementById('simModalControls');
+const simModalVisual = document.getElementById('simModalVisual');
+const simLaunchButtons = Array.from(document.querySelectorAll('[data-open-sim]'));
+const simControlPanels = Array.from(document.querySelectorAll('[data-sim-source]'));
+const simHomes = new Map();
+let currentSimControl = null;
+let currentSimVisual = null;
+let lastSimTrigger = null;
+
+simControlPanels.forEach((panel) => {
+  simHomes.set(panel, { parent: panel.parentNode, next: panel.nextSibling });
+});
+vizSections.forEach((panel) => {
+  simHomes.set(panel, { parent: panel.parentNode, next: panel.nextSibling });
+});
 
 function setActiveSection(idx) {
-  if (idx === activeSection) return;
   activeSection = idx;
-  vizSections.forEach((v,i) => v.classList.toggle('active', i===idx));
-  dotLinks.forEach((d,i) => d.classList.toggle('active', i===idx));
-  // Update viz title based on section
-  const titles = ['Dental Implant', 'DMFT', 'Patient Satisfaction'];
-  document.querySelectorAll('.viz-title span').forEach((s,i) => {
-    if (i === idx) s.parentElement.parentElement.classList.contains('active');
-  });
+  vizSections.forEach((panel, i) => panel.classList.toggle('active', i === idx));
 }
 
-const textSections = document.querySelectorAll('.section');
+function restoreNode(node) {
+  const home = simHomes.get(node);
+  if (!home) return;
+  home.parent.insertBefore(node, home.next);
+}
 
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      setActiveSection(+e.target.dataset.section);
-    }
-  });
-}, { root: document.getElementById('textPanel'), threshold: 0.4 });
+function redrawActiveCharts() {
+  renderCoinChart();
+  renderDieChart();
+  renderVarChart();
+}
 
-textSections.forEach(s => observer.observe(s));
+function closeSimulator({ restoreFocus = true } = {}) {
+  if (!simModal.classList.contains('is-open')) return;
+
+  if (autoPlayInterval) {
+    toggleAutoPlay();
+  }
+
+  if (currentSimControl) {
+    restoreNode(currentSimControl);
+    currentSimControl = null;
+  }
+  if (currentSimVisual) {
+    restoreNode(currentSimVisual);
+    currentSimVisual = null;
+  }
+
+  simModal.classList.remove('is-open');
+  simModal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('modal-open');
+
+  if (restoreFocus && lastSimTrigger) {
+    lastSimTrigger.focus();
+  }
+}
+
+function openSimulator(idx, trigger = null) {
+  const safeIndex = Number(idx);
+  if (Number.isNaN(safeIndex) || !simConfigs[safeIndex]) return;
+
+  if (simModal.classList.contains('is-open')) {
+    closeSimulator({ restoreFocus: false });
+  }
+
+  const config = simConfigs[safeIndex];
+  const controlPanel = simControlPanels[safeIndex];
+  const visualPanel = vizSections[safeIndex];
+
+  setActiveSection(safeIndex);
+  simModalTitle.textContent = config.title;
+  simModalDesc.textContent = config.description;
+
+  simModalControls.appendChild(controlPanel);
+  simModalVisual.appendChild(visualPanel);
+
+  currentSimControl = controlPanel;
+  currentSimVisual = visualPanel;
+  lastSimTrigger = trigger;
+
+  simModal.classList.add('is-open');
+  simModal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('modal-open');
+  redrawActiveCharts();
+}
+
+simLaunchButtons.forEach((button) => {
+  button.addEventListener('click', () => openSimulator(button.dataset.openSim, button));
+});
+
+simModalClose.addEventListener('click', () => closeSimulator());
+simModal.querySelectorAll('[data-close-sim]').forEach((el) => {
+  el.addEventListener('click', () => closeSimulator());
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    closeSimulator();
+  }
+});
 
 /* ═══════════════════════════════════════════════════════════
    PARTICLE BURST EFFECT
