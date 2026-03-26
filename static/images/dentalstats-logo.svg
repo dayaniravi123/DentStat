@@ -1,0 +1,62 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>DentalStats Logo</title>
+  <desc>A stylized tooth combined with a bar chart and trend line.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="24" y1="24" x2="228" y2="232" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#07111E"/>
+      <stop offset="0.48" stop-color="#17345E"/>
+      <stop offset="1" stop-color="#0F766E"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(176 70) rotate(126.573) scale(164.697)">
+      <stop stop-color="#38BDF8" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#38BDF8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bars" x1="128" y1="120" x2="128" y2="196" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FDE68A"/>
+      <stop offset="1" stop-color="#F59E0B"/>
+    </linearGradient>
+    <linearGradient id="trend" x1="74" y1="148" x2="188" y2="106" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C084FC"/>
+      <stop offset="0.45" stop-color="#9333EA"/>
+      <stop offset="1" stop-color="#2563EB"/>
+    </linearGradient>
+    <clipPath id="toothClip">
+      <path d="M76 46C58 48 47 61 48 82C49 101 59 114 65 133C71 152 72 181 88 191C102 199 114 188 121 168L128 149L135 168C142 188 154 199 168 191C184 181 185 152 191 133C197 114 207 101 208 82C209 61 198 48 180 46C162 44 145 54 128 72C111 54 94 44 76 46Z"/>
+    </clipPath>
+  </defs>
+
+  <rect x="16" y="16" width="224" height="224" rx="56" fill="url(#bg)"/>
+  <rect x="16.5" y="16.5" width="223" height="223" rx="55.5" stroke="white" stroke-opacity="0.08"/>
+  <circle cx="172" cy="72" r="92" fill="url(#glow)"/>
+
+  <g clip-path="url(#toothClip)">
+    <path d="M58 102C84 84 113 84 128 92C146 102 169 101 197 82" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="18" stroke-linecap="round"/>
+    <rect x="70" y="136" width="24" height="50" rx="9" fill="url(#bars)"/>
+    <rect x="116" y="120" width="24" height="66" rx="9" fill="url(#bars)"/>
+    <rect x="162" y="148" width="24" height="38" rx="9" fill="url(#bars)"/>
+    <path d="M82 186H194" stroke="#FFE8A3" stroke-opacity="0.42" stroke-width="4" stroke-linecap="round"/>
+    <path d="M82 136L128 120L174 148L192 116" stroke="url(#trend)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="82" cy="136" r="6" fill="#C084FC"/>
+    <circle cx="128" cy="120" r="6" fill="#9333EA"/>
+    <circle cx="174" cy="148" r="6" fill="#2563EB"/>
+    <path d="M189 108L197 116L186 119" stroke="#7DD3FC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <path
+    d="M76 46C58 48 47 61 48 82C49 101 59 114 65 133C71 152 72 181 88 191C102 199 114 188 121 168L128 149L135 168C142 188 154 199 168 191C184 181 185 152 191 133C197 114 207 101 208 82C209 61 198 48 180 46C162 44 145 54 128 72C111 54 94 44 76 46Z"
+    fill="white"
+    fill-opacity="0.03"
+    stroke="#FFF8EA"
+    stroke-width="11"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <path d="M76 84C82 70 93 61 107 57" stroke="#FFE085" stroke-width="4.5" stroke-linecap="round" opacity="0.95"/>
+
+  <path
+    d="M188 62L190.8 71.2L200 74L190.8 76.8L188 86L185.2 76.8L176 74L185.2 71.2L188 62Z"
+    fill="#FDE68A"
+  />
+</svg>
