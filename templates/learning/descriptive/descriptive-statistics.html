@@ -228,13 +228,13 @@
 </head>
 <body>
 {% include 'includes/site_nav.html' %}
-<div class="max-w-4xl mx-auto py-10 px-4">
+<div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
 
   <!-- Hero -->
   <div class="hero-banner mb-10">
     <div class="text-xs font-semibold uppercase tracking-widest opacity-60 mb-2">Learning Module</div>
     <h1 class="text-3xl font-bold mb-3">Descriptive Statistics</h1>
-    <p class="opacity-85 text-sm leading-relaxed max-w-xl">
+    <p class="opacity-85 text-sm leading-relaxed max-w-3xl">
       Turn hundreds of patient measurements into a few clear numbers. Click any card below to learn and try it yourself.
     </p>
     <div class="flex flex-wrap gap-3 mt-6">
@@ -257,6 +257,47 @@
     <div class="info-pill">
       <div class="emoji">📝</div>
       <p><strong>Report results</strong><br>Every dental research paper starts with a descriptive statistics table.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-6 mb-10">
+    <div class="sim-panel">
+      <div class="section-title"><span class="dot"></span>Choosing the Right Summary</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
+          <div class="font-semibold text-slate-900 mb-2">Mean +/- SD</div>
+          <p class="text-sm text-slate-600 leading-relaxed">Use this when the values are roughly symmetric and there are no major outliers. Good examples are age, plaque index, or bone loss scores that cluster evenly around the center.</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
+          <div class="font-semibold text-slate-900 mb-2">Median (IQR)</div>
+          <p class="text-sm text-slate-600 leading-relaxed">Choose this when the data are skewed, long-tailed, or pulled by a few very large values. Pocket depth, treatment cost, and DMFT often behave this way.</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
+          <div class="font-semibold text-slate-900 mb-2">Mode and Frequency</div>
+          <p class="text-sm text-slate-600 leading-relaxed">Best for categories and repeated scores. If you want to describe the most common tooth type, diagnosis, or patient response, mode and percentages are usually the clearest.</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
+          <div class="font-semibold text-slate-900 mb-2">Range as a quick check</div>
+          <p class="text-sm text-slate-600 leading-relaxed">Range is easy to understand but too sensitive to extremes to stand alone. It works best as a quick preview of spread, not as the only way to report variability.</p>
+        </div>
+      </div>
+    </div>
+    <div class="sim-panel">
+      <div class="section-title"><span class="dot"></span>What Reviewers Expect</div>
+      <div class="space-y-3 text-sm text-gray-700 leading-relaxed">
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          Match the summary to the data shape instead of reporting mean for everything automatically.
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          State units clearly: years, millimeters, scores, or percentages.
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          For categorical variables, report both counts and percentages so readers can judge sample balance.
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          Keep descriptive tables clinically meaningful by grouping variables into demographics, disease severity, and outcomes.
+        </div>
+      </div>
     </div>
   </div>
 
@@ -343,6 +384,28 @@
           <tr><td>Plaque Index</td><td><strong>1.7 ± 0.5</strong></td><td class="text-gray-300">—</td></tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <div class="mb-10">
+    <div class="section-title"><span class="dot"></span>Common Dental Data Patterns</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div class="sim-panel">
+        <div class="text-sm font-semibold text-slate-900 mb-2">DMFT Scores</div>
+        <p class="text-sm text-slate-600 leading-relaxed">Often right-skewed because many patients have low scores while a smaller group has very high disease burden. Median and IQR are often safer than mean alone.</p>
+      </div>
+      <div class="sim-panel">
+        <div class="text-sm font-semibold text-slate-900 mb-2">Pocket Depth</div>
+        <p class="text-sm text-slate-600 leading-relaxed">Can contain extreme values from severe periodontitis. Show spread clearly so readers see whether the sample is tightly clustered or highly variable.</p>
+      </div>
+      <div class="sim-panel">
+        <div class="text-sm font-semibold text-slate-900 mb-2">Plaque or Bleeding Indices</div>
+        <p class="text-sm text-slate-600 leading-relaxed">These are commonly summarized by mean +/- SD when the distribution is fairly balanced, especially in intervention studies with repeated measurements.</p>
+      </div>
+      <div class="sim-panel">
+        <div class="text-sm font-semibold text-slate-900 mb-2">Patient Categories</div>
+        <p class="text-sm text-slate-600 leading-relaxed">Variables like smoking, diabetes status, or implant success should be shown as counts and percentages so the group composition is easy to compare.</p>
+      </div>
     </div>
   </div>
 

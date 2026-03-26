@@ -319,13 +319,13 @@
 </head>
 <body>
 {% include 'includes/site_nav.html' %}
-<div class="max-w-4xl mx-auto py-10 px-4">
+<div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
 
   <!-- ══════════════ HERO ══════════════ -->
   <div class="hero-banner mb-10">
     <div class="text-xs font-semibold uppercase tracking-widest opacity-60 mb-2">Learning Module</div>
     <h1 class="text-3xl font-bold mb-3">Hypothesis Testing Framework</h1>
-    <p class="opacity-85 text-sm leading-relaxed max-w-xl">
+    <p class="opacity-85 text-sm leading-relaxed max-w-3xl">
       Learn to make evidence-based decisions from dental research data. Explore every step of hypothesis testing with interactive examples.
     </p>
     <div class="flex flex-wrap gap-3 mt-6">
@@ -349,6 +349,51 @@
     <div class="info-pill">
       <div class="emoji">&#x1F4CA;</div>
       <p><strong>Make decisions</strong><br>Use p-values and significance levels to draw reliable conclusions.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-6 mb-10">
+    <div class="sim-panel">
+      <div class="section-title"><span class="dot"></span>Hypothesis Testing Roadmap</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
+          <div class="font-semibold text-slate-900 mb-2">1. Ask a focused question</div>
+          <p class="text-sm text-slate-600 leading-relaxed">Be clear about the outcome, the comparison, and the population. A precise question makes the rest of the analysis much easier.</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
+          <div class="font-semibold text-slate-900 mb-2">2. Choose the right test</div>
+          <p class="text-sm text-slate-600 leading-relaxed">Match the test to the outcome type, study design, and whether the data are paired, independent, categorical, or continuous.</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
+          <div class="font-semibold text-slate-900 mb-2">3. Read p-value with context</div>
+          <p class="text-sm text-slate-600 leading-relaxed">A small p-value suggests evidence against H0, but it does not tell you whether the effect is large, useful, or clinically important.</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
+          <div class="font-semibold text-slate-900 mb-2">4. Report the whole picture</div>
+          <p class="text-sm text-slate-600 leading-relaxed">Good reporting includes the test statistic, p-value, confidence interval, and a sentence that explains what the result means for dental practice or research.</p>
+        </div>
+      </div>
+    </div>
+    <div class="sim-panel">
+      <div class="section-title"><span class="dot"></span>Pick the Test First</div>
+      <div class="space-y-3">
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="text-sm font-semibold text-slate-900 mb-1">Two group means</div>
+          <p class="text-sm text-slate-600 leading-relaxed">Think about a t-test when comparing average plaque index, bond strength, or gingival scores between two groups.</p>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="text-sm font-semibold text-slate-900 mb-1">Three or more group means</div>
+          <p class="text-sm text-slate-600 leading-relaxed">ANOVA is usually the starting point when several treatment groups are compared at the same time.</p>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="text-sm font-semibold text-slate-900 mb-1">Counts or proportions</div>
+          <p class="text-sm text-slate-600 leading-relaxed">Use chi-square style thinking when the question is about categories such as disease present vs absent or implant success vs failure.</p>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="text-sm font-semibold text-slate-900 mb-1">Paired observations</div>
+          <p class="text-sm text-slate-600 leading-relaxed">Before-after measurements on the same patient need paired methods, not independent-group tests.</p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -573,6 +618,28 @@
     <div class="info-pill" style="border-color:#8b5cf6">
       <div class="emoji">&#x1F6AB;</div>
       <p><strong>Not proof</strong><br>Failing to reject H&#8320; does not prove it true &mdash; only insufficient evidence.</p>
+    </div>
+  </div>
+
+  <div class="mb-10">
+    <div class="section-title"><span class="dot"></span>Interpretation Guardrails</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div class="sim-panel">
+        <div class="text-sm font-semibold text-slate-900 mb-2">A small p-value is not effect size</div>
+        <p class="text-sm text-slate-600 leading-relaxed">Statistical significance says the finding is unlikely under H0. It does not automatically mean the effect is large enough to matter clinically.</p>
+      </div>
+      <div class="sim-panel">
+        <div class="text-sm font-semibold text-slate-900 mb-2">Non-significant does not mean no effect</div>
+        <p class="text-sm text-slate-600 leading-relaxed">A study can miss a true effect because of low sample size, high variability, or weak measurement quality. Always look at confidence intervals too.</p>
+      </div>
+      <div class="sim-panel">
+        <div class="text-sm font-semibold text-slate-900 mb-2">Alpha should be set before analysis</div>
+        <p class="text-sm text-slate-600 leading-relaxed">Choosing alpha after seeing the result makes the conclusion less trustworthy. Pre-specification protects against flexible interpretation.</p>
+      </div>
+      <div class="sim-panel">
+        <div class="text-sm font-semibold text-slate-900 mb-2">Clinical meaning still matters</div>
+        <p class="text-sm text-slate-600 leading-relaxed">Even when a difference is statistically significant, ask whether it changes patient outcomes, treatment decisions, or policy in a meaningful way.</p>
+      </div>
     </div>
   </div>
 

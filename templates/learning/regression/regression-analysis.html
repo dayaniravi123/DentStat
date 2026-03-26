@@ -312,13 +312,13 @@
 </head>
 <body>
 {% include 'includes/site_nav.html' %}
-<div class="max-w-4xl mx-auto py-10 px-4">
+<div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
 
   <!-- Hero -->
   <div class="hero-banner mb-10">
     <div class="text-xs font-semibold uppercase tracking-widest opacity-60 mb-2">Learning Module</div>
     <h1 class="text-3xl font-bold mb-3">Regression Analysis</h1>
-    <p class="opacity-85 text-sm leading-relaxed max-w-xl">
+    <p class="opacity-85 text-sm leading-relaxed max-w-3xl">
       Predict outcomes and find relationships in dental data. Click any card below to explore each concept interactively.
     </p>
     <div class="flex flex-wrap gap-3 mt-6">
@@ -342,6 +342,47 @@
     <div class="info-pill">
       <div class="emoji">📋</div>
       <p><strong>Report results</strong><br>Present coefficients, odds ratios, and confidence intervals in papers.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-[1.15fr_0.85fr] gap-6 mb-10">
+    <div class="sim-panel">
+      <div class="section-title"><span class="dot"></span>Choose the Right Regression Model</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
+          <div class="font-semibold text-slate-900 mb-2">Linear regression</div>
+          <p class="text-sm text-slate-600 leading-relaxed">Use when the outcome is continuous, like attachment loss, plaque score, or healing time, and you want to estimate how much it changes with a predictor.</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
+          <div class="font-semibold text-slate-900 mb-2">Multiple regression</div>
+          <p class="text-sm text-slate-600 leading-relaxed">Use when several predictors may influence the same continuous outcome and you want to adjust for confounding variables at the same time.</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
+          <div class="font-semibold text-slate-900 mb-2">Logistic regression</div>
+          <p class="text-sm text-slate-600 leading-relaxed">Choose this when the outcome is binary, such as implant failure yes/no or peri-implantitis present/absent.</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
+          <div class="font-semibold text-slate-900 mb-2">Model fit matters too</div>
+          <p class="text-sm text-slate-600 leading-relaxed">A model is not judged only by p-values. You also need to know how well it explains variation and whether the assumptions are believable.</p>
+        </div>
+      </div>
+    </div>
+    <div class="sim-panel">
+      <div class="section-title"><span class="dot"></span>Before You Trust the Model</div>
+      <div class="space-y-3 text-sm text-gray-700 leading-relaxed">
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          Check whether the outcome type really matches the model you chose.
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          Decide how each predictor is coded so the coefficient has a clear clinical meaning.
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          Think about confounding before fitting the model, not after reading the result.
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          Review assumptions and sample size because unstable models can produce very confident-looking but misleading estimates.
+        </div>
+      </div>
     </div>
   </div>
 
@@ -531,6 +572,28 @@
       <div class="summary-card" style="border-color:#ec4899">
         <h4>🎯 Model Fit</h4>
         <p>R² = proportion of variance explained. Higher is better. Adjusted R² penalizes adding useless predictors.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-10">
+    <div class="section-title"><span class="dot"></span>How to Read Regression Output</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div class="sim-panel">
+        <div class="text-sm font-semibold text-slate-900 mb-2">Coefficient</div>
+        <p class="text-sm text-slate-600 leading-relaxed">The sign shows direction and the size shows expected change in the outcome for a one-unit increase in the predictor, holding other variables constant.</p>
+      </div>
+      <div class="sim-panel">
+        <div class="text-sm font-semibold text-slate-900 mb-2">Odds ratio</div>
+        <p class="text-sm text-slate-600 leading-relaxed">In logistic models, OR greater than 1 means higher odds, OR less than 1 means lower odds. It describes multiplicative change, not direct probability change.</p>
+      </div>
+      <div class="sim-panel">
+        <div class="text-sm font-semibold text-slate-900 mb-2">Confidence interval</div>
+        <p class="text-sm text-slate-600 leading-relaxed">The interval shows precision. Wide intervals suggest more uncertainty, even if the p-value looks interesting.</p>
+      </div>
+      <div class="sim-panel">
+        <div class="text-sm font-semibold text-slate-900 mb-2">R2 and adjusted R2</div>
+        <p class="text-sm text-slate-600 leading-relaxed">These tell you how much outcome variability is explained by the model, but a high value alone does not prove causation or good clinical usefulness.</p>
       </div>
     </div>
   </div>
