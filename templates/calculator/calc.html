@@ -762,36 +762,7 @@
 </head>
 <body class="bg-gray-50 smooth-scroll">
 
-  <!-- Navigation -->
-  <nav style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0d9488 100%); color: white; position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
-    <div style="max-width:1400px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;align-items:center;height:64px;">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <i data-lucide="activity" style="width:32px;height:32px;color:#5eead4;"></i>
-        <div>
-          <div style="font-size:1.2rem;font-weight:700;">DentalStats</div>
-          <div style="font-size:0.7rem;color:#99f6e4;">Biostatistics for Dental Research</div>
-        </div>
-      </div>
-      <div class="hidden md:flex" style="display:flex;gap:28px;align-items:center;">
-        <a href="/#concepts" style="color:white;text-decoration:none;font-size:0.9rem;opacity:0.85;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">Concepts</a>
-        <a href="/calculator" style="color:#5eead4;text-decoration:none;font-size:0.9rem;font-weight:600;">Calculators</a>
-        <a href="/visualization/live-graph" style="color:white;text-decoration:none;font-size:0.9rem;opacity:0.85;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">Visualizations</a>
-        <a href="/about" style="color:white;text-decoration:none;font-size:0.9rem;opacity:0.85;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">About Us</a>
-        <a href="/" style="color:white;text-decoration:none;font-size:0.875rem;opacity:0.7;border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:6px 16px;transition:all 0.2s;" onmouseover="this.style.opacity='1';this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.opacity='0.7';this.style.background='transparent'">← Home</a>
-      </div>
-      <button id="mobile-menu-btn" class="md:hidden" style="display:none;background:none;border:none;color:white;cursor:pointer;" onclick="document.getElementById('mobileMenu').style.display=document.getElementById('mobileMenu').style.display==='flex'?'none':'flex'">
-        <i data-lucide="menu" style="width:24px;height:24px;"></i>
-      </button>
-    </div>
-    <!-- Mobile menu -->
-    <div id="mobileMenu" style="display:none;flex-direction:column;gap:12px;padding:0 24px 16px;">
-      <a href="/#concepts" style="color:white;text-decoration:none;font-size:0.9rem;opacity:0.85;">Concepts</a>
-      <a href="/calculator" style="color:#5eead4;text-decoration:none;font-size:0.9rem;font-weight:600;">Calculators</a>
-      <a href="/visualization/live-graph" style="color:white;text-decoration:none;font-size:0.9rem;opacity:0.85;">Visualizations</a>
-      <a href="/about" style="color:white;text-decoration:none;font-size:0.9rem;opacity:0.85;">About Us</a>
-      <a href="/" style="color:white;text-decoration:none;font-size:0.9rem;opacity:0.7;">← Home</a>
-    </div>
-  </nav>
+{% include 'includes/site_nav.html' %}
 
 <!-- Hero Banner -->
 <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 55%,#0f766e 100%);color:white;padding:40px 24px 36px;margin-bottom:0;">

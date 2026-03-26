@@ -48,27 +48,7 @@
 </head>
 <body class="bg-gray-50">
 
-    <!-- Navigation -->
-    <nav class="gradient-bg text-white sticky top-0 z-50 shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center space-x-3">
-                    <i data-lucide="activity" class="w-8 h-8 text-teal-300"></i>
-                    <div>
-                        <h1 class="text-xl font-bold">DentalStats</h1>
-                        <p class="text-xs text-teal-200">Biostatistics for Dental Research</p>
-                    </div>
-                </div>
-                <div class="hidden md:flex space-x-8">
-                    <a href="/#concepts" class="hover:text-teal-300 transition">Concepts</a>
-                    <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
-                    <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
-                    <a href="/about" class="text-teal-300 font-semibold">About Us</a>
-                </div>
-                <a href="/" class="text-sm text-white/70 hover:text-white transition border border-white/25 rounded-full px-4 py-1.5">← Home</a>
-            </div>
-        </div>
-    </nav>
+    {% include 'includes/site_nav.html' %}
 
     <!-- Hero -->
     <div class="gradient-bg text-white py-20 text-center px-4">

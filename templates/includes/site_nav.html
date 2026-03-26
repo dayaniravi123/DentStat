@@ -12,10 +12,10 @@
       </a>
 
       <div class="hidden md:flex items-center space-x-8">
-        <a href="/concepts/" class="hover:text-teal-300 transition">Concepts</a>
-        <a href="/calculator" class="hover:text-teal-300 transition">Calculators</a>
-        <a href="/visualization/live-graph" class="hover:text-teal-300 transition">Visualizations</a>
-        <a href="/about" class="hover:text-teal-300 transition">About Us</a>
+        <a href="/concepts/" data-nav-link="concepts" class="hover:text-teal-300 transition">Concepts</a>
+        <a href="/calculator" data-nav-link="calculators" class="hover:text-teal-300 transition">Calculators</a>
+        <a href="/visualization/live-graph" data-nav-link="visualizations" class="hover:text-teal-300 transition">Visualizations</a>
+        <a href="/about" data-nav-link="about" class="hover:text-teal-300 transition">About Us</a>
       </div>
 
       <details class="md:hidden relative">
@@ -28,14 +28,34 @@
         </summary>
         <div class="absolute right-0 top-12 w-56 rounded-2xl border border-white/15 bg-slate-950/95 backdrop-blur-xl p-3 shadow-2xl">
           <div class="flex flex-col space-y-1 text-sm">
-            <a href="/concepts/" class="rounded-xl px-3 py-2 hover:bg-white/10 transition">Concepts</a>
-            <a href="/calculator" class="rounded-xl px-3 py-2 hover:bg-white/10 transition">Calculators</a>
-            <a href="/visualization/live-graph" class="rounded-xl px-3 py-2 hover:bg-white/10 transition">Visualizations</a>
-            <a href="/about" class="rounded-xl px-3 py-2 hover:bg-white/10 transition">About Us</a>
-            <a href="/" class="rounded-xl px-3 py-2 border border-white/10 text-teal-200 hover:bg-white/10 transition">Home</a>
+            <a href="/concepts/" data-nav-link="concepts" class="rounded-xl px-3 py-2 hover:bg-white/10 transition">Concepts</a>
+            <a href="/calculator" data-nav-link="calculators" class="rounded-xl px-3 py-2 hover:bg-white/10 transition">Calculators</a>
+            <a href="/visualization/live-graph" data-nav-link="visualizations" class="rounded-xl px-3 py-2 hover:bg-white/10 transition">Visualizations</a>
+            <a href="/about" data-nav-link="about" class="rounded-xl px-3 py-2 hover:bg-white/10 transition">About Us</a>
+            <a href="/" data-nav-link="home" class="rounded-xl px-3 py-2 border border-white/10 text-teal-200 hover:bg-white/10 transition">Home</a>
           </div>
         </div>
       </details>
     </div>
   </div>
 </nav>
+<script>
+  (function () {
+    const path = window.location.pathname;
+    let active = 'home';
+
+    if (path.startsWith('/concepts')) active = 'concepts';
+    else if (path.startsWith('/calculator')) active = 'calculators';
+    else if (path.startsWith('/visualization')) active = 'visualizations';
+    else if (path.startsWith('/about')) active = 'about';
+
+    document.querySelectorAll('[data-nav-link]').forEach((link) => {
+      const isActive = link.getAttribute('data-nav-link') === active;
+      link.classList.toggle('text-teal-300', isActive);
+      link.classList.toggle('font-semibold', isActive);
+      if (isActive && link.closest('details')) {
+        link.classList.add('bg-white/10');
+      }
+    });
+  })();
+</script>
