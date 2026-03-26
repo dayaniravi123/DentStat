@@ -840,24 +840,52 @@
             }
 
             function drawToothSymbol(x, y, size, alpha, phase) {
-                const s = size * 1.5;
+                const s = Math.max(size * 2.05, 4.6);
                 ctx.save();
-                ctx.globalAlpha = alpha;
+                ctx.globalAlpha = Math.min(alpha, 0.95);
                 ctx.translate(x, y);
-                ctx.rotate(Math.sin(phase) * 0.18);
-                ctx.strokeStyle = '#f8fafc';
-                ctx.lineWidth = 1.4;
+                ctx.rotate(Math.sin(phase) * 0.12);
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
+                ctx.shadowColor = 'rgba(94, 234, 212, 0.22)';
+                ctx.shadowBlur = 8;
+
+                const fill = ctx.createLinearGradient(0, -s * 1.8, 0, s * 2.7);
+                fill.addColorStop(0, 'rgba(255, 255, 255, 0.97)');
+                fill.addColorStop(1, 'rgba(219, 234, 254, 0.82)');
+                ctx.fillStyle = fill;
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.95)';
+                ctx.lineWidth = 1.25;
+
                 ctx.beginPath();
-                ctx.moveTo(0, -s * 1.5);
-                ctx.bezierCurveTo(-s * 1.05, -s * 1.5, -s * 1.55, -s * 0.7, -s * 1.28, 0);
-                ctx.bezierCurveTo(-s * 1.05, s * 0.68, -s * 0.8, s * 1.08, -s * 0.55, s * 1.52);
-                ctx.bezierCurveTo(-s * 0.28, s * 1.95, -s * 0.22, s * 2.45, 0, s * 2.45);
-                ctx.bezierCurveTo(s * 0.22, s * 2.45, s * 0.28, s * 1.95, s * 0.55, s * 1.52);
-                ctx.bezierCurveTo(s * 0.8, s * 1.08, s * 1.05, s * 0.68, s * 1.28, 0);
-                ctx.bezierCurveTo(s * 1.55, -s * 0.7, s * 1.05, -s * 1.5, 0, -s * 1.5);
+                ctx.moveTo(0, -s * 1.68);
+                ctx.bezierCurveTo(-s * 0.9, -s * 1.8, -s * 1.42, -s * 1.08, -s * 1.42, -s * 0.16);
+                ctx.bezierCurveTo(-s * 1.42, s * 0.62, -s * 1.04, s * 1.06, -s * 0.75, s * 1.43);
+                ctx.bezierCurveTo(-s * 0.48, s * 1.8, -s * 0.38, s * 2.16, -s * 0.31, s * 2.52);
+                ctx.bezierCurveTo(-s * 0.26, s * 2.82, -s * 0.13, s * 2.97, 0, s * 2.62);
+                ctx.bezierCurveTo(s * 0.13, s * 2.97, s * 0.26, s * 2.82, s * 0.31, s * 2.52);
+                ctx.bezierCurveTo(s * 0.38, s * 2.16, s * 0.48, s * 1.8, s * 0.75, s * 1.43);
+                ctx.bezierCurveTo(s * 1.04, s * 1.06, s * 1.42, s * 0.62, s * 1.42, -s * 0.16);
+                ctx.bezierCurveTo(s * 1.42, -s * 1.08, s * 0.9, -s * 1.8, 0, -s * 1.68);
+                ctx.closePath();
+                ctx.fill();
                 ctx.stroke();
+
+                ctx.shadowBlur = 0;
+                ctx.beginPath();
+                ctx.moveTo(-s * 0.56, -s * 0.96);
+                ctx.bezierCurveTo(-s * 0.72, -s * 0.42, -s * 0.63, s * 0.22, -s * 0.24, s * 0.88);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.72)';
+                ctx.lineWidth = 0.85;
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(0, s * 2.58);
+                ctx.lineTo(0, s * 2.08);
+                ctx.strokeStyle = 'rgba(100, 116, 139, 0.42)';
+                ctx.lineWidth = 0.9;
+                ctx.stroke();
+
                 ctx.restore();
             }
 
@@ -972,7 +1000,7 @@
                     } else if (p.type === 'bar') {
                         drawMiniHistogram(p.x - p.size * 2, p.y, p.size * 3, alpha * 1.5);
                     } else if (p.type === 'tooth') {
-                        drawToothSymbol(p.x, p.y, p.size, alpha * 1.8, p.phase);
+                        drawToothSymbol(p.x, p.y, p.size * 1.12, alpha * 2.1, p.phase);
                     }
 
                     ctx.restore();
