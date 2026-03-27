@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import Http404, JsonResponse
 from django.template import TemplateDoesNotExist
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 from datetime import date
 import json
 import math
@@ -123,6 +124,7 @@ def concepts_hub(request):
 	return render(request, 'concepts/hub.html', context)
 
 
+@xframe_options_sameorigin
 def concept_page(request, page):
 	if not page.endswith('.html'):
 		tpl_name = f'concepts/{page}.html'

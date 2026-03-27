@@ -15,9 +15,34 @@ SECRET_KEY = os.environ.get('SECRET_KEY', os.environ.get('DJANGO_SECRET_KEY', 'd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-# ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '.railway.app,.dent-stats.com').split(',')  # Railway + GoDaddy domain
-#ALLOWED_HOSTS = ['*'] #['.railway.app']  # Allow all hosts for development; adjust for production
+DEFAULT_ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    '0.0.0.0',
+    '[::1]',
+    '.railway.app',
+    '.dent-stats.com',
+]
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get('ALLOWED_HOSTS', ','.join(DEFAULT_ALLOWED_HOSTS)).split(',')
+    if host.strip()
+]
+
+DEFAULT_CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://dent-stats.com',
+    'https://www.dent-stats.com',
+    'http://127.0.0.1:8000',
+    'http://127.0.0.1:8020',
+    'http://localhost:8000',
+    'http://localhost:8020',
+]
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get('CSRF_TRUSTED_ORIGINS', ','.join(DEFAULT_CSRF_TRUSTED_ORIGINS)).split(',')
+    if origin.strip()
+]
 
 # Application definition
 
