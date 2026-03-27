@@ -885,6 +885,42 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
 
     .home-page .site-nav-mobile-menu {
         top: 4.4rem;
+        width: min(18rem, calc(100vw - 2rem));
+        border: 1px solid rgba(71, 85, 105, 0.42);
+        background: rgba(6, 14, 26, 0.96);
+        box-shadow: 0 22px 48px rgba(2, 6, 23, 0.36);
+        backdrop-filter: blur(18px);
+    }
+
+    .home-page .site-nav-mobile-menu .flex {
+        gap: 0.3rem;
+    }
+
+    .home-page .site-nav-mobile-menu [data-nav-link] {
+        color: rgba(226, 232, 240, 0.9) !important;
+        font-size: 1.08rem;
+        font-weight: 600;
+    }
+
+    .home-page .site-nav-mobile-menu [data-nav-link]:hover,
+    .home-page .site-nav-mobile-menu [data-nav-link]:focus-visible {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff !important;
+        outline: none;
+    }
+
+    .home-page .site-nav-mobile-menu [data-nav-link].bg-white\/10 {
+        background: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .home-page .site-nav-mobile-menu [data-nav-link].text-teal-300,
+    .home-page .site-nav-mobile-menu [data-nav-link].text-teal-200 {
+        color: #67f0c2 !important;
+    }
+
+    .home-page .site-nav-mobile-menu [data-nav-link="home"] {
+        border-color: rgba(148, 163, 184, 0.22) !important;
+        background: rgba(255, 255, 255, 0.06);
     }
 
     .home-page #hero-section {
