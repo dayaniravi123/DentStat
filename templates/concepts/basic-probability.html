@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Learn basic probability with dental examples. Interactive coin flips, dice rolls, and card draws — understand chance, expectation, and variance visually.">
+  <meta name="description" content="Learn basic probability concepts for dental research — chance events, expected value, and variance explained with dental examples.">
   <meta property="og:title" content="Basic Probability — DentalStats">
-  <meta property="og:description" content="Learn basic probability with dental examples. Interactive coin flips, dice rolls, and card draws — understand chance, expectation, and variance visually.">
+  <meta property="og:description" content="Learn basic probability concepts for dental research — chance events, expected value, and variance explained with dental examples.">
   <meta property="og:type" content="website">
   <title>Basic Probability — DentalStats</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -39,7 +39,7 @@
       padding-top: 64px;
     }
 
-    /* ── GRADIENT NAV (site-wide) ── */
+    /* ── NAV ── */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 200;
       background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f766e 100%);
@@ -74,483 +74,7 @@
     }
     #mobileMenuBtn svg { width: 24px; height: 24px; }
 
-    /* ── LAYOUT ── */
-    .page-wrapper {
-      display: flex;
-      height: calc(100vh - 64px);
-      margin-top: 64px;
-    }
-
-    /* LEFT: scrollable text */
-    .text-panel {
-      width: 42%;
-      min-width: 340px;
-      overflow-y: auto;
-      background: var(--white);
-      border-right: 1px solid var(--border);
-      scroll-behavior: smooth;
-    }
-    .text-panel::-webkit-scrollbar { width: 6px; }
-    .text-panel::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-
-    /* RIGHT: sticky viz */
-    .viz-panel {
-      flex: 1;
-      position: sticky;
-      top: 64px;
-      height: calc(100vh - 64px);
-      background: var(--bg);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-
-    /* Floating particles background for viz panel */
-    #vizParticles {
-      position: absolute; inset: 0; z-index: 0; pointer-events: none;
-    }
-
-    /* ── SECTION ── */
-    .section {
-      padding: 3rem 2.5rem;
-      min-height: calc(100vh - 64px);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    /* Section number badge */
-    .section-badge {
-      display: inline-flex; align-items: center; gap: 0.6rem;
-      margin-bottom: 1rem;
-    }
-    .section-num {
-      width: 36px; height: 36px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem; font-weight: 700; color: white;
-      background: linear-gradient(135deg, var(--teal), var(--indigo));
-      box-shadow: 0 4px 12px rgba(13,148,136,0.3);
-      animation: pulseNum 3s ease-in-out infinite;
-    }
-    @keyframes pulseNum {
-      0%, 100% { box-shadow: 0 4px 12px rgba(13,148,136,0.3); }
-      50% { box-shadow: 0 4px 20px rgba(13,148,136,0.5); }
-    }
-    .section-label {
-      font-size: 0.72rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 2.5px;
-      background: linear-gradient(90deg, var(--teal), var(--indigo));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .section h2 {
-      font-family: var(--serif);
-      font-size: 2rem; font-weight: 600;
-      color: var(--navy); margin-bottom: 1rem; line-height: 1.25;
-    }
-    .section p {
-      font-size: 0.95rem; line-height: 1.75;
-      color: var(--text); margin-bottom: 0.9rem;
-    }
-    .section p:last-of-type { margin-bottom: 0; }
-
-    /* Formula box with gradient */
-    .formula {
-      background: linear-gradient(135deg, rgba(13,148,136,0.06), rgba(99,102,241,0.06));
-      border-left: 4px solid;
-      border-image: linear-gradient(to bottom, var(--teal), var(--indigo)) 1;
-      border-radius: 0 12px 12px 0;
-      padding: 1rem 1.25rem;
-      margin: 1.25rem 0;
-      font-family: 'Georgia', serif;
-      font-size: 1.05rem;
-      color: var(--navy);
-      backdrop-filter: blur(4px);
-    }
-    .formula .sym { color: var(--teal); font-weight: 700; }
-
-    /* Preset buttons */
-    .preset-row {
-      display: flex; flex-wrap: wrap; gap: 0.5rem;
-      margin: 1rem 0;
-    }
-    .preset-btn {
-      padding: 0.4rem 0.9rem; border-radius: 20px;
-      font-size: 0.78rem; font-weight: 600;
-      cursor: pointer; transition: all .2s;
-      border: 1.5px solid var(--border);
-      background: var(--white); color: var(--text);
-    }
-    .preset-btn:hover {
-      border-color: var(--teal); color: var(--teal);
-      transform: translateY(-1px); box-shadow: 0 4px 12px rgba(13,148,136,0.15);
-    }
-    .preset-btn.active {
-      background: linear-gradient(135deg, var(--teal), #0f766e);
-      color: white; border-color: transparent;
-      box-shadow: 0 4px 12px rgba(13,148,136,0.3);
-    }
-
-    /* ── DRAGGABLE PROBABILITY BARS ── */
-    .prob-bars-label {
-      font-size: 0.78rem; font-weight: 600; color: var(--muted);
-      margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 1px;
-    }
-    .prob-bars {
-      display: flex; gap: 6px; align-items: flex-end;
-      height: 100px; user-select: none; margin-bottom: 0.5rem;
-    }
-    .bar-col {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; gap: 4px; height: 100%;
-    }
-    .bar-track {
-      flex: 1; width: 100%; background: #e2e8f0;
-      border-radius: 8px; position: relative; cursor: ns-resize; overflow: hidden;
-      transition: box-shadow 0.2s;
-    }
-    .bar-track:hover { box-shadow: 0 0 0 2px rgba(13,148,136,0.2); }
-    .bar-fill {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      border-radius: 8px;
-      transition: height 0.08s;
-    }
-    .bar-pct  { font-size: 0.68rem; color: var(--muted); font-weight: 600; }
-    .bar-name { font-size: 0.72rem; color: var(--navy); font-weight: 600; }
-
-    /* Die bars gradient */
-    .die-bars .bar-fill {
-      background: linear-gradient(to top, var(--teal), var(--teal-light));
-    }
-
-    /* Slider row */
-    .slider-row { margin: 1rem 0; }
-    .slider-row label {
-      display: flex; justify-content: space-between;
-      font-size: 0.82rem; font-weight: 600; color: var(--muted);
-      margin-bottom: 0.35rem;
-    }
-    .slider-row label span {
-      color: var(--teal); font-weight: 700;
-    }
-    input[type=range] {
-      width: 100%; accent-color: var(--teal);
-      height: 6px; cursor: pointer; border-radius: 3px;
-    }
-
-    /* Buttons */
-    .btn-row { display: flex; gap: 0.6rem; margin-top: 1.1rem; flex-wrap: wrap; }
-    .btn {
-      padding: 0.5rem 1.2rem; border: none; border-radius: 8px;
-      font-family: var(--sans); font-size: 0.85rem; font-weight: 600;
-      cursor: pointer; transition: all .2s; min-height: 44px;
-      position: relative; overflow: hidden;
-    }
-    .btn::after {
-      content: ''; position: absolute; top: 50%; left: 50%;
-      width: 0; height: 0; background: rgba(255,255,255,0.3);
-      border-radius: 50%; transform: translate(-50%, -50%);
-      transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
-      opacity: 0;
-    }
-    .btn:active::after { width: 200px; height: 200px; opacity: 0; }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--teal), #0f766e);
-      color: #fff; box-shadow: 0 4px 12px rgba(13,148,136,0.3);
-    }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(13,148,136,0.4); }
-    .btn-batch {
-      background: rgba(13,148,136,0.08); color: var(--teal);
-      border: 1.5px solid rgba(13,148,136,0.25);
-    }
-    .btn-batch:hover { background: rgba(13,148,136,0.14); }
-    .btn-auto {
-      background: rgba(99,102,241,0.08); color: var(--indigo);
-      border: 1.5px solid rgba(99,102,241,0.25);
-    }
-    .btn-auto:hover { background: rgba(99,102,241,0.14); }
-    .btn-auto.playing {
-      background: linear-gradient(135deg, var(--indigo), #4f46e5);
-      color: white; border-color: transparent;
-    }
-    .btn-reset {
-      background: #f1f5f9; color: var(--muted);
-      border: 1.5px solid var(--border);
-    }
-    .btn-reset:hover { background: #e2e8f0; }
-
-    /* Stats grid with gradient cards */
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 1rem; }
-    .stat-box {
-      background: linear-gradient(135deg, rgba(13,148,136,0.04), rgba(99,102,241,0.04));
-      border: 1px solid var(--border);
-      border-radius: 12px; padding: 0.75rem; text-align: center;
-      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease;
-    }
-    .stat-box:hover {
-      transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-    }
-    .stat-box .s-label { font-size: 0.68rem; color: var(--muted); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .stat-box .s-value {
-      font-size: 1.5rem; font-weight: 700; color: var(--navy);
-      transition: transform 0.2s ease;
-    }
-    .stat-box .s-value.bump { transform: scale(1.2); }
-
-    /* Card toggles (Section 3) */
-    .card-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 1rem 0; }
-    .card-toggle {
-      width: 48px; height: 64px; border-radius: 8px;
-      border: 2px solid var(--border);
-      background: var(--white); cursor: pointer;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      font-size: 0.8rem; font-weight: 700;
-      transition: all .25s cubic-bezier(0.16,1,0.3,1);
-      color: var(--text); position: relative; overflow: hidden;
-    }
-    .card-toggle::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(13,148,136,0.1), rgba(99,102,241,0.1));
-      opacity: 0; transition: opacity 0.2s;
-    }
-    .card-toggle:hover::before { opacity: 1; }
-    .card-toggle:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    .card-toggle.active {
-      background: linear-gradient(135deg, var(--teal), #0f766e);
-      border-color: transparent;
-      color: white; box-shadow: 0 4px 12px rgba(13,148,136,0.35);
-    }
-    .card-toggle .suit { font-size: 1.1rem; }
-    .card-toggle .score-label { font-size: 0.6rem; color: var(--muted); margin-top: 2px; }
-    .card-toggle.active .score-label { color: rgba(255,255,255,0.7); }
-
-    /* ── VISUALIZATION SECTIONS ── */
-    .viz-section {
-      position: absolute; inset: 0;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 2rem;
-      opacity: 0; transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1);
-      pointer-events: none;
-      z-index: 1;
-    }
-    .viz-section.active { opacity: 1; pointer-events: all; }
-
-    .viz-title {
-      font-family: var(--serif); font-size: 1.05rem;
-      color: var(--muted); margin-bottom: 1.25rem;
-      text-align: center; letter-spacing: 0.5px;
-    }
-    .viz-title span { color: var(--teal); font-weight: 600; }
-
-    /* ─ VIZ 1: Tooth flip ─ */
-    #coin-viz {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 1.2rem; width: 100%;
-    }
-
-    .tooth-display { perspective: 800px; }
-    .tooth-inner {
-      width: 120px; height: 120px;
-      position: relative; transform-style: preserve-3d;
-      transition: transform 0.5s ease;
-    }
-    .tooth-inner.flipping { animation: toothFlip 0.6s ease; }
-    @keyframes toothFlip {
-      0%   { transform: rotateY(0deg) scale(1); }
-      25%  { transform: rotateY(450deg) scale(1.1); }
-      50%  { transform: rotateY(900deg) scale(1.05); }
-      100% { transform: rotateY(1800deg) scale(1); }
-    }
-    .tooth-face {
-      position: absolute; inset: 0; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column;
-      font-size: 2.5rem;
-      box-shadow: 0 8px 25px rgba(0,0,0,.15);
-      backface-visibility: hidden;
-    }
-    .tooth-success {
-      background: linear-gradient(135deg, #10b981, #059669);
-      color: white;
-    }
-    .tooth-failure {
-      background: linear-gradient(135deg, #f87171, #dc2626);
-      color: white;
-    }
-    .tooth-face .face-label {
-      font-size: 0.6rem; font-weight: 700; letter-spacing: 1px;
-      text-transform: uppercase; margin-top: 2px; opacity: 0.9;
-    }
-
-    /* Particle burst */
-    .particle-burst {
-      position: absolute; pointer-events: none;
-    }
-    .burst-dot {
-      position: absolute; width: 6px; height: 6px; border-radius: 50%;
-      animation: burstOut 0.6s ease-out forwards;
-    }
-    @keyframes burstOut {
-      0% { transform: translate(0,0) scale(1); opacity: 1; }
-      100% { opacity: 0; }
-    }
-
-    .coin-history {
-      display: flex; flex-wrap: wrap; gap: 4px;
-      justify-content: center; max-height: 80px;
-      overflow: hidden; width: 100%; max-width: 320px;
-    }
-    .coin-dot {
-      width: 16px; height: 16px; border-radius: 50%;
-      animation: dotPop 0.25s cubic-bezier(0.16,1,0.3,1);
-      cursor: default; position: relative;
-    }
-    @keyframes dotPop {
-      from { transform: scale(0) rotate(-90deg); opacity: 0; }
-      to   { transform: scale(1) rotate(0deg); opacity: 1; }
-    }
-    .coin-dot.s { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 2px 6px rgba(16,185,129,0.3); }
-    .coin-dot.f { background: linear-gradient(135deg, #f87171, #dc2626); box-shadow: 0 2px 6px rgba(248,113,113,0.3); }
-    .coin-dot[title]:hover { transform: scale(1.3); }
-
-    .coin-stats {
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
-      gap: 0.75rem; width: 100%; max-width: 360px;
-    }
-    .coin-stat { text-align: center; }
-    .coin-stat .cs-val {
-      font-size: 1.6rem; font-weight: 700; color: var(--navy);
-    }
-    .coin-stat .cs-lab {
-      font-size: 0.7rem; color: var(--muted); margin-top: 2px;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-
-    /* Convergence band label */
-    .convergence-badge {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      padding: 0.3rem 0.7rem; border-radius: 20px;
-      font-size: 0.72rem; font-weight: 600;
-      background: rgba(13,148,136,0.08); color: var(--teal);
-      border: 1px solid rgba(13,148,136,0.15);
-      transition: all 0.3s;
-    }
-    .convergence-badge.converged { background: rgba(16,185,129,0.12); color: #059669; border-color: rgba(16,185,129,0.25); }
-
-    /* ─ VIZ 2: DMFT Tooth Health ─ */
-    #die-viz {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 1rem; width: 100%;
-    }
-
-    .tooth-health-indicator {
-      width: 110px; height: 110px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column;
-      font-size: 2.2rem; font-weight: 800;
-      color: white;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-      transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-      position: relative;
-    }
-    .tooth-health-indicator .dmft-label {
-      font-size: 0.55rem; font-weight: 700; letter-spacing: 1.5px;
-      text-transform: uppercase; margin-top: 2px; opacity: 0.85;
-    }
-    .tooth-health-indicator.rolling { animation: healthPulse 0.4s ease; }
-    @keyframes healthPulse {
-      0%,100% { transform: scale(1) rotate(0deg); }
-      25% { transform: scale(1.08) rotate(-5deg); }
-      50% { transform: scale(1.05) rotate(5deg); }
-      75% { transform: scale(1.08) rotate(-3deg); }
-    }
-
-    .exp-display {
-      display: flex; gap: 1.5rem; text-align: center;
-    }
-    .exp-val { font-size: 0.85rem; color: var(--muted); }
-    .exp-val strong { display: block; font-size: 1.3rem; color: var(--navy); }
-
-    /* ─ VIZ 3: Satisfaction score ─ */
-    #card-viz {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 1rem; width: 100%;
-    }
-
-    .score-card-display {
-      width: 90px; height: 120px;
-      background: var(--white); border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0,0,0,.12);
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column;
-      font-size: 2rem; font-weight: 800;
-      border: 2px solid var(--border);
-      transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-      position: relative; overflow: hidden;
-    }
-    .score-card-display::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, var(--teal), var(--indigo));
-      opacity: 0; transition: opacity 0.3s;
-    }
-    .score-card-display.revealed::before { opacity: 1; }
-    .score-card-display .score-emoji { font-size: 1.2rem; }
-    .score-card-display .score-text {
-      font-size: 0.55rem; font-weight: 600; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;
-    }
-    .score-card-display.flip-anim {
-      animation: cardFlip3D 0.5s ease;
-    }
-    @keyframes cardFlip3D {
-      0% { transform: perspective(600px) rotateY(0deg); }
-      50% { transform: perspective(600px) rotateY(90deg) scale(0.9); }
-      100% { transform: perspective(600px) rotateY(0deg) scale(1); }
-    }
-
-    /* ── SECTION NAV DOTS ── */
-    .dot-nav {
-      position: fixed; right: 1.2rem; top: 50%;
-      transform: translateY(-50%); z-index: 100;
-      display: flex; flex-direction: column; gap: 12px;
-    }
-    .dot-nav a {
-      width: 12px; height: 12px; border-radius: 50%;
-      background: #cbd5e1; display: block; transition: all .25s cubic-bezier(0.16,1,0.3,1);
-      border: 2px solid transparent;
-    }
-    .dot-nav a.active {
-      background: var(--teal);
-      border-color: rgba(13,148,136,.25);
-      box-shadow: 0 0 0 4px rgba(13,148,136,.12);
-      transform: scale(1.2);
-    }
-    .dot-nav a:hover { background: var(--teal); transform: scale(1.15); }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      .page-wrapper { flex-direction: column; height: auto; }
-      .text-panel { width: 100%; min-width: auto; min-height: auto; overflow: visible; }
-      .viz-panel { position: relative; top: 0; height: 65vh; width: 100%; }
-      .dot-nav { display: none; }
-      .nav-links { display: none; }
-      #mobileMenuBtn { display: block; }
-      .section { padding: 2rem 1.5rem; }
-      .nav-breadcrumb { display: none; }
-    }
-
-    /* ── DOCUMENTATION LAYOUT + MODAL SIMULATOR ── */
-    .dot-nav,
-    .viz-panel {
-      display: none;
-    }
+    /* ── PAGE LAYOUT ── */
     .page-wrapper {
       display: block;
       height: auto;
@@ -565,6 +89,8 @@
       background: transparent;
       border-right: 0;
     }
+
+    /* ── HERO ── */
     .chapter-hero {
       margin: 0 auto 1.5rem;
       padding: 2.6rem 2.5rem;
@@ -587,9 +113,7 @@
       background: radial-gradient(circle, rgba(94,234,212,0.22), rgba(94,234,212,0));
       pointer-events: none;
     }
-    .chapter-hero__badge {
-      display: none;
-    }
+    .chapter-hero__badge { display: none; }
     .chapter-hero__title {
       margin-top: 0;
       font-size: clamp(2.5rem, 4vw, 3.9rem);
@@ -604,6 +128,8 @@
       font-size: 1.08rem;
       line-height: 1.75;
     }
+
+    /* ── SECTIONS ── */
     .section {
       min-height: auto;
       justify-content: flex-start;
@@ -613,251 +139,290 @@
       border: 1px solid var(--border);
       border-radius: 26px;
       box-shadow: 0 20px 45px rgba(15,23,42,0.08);
-    }
-    .section:last-child {
-      margin-bottom: 0;
-    }
-    .section h2 {
-      font-size: 2.15rem;
-    }
-    .sim-launch-card {
-      margin-top: 1.4rem;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.25rem;
-      padding: 1.25rem 1.35rem;
-      border-radius: 20px;
-      border: 1px solid rgba(13,148,136,0.14);
-      background: linear-gradient(135deg, rgba(13,148,136,0.08), rgba(99,102,241,0.08));
+      flex-direction: column;
     }
-    .sim-launch-copy h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--navy);
-      margin-bottom: 0.35rem;
-    }
-    .sim-launch-copy p {
-      font-size: 0.88rem;
-      color: var(--muted);
-      line-height: 1.65;
-      margin: 0;
-    }
-    .sim-open-btn {
-      border: none;
-      border-radius: 999px;
-      padding: 0.9rem 1.4rem;
-      min-width: 150px;
-      background: linear-gradient(135deg, var(--teal), #0f766e);
-      color: white;
-      font-size: 0.9rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 14px 28px rgba(13,148,136,0.22);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .sim-open-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 18px 32px rgba(13,148,136,0.28);
-    }
-    [data-sim-source] {
-      display: none;
-    }
-
-    .sim-modal {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.75rem;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transition: opacity 0.22s ease, visibility 0.22s ease;
-      z-index: 300;
-    }
-    .sim-modal.is-open {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-    }
-    .sim-modal__backdrop {
-      position: absolute;
-      inset: 0;
-      background: rgba(15,23,42,0.66);
-      backdrop-filter: blur(5px);
-    }
-    .sim-modal__dialog {
-      position: relative;
-      width: min(1660px, calc(100vw - 0.5rem));
-      height: min(94vh, 980px);
-      max-height: min(94vh, 980px);
-      overflow: auto;
-      border-radius: 32px;
-      background: #ffffff;
-      box-shadow: 0 30px 80px rgba(15,23,42,0.34);
-      z-index: 1;
-    }
-    .sim-modal__header {
-      padding: 1.35rem 1.55rem 1rem;
-      background:
-        radial-gradient(circle at top right, rgba(94,234,212,0.18), transparent 30%),
-        linear-gradient(135deg, #0f172a 0%, #1d4f77 60%, #0f766e 100%);
-      color: white;
-    }
-    .sim-modal__eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      padding: 0.45rem 0.85rem;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.12);
-      color: #99f6e4;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .sim-modal__header h2 {
-      margin-top: 0.9rem;
-      font-size: 2rem;
-      color: white;
-    }
-    .sim-modal__header p {
-      margin-top: 0.45rem;
-      max-width: 760px;
-      color: rgba(226,232,240,0.92);
-      line-height: 1.7;
-    }
-    .sim-modal__close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      width: 44px;
-      height: 44px;
-      border: none;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.12);
-      color: white;
-      font-size: 1.6rem;
-      line-height: 1;
-      cursor: pointer;
-      border: 1px solid rgba(255,255,255,0.16);
-    }
-    .sim-modal__body {
-      display: grid;
-      grid-template-columns: minmax(390px, 460px) minmax(760px, 1fr);
-      gap: 1rem;
-      padding: 1.3rem 1.45rem 1.45rem;
-      align-items: start;
-      background: linear-gradient(180deg, #f8fbfe 0%, #eef6f7 100%);
-    }
-    .sim-modal__controls {
-      min-width: 0;
-    }
-    .sim-modal__controls > [data-sim-source] {
-      display: block;
-      padding: 1.2rem;
-      border-radius: 24px;
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, #ffffff 0%, #f8fbfc 100%);
-      box-shadow: 0 16px 36px rgba(15,23,42,0.08);
-      height: 100%;
-    }
-    .sim-modal__visual {
-      min-width: 0;
-      min-height: 720px;
-      display: flex;
-      position: sticky;
-      top: 0;
-      align-self: start;
-    }
-    .sim-modal__visual .viz-section {
-      position: relative;
-      inset: auto;
-      opacity: 1;
-      pointer-events: all;
-      display: none;
-      min-height: 720px;
-      width: 100%;
-      padding: 1.35rem;
-      border-radius: 24px;
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, #f8fcfc 0%, #eff6fb 100%);
-      box-shadow: 0 16px 36px rgba(15,23,42,0.08);
-      justify-content: center;
-    }
-    .sim-modal__visual .viz-section.active {
-      display: flex;
-    }
-    .sim-modal__visual .viz-title {
-      font-size: 1rem;
+    .section:last-child { margin-bottom: 0; }
+    .section-badge {
+      display: inline-flex; align-items: center; gap: 0.6rem;
       margin-bottom: 1rem;
     }
-    .sim-modal__visual #coin-viz,
-    .sim-modal__visual #die-viz,
-    .sim-modal__visual #card-viz {
-      width: 100%;
-      max-width: 980px;
+    .section-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700; color: white;
+      background: linear-gradient(135deg, var(--teal), var(--indigo));
+      box-shadow: 0 4px 12px rgba(13,148,136,0.3);
     }
-    .sim-modal__visual #coinChart,
-    .sim-modal__visual #dieChart,
-    .sim-modal__visual #varChart {
-      max-width: 100%;
-      width: 100% !important;
-      min-height: 320px;
-      border: 1px solid rgba(148,163,184,0.18);
+    .section-label {
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 2.5px;
+      background: linear-gradient(90deg, var(--teal), var(--indigo));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-    .sim-modal__visual .exp-display {
-      flex-wrap: wrap;
-      justify-content: center;
+    .section h2 {
+      font-family: var(--serif);
+      font-size: 2.15rem; font-weight: 600;
+      color: var(--navy); margin-bottom: 1rem; line-height: 1.25;
     }
-    body.modal-open {
+    .section p {
+      font-size: 0.95rem; line-height: 1.75;
+      color: var(--text); margin-bottom: 0.9rem;
+    }
+    .section p:last-of-type { margin-bottom: 0; }
+
+    /* ── FORMULA BOX ── */
+    .formula {
+      background: linear-gradient(135deg, rgba(13,148,136,0.06), rgba(99,102,241,0.06));
+      border-left: 4px solid;
+      border-image: linear-gradient(to bottom, var(--teal), var(--indigo)) 1;
+      border-radius: 0 12px 12px 0;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      font-family: 'Georgia', serif;
+      font-size: 1.05rem;
+      color: var(--navy);
+    }
+    .formula .sym { color: var(--teal); font-weight: 700; }
+
+    /* ── KEY POINTS ── */
+    .key-points {
+      margin-top: 1.25rem;
+      padding: 0;
+      list-style: none;
+    }
+    .key-points li {
+      position: relative;
+      padding: 0.6rem 0 0.6rem 1.8rem;
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: var(--text);
+      border-bottom: 1px solid rgba(226,232,240,0.5);
+    }
+    .key-points li:last-child { border-bottom: none; }
+    .key-points li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), var(--indigo));
+    }
+
+    /* ── EXAMPLE BOX ── */
+    .example-box {
+      margin-top: 1.25rem;
+      padding: 1.15rem 1.3rem;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(13,148,136,0.05), rgba(99,102,241,0.05));
+      border: 1px solid rgba(13,148,136,0.12);
+    }
+    .example-box__label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--teal);
+      margin-bottom: 0.5rem;
+    }
+    .example-box p {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text);
+      margin: 0;
+    }
+    .example-box code {
+      background: rgba(13,148,136,0.1);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: var(--teal);
+      font-weight: 600;
+    }
+
+    /* ── CTA SECTION ── */
+    .examples-cta {
+      margin-top: 2rem;
+      position: relative;
+      border-radius: 28px;
       overflow: hidden;
+      background: linear-gradient(135deg, #0f172a 0%, #1d4f77 54%, #0f766e 100%);
+      box-shadow: 0 24px 60px rgba(15,23,42,0.2);
+    }
+    .examples-cta::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      right: -10%;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(94,234,212,0.2), transparent 70%);
+      pointer-events: none;
+    }
+    .examples-cta::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -5%;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.15), transparent 70%);
+      pointer-events: none;
+    }
+    .examples-cta__inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      padding: 2.5rem 2.8rem;
+    }
+    .examples-cta__icon {
+      flex-shrink: 0;
+      width: 100px;
+      height: 100px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+    .examples-cta__icon svg {
+      width: 48px;
+      height: 48px;
+      color: #5eead4;
+    }
+    .examples-cta__content {
+      flex: 1;
+    }
+    .examples-cta__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #99f6e4;
+      margin-bottom: 0.8rem;
+    }
+    .examples-cta__eyebrow .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #5eead4;
+      animation: ctaPulse 2s ease-in-out infinite;
+    }
+    @keyframes ctaPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.4); }
+    }
+    .examples-cta__title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    .examples-cta__desc {
+      font-size: 0.95rem;
+      color: rgba(226,232,240,0.85);
+      line-height: 1.65;
+      max-width: 540px;
+    }
+    .examples-cta__actions {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .examples-cta__btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.85rem 1.8rem;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #5eead4, #14b8a6);
+      color: #0f172a;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 8px 28px rgba(94,234,212,0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .examples-cta__btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 36px rgba(94,234,212,0.4);
+    }
+    .examples-cta__btn svg {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.2s;
+    }
+    .examples-cta__btn:hover svg {
+      transform: translateX(3px);
+    }
+    .examples-cta__hint {
+      font-size: 0.72rem;
+      color: rgba(226,232,240,0.5);
+      letter-spacing: 0.04em;
+    }
+    .examples-cta__sims {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+    .examples-cta__sim-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: rgba(226,232,240,0.7);
+    }
+    .examples-cta__sim-tag .tag-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
     }
 
-    @media (max-width: 960px) {
-      .section {
-        padding: 2rem 1.5rem;
-      }
-      .chapter-hero {
-        padding: 1.9rem 1.55rem;
-      }
-      .sim-launch-card {
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      #mobileMenuBtn { display: block; }
+      .nav-breadcrumb { display: none; }
+      .section { padding: 2rem 1.5rem; }
+      .chapter-hero { padding: 2rem 1.5rem; }
+      .examples-cta__inner {
         flex-direction: column;
-        align-items: flex-start;
+        text-align: center;
+        padding: 2rem 1.5rem;
+        gap: 1.5rem;
       }
-      .sim-open-btn {
-        width: 100%;
-      }
-      .sim-modal {
-        padding: 0.9rem;
-      }
-      .sim-modal__body {
-        grid-template-columns: 1fr;
-      }
-      .sim-modal__dialog {
-        max-height: 92vh;
-        height: auto;
-      }
-      .sim-modal__visual,
-      .sim-modal__visual .viz-section {
-        min-height: 520px;
-      }
-      .sim-modal__visual {
-        position: relative;
-      }
+      .examples-cta__actions { width: 100%; }
+      .examples-cta__btn { width: 100%; justify-content: center; }
+      .examples-cta__sims { justify-content: center; flex-wrap: wrap; }
+      .examples-cta__desc { max-width: 100%; }
     }
-
-    /* Speed control */
-    .speed-control {
-      display: flex; align-items: center; gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    .speed-control label { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
-    .speed-control input[type=range] { width: 100px; }
-    .speed-val { font-size: 0.72rem; color: var(--teal); font-weight: 700; min-width: 28px; }
   </style>
 </head>
 
@@ -881,7 +446,7 @@
         <span class="sep">/</span>
         <a href="/#concepts">Concepts</a>
         <span class="sep">/</span>
-        <span class="current">Chapter 1 · Basic Probability</span>
+        <span class="current">Basic Probability</span>
       </div>
     </div>
     <button id="mobileMenuBtn" onclick="history.back()">
@@ -890,21 +455,12 @@
   </div>
 </nav>
 
-<!-- SECTION DOTS -->
-<div class="dot-nav">
-  <a href="#s1" class="active" data-sec="0" title="Chance Events"></a>
-  <a href="#s2" data-sec="1" title="Expectation"></a>
-  <a href="#s3" data-sec="2" title="Variance"></a>
-</div>
-
 <!-- PAGE WRAPPER -->
 <div class="page-wrapper">
-
-  <!-- ═══════════════════ LEFT TEXT PANEL ═══════════════════ -->
-  <div class="text-panel" id="textPanel">
+  <div class="text-panel">
 
     <section class="chapter-hero" aria-label="Basic Probability overview">
-      <span class="chapter-hero__badge">Chapter 1 · Basic Probability</span>
+      <span class="chapter-hero__badge">Chapter 1 &middot; Basic Probability</span>
       <h1 class="chapter-hero__title">Basic Probability</h1>
       <p class="chapter-hero__lead">
         Probability tells us how likely an event is to happen. In dental research, it helps us reason
@@ -914,12 +470,12 @@
     </section>
 
     <!-- SECTION 1: CHANCE EVENTS -->
-    <div class="section" id="s1" data-section="0">
+    <div class="section" id="s1">
       <div class="section-badge">
         <div class="section-num">1</div>
         <span class="section-label">Chance Events</span>
       </div>
-      <h2>Dental Implant Success Simulator</h2>
+      <h2>Understanding Probability</h2>
       <p>
         Probability is a number between <strong>0</strong> and <strong>1</strong> indicating how
         likely an event will occur. In dentistry, implant procedures, root canals, and fillings
@@ -928,7 +484,8 @@
       <p>
         Will this implant integrate successfully? Will a root canal relieve the patient's pain?
         These are questions of probability. By simulating many outcomes, we observe the
-        <strong>Law of Large Numbers</strong> in action.
+        <strong>Law of Large Numbers</strong> in action &mdash; observed frequencies converge to
+        the true probability as the number of trials grows.
       </p>
       <div class="formula">
         <span class="sym">0 &le; P(A) &le; 1</span>
@@ -936,153 +493,72 @@
         <span class="sym">P(A&#x1d9c;) = 1 &minus; P(A)</span>
       </div>
 
-      <div class="sim-launch-card">
-        <div class="sim-launch-copy">
-          <h3>Open the implant probability simulator</h3>
-          <p>
-            Try preset success rates, change the probability slider, and watch the observed rate
-            move closer to the true value as more patients are simulated.
-          </p>
-        </div>
-        <button type="button" class="sim-open-btn" data-open-sim="0">Simulate</button>
-      </div>
+      <ul class="key-points">
+        <li><strong>P(A) = 0</strong> means the event is impossible; <strong>P(A) = 1</strong> means it is certain.</li>
+        <li>The complement rule: if an implant has a 95% success rate, the failure rate is <code>1 &minus; 0.95 = 0.05</code>.</li>
+        <li>The <strong>Law of Large Numbers</strong> guarantees that observed proportions converge to the true probability as sample size increases.</li>
+        <li>Clinical success rates (e.g., implant: 95%, filling: 90%) are derived from large-scale studies using this principle.</li>
+      </ul>
 
-      <div data-sim-source="0">
-        <div class="prob-bars-label">Clinical Scenarios</div>
-        <div class="preset-row" id="coinPresets">
-          <button class="preset-btn active" onclick="setCoinPreset(95,'implant')">Implant (95%)</button>
-          <button class="preset-btn" onclick="setCoinPreset(90,'filling')">Filling (90%)</button>
-          <button class="preset-btn" onclick="setCoinPreset(85,'rootcanal')">Root Canal (85%)</button>
-          <button class="preset-btn" onclick="setCoinPreset(92,'extraction')">Extraction (92%)</button>
-          <button class="preset-btn" onclick="setCoinPreset(50,'custom')">Custom</button>
-        </div>
-
-        <div class="slider-row">
-          <label>P(Success) <span id="coin-p-label">95%</span></label>
-          <input type="range" id="coin-p" min="5" max="99" value="95">
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat-box">
-            <div class="s-label">Success</div>
-            <div class="s-value" id="c-heads" style="color:var(--teal)">0</div>
-          </div>
-          <div class="stat-box">
-            <div class="s-label">Failure</div>
-            <div class="s-value" id="c-tails" style="color:var(--red)">0</div>
-          </div>
-          <div class="stat-box">
-            <div class="s-label">Total Patients</div>
-            <div class="s-value" id="c-total">0</div>
-          </div>
-          <div class="stat-box">
-            <div class="s-label">Observed P</div>
-            <div class="s-value" id="c-obs" style="font-size:1.1rem">—</div>
-          </div>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn btn-primary" onclick="flipCoin()">Simulate</button>
-          <button class="btn btn-batch" onclick="flipMany()">100 Patients</button>
-          <button class="btn btn-auto" id="autoPlayBtn" onclick="toggleAutoPlay()">Auto-Play</button>
-          <button class="btn btn-reset" onclick="resetCoin()">Reset</button>
-        </div>
-        <div class="speed-control" id="speedControl" style="display:none">
-          <label>Speed:</label>
-          <input type="range" id="autoSpeed" min="1" max="10" value="5">
-          <span class="speed-val" id="speedVal">5x</span>
-        </div>
+      <div class="example-box">
+        <div class="example-box__label">Dental Example</div>
+        <p>
+          A dental implant has a success rate of <code>P = 0.95</code>. If a clinic places 200 implants,
+          the expected number of successful outcomes is <code>200 &times; 0.95 = 190</code>. The probability
+          of failure per implant is <code>1 &minus; 0.95 = 0.05</code>, so roughly 10 failures are expected.
+        </p>
       </div>
     </div>
 
     <!-- SECTION 2: EXPECTATION -->
-    <div class="section" id="s2" data-section="1">
+    <div class="section" id="s2">
       <div class="section-badge">
         <div class="section-num">2</div>
         <span class="section-label">Expectation</span>
       </div>
-      <h2>DMFT Score Distribution</h2>
+      <h2>Expected Value</h2>
       <p>
         The <strong>expected value</strong> (mean) is the long-run average of outcomes, weighted
-        by their probabilities. The DMFT index tracks Decayed, Missing, and Filled Teeth —
+        by their probabilities. The DMFT index tracks Decayed, Missing, and Filled Teeth &mdash;
         a key measure in dental epidemiology.
       </p>
       <p>
         Different populations show different DMFT distributions. A healthy group clusters near 0,
-        while a high-risk group skews toward higher scores.
+        while a high-risk group skews toward higher scores. The expected value tells us the
+        &ldquo;center of gravity&rdquo; of the distribution.
       </p>
       <div class="formula">
         <span class="sym">E[X] = &Sigma; x &middot; P(x)</span>
       </div>
 
-      <div class="sim-launch-card">
-        <div class="sim-launch-copy">
-          <h3>Explore expected value with DMFT scores</h3>
-          <p>
-            Open the simulator to choose a population, reshape the DMFT probabilities, and watch
-            the running sample mean stabilize around the true expected value.
-          </p>
-        </div>
-        <button type="button" class="sim-open-btn" data-open-sim="1">Simulate</button>
-      </div>
+      <ul class="key-points">
+        <li>Expected value is a <strong>weighted average</strong> &mdash; outcomes that are more likely contribute more.</li>
+        <li>It does not have to be a value that is actually observable. For example, E[DMFT] = 3.2 even though no patient has exactly 3.2 teeth affected.</li>
+        <li>The <strong>sample mean</strong> converges to E[X] as more observations are collected.</li>
+        <li>Comparing expected values across populations helps identify high-risk groups for targeted intervention.</li>
+      </ul>
 
-      <div data-sim-source="1">
-        <div class="prob-bars-label">Population Presets</div>
-        <div class="preset-row" id="diePresets">
-          <button class="preset-btn" onclick="setDiePreset('healthy')">Healthy</button>
-          <button class="preset-btn" onclick="setDiePreset('highrisk')">High-Risk</button>
-          <button class="preset-btn" onclick="setDiePreset('mixed')">Mixed Community</button>
-          <button class="preset-btn" onclick="setDiePreset('post')">Post-Treatment</button>
-          <button class="preset-btn active" onclick="setDiePreset('uniform')">Uniform</button>
-        </div>
-
-        <p style="margin-top:0.5rem">
-          Drag the bars below to customize DMFT score probabilities, or select a preset.
-          Then roll to see the sample mean converge to E[X].
+      <div class="example-box">
+        <div class="example-box__label">Dental Example</div>
+        <p>
+          In a community screening, suppose DMFT scores of 0, 1, 2, 3, 4, 5 occur with probabilities
+          0.30, 0.25, 0.20, 0.12, 0.08, 0.05. The expected DMFT is
+          <code>0(0.30) + 1(0.25) + 2(0.20) + 3(0.12) + 4(0.08) + 5(0.05) = 1.58</code>.
+          This tells us the average disease burden in the population.
         </p>
-
-        <div class="prob-bars-label" style="margin-top:0.8rem">DMFT Score Distribution</div>
-        <div class="prob-bars die-bars" id="dieBars">
-          <!-- generated by JS -->
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat-box">
-            <div class="s-label">True E[X]</div>
-            <div class="s-value" id="d-true" style="color:var(--teal)">—</div>
-          </div>
-          <div class="stat-box">
-            <div class="s-label">Sample Mean</div>
-            <div class="s-value" id="d-sample">—</div>
-          </div>
-          <div class="stat-box">
-            <div class="s-label">Rolls</div>
-            <div class="s-value" id="d-rolls">0</div>
-          </div>
-          <div class="stat-box">
-            <div class="s-label">Last Score</div>
-            <div class="s-value" id="d-last" style="color:var(--teal)">—</div>
-          </div>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn btn-primary" onclick="rollDie()">Roll</button>
-          <button class="btn btn-batch" onclick="rollMany()">Roll 100&times;</button>
-          <button class="btn btn-reset" onclick="resetDie()">Reset</button>
-        </div>
       </div>
     </div>
 
     <!-- SECTION 3: VARIANCE -->
-    <div class="section" id="s3" data-section="2">
+    <div class="section" id="s3">
       <div class="section-badge">
         <div class="section-num">3</div>
         <span class="section-label">Variance</span>
       </div>
-      <h2>Patient Satisfaction Scores</h2>
+      <h2>Variance &amp; Spread</h2>
       <p>
         <strong>Variance</strong> measures how spread out outcomes are from the expected value.
-        In dentistry, patient satisfaction varies widely — some patients report excellent outcomes,
+        In dentistry, patient satisfaction varies widely &mdash; some patients report excellent outcomes,
         others experience complications.
       </p>
       <p>
@@ -1093,1281 +569,62 @@
         <span class="sym">Var(X) = E[(X &minus; E[X])&sup2;]</span>
       </div>
 
-      <div class="sim-launch-card">
-        <div class="sim-launch-copy">
-          <h3>Test how spread changes from one score setup to another</h3>
-          <p>
-            Launch the simulator to include or remove satisfaction scores, then draw repeated
-            samples and compare the running variance with the true variance.
-          </p>
-        </div>
-        <button type="button" class="sim-open-btn" data-open-sim="2">Simulate</button>
-      </div>
+      <ul class="key-points">
+        <li>Variance is always <strong>non-negative</strong>. A variance of 0 means every outcome is identical.</li>
+        <li><strong>Standard deviation</strong> (&sigma;) is the square root of variance &mdash; it is in the same units as the data, making it easier to interpret.</li>
+        <li>When comparing treatments, a procedure with the same average outcome but <em>lower variance</em> is generally more predictable and preferred.</li>
+        <li>High variance in satisfaction scores may indicate that patient experience depends on factors not captured in the average.</li>
+      </ul>
 
-      <div data-sim-source="2">
-        <div class="prob-bars-label">Outcome Scenarios</div>
-        <div class="preset-row" id="cardPresets">
-          <button class="preset-btn active" onclick="setCardPreset('all')">All Scores</button>
-          <button class="preset-btn" onclick="setCardPreset('consistent')">Consistent Results</button>
-          <button class="preset-btn" onclick="setCardPreset('variable')">Variable Results</button>
-          <button class="preset-btn" onclick="setCardPreset('bimodal')">Bimodal Outcomes</button>
-        </div>
-
-        <p style="margin-top:0.5rem">
-          Toggle scores to include/exclude them from the population. Each score (1–10) represents
-          a patient satisfaction rating. Draw samples and watch variance converge.
+      <div class="example-box">
+        <div class="example-box__label">Dental Example</div>
+        <p>
+          Clinic A reports patient satisfaction scores of {8, 8, 9, 8, 9} (low variance),
+          while Clinic B reports {3, 10, 5, 9, 8} (high variance). Both have similar averages
+          (~8.4 vs 7.0), but Clinic A delivers more consistent experiences. Variance captures
+          this difference that the mean alone cannot.
         </p>
+      </div>
+    </div>
 
-        <div class="prob-bars-label" style="margin-top:0.8rem">Satisfaction Scores (click to toggle)</div>
-        <div class="card-grid" id="cardGrid">
-          <!-- generated by JS -->
+    <!-- CTA: EXPLORE INTERACTIVE EXAMPLES -->
+    <div class="examples-cta">
+      <div class="examples-cta__inner">
+        <div class="examples-cta__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
         </div>
-
-        <div class="stats-grid">
-          <div class="stat-box">
-            <div class="s-label">True Var(X)</div>
-            <div class="s-value" id="v-true" style="color:var(--indigo)">—</div>
-          </div>
-          <div class="stat-box">
-            <div class="s-label">Running Var</div>
-            <div class="s-value" id="v-sample">—</div>
-          </div>
-          <div class="stat-box">
-            <div class="s-label">Draws</div>
-            <div class="s-value" id="v-draws">0</div>
-          </div>
-          <div class="stat-box">
-            <div class="s-label">Last Score</div>
-            <div class="s-value" id="v-last" style="color:var(--indigo)">—</div>
+        <div class="examples-cta__content">
+          <span class="examples-cta__eyebrow">
+            <span class="dot"></span>
+            3 Interactive Simulations
+          </span>
+          <div class="examples-cta__title">Ready to see it in action?</div>
+          <p class="examples-cta__desc">
+            Put these concepts to the test with hands-on simulations. Flip implants, roll DMFT scores,
+            and draw satisfaction ratings &mdash; watch the math come alive with real dental scenarios.
+          </p>
+          <div class="examples-cta__sims">
+            <span class="examples-cta__sim-tag"><span class="tag-dot" style="background:#10b981"></span> Implant Success</span>
+            <span class="examples-cta__sim-tag"><span class="tag-dot" style="background:#0d9488"></span> DMFT Expected Value</span>
+            <span class="examples-cta__sim-tag"><span class="tag-dot" style="background:#6366f1"></span> Satisfaction Variance</span>
           </div>
         </div>
-
-        <div class="btn-row">
-          <button class="btn btn-primary" onclick="drawCard()">Draw</button>
-          <button class="btn btn-batch" onclick="drawMany()">Draw 100&times;</button>
-          <button class="btn btn-reset" onclick="resetCards()">Reset</button>
+        <div class="examples-cta__actions">
+          <a href="/concepts/basic-probability-examples" class="examples-cta__btn">
+            Explore Examples
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+          <span class="examples-cta__hint">Interactive &middot; No sign-up needed</span>
         </div>
       </div>
     </div>
 
   </div><!-- /text-panel -->
-
-
-  <!-- ═══════════════════ RIGHT VIZ PANEL ═══════════════════ -->
-  <div class="viz-panel" id="vizPanel">
-    <canvas id="vizParticles"></canvas>
-
-    <!-- VIZ 1: IMPLANT SUCCESS -->
-    <div class="viz-section active" id="viz1">
-      <div class="viz-title">Simulating <span>Dental Implant</span> Outcomes</div>
-
-      <div id="coin-viz">
-        <div class="tooth-display" id="toothBurstContainer" style="position:relative">
-          <div class="tooth-inner" id="coinInner">
-            <div class="tooth-face tooth-success" id="coinFace">
-              <span>&#x1F9B7;</span>
-              <span class="face-label">Success</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="coin-history" id="coinHistory"></div>
-
-        <div class="coin-stats">
-          <div class="coin-stat">
-            <div class="cs-val" id="cv-heads" style="color:var(--teal)">0</div>
-            <div class="cs-lab">Success</div>
-          </div>
-          <div class="coin-stat">
-            <div class="cs-val" id="cv-pct">0%</div>
-            <div class="cs-lab">Observed P</div>
-          </div>
-          <div class="coin-stat">
-            <div class="cs-val" id="cv-tails" style="color:var(--red)">0</div>
-            <div class="cs-lab">Failure</div>
-          </div>
-        </div>
-
-        <div id="convergenceBadge" class="convergence-badge" style="margin-bottom:0.5rem">
-          Distance from true P: <strong id="convDist">—</strong>
-        </div>
-
-        <canvas id="coinChart" width="760" height="300" style="width:100%;max-width:760px;border-radius:12px;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.06);"></canvas>
-      </div>
-    </div>
-
-    <!-- VIZ 2: DMFT -->
-    <div class="viz-section" id="viz2">
-      <div class="viz-title">Rolling <span>DMFT</span> Distribution</div>
-
-      <div id="die-viz">
-        <div class="tooth-health-indicator" id="healthIndicator" style="background: linear-gradient(135deg, #10b981, #059669);">
-          <span>?</span>
-          <span class="dmft-label">DMFT</span>
-        </div>
-
-        <div class="exp-display">
-          <div class="exp-val"><strong id="dv-true" style="color:var(--teal)">—</strong>True E[X]</div>
-          <div class="exp-val"><strong id="dv-sample">—</strong>Sample Mean</div>
-          <div class="exp-val"><strong id="dv-rolls">0</strong>Rolls</div>
-        </div>
-
-        <canvas id="dieChart" width="760" height="320" style="width:100%;max-width:760px;border-radius:12px;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.06);"></canvas>
-      </div>
-    </div>
-
-    <!-- VIZ 3: SATISFACTION -->
-    <div class="viz-section" id="viz3">
-      <div class="viz-title">Drawing <span>Patient Satisfaction</span> Scores</div>
-
-      <div id="card-viz">
-        <div class="score-card-display" id="drawnCard">
-          <span style="font-size:2rem; color:#cbd5e1">?</span>
-          <span class="score-text">Score</span>
-        </div>
-
-        <div class="exp-display">
-          <div class="exp-val"><strong id="vv-true" style="color:var(--indigo)">—</strong>True Var(X)</div>
-          <div class="exp-val"><strong id="vv-sample">—</strong>Running Var</div>
-          <div class="exp-val"><strong id="vv-draws">0</strong>Draws</div>
-        </div>
-
-        <canvas id="varChart" width="760" height="320" style="width:100%;max-width:760px;border-radius:12px;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.06);"></canvas>
-      </div>
-    </div>
-
-  </div><!-- /viz-panel -->
-
 </div><!-- /page-wrapper -->
-
-<div class="sim-modal" id="simModal" aria-hidden="true">
-  <div class="sim-modal__backdrop" data-close-sim></div>
-  <div class="sim-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="simModalTitle">
-    <button type="button" class="sim-modal__close" id="simModalClose" aria-label="Close simulator">&times;</button>
-    <div class="sim-modal__header">
-      <span class="sim-modal__eyebrow">Interactive Example</span>
-      <h2 id="simModalTitle">Simulator</h2>
-      <p id="simModalDesc">Open a simulation and experiment with the probability concept step by step.</p>
-    </div>
-    <div class="sim-modal__body">
-      <div class="sim-modal__controls" id="simModalControls"></div>
-      <div class="sim-modal__visual" id="simModalVisual"></div>
-    </div>
-  </div>
-</div>
-
-
-<script>
-/* ═══════════════════════════════════════════════════════════
-   UTILITIES
-═══════════════════════════════════════════════════════════ */
-const delay = ms => new Promise(r => setTimeout(r, ms));
-
-function drawLine(ctx, x1,y1,x2,y2, color, dash=[]) {
-  ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=2;
-  ctx.setLineDash(dash); ctx.beginPath();
-  ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); ctx.restore();
-}
-
-function drawCanvasEmptyState(ctx, W, H, title, subtitle, tint = '#0d9488') {
-  ctx.save();
-  const panelX = 26;
-  const panelY = 26;
-  const panelW = W - 52;
-  const panelH = H - 52;
-  ctx.fillStyle = 'rgba(248,250,252,0.92)';
-  ctx.fillRect(panelX, panelY, panelW, panelH);
-  ctx.strokeStyle = 'rgba(148,163,184,0.18)';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(panelX, panelY, panelW, panelH);
-
-  ctx.beginPath();
-  ctx.fillStyle = tint;
-  ctx.arc(W / 2, H / 2 - 22, 8, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#0f172a';
-  ctx.font = '700 15px Inter, -apple-system, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(title, W / 2, H / 2 + 8);
-
-  ctx.fillStyle = '#64748b';
-  ctx.font = '500 11px Inter, -apple-system, sans-serif';
-  ctx.fillText(subtitle, W / 2, H / 2 + 30);
-  ctx.restore();
-}
-
-function makeHiDPI(canvas) {
-  const dpr = window.devicePixelRatio || 1;
-  const rect = canvas.getBoundingClientRect();
-  const w = canvas.width;
-  const h = canvas.height;
-  canvas.width  = w * dpr;
-  canvas.height = h * dpr;
-  const ctx = canvas.getContext('2d', { alpha: false });
-  ctx.scale(dpr, dpr);
-  ctx.imageSmoothingEnabled = false;
-  ctx.textBaseline = 'middle';
-  return ctx;
-}
-
-// Bump animation for stat values
-function bumpValue(el) {
-  el.classList.add('bump');
-  setTimeout(() => el.classList.remove('bump'), 200);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   VIZ PANEL FLOATING PARTICLES
-═══════════════════════════════════════════════════════════ */
-(function initVizParticles() {
-  const canvas = document.getElementById('vizParticles');
-  const ctx = canvas.getContext('2d');
-  let particles = [];
-  const COUNT = 30;
-
-  function resize() {
-    const rect = canvas.parentElement.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  for (let i = 0; i < COUNT; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 2 + 1,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      alpha: Math.random() * 0.15 + 0.05,
-    });
-  }
-
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0) p.x = canvas.width;
-      if (p.x > canvas.width) p.x = 0;
-      if (p.y < 0) p.y = canvas.height;
-      if (p.y > canvas.height) p.y = 0;
-
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(13, 148, 136, ${p.alpha})`;
-      ctx.fill();
-    });
-
-    // Connection lines
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist < 80) {
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(13, 148, 136, ${0.06 * (1 - dist/80)})`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-      }
-    }
-    requestAnimationFrame(animate);
-  }
-  animate();
-})();
-
-/* ═══════════════════════════════════════════════════════════
-   MODAL SIMULATOR MANAGEMENT
-═══════════════════════════════════════════════════════════ */
-let activeSection = 0;
-
-const vizSections = [
-  document.getElementById('viz1'),
-  document.getElementById('viz2'),
-  document.getElementById('viz3')
-];
-
-const simConfigs = [
-  {
-    title: 'Dental Implant Success Simulator',
-    description: 'Problem: if an implant succeeds 95% of the time, how quickly does the observed success rate settle near the true probability as more patients are simulated?'
-  },
-  {
-    title: 'DMFT Expected Value Simulator',
-    description: 'Problem: given a DMFT score distribution, what long-run average should you expect, and how does the running sample mean move toward it?'
-  },
-  {
-    title: 'Patient Satisfaction Variance Simulator',
-    description: 'Problem: when the allowed satisfaction scores change, how does the spread of outcomes change, and what happens to the running variance?'
-  }
-];
-
-const simModal = document.getElementById('simModal');
-const simModalTitle = document.getElementById('simModalTitle');
-const simModalDesc = document.getElementById('simModalDesc');
-const simModalClose = document.getElementById('simModalClose');
-const simModalControls = document.getElementById('simModalControls');
-const simModalVisual = document.getElementById('simModalVisual');
-const simLaunchButtons = Array.from(document.querySelectorAll('[data-open-sim]'));
-const simControlPanels = Array.from(document.querySelectorAll('[data-sim-source]'));
-const simHomes = new Map();
-let currentSimControl = null;
-let currentSimVisual = null;
-let lastSimTrigger = null;
-
-simControlPanels.forEach((panel) => {
-  simHomes.set(panel, { parent: panel.parentNode, next: panel.nextSibling });
-});
-vizSections.forEach((panel) => {
-  simHomes.set(panel, { parent: panel.parentNode, next: panel.nextSibling });
-});
-
-function setActiveSection(idx) {
-  if (simModal.classList.contains('is-open') && currentSimVisual) {
-    return;
-  }
-  activeSection = idx;
-  vizSections.forEach((panel, i) => panel.classList.toggle('active', i === idx));
-}
-
-function restoreNode(node) {
-  const home = simHomes.get(node);
-  if (!home) return;
-  home.parent.insertBefore(node, home.next);
-}
-
-function redrawActiveCharts() {
-  renderCoinChart();
-  renderDieChart();
-  renderVarChart();
-}
-
-function closeSimulator({ restoreFocus = true } = {}) {
-  if (!simModal.classList.contains('is-open')) return;
-
-  if (autoPlayInterval) {
-    toggleAutoPlay();
-  }
-
-  if (currentSimControl) {
-    restoreNode(currentSimControl);
-    currentSimControl = null;
-  }
-  if (currentSimVisual) {
-    restoreNode(currentSimVisual);
-    currentSimVisual = null;
-  }
-
-  simModal.classList.remove('is-open');
-  simModal.setAttribute('aria-hidden', 'true');
-  document.body.classList.remove('modal-open');
-
-  if (restoreFocus && lastSimTrigger) {
-    lastSimTrigger.focus();
-  }
-}
-
-function openSimulator(idx, trigger = null) {
-  const safeIndex = Number(idx);
-  if (Number.isNaN(safeIndex) || !simConfigs[safeIndex]) return;
-
-  if (simModal.classList.contains('is-open')) {
-    closeSimulator({ restoreFocus: false });
-  }
-
-  const config = simConfigs[safeIndex];
-  const controlPanel = simControlPanels[safeIndex];
-  const visualPanel = vizSections[safeIndex];
-
-  setActiveSection(safeIndex);
-  simModalTitle.textContent = config.title;
-  simModalDesc.textContent = config.description;
-
-  simModalControls.appendChild(controlPanel);
-  simModalVisual.appendChild(visualPanel);
-
-  currentSimControl = controlPanel;
-  currentSimVisual = visualPanel;
-  lastSimTrigger = trigger;
-
-  simModal.classList.add('is-open');
-  simModal.setAttribute('aria-hidden', 'false');
-  document.body.classList.add('modal-open');
-  redrawActiveCharts();
-  requestAnimationFrame(redrawActiveCharts);
-  setTimeout(redrawActiveCharts, 120);
-}
-
-simLaunchButtons.forEach((button) => {
-  button.addEventListener('click', () => openSimulator(button.dataset.openSim, button));
-});
-
-simModalClose.addEventListener('click', () => closeSimulator());
-simModal.querySelectorAll('[data-close-sim]').forEach((el) => {
-  el.addEventListener('click', () => closeSimulator());
-});
-
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') {
-    closeSimulator();
-  }
-});
-
-/* ═══════════════════════════════════════════════════════════
-   PARTICLE BURST EFFECT
-═══════════════════════════════════════════════════════════ */
-function createBurst(container, success) {
-  const colors = success
-    ? ['#10b981','#059669','#34d399','#6ee7b7']
-    : ['#ef4444','#dc2626','#f87171','#fca5a5'];
-  const count = 12;
-  for (let i = 0; i < count; i++) {
-    const dot = document.createElement('div');
-    dot.className = 'burst-dot';
-    const angle = (Math.PI * 2 / count) * i;
-    const dist = 40 + Math.random() * 30;
-    const tx = Math.cos(angle) * dist;
-    const ty = Math.sin(angle) * dist;
-    dot.style.cssText = `
-      background: ${colors[i % colors.length]};
-      left: 50%; top: 50%;
-      animation: burstOut 0.6s ease-out forwards;
-      transform: translate(${tx}px, ${ty}px) scale(0);
-    `;
-    // Override keyframes inline
-    dot.style.setProperty('--tx', tx + 'px');
-    dot.style.setProperty('--ty', ty + 'px');
-    dot.animate([
-      { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
-      { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(0)`, opacity: 0 }
-    ], { duration: 500, easing: 'ease-out', fill: 'forwards' });
-    container.appendChild(dot);
-    setTimeout(() => dot.remove(), 600);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   SECTION 1 — IMPLANT SUCCESS SIMULATOR
-═══════════════════════════════════════════════════════════ */
-let cHeads = 0, cTails = 0;
-const cHistory = [];
-let autoPlayInterval = null;
-
-const coinP       = document.getElementById('coin-p');
-const coinPLabel  = document.getElementById('coin-p-label');
-const coinInner   = document.getElementById('coinInner');
-const coinFace    = document.getElementById('coinFace');
-const coinHistory = document.getElementById('coinHistory');
-const burstContainer = document.getElementById('toothBurstContainer');
-
-const coinCtx = makeHiDPI(document.getElementById('coinChart'));
-const coinChartData = { labels:[], obs:[], trueP:[] };
-
-coinP.addEventListener('input', () => {
-  coinPLabel.textContent = coinP.value + '%';
-  // Deactivate preset buttons when slider is manually changed
-  document.querySelectorAll('#coinPresets .preset-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector('#coinPresets .preset-btn:last-child').classList.add('active');
-});
-
-document.getElementById('autoSpeed').addEventListener('input', e => {
-  document.getElementById('speedVal').textContent = e.target.value + 'x';
-});
-
-function setCoinPreset(prob, name) {
-  coinP.value = prob;
-  coinPLabel.textContent = prob + '%';
-  document.querySelectorAll('#coinPresets .preset-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-  // Update viz title
-  const names = { implant: 'Dental Implant', filling: 'Dental Filling', rootcanal: 'Root Canal', extraction: 'Extraction Healing', custom: 'Custom Procedure' };
-  const vizTitle = document.querySelector('#viz1 .viz-title');
-  vizTitle.innerHTML = `Simulating <span>${names[name] || name}</span> Outcomes`;
-}
-
-function toggleAutoPlay() {
-  const btn = document.getElementById('autoPlayBtn');
-  const ctrl = document.getElementById('speedControl');
-  if (autoPlayInterval) {
-    clearInterval(autoPlayInterval);
-    autoPlayInterval = null;
-    btn.classList.remove('playing');
-    btn.textContent = 'Auto-Play';
-    ctrl.style.display = 'none';
-  } else {
-    btn.classList.add('playing');
-    btn.textContent = 'Stop';
-    ctrl.style.display = 'flex';
-    const speed = parseInt(document.getElementById('autoSpeed').value);
-    autoPlayInterval = setInterval(() => {
-      const sp = parseInt(document.getElementById('autoSpeed').value);
-      for (let i = 0; i < sp; i++) doFlip(true);
-    }, 100);
-  }
-}
-
-function renderCoinChart() {
-  const W=760, H=300, PL=60, PR=20, PT=22, PB=46;
-  const cW = W-PL-PR, cH = H-PT-PB;
-  const FONT = '500 9.5px Inter, -apple-system, sans-serif';
-
-  coinCtx.clearRect(0,0,W,H);
-  coinCtx.fillStyle='#fff'; coinCtx.fillRect(0,0,W,H);
-
-  const n = coinChartData.labels.length;
-  const xScale = i => PL + (i/Math.max(n-1,1))*cW;
-  const yScale = v => PT + (1-v)*cH;
-
-  // Grid lines
-  [0, 0.25, 0.5, 0.75, 1].forEach(v => {
-    const y = Math.round(yScale(v)) + 0.5;
-    coinCtx.strokeStyle = v===0||v===1 ? '#cbd5e1' : '#f1f5f9';
-    coinCtx.lineWidth=1; coinCtx.setLineDash([]);
-    coinCtx.beginPath(); coinCtx.moveTo(PL,y); coinCtx.lineTo(PL+cW,y); coinCtx.stroke();
-    coinCtx.fillStyle='#94a3b8'; coinCtx.font=FONT; coinCtx.textAlign='right';
-    coinCtx.fillText(Math.round(v*100)+'%', PL-6, y);
-  });
-
-  // Axes
-  coinCtx.strokeStyle='#cbd5e1'; coinCtx.lineWidth=1; coinCtx.setLineDash([]);
-  coinCtx.beginPath(); coinCtx.moveTo(PL,PT); coinCtx.lineTo(PL,PT+cH); coinCtx.stroke();
-  coinCtx.beginPath(); coinCtx.moveTo(PL,PT+cH); coinCtx.lineTo(PL+cW,PT+cH); coinCtx.stroke();
-
-  if(n<2){
-    drawCanvasEmptyState(
-      coinCtx,
-      W,
-      H,
-      'Start the simulation',
-      'Run a few patient outcomes to see observed probability appear.',
-      '#0d9488'
-    );
-    coinCtx.textAlign='left';
-    return;
-  }
-
-  // X labels
-  coinCtx.fillStyle='#94a3b8'; coinCtx.font=FONT; coinCtx.textAlign='center';
-  [0,0.25,0.5,0.75,1].forEach(t=>{
-    const i=Math.round(t*(n-1));
-    if(i<coinChartData.labels.length)
-      coinCtx.fillText(coinChartData.labels[i], xScale(i), PT+cH+14);
-  });
-  coinCtx.textAlign='left';
-
-  // True P line
-  const tp = parseInt(coinP.value)/100;
-  drawLine(coinCtx, PL, yScale(tp), PL+cW, yScale(tp), '#ef4444', [6,4]);
-
-  // ±2 SE convergence band
-  if (n > 5) {
-    const total = cHeads + cTails;
-    const se2 = 2 * Math.sqrt(tp * (1-tp) / Math.max(total, 1));
-    coinCtx.save();
-    coinCtx.beginPath();
-    for (let i = 0; i < n; i++) {
-      const trial = coinChartData.labels[i];
-      const upperSE = Math.min(1, tp + 2 * Math.sqrt(tp * (1-tp) / Math.max(trial, 1)));
-      const lowerSE = Math.max(0, tp - 2 * Math.sqrt(tp * (1-tp) / Math.max(trial, 1)));
-      if (i === 0) coinCtx.moveTo(xScale(i), yScale(upperSE));
-      else coinCtx.lineTo(xScale(i), yScale(upperSE));
-    }
-    for (let i = n-1; i >= 0; i--) {
-      const trial = coinChartData.labels[i];
-      const lowerSE = Math.max(0, tp - 2 * Math.sqrt(tp * (1-tp) / Math.max(trial, 1)));
-      coinCtx.lineTo(xScale(i), yScale(lowerSE));
-    }
-    coinCtx.closePath();
-    coinCtx.fillStyle = 'rgba(239,68,68,0.06)';
-    coinCtx.fill();
-    coinCtx.restore();
-  }
-
-  // Observed proportion — gradient fill + teal line
-  coinCtx.save();
-  coinCtx.lineJoin='round'; coinCtx.beginPath();
-  coinChartData.obs.forEach((v,i)=>{
-    i===0 ? coinCtx.moveTo(xScale(i),yScale(v)) : coinCtx.lineTo(xScale(i),yScale(v));
-  });
-  coinCtx.lineTo(xScale(n-1), PT+cH);
-  coinCtx.lineTo(xScale(0), PT+cH);
-  coinCtx.closePath();
-  const coinGrad = coinCtx.createLinearGradient(0, PT, 0, PT+cH);
-  coinGrad.addColorStop(0, 'rgba(13,148,136,0.18)');
-  coinGrad.addColorStop(1, 'rgba(13,148,136,0)');
-  coinCtx.fillStyle = coinGrad; coinCtx.fill();
-  coinCtx.beginPath();
-  coinChartData.obs.forEach((v,i)=>{
-    i===0 ? coinCtx.moveTo(xScale(i),yScale(v)) : coinCtx.lineTo(xScale(i),yScale(v));
-  });
-  coinCtx.strokeStyle='#0d9488'; coinCtx.lineWidth=2.5; coinCtx.setLineDash([]);
-  coinCtx.stroke(); coinCtx.restore();
-
-  // Legend
-  const lx=PL+cW-155, ly=PT+10;
-  coinCtx.fillStyle='rgba(255,255,255,0.92)';
-  coinCtx.fillRect(lx-4, ly-8, 162, 38);
-  coinCtx.fillStyle='#0d9488'; coinCtx.fillRect(lx, ly-3, 18, 3);
-  coinCtx.fillStyle='#475569'; coinCtx.font=FONT;
-  coinCtx.fillText('Observed P', lx+22, ly);
-  drawLine(coinCtx,lx,ly+10,lx+18,ly+10,'#ef4444',[5,3]);
-  coinCtx.fillText('True P', lx+22, ly+10);
-  coinCtx.fillStyle='rgba(239,68,68,0.15)'; coinCtx.fillRect(lx, ly+17, 18, 8);
-  coinCtx.fillStyle='#475569';
-  coinCtx.fillText('\u00b12 SE Band', lx+22, ly+22);
-}
-
-function updateCoinUI() {
-  const total = cHeads+cTails;
-  document.getElementById('c-heads').textContent = cHeads;
-  document.getElementById('cv-heads').textContent = cHeads;
-  document.getElementById('c-tails').textContent = cTails;
-  document.getElementById('cv-tails').textContent = cTails;
-  document.getElementById('c-total').textContent = total;
-  const obs = total ? (cHeads/total*100).toFixed(1)+'%' : '—';
-  document.getElementById('c-obs').textContent = obs;
-  document.getElementById('cv-pct').textContent = total ? (cHeads/total*100).toFixed(1)+'%' : '0%';
-
-  // Convergence distance
-  const tp = parseInt(coinP.value)/100;
-  const badge = document.getElementById('convergenceBadge');
-  const distEl = document.getElementById('convDist');
-  if (total > 0) {
-    const dist = Math.abs(cHeads/total - tp);
-    distEl.textContent = (dist * 100).toFixed(1) + '%';
-    badge.classList.toggle('converged', dist < 0.02);
-  } else {
-    distEl.textContent = '—';
-    badge.classList.remove('converged');
-  }
-}
-
-function doFlip(silent) {
-  const p = parseInt(coinP.value)/100;
-  const isSuccess = Math.random() < p;
-  if(isSuccess) cHeads++; else cTails++;
-
-  if (!silent) {
-    // Update face
-    coinFace.innerHTML = isSuccess
-      ? '<span>&#x1F9B7;</span><span class="face-label">Success</span>'
-      : '<span>&#x2717;</span><span class="face-label">Failure</span>';
-    coinFace.className = 'tooth-face ' + (isSuccess ? 'tooth-success' : 'tooth-failure');
-
-    // Flip animation
-    coinInner.classList.remove('flipping');
-    void coinInner.offsetWidth;
-    coinInner.classList.add('flipping');
-    setTimeout(() => coinInner.classList.remove('flipping'), 620);
-
-    // Particle burst
-    createBurst(burstContainer, isSuccess);
-
-    // Bump stat values
-    bumpValue(document.getElementById('c-heads'));
-    bumpValue(document.getElementById('c-total'));
-  }
-
-  // History dot
-  const dot = document.createElement('div');
-  dot.className = 'coin-dot ' + (isSuccess?'s':'f');
-  dot.title = `Trial ${cHeads+cTails}: ${isSuccess ? 'Success' : 'Failure'}`;
-  coinHistory.appendChild(dot);
-  if(coinHistory.children.length > 80) coinHistory.firstChild.remove();
-
-  // Chart data
-  const total = cHeads+cTails;
-  coinChartData.labels.push(total);
-  coinChartData.obs.push(cHeads/total);
-  coinChartData.trueP.push(p);
-  if(coinChartData.labels.length > 400) {
-    coinChartData.labels.shift(); coinChartData.obs.shift(); coinChartData.trueP.shift();
-  }
-
-  updateCoinUI();
-  renderCoinChart();
-}
-
-function flipCoin() { doFlip(false); }
-async function flipMany() { for(let i=0;i<100;i++) { doFlip(i>0); await delay(15); } }
-
-function resetCoin() {
-  if (autoPlayInterval) { toggleAutoPlay(); }
-  cHeads=0; cTails=0;
-  coinHistory.innerHTML='';
-  coinFace.innerHTML='<span>&#x1F9B7;</span><span class="face-label">Success</span>';
-  coinFace.className='tooth-face tooth-success';
-  coinChartData.labels=[]; coinChartData.obs=[]; coinChartData.trueP=[];
-  updateCoinUI(); renderCoinChart();
-}
-
-
-/* ═══════════════════════════════════════════════════════════
-   SECTION 2 — DMFT EXPECTATION
-═══════════════════════════════════════════════════════════ */
-const DIE_LABELS = ['0','1','2','3','4','5'];
-let dieProbs = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6];
-
-let dRolls = 0, dSum = 0;
-const dHistory = [];
-let dFreq = [0,0,0,0,0,0];
-
-// DMFT score to color gradient
-const DMFT_COLORS = [
-  ['#10b981','#059669'], // 0: excellent
-  ['#34d399','#10b981'], // 1: good
-  ['#f59e0b','#d97706'], // 2: moderate
-  ['#f97316','#ea580c'], // 3: concerning
-  ['#ef4444','#dc2626'], // 4: poor
-  ['#dc2626','#b91c1c'], // 5: severe
-];
-
-const dieBarsCont = document.getElementById('dieBars');
-DIE_LABELS.forEach((label, i) => {
-  const col = document.createElement('div');
-  col.className = 'bar-col';
-  col.innerHTML = `
-    <div class="bar-track" data-i="${i}">
-      <div class="bar-fill" style="height:${Math.round(dieProbs[i]*100)}%"></div>
-    </div>
-    <div class="bar-pct" id="dp${i}">${Math.round(dieProbs[i]*100)}%</div>
-    <div class="bar-name">${label}</div>
-  `;
-  dieBarsCont.appendChild(col);
-});
-
-// Make bars draggable
-let draggingBar = null;
-dieBarsCont.querySelectorAll('.bar-track').forEach(track => {
-  const onMove = e => {
-    if(draggingBar !== track) return;
-    const rect = track.getBoundingClientRect();
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    const pct = Math.min(1, Math.max(0.02, (rect.bottom - clientY) / rect.height));
-    const i = +track.dataset.i;
-    dieProbs[i] = pct;
-    normalizeDieProbs();
-    updateDieBars();
-    updateDieExpected();
-    // Clear preset highlight
-    document.querySelectorAll('#diePresets .preset-btn').forEach(b => b.classList.remove('active'));
-  };
-  track.addEventListener('mousedown', e => { draggingBar=track; onMove(e); });
-  track.addEventListener('touchstart', e => { draggingBar=track; onMove(e); }, {passive:true});
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('touchmove', onMove, {passive:true});
-  document.addEventListener('mouseup', () => draggingBar=null);
-  document.addEventListener('touchend', () => draggingBar=null);
-});
-
-function normalizeDieProbs() {
-  const sum = dieProbs.reduce((a,b)=>a+b, 0);
-  dieProbs = dieProbs.map(p => p/sum);
-}
-
-function updateDieBars() {
-  DIE_LABELS.forEach((_, i) => {
-    const fill = dieBarsCont.querySelectorAll('.bar-fill')[i];
-    const pct  = dieBarsCont.querySelectorAll('.bar-pct')[i];
-    fill.style.height = Math.round(dieProbs[i]*100) + '%';
-    pct.textContent   = Math.round(dieProbs[i]*100) + '%';
-  });
-}
-
-function getDieExpected() {
-  return dieProbs.reduce((acc,p,i) => acc + i*p, 0);
-}
-
-function updateDieExpected() {
-  const e = getDieExpected().toFixed(2);
-  document.getElementById('d-true').textContent = e;
-  document.getElementById('dv-true').textContent = e;
-}
-
-function setDiePreset(name) {
-  const presets = {
-    healthy:  [0.40, 0.30, 0.15, 0.10, 0.04, 0.01],
-    highrisk: [0.05, 0.08, 0.12, 0.20, 0.30, 0.25],
-    mixed:    [0.15, 0.20, 0.25, 0.20, 0.12, 0.08],
-    post:     [0.10, 0.25, 0.35, 0.20, 0.08, 0.02],
-    uniform:  [1/6, 1/6, 1/6, 1/6, 1/6, 1/6],
-  };
-  dieProbs = presets[name] ? [...presets[name]] : [1/6,1/6,1/6,1/6,1/6,1/6];
-  document.querySelectorAll('#diePresets .preset-btn').forEach(b => b.classList.remove('active'));
-  if (event && event.target) event.target.classList.add('active');
-  updateDieBars();
-  updateDieExpected();
-  resetDie();
-}
-
-updateDieExpected();
-
-// Die chart
-const dieCtx = makeHiDPI(document.getElementById('dieChart'));
-const dieChartData = { obs:[], trueE:[] };
-
-function renderDieChart() {
-  const W=760, H=320, PL=62, PR=24, PT=22, PB=52;
-  const cW = W-PL-PR, cH = H-PT-PB;
-  const FONT = '500 9.5px Inter, -apple-system, sans-serif';
-
-  dieCtx.clearRect(0,0,W,H);
-  dieCtx.fillStyle='#fff'; dieCtx.fillRect(0,0,W,H);
-
-  const total = dRolls;
-  const props = dFreq.map(f => total ? f/total : 0);
-  const maxProp = Math.max(...props, ...dieProbs, 0.2) * 1.15;
-  const numBars = 6;
-  const slotW = cW / numBars;
-  const barW  = slotW * 0.55;
-
-  const xCenter = i => PL + (i + 0.5) * slotW;
-  const yScale  = v => PT + (1 - v/maxProp) * cH;
-
-  // Grid
-  [0, 0.25, 0.5, 0.75, 1].forEach(t => {
-    const v = t * maxProp;
-    const y = Math.round(yScale(v)) + 0.5;
-    dieCtx.strokeStyle = t===0||t===1 ? '#cbd5e1' : '#f1f5f9';
-    dieCtx.lineWidth=1; dieCtx.setLineDash([]);
-    dieCtx.beginPath(); dieCtx.moveTo(PL,y); dieCtx.lineTo(PL+cW,y); dieCtx.stroke();
-    dieCtx.fillStyle='#94a3b8'; dieCtx.font=FONT; dieCtx.textAlign='right';
-    dieCtx.fillText((v*100).toFixed(0)+'%', PL-6, y);
-  });
-
-  // Axes
-  dieCtx.strokeStyle='#cbd5e1'; dieCtx.lineWidth=1; dieCtx.setLineDash([]);
-  dieCtx.beginPath(); dieCtx.moveTo(PL,PT); dieCtx.lineTo(PL,PT+cH); dieCtx.stroke();
-  dieCtx.beginPath(); dieCtx.moveTo(PL,PT+cH); dieCtx.lineTo(PL+cW,PT+cH); dieCtx.stroke();
-
-  // Theoretical bars (light, rounded)
-  dieProbs.forEach((p,i) => {
-    const barH = Math.max(p/maxProp * cH, 1);
-    const x = xCenter(i) - barW/2;
-    const y = PT+cH-barH;
-    dieCtx.fillStyle='rgba(203,213,225,0.45)';
-    dieCtx.beginPath();
-    dieCtx.roundRect ? dieCtx.roundRect(x,y,barW,barH,4) : dieCtx.rect(x,y,barW,barH);
-    dieCtx.fill();
-  });
-
-  // Empirical bars (gradient per DMFT score)
-  props.forEach((p,i) => {
-    if(p===0) return;
-    const barH = p/maxProp * cH;
-    const x = xCenter(i) - barW/2;
-    const y = PT+cH-barH;
-    const grad = dieCtx.createLinearGradient(0,y,0,y+barH);
-    grad.addColorStop(0, DMFT_COLORS[i][0] + 'e6');
-    grad.addColorStop(1, DMFT_COLORS[i][1] + 'b3');
-    dieCtx.fillStyle=grad;
-    dieCtx.beginPath();
-    dieCtx.roundRect ? dieCtx.roundRect(x,y,barW,barH,4) : dieCtx.rect(x,y,barW,barH);
-    dieCtx.fill();
-    if(barH > 18) {
-      dieCtx.fillStyle='#1e293b'; dieCtx.font=FONT; dieCtx.textAlign='center';
-      dieCtx.fillText((p*100).toFixed(0)+'%', xCenter(i), y-5);
-    }
-  });
-
-  // X labels
-  dieCtx.fillStyle='#475569'; dieCtx.font=FONT; dieCtx.textAlign='center';
-  [0,1,2,3,4,5].forEach(i => {
-    dieCtx.fillText('DMFT '+i, xCenter(i), PT+cH+14);
-  });
-  dieCtx.fillStyle='#94a3b8'; dieCtx.textAlign='center';
-  dieCtx.fillText('DMFT Score', PL+cW/2, PT+cH+28);
-  dieCtx.textAlign='left';
-
-  // E[X] dashed line
-  if(total > 0) {
-    const trueE = getDieExpected();
-    const ex = PL + (trueE/5) * cW;
-    drawLine(dieCtx, ex, PT, ex, PT+cH, '#0d9488', [5,4]);
-    dieCtx.fillStyle='#0d9488'; dieCtx.font='600 10px Inter, sans-serif'; dieCtx.textAlign='left';
-    dieCtx.fillText('E[X]='+trueE.toFixed(2), ex + 4, PT + 14);
-  }
-
-  // Legend
-  const lx=PL+cW-168, ly=PT+6;
-  dieCtx.fillStyle='rgba(255,255,255,0.92)';
-  dieCtx.fillRect(lx-6, ly-8, 178, 22);
-  dieCtx.fillStyle='rgba(13,148,136,0.8)'; dieCtx.fillRect(lx, ly-3, 12, 8);
-  dieCtx.fillStyle='#475569'; dieCtx.font=FONT;
-  dieCtx.fillText('Observed', lx+16, ly+1);
-  dieCtx.fillStyle='rgba(203,213,225,0.8)'; dieCtx.fillRect(lx+82, ly-3, 12, 8);
-  dieCtx.fillStyle='#475569';
-  dieCtx.fillText('True prob.', lx+98, ly+1);
-
-  if (total === 0) {
-    drawCanvasEmptyState(
-      dieCtx,
-      W,
-      H,
-      'Roll the DMFT simulator',
-      'Observed bars will appear here as soon as you collect sample scores.',
-      '#0d9488'
-    );
-  }
-}
-
-function updateHealthIndicator(val) {
-  const indicator = document.getElementById('healthIndicator');
-  indicator.innerHTML = `<span>${val}</span><span class="dmft-label">DMFT</span>`;
-  indicator.style.background = `linear-gradient(135deg, ${DMFT_COLORS[val][0]}, ${DMFT_COLORS[val][1]})`;
-  indicator.classList.remove('rolling');
-  void indicator.offsetWidth;
-  indicator.classList.add('rolling');
-  setTimeout(() => indicator.classList.remove('rolling'), 420);
-}
-
-renderDieChart();
-
-function doRoll() {
-  const r = Math.random();
-  let cum=0, val=0;
-  for(let i=0;i<6;i++) { cum+=dieProbs[i]; if(r<cum){val=i;break;} }
-
-  dRolls++; dSum+=val; dFreq[val]++;
-  dHistory.push(val);
-  const sampleMean = dSum/dRolls;
-
-  dieChartData.obs.push(sampleMean);
-  dieChartData.trueE.push(getDieExpected());
-  if(dieChartData.obs.length>300) { dieChartData.obs.shift(); dieChartData.trueE.shift(); }
-
-  document.getElementById('d-rolls').textContent  = dRolls;
-  document.getElementById('dv-rolls').textContent  = dRolls;
-  document.getElementById('d-last').textContent   = val;
-  document.getElementById('d-sample').textContent = sampleMean.toFixed(2);
-  document.getElementById('dv-sample').textContent = sampleMean.toFixed(2);
-
-  bumpValue(document.getElementById('d-rolls'));
-  bumpValue(document.getElementById('d-last'));
-
-  updateHealthIndicator(val);
-  renderDieChart();
-}
-
-function rollDie()  { doRoll(); }
-async function rollMany() { for(let i=0;i<100;i++){doRoll();await delay(18);} }
-
-function resetDie() {
-  dRolls=0; dSum=0; dFreq=[0,0,0,0,0,0]; dieChartData.obs=[]; dieChartData.trueE=[];
-  document.getElementById('d-rolls').textContent='0';
-  document.getElementById('dv-rolls').textContent='0';
-  document.getElementById('d-last').textContent='—';
-  document.getElementById('d-sample').textContent='—';
-  document.getElementById('dv-sample').textContent='—';
-  const indicator = document.getElementById('healthIndicator');
-  indicator.innerHTML = '<span>?</span><span class="dmft-label">DMFT</span>';
-  indicator.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-  renderDieChart();
-}
-
-
-/* ═══════════════════════════════════════════════════════════
-   SECTION 3 — PATIENT SATISFACTION / VARIANCE
-═══════════════════════════════════════════════════════════ */
-const SCORE_EMOJIS = ['','😣','😟','😕','😐','🙂','😊','😃','😁','🤩','🌟'];
-const SCORE_LABELS = ['','Poor','Low','Fair','Avg','OK','Good','Great','Excel','Top','Star'];
-
-// 10 scores (1-10)
-const deck = [];
-for (let i = 1; i <= 10; i++) {
-  deck.push({ val: i, label: String(i), emoji: SCORE_EMOJIS[i], active: true });
-}
-
-let vDraws=0, vSumX=0, vSumX2=0;
-let vDrawnValues = [];
-
-const cardGrid = document.getElementById('cardGrid');
-
-function buildCardGrid() {
-  cardGrid.innerHTML='';
-  deck.forEach((card,i) => {
-    const el = document.createElement('div');
-    el.className = 'card-toggle' + (card.active?' active':'');
-    el.innerHTML = `<span class="suit">${card.emoji}</span><span>${card.label}</span><span class="score-label">pts</span>`;
-    el.onclick = () => {
-      const activeCount = deck.filter(c=>c.active).length;
-      if(card.active && activeCount<=2) return;
-      card.active = !card.active;
-      el.classList.toggle('active', card.active);
-      updateCardVariance();
-      document.querySelectorAll('#cardPresets .preset-btn').forEach(b => b.classList.remove('active'));
-    };
-    cardGrid.appendChild(el);
-  });
-}
-
-function setCardPreset(name) {
-  const presets = {
-    all:        [1,1,1,1,1,1,1,1,1,1],
-    consistent: [0,0,0,0,0,1,1,1,1,0], // scores 6-9
-    variable:   [1,1,0,0,0,0,0,0,1,1], // extremes only
-    bimodal:    [1,1,1,0,0,0,0,1,1,1], // 1-3 and 8-10
-  };
-  const pattern = presets[name] || presets.all;
-  deck.forEach((card, i) => { card.active = !!pattern[i]; });
-  document.querySelectorAll('#cardPresets .preset-btn').forEach(b => b.classList.remove('active'));
-  if (event && event.target) event.target.classList.add('active');
-  buildCardGrid();
-  resetCards();
-  updateCardVariance();
-}
-
-function getActiveDeck() { return deck.filter(c=>c.active); }
-
-function getTrueVariance() {
-  const active = getActiveDeck();
-  if(!active.length) return 0;
-  const mean = active.reduce((a,c)=>a+c.val,0)/active.length;
-  return active.reduce((a,c)=>a+Math.pow(c.val-mean,2),0)/active.length;
-}
-
-function updateCardVariance() {
-  const tv = getTrueVariance().toFixed(2);
-  document.getElementById('v-true').textContent = tv;
-  document.getElementById('vv-true').textContent = tv;
-  renderVarChart();
-}
-
-// Variance chart
-const varCtx  = makeHiDPI(document.getElementById('varChart'));
-const varData  = { sample:[], trueV:[] };
-
-function renderVarChart() {
-  const W=760, H=320, PL=62, PR=20, FONT='500 9.5px Inter, -apple-system, sans-serif';
-
-  const DOT_TOP=8, DOT_H=62, DOT_BOT=DOT_TOP+DOT_H;
-  const CV_TOP=DOT_BOT+16, CV_BOT=H-36, CV_H=CV_BOT-CV_TOP;
-  const cW = W-PL-PR;
-
-  varCtx.clearRect(0,0,W,H);
-  varCtx.fillStyle='#fff'; varCtx.fillRect(0,0,W,H);
-
-  // Soft background for dot-plot zone
-  varCtx.fillStyle='rgba(248,250,252,0.8)';
-  varCtx.fillRect(PL, DOT_TOP, cW, DOT_H);
-
-  // DOT PLOT (1–10)
-  const active = getActiveDeck();
-  const vals = active.map(c=>c.val);
-  const minVal = 1, maxVal = 10;
-  const dotXScale = v => PL + ((v - minVal) / (maxVal - minVal)) * cW;
-  const lineY = DOT_TOP + DOT_H * 0.65;
-
-  // Axis line
-  varCtx.strokeStyle='#cbd5e1'; varCtx.lineWidth=1; varCtx.setLineDash([]);
-  varCtx.beginPath(); varCtx.moveTo(PL,lineY); varCtx.lineTo(PL+cW,lineY); varCtx.stroke();
-
-  // Ticks + labels
-  varCtx.fillStyle='#94a3b8'; varCtx.font=FONT; varCtx.textAlign='center';
-  for (let v = 1; v <= 10; v++) {
-    const x = dotXScale(v);
-    const isActive = vals.includes(v);
-    varCtx.strokeStyle = isActive ? '#94a3b8' : '#e2e8f0';
-    varCtx.beginPath(); varCtx.moveTo(x,lineY-3); varCtx.lineTo(x,lineY+3); varCtx.stroke();
-    varCtx.fillStyle = isActive ? '#64748b' : '#cbd5e1';
-    varCtx.fillText(v, x, lineY+12);
-  }
-  varCtx.textAlign='left';
-
-  // Label
-  varCtx.save();
-  varCtx.fillStyle='#94a3b8'; varCtx.font='500 7.5px Inter, sans-serif'; varCtx.textAlign='center';
-  varCtx.translate(9, lineY - 6);
-  varCtx.rotate(-Math.PI/2);
-  varCtx.fillText('Draws', 0, 0);
-  varCtx.restore();
-
-  // Stacked dots
-  const dotCounts = {};
-  vDrawnValues.forEach(v => { dotCounts[v]=(dotCounts[v]||0)+1; });
-
-  const DOT_R = 4, DOT_GAP = 1;
-  const maxDotsPerCol = Math.floor((lineY - DOT_TOP - 4) / (DOT_R*2+DOT_GAP));
-  Object.entries(dotCounts).forEach(([v,cnt]) => {
-    const x = dotXScale(+v);
-    // Color based on score
-    const score = +v;
-    const hue = (score - 1) / 9 * 120; // 0=red to 120=green
-    const fillCol = `hsl(${hue}, 65%, 50%)`;
-    const visible = Math.min(cnt, maxDotsPerCol);
-    for(let k=0;k<visible;k++){
-      const y = lineY - DOT_R - k*(DOT_R*2+DOT_GAP) - 2;
-      varCtx.fillStyle='#fff';
-      varCtx.beginPath(); varCtx.arc(x,y,DOT_R+1,0,Math.PI*2); varCtx.fill();
-      varCtx.fillStyle=fillCol;
-      varCtx.beginPath(); varCtx.arc(x,y,DOT_R,0,Math.PI*2); varCtx.fill();
-    }
-    if(cnt>visible){
-      const SMALL='500 7.5px Inter, sans-serif';
-      const labelY = Math.max(DOT_TOP+7, lineY-DOT_R-visible*(DOT_R*2+DOT_GAP)-9);
-      varCtx.fillStyle='rgba(255,255,255,0.92)';
-      varCtx.fillRect(x-10, labelY-6, 20, 9);
-      varCtx.fillStyle='#64748b'; varCtx.font=SMALL; varCtx.textAlign='center';
-      varCtx.fillText('+'+( cnt-visible), x, labelY);
-      varCtx.textAlign='left';
-    }
-  });
-
-  // VARIANCE CONVERGENCE
-  const n = varData.sample.length;
-  const trueV = getTrueVariance();
-  const allV = [...varData.sample, trueV];
-  const maxV = Math.max(...allV, 0.5) * 1.15;
-
-  const xScale = i => PL + (i/Math.max(n-1,1))*cW;
-  const yScale = v => CV_TOP + (1-v/maxV)*CV_H;
-
-  // Divider
-  varCtx.strokeStyle='#e2e8f0'; varCtx.lineWidth=1; varCtx.setLineDash([2,2]);
-  varCtx.beginPath(); varCtx.moveTo(PL,DOT_BOT+6); varCtx.lineTo(PL+cW,DOT_BOT+6); varCtx.stroke();
-  varCtx.setLineDash([]);
-
-  // Grid
-  [0, 0.5, 1].forEach(t => {
-    const v=t*maxV;
-    const y=Math.round(yScale(v))+0.5;
-    varCtx.strokeStyle='#f1f5f9'; varCtx.lineWidth=1; varCtx.setLineDash([]);
-    varCtx.beginPath(); varCtx.moveTo(PL,y); varCtx.lineTo(PL+cW,y); varCtx.stroke();
-    varCtx.fillStyle='#94a3b8'; varCtx.font=FONT; varCtx.textAlign='right';
-    varCtx.fillText(v.toFixed(1), PL-6, y);
-  });
-
-  // Axes
-  varCtx.strokeStyle='#cbd5e1'; varCtx.lineWidth=1; varCtx.setLineDash([]);
-  varCtx.beginPath(); varCtx.moveTo(PL,CV_TOP); varCtx.lineTo(PL,CV_BOT); varCtx.stroke();
-  varCtx.beginPath(); varCtx.moveTo(PL,CV_BOT); varCtx.lineTo(PL+cW,CV_BOT); varCtx.stroke();
-
-  // X labels
-  if(n>0){
-    varCtx.fillStyle='#94a3b8'; varCtx.font=FONT; varCtx.textAlign='center';
-    [0,0.5,1].forEach(t=>{
-      const i=Math.round(t*Math.max(n-1,0));
-      varCtx.fillText(i, xScale(i), CV_BOT+11);
-    });
-    varCtx.textAlign='left';
-  }
-
-  // True variance line
-  drawLine(varCtx, PL, yScale(trueV), PL+cW, yScale(trueV), '#6366f1', [6,4]);
-
-  // Running variance curve
-  if(n>1){
-    varCtx.save(); varCtx.lineJoin='round'; varCtx.setLineDash([]);
-    varCtx.beginPath();
-    varData.sample.forEach((v,i)=>{
-      i===0 ? varCtx.moveTo(xScale(i),yScale(v)) : varCtx.lineTo(xScale(i),yScale(v));
-    });
-    varCtx.lineTo(xScale(n-1), CV_BOT); varCtx.lineTo(xScale(0), CV_BOT); varCtx.closePath();
-    const vGrad = varCtx.createLinearGradient(0,CV_TOP,0,CV_BOT);
-    vGrad.addColorStop(0,'rgba(99,102,241,0.15)');
-    vGrad.addColorStop(1,'rgba(99,102,241,0)');
-    varCtx.fillStyle=vGrad; varCtx.fill();
-    varCtx.beginPath();
-    varData.sample.forEach((v,i)=>{
-      i===0 ? varCtx.moveTo(xScale(i),yScale(v)) : varCtx.lineTo(xScale(i),yScale(v));
-    });
-    varCtx.strokeStyle='#6366f1'; varCtx.lineWidth=2.5; varCtx.stroke();
-    varCtx.restore();
-  }
-
-  // Legend
-  const lx=PL+cW-155, ly=CV_TOP+6;
-  varCtx.fillStyle='rgba(255,255,255,0.94)';
-  varCtx.fillRect(lx-6, ly-5, 162, 28);
-  varCtx.fillStyle='#6366f1'; varCtx.fillRect(lx, ly, 18, 3);
-  varCtx.fillStyle='#475569'; varCtx.font=FONT;
-  varCtx.fillText('Running Var(X)', lx+22, ly+3);
-  drawLine(varCtx,lx,ly+13,lx+18,ly+13,'#6366f1',[5,3]);
-  varCtx.fillText('True Var(X)', lx+22, ly+13);
-
-  if (n === 0) {
-    drawCanvasEmptyState(
-      varCtx,
-      W,
-      H,
-      'Draw a few satisfaction scores',
-      'The running variance curve will appear after the first samples.',
-      '#6366f1'
-    );
-  }
-}
-
-function doDrawCard() {
-  const active = getActiveDeck();
-  if(!active.length) return;
-
-  const card = active[Math.floor(Math.random()*active.length)];
-  vDraws++; vSumX+=card.val; vSumX2+=card.val*card.val;
-  vDrawnValues.push(card.val);
-  if(vDrawnValues.length > 250) vDrawnValues.shift();
-
-  const runMean = vSumX/vDraws;
-  const runVar  = vSumX2/vDraws - runMean*runMean;
-
-  varData.sample.push(runVar);
-  varData.trueV.push(getTrueVariance());
-  if(varData.sample.length>400){varData.sample.shift();varData.trueV.shift();}
-
-  // Update card display with 3D flip
-  const dc = document.getElementById('drawnCard');
-  dc.textContent='';
-  dc.className = 'score-card-display revealed flip-anim';
-  // Color based on score
-  const hue = (card.val - 1) / 9 * 120;
-  dc.style.borderColor = `hsl(${hue}, 65%, 50%)`;
-  const valEl = document.createElement('span');
-  valEl.textContent = card.val;
-  valEl.style.color = `hsl(${hue}, 65%, 45%)`;
-  const emojiEl = document.createElement('span');
-  emojiEl.className = 'score-emoji';
-  emojiEl.textContent = card.emoji;
-  const textEl = document.createElement('span');
-  textEl.className = 'score-text';
-  textEl.textContent = SCORE_LABELS[card.val];
-  dc.appendChild(valEl); dc.appendChild(emojiEl); dc.appendChild(textEl);
-
-  document.getElementById('v-draws').textContent  = vDraws;
-  document.getElementById('vv-draws').textContent  = vDraws;
-  document.getElementById('v-last').textContent   = card.val;
-  document.getElementById('vv-sample').textContent = runVar.toFixed(2);
-  document.getElementById('v-sample').textContent  = runVar.toFixed(2);
-
-  bumpValue(document.getElementById('v-draws'));
-
-  renderVarChart();
-}
-
-function drawCard()  { doDrawCard(); }
-async function drawMany() { for(let i=0;i<100;i++){doDrawCard();await delay(15);} }
-
-function resetCards() {
-  vDraws=0; vSumX=0; vSumX2=0; vDrawnValues=[];
-  varData.sample=[]; varData.trueV=[];
-  const dc=document.getElementById('drawnCard');
-  dc.className='score-card-display';
-  dc.style.borderColor = '';
-  dc.innerHTML='<span style="font-size:2rem;color:#cbd5e1">?</span><span class="score-text">Score</span>';
-  ['v-draws','vv-draws'].forEach(id=>document.getElementById(id).textContent='0');
-  ['v-last','v-sample','vv-sample'].forEach(id=>document.getElementById(id).textContent='—');
-  renderVarChart();
-}
-
-// INIT
-buildCardGrid();
-updateCardVariance();
-renderCoinChart();
-renderDieChart();
-</script>
 
 </body>
 </html>
