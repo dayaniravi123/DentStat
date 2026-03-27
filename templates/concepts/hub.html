@@ -22,80 +22,209 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(180deg, #f8fbff 0%, #eef7f5 100%); }
-        .concepts-shell { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 24px; align-items: start; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(180deg, #f8f7f1 0%, #fdfcf8 45%, #f6faf7 100%);
+            color: #171717;
+        }
+        .concepts-shell {
+            display: grid;
+            grid-template-columns: 330px minmax(0, 1fr) 280px;
+            gap: 0;
+            align-items: start;
+            border-radius: 34px;
+            border: 1px solid rgba(215, 211, 199, 0.9);
+            background: rgba(255, 252, 246, 0.96);
+            box-shadow: 0 28px 64px rgba(15, 23, 42, 0.08);
+            overflow: visible;
+        }
+        .sidebar-card,
+        .reader-shell,
+        .concepts-outline {
+            min-height: calc(100vh - 118px);
+            background: rgba(255, 252, 246, 0.96);
+        }
         .sidebar-card {
-            position: sticky; top: 96px;
-            border-radius: 28px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,250,252,0.98));
-            border: 1px solid rgba(148,163,184,0.18);
-            box-shadow: 0 24px 54px rgba(15,23,42,0.1);
-            padding: 22px;
-            max-height: calc(100vh - 120px);
+            position: sticky;
+            top: 92px;
+            align-self: start;
+            border-right: 1px solid rgba(221, 216, 203, 0.92);
             overflow-y: auto;
         }
-        .sidebar-card::-webkit-scrollbar { width: 5px; }
-        .sidebar-card::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .sidebar-head {
-            padding: 18px;
-            border-radius: 22px;
-            background: linear-gradient(135deg, #0f172a 0%, #1d4f77 58%, #0f766e 100%);
-            color: white;
-            margin-bottom: 18px;
+        .sidebar-card::-webkit-scrollbar { width: 6px; }
+        .sidebar-card::-webkit-scrollbar-thumb {
+            background: rgba(203, 213, 225, 0.95);
+            border-radius: 999px;
         }
-        .sidebar-head h1 { font-size: 1.35rem; font-weight: 800; margin: 0 0 6px; }
-        .sidebar-head p { font-size: 0.9rem; color: rgba(226,232,240,0.88); margin: 0; line-height: 1.6; }
-        .sidebar-group + .sidebar-group { margin-top: 18px; }
+        .sidebar-search-wrap {
+            position: sticky;
+            top: 0;
+            z-index: 4;
+            padding: 20px 20px 18px;
+            background: rgba(255, 252, 246, 0.98);
+            border-bottom: 1px solid rgba(221, 216, 203, 0.92);
+            backdrop-filter: blur(12px);
+        }
+        .sidebar-search-box {
+            position: relative;
+        }
+        .sidebar-search-box i,
+        .sidebar-search-box svg {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 19px;
+            height: 19px;
+            color: #b8af9f;
+            pointer-events: none;
+        }
+        .sidebar-search-input {
+            width: 100%;
+            border-radius: 18px;
+            border: 1px solid rgba(221, 216, 203, 0.94);
+            background: rgba(255, 251, 243, 0.98);
+            padding: 16px 18px 16px 52px;
+            font-size: 1rem;
+            color: #171717;
+            outline: none;
+            box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+        .sidebar-search-input::placeholder {
+            color: #b0a79a;
+        }
+        .sidebar-search-input:focus {
+            border-color: rgba(15, 118, 110, 0.24);
+            box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.08);
+        }
+        .sidebar-groups {
+            padding: 18px 20px 24px;
+        }
+        .sidebar-group + .sidebar-group {
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(221, 216, 203, 0.86);
+        }
+        .sidebar-group[data-group="beginner"] .sidebar-group-title {
+            color: #0f6d56;
+        }
+        .sidebar-group[data-group="intermediate"] .sidebar-group-title {
+            color: #b7791f;
+        }
+        .sidebar-group[data-group="advanced"] .sidebar-group-title {
+            color: #5b6ccf;
+        }
         .sidebar-group-title {
-            font-size: 0.72rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
-            color: #0f766e; margin-bottom: 10px; padding-left: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .sidebar-group-title::before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: currentColor;
+            flex: 0 0 auto;
         }
         .concept-link {
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 14px;
             width: 100%;
             text-align: left;
-            padding: 14px 14px 13px;
+            padding: 14px 12px;
             border-radius: 18px;
-            border: 1px solid rgba(226,232,240,0.9);
-            background: rgba(255,255,255,0.78);
-            transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+            border: 1px solid transparent;
+            background: transparent;
+            transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
             margin-bottom: 10px;
             cursor: pointer;
             text-decoration: none;
         }
-        .concept-link:hover, .concept-link:focus-visible {
-            transform: translateY(-2px);
-            border-color: rgba(15,118,110,0.22);
-            box-shadow: 0 14px 28px rgba(15,23,42,0.08);
+        .concept-link:hover,
+        .concept-link:focus-visible {
+            transform: translateX(2px);
+            background: rgba(246, 244, 237, 0.92);
+            border-color: rgba(221, 216, 203, 0.88);
             outline: none;
         }
         .concept-link.is-active {
-            background: linear-gradient(135deg, rgba(15,118,110,0.13), rgba(94,234,212,0.16));
-            border-color: rgba(15,118,110,0.24);
-            box-shadow: 0 16px 34px rgba(15,23,42,0.1);
+            background: linear-gradient(135deg, rgba(225, 249, 243, 0.96), rgba(236, 250, 247, 0.94));
+            border-color: rgba(177, 229, 214, 0.95);
         }
-        .concept-link-title { display: block; color: #0f172a; font-size: 0.96rem; font-weight: 700; margin-bottom: 5px; }
-        .concept-link-desc { display: block; color: #64748b; font-size: 0.82rem; line-height: 1.45; }
+        .concept-icon {
+            flex: 0 0 54px;
+            width: 54px;
+            height: 54px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.45rem;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            text-align: center;
+            padding: 4px;
+            transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+        }
+        .concept-link[data-group="beginner"] .concept-icon {
+            background: linear-gradient(180deg, #e6f7ef, #dbf5eb);
+            color: #0f6d56;
+        }
+        .concept-link[data-group="intermediate"] .concept-icon {
+            background: linear-gradient(180deg, #fff4dd, #fdf0d0);
+            color: #c98322;
+        }
+        .concept-link[data-group="advanced"] .concept-icon {
+            background: linear-gradient(180deg, #ececff, #e5e8ff);
+            color: #5b6ccf;
+        }
+        .concept-link.is-active .concept-icon {
+            background: linear-gradient(180deg, #0f6d56, #0d7a63);
+            color: #ffffff;
+            transform: scale(1.02);
+        }
+        .concept-link-body {
+            min-width: 0;
+            flex: 1;
+        }
+        .concept-link-title {
+            display: block;
+            color: #2f302d;
+            font-size: 0.98rem;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+        .concept-link-desc {
+            display: block;
+            color: #7a7a73;
+            font-size: 0.85rem;
+            line-height: 1.45;
+            margin-top: 4px;
+        }
 
-        /* ── Reader panel ── */
         .reader-shell {
-            border-radius: 30px;
-            overflow: hidden;
-            border: 1px solid rgba(148,163,184,0.18);
-            box-shadow: 0 28px 60px rgba(15,23,42,0.12);
-            background: #ffffff;
-            min-height: 560px;
+            border-right: 1px solid rgba(221, 216, 203, 0.92);
+            background: rgba(255, 252, 246, 0.96);
         }
         #concept-content {
             position: relative;
-            background: white;
+            background: rgba(255, 252, 246, 0.96);
+            min-height: calc(100vh - 118px);
         }
         .reader-frame {
             display: block;
             width: 100%;
-            min-height: 760px;
+            min-height: calc(100vh - 118px);
             border: 0;
-            background: #ffffff;
+            background: rgba(255, 252, 246, 0.96);
             visibility: hidden;
         }
         .reader-loading {
@@ -105,9 +234,9 @@
             position: absolute;
             inset: 0;
             padding: 4rem 2rem;
-            background: rgba(255,255,255,0.96);
-            color: #64748b;
-            font-size: 0.9rem;
+            background: rgba(255, 252, 246, 0.95);
+            color: #7a7a73;
+            font-size: 0.92rem;
             gap: 0.6rem;
             z-index: 2;
         }
@@ -118,6 +247,135 @@
             border-top-color: #0d9488;
             border-radius: 50%;
             animation: spin 0.6s linear infinite;
+        }
+        .concepts-outline {
+            position: sticky;
+            top: 92px;
+            align-self: start;
+            padding: 28px 22px;
+        }
+        .outline-heading {
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #9f9789;
+            margin: 0 0 16px;
+        }
+        .toc-list {
+            display: grid;
+            gap: 6px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(221, 216, 203, 0.92);
+        }
+        .toc-link {
+            position: relative;
+            display: block;
+            width: 100%;
+            text-align: left;
+            border: none;
+            background: transparent;
+            color: #6c675f;
+            font-size: 0.98rem;
+            line-height: 1.45;
+            padding: 10px 14px 10px 24px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+        }
+        .toc-link::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 18px;
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: rgba(193, 185, 171, 0.95);
+        }
+        .toc-link.is-child {
+            padding-left: 36px;
+            font-size: 0.92rem;
+        }
+        .toc-link.is-child::before {
+            left: 22px;
+            width: 5px;
+            height: 5px;
+        }
+        .toc-link:hover,
+        .toc-link:focus-visible {
+            background: rgba(246, 244, 237, 0.95);
+            color: #185f4d;
+            outline: none;
+        }
+        .toc-link.is-active {
+            background: linear-gradient(135deg, rgba(225, 249, 243, 0.96), rgba(236, 250, 247, 0.94));
+            color: #116149;
+        }
+        .toc-link.is-active::before {
+            background: #116149;
+        }
+        .toc-empty {
+            color: #9a9488;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            padding: 4px 2px 22px;
+            border-bottom: 1px solid rgba(221, 216, 203, 0.92);
+        }
+        .progress-card {
+            margin-top: 22px;
+            border-radius: 22px;
+            border: 1px solid rgba(221, 216, 203, 0.92);
+            background: rgba(255, 255, 255, 0.75);
+            padding: 20px 18px 18px;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+        }
+        .progress-label {
+            display: block;
+            color: #8d867a;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(223, 219, 210, 0.95);
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        .progress-fill {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #0f6d56 0%, #1e8e70 100%);
+            transition: width 220ms ease;
+        }
+        .progress-stats {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .progress-count {
+            color: #6d665b;
+            font-size: 0.96rem;
+            font-weight: 700;
+        }
+        .progress-percent {
+            color: #8d867a;
+            font-size: 0.96rem;
+            font-weight: 700;
+        }
+        .progress-level {
+            margin-top: 10px;
+            color: #9f9789;
+            font-size: 0.84rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
         .mobile-library-shell {
             display: none;
@@ -318,12 +576,38 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        @media (max-width: 1360px) {
+            .concepts-shell {
+                grid-template-columns: 310px minmax(0, 1fr) 250px;
+            }
+        }
+        @media (max-width: 1180px) {
+            .concepts-shell {
+                grid-template-columns: 320px minmax(0, 1fr);
+            }
+            .concepts-outline {
+                display: none;
+            }
+            .reader-shell {
+                border-right: none;
+            }
+        }
         @media (max-width: 1024px) {
-            .concepts-shell { grid-template-columns: 1fr; }
-            .sidebar-card { position: static; max-height: min(48vh, 420px); }
+            .concepts-shell {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-card,
+            .reader-shell {
+                min-height: auto;
+            }
+            .sidebar-card {
+                position: static;
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid rgba(221, 216, 203, 0.92);
+            }
         }
         @media (max-width: 768px) {
-            .desktop-concepts-hero,
             .concepts-shell {
                 display: none;
             }
@@ -335,25 +619,6 @@
 </head>
 <body class="smooth-scroll">
     {% include 'includes/site_nav.html' %}
-
-    <section class="relative overflow-hidden desktop-concepts-hero">
-        <div class="absolute inset-0 gradient-bg opacity-95"></div>
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
-            <div class="max-w-4xl">
-                <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/15 text-white/90 text-xs font-bold tracking-[0.22em] uppercase">
-                    <span class="w-2 h-2 rounded-full bg-teal-300"></span>
-                    Concepts Library
-                </span>
-                <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-5 leading-tight">
-                    Learn statistics and biostatistics like a docs site, not a scattered list of pages
-                </h1>
-                <p class="text-lg text-slate-200 mt-4 max-w-3xl leading-relaxed">
-                    Browse all core concepts from one place. Use the left sidebar to move through dental statistics,
-                    biostatistics, probability, hypothesis testing, regression, and other lessons without losing your place.
-                </p>
-            </div>
-        </div>
-    </section>
 
     <section class="mobile-library-shell">
         <div class="mobile-library-hero">
@@ -468,29 +733,93 @@
         </div>
     </section>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
+    <div class="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         <div class="concepts-shell">
             <aside class="sidebar-card">
-                <div class="sidebar-head">
-                    <h1>Concept Navigator</h1>
-                    <p>Pick any topic from the left and the reading panel will update in place, just like a documentation page.</p>
+                <div class="sidebar-search-wrap">
+                    <div class="sidebar-search-box">
+                        <i data-lucide="search"></i>
+                        <input
+                            id="desktop-concept-search"
+                            class="sidebar-search-input"
+                            type="search"
+                            placeholder="Filter topics..."
+                            autocomplete="off"
+                        >
+                    </div>
                 </div>
 
+                <div class="sidebar-groups">
                 {% for group in concept_groups %}
-                <div class="sidebar-group">
+                {% if group.label == 'Beginner Concepts' %}
+                {% with group_key='beginner' %}
+                <div class="sidebar-group" data-group="{{ group_key }}">
                     <div class="sidebar-group-title">{{ group.label }}</div>
                     {% for concept in group.concepts %}
                     <a
                         href="/concepts/?topic={{ concept.slug }}"
                         class="concept-link"
                         data-slug="{{ concept.slug }}"
+                        data-group="{{ group_key }}"
+                        data-group-label="{{ group.label }}"
+                        data-search="{{ concept.title|lower }} {{ concept.description|lower }}"
                     >
-                        <span class="concept-link-title">{{ concept.title }}</span>
-                        <span class="concept-link-desc">{{ concept.description }}</span>
+                        <span class="concept-icon" data-slug="{{ concept.slug }}"></span>
+                        <span class="concept-link-body">
+                            <span class="concept-link-title">{{ concept.title }}</span>
+                            <span class="concept-link-desc">{{ concept.description }}</span>
+                        </span>
                     </a>
                     {% endfor %}
                 </div>
+                {% endwith %}
+                {% elif group.label == 'Intermediate Concepts' %}
+                {% with group_key='intermediate' %}
+                <div class="sidebar-group" data-group="{{ group_key }}">
+                    <div class="sidebar-group-title">{{ group.label }}</div>
+                    {% for concept in group.concepts %}
+                    <a
+                        href="/concepts/?topic={{ concept.slug }}"
+                        class="concept-link"
+                        data-slug="{{ concept.slug }}"
+                        data-group="{{ group_key }}"
+                        data-group-label="{{ group.label }}"
+                        data-search="{{ concept.title|lower }} {{ concept.description|lower }}"
+                    >
+                        <span class="concept-icon" data-slug="{{ concept.slug }}"></span>
+                        <span class="concept-link-body">
+                            <span class="concept-link-title">{{ concept.title }}</span>
+                            <span class="concept-link-desc">{{ concept.description }}</span>
+                        </span>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endwith %}
+                {% else %}
+                {% with group_key='advanced' %}
+                <div class="sidebar-group" data-group="{{ group_key }}">
+                    <div class="sidebar-group-title">{{ group.label }}</div>
+                    {% for concept in group.concepts %}
+                    <a
+                        href="/concepts/?topic={{ concept.slug }}"
+                        class="concept-link"
+                        data-slug="{{ concept.slug }}"
+                        data-group="{{ group_key }}"
+                        data-group-label="{{ group.label }}"
+                        data-search="{{ concept.title|lower }} {{ concept.description|lower }}"
+                    >
+                        <span class="concept-icon" data-slug="{{ concept.slug }}"></span>
+                        <span class="concept-link-body">
+                            <span class="concept-link-title">{{ concept.title }}</span>
+                            <span class="concept-link-desc">{{ concept.description }}</span>
+                        </span>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endwith %}
+                {% endif %}
                 {% endfor %}
+                </div>
             </aside>
 
             <main class="reader-shell">
@@ -506,6 +835,26 @@
                     ></iframe>
                 </div>
             </main>
+
+            <aside class="concepts-outline">
+                <div class="outline-heading">On This Page</div>
+                <nav id="concept-toc" class="toc-list" aria-label="On this page"></nav>
+                <div id="concept-toc-empty" class="toc-empty" hidden>
+                    This concept is a shorter overview, so there are not many sub-sections to jump between.
+                </div>
+
+                <div class="progress-card">
+                    <span class="progress-label">Your progress</span>
+                    <div class="progress-track">
+                        <span id="concept-progress-fill" class="progress-fill"></span>
+                    </div>
+                    <div class="progress-stats">
+                        <span id="concept-progress-count" class="progress-count">1 of 18</span>
+                        <span id="concept-progress-percent" class="progress-percent">6%</span>
+                    </div>
+                    <div id="concept-progress-level" class="progress-level">Beginner Concepts</div>
+                </div>
+            </aside>
         </div>
     </div>
 
@@ -515,11 +864,19 @@
         const loaderEl = document.getElementById('reader-loader');
         const frameEl = document.getElementById('concept-frame');
         const conceptLinks = Array.from(document.querySelectorAll('.concept-link'));
+        const sidebarGroups = Array.from(document.querySelectorAll('.sidebar-group'));
+        const desktopSearchInput = document.getElementById('desktop-concept-search');
         const mobileSearchInput = document.getElementById('mobile-concept-search');
         const mobileFilterButtons = Array.from(document.querySelectorAll('.mobile-filter-btn'));
         const mobileGroups = Array.from(document.querySelectorAll('.mobile-library-group'));
         const mobileConceptCards = Array.from(document.querySelectorAll('.mobile-concept-card'));
         const mobileEmptyState = document.getElementById('mobile-concept-empty');
+        const tocEl = document.getElementById('concept-toc');
+        const tocEmptyEl = document.getElementById('concept-toc-empty');
+        const progressFillEl = document.getElementById('concept-progress-fill');
+        const progressCountEl = document.getElementById('concept-progress-count');
+        const progressPercentEl = document.getElementById('concept-progress-percent');
+        const progressLevelEl = document.getElementById('concept-progress-level');
         const defaultLoaderMarkup = loaderEl.innerHTML;
         let currentSlug = null;
         let activeDoc = null;
@@ -528,6 +885,8 @@
         let pendingSlug = null;
         let resizeTimers = [];
         let mobileFilter = 'all';
+        let tocEntries = [];
+        let tocSyncHandler = null;
 
         const mobileConceptSymbols = {
             'central-tendency': 'Σ',
@@ -555,12 +914,39 @@
             return params.get('topic') || 'central-tendency';
         }
 
-        function initializeMobileConceptIcons() {
-            document.querySelectorAll('.mobile-concept-icon').forEach((iconEl) => {
+        function initializeConceptIcons() {
+            document.querySelectorAll('.mobile-concept-icon, .concept-icon').forEach((iconEl) => {
                 const slug = iconEl.dataset.slug;
                 const fallback = slug ? slug.charAt(0).toUpperCase() : '?';
                 iconEl.textContent = mobileConceptSymbols[slug] || fallback;
             });
+        }
+
+        function applyDesktopConceptFilters() {
+            const query = (desktopSearchInput?.value || '').trim().toLowerCase();
+
+            sidebarGroups.forEach((groupEl) => {
+                let visibleCount = 0;
+
+                groupEl.querySelectorAll('.concept-link').forEach((link) => {
+                    const matchesQuery = !query || (link.dataset.search || '').includes(query);
+                    link.style.display = matchesQuery ? 'flex' : 'none';
+                    if (matchesQuery) {
+                        visibleCount += 1;
+                    }
+                });
+
+                groupEl.style.display = visibleCount > 0 ? 'block' : 'none';
+            });
+        }
+
+        function bindDesktopConceptFilters() {
+            initializeConceptIcons();
+
+            if (!desktopSearchInput) return;
+
+            desktopSearchInput.addEventListener('input', applyDesktopConceptFilters);
+            applyDesktopConceptFilters();
         }
 
         function applyMobileConceptFilters() {
@@ -590,7 +976,7 @@
         }
 
         function bindMobileConceptFilters() {
-            initializeMobileConceptIcons();
+            initializeConceptIcons();
 
             if (mobileSearchInput) {
                 mobileSearchInput.addEventListener('input', applyMobileConceptFilters);
@@ -621,6 +1007,7 @@
 
         function cleanupObservers() {
             clearResizeTimers();
+            clearToc();
 
             if (resizeObserver) {
                 resizeObserver.disconnect();
@@ -639,6 +1026,151 @@
             }
 
             activeDoc = null;
+        }
+
+        function slugifyText(value) {
+            return value
+                .toLowerCase()
+                .normalize('NFKD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '') || 'section';
+        }
+
+        function clearToc() {
+            if (tocSyncHandler) {
+                window.removeEventListener('scroll', tocSyncHandler);
+                window.removeEventListener('resize', tocSyncHandler);
+                tocSyncHandler = null;
+            }
+
+            tocEntries = [];
+
+            if (tocEl) {
+                tocEl.innerHTML = '';
+                tocEl.hidden = false;
+            }
+
+            if (tocEmptyEl) {
+                tocEmptyEl.hidden = true;
+            }
+        }
+
+        function setActiveToc(id) {
+            tocEntries.forEach((entry) => {
+                entry.button.classList.toggle('is-active', entry.id === id);
+            });
+        }
+
+        function getAbsoluteHeadingTop(entry) {
+            const frameRect = frameEl.getBoundingClientRect();
+            const headingRect = entry.heading.getBoundingClientRect();
+            return window.scrollY + frameRect.top + headingRect.top;
+        }
+
+        function syncActiveToc() {
+            if (!tocEntries.length) return;
+
+            const scrollMarker = window.scrollY + 168;
+            let activeId = tocEntries[0].id;
+
+            tocEntries.forEach((entry) => {
+                if (getAbsoluteHeadingTop(entry) <= scrollMarker) {
+                    activeId = entry.id;
+                }
+            });
+
+            setActiveToc(activeId);
+        }
+
+        function buildConceptToc(doc) {
+            clearToc();
+
+            if (!tocEl) return;
+
+            const headings = Array.from(doc.querySelectorAll('h2, h3')).filter((heading) => {
+                const text = heading.textContent.trim();
+                if (!text) return false;
+
+                const style = frameEl.contentWindow?.getComputedStyle(heading);
+                if (!style || style.display === 'none' || style.visibility === 'hidden') {
+                    return false;
+                }
+
+                const rect = heading.getBoundingClientRect();
+                return rect.height > 0;
+            });
+
+            if (!headings.length) {
+                if (tocEl) {
+                    tocEl.hidden = true;
+                }
+                if (tocEmptyEl) {
+                    tocEmptyEl.hidden = false;
+                }
+                return;
+            }
+
+            const usedIds = new Set();
+
+            tocEntries = headings.map((heading) => {
+                const text = heading.textContent.trim();
+                const baseId = heading.id || slugifyText(text);
+                let resolvedId = baseId;
+                let suffix = 2;
+
+                while (usedIds.has(resolvedId) || (doc.getElementById(resolvedId) && doc.getElementById(resolvedId) !== heading)) {
+                    resolvedId = `${baseId}-${suffix}`;
+                    suffix += 1;
+                }
+
+                heading.id = resolvedId;
+                usedIds.add(resolvedId);
+
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = `toc-link${heading.tagName.toLowerCase() === 'h3' ? ' is-child' : ''}`;
+                button.textContent = text;
+                button.addEventListener('click', () => {
+                    window.scrollTo({
+                        top: Math.max(getAbsoluteHeadingTop({ heading }) - 116, 0),
+                        behavior: 'smooth'
+                    });
+                    setActiveToc(resolvedId);
+                });
+                tocEl.appendChild(button);
+
+                return { id: resolvedId, heading, button };
+            });
+
+            tocSyncHandler = () => syncActiveToc();
+            window.addEventListener('scroll', tocSyncHandler, { passive: true });
+            window.addEventListener('resize', tocSyncHandler);
+            syncActiveToc();
+        }
+
+        function updateProgressCard(slug) {
+            const total = conceptLinks.length;
+            const activeIndex = conceptLinks.findIndex((link) => link.dataset.slug === slug);
+            const currentIndex = activeIndex >= 0 ? activeIndex + 1 : 0;
+            const progressPercent = total ? Math.round((currentIndex / total) * 100) : 0;
+            const activeLink = activeIndex >= 0 ? conceptLinks[activeIndex] : null;
+
+            if (progressFillEl) {
+                progressFillEl.style.width = `${progressPercent}%`;
+            }
+
+            if (progressCountEl) {
+                progressCountEl.textContent = `${currentIndex} of ${total}`;
+            }
+
+            if (progressPercentEl) {
+                progressPercentEl.textContent = `${progressPercent}%`;
+            }
+
+            if (progressLevelEl && activeLink) {
+                progressLevelEl.textContent = activeLink.dataset.groupLabel || 'Concept Library';
+            }
         }
 
         function queueResize(delay = 0) {
@@ -802,6 +1334,7 @@
         function loadConcept(slug, pushState) {
             if (slug === currentSlug && frameEl.dataset.ready === 'true') {
                 updateUrl(slug, pushState);
+                updateProgressCard(slug);
                 return;
             }
 
@@ -810,6 +1343,7 @@
 
             highlightSidebar(slug);
             updateUrl(slug, pushState);
+            updateProgressCard(slug);
 
             loaderEl.innerHTML = defaultLoaderMarkup;
             loaderEl.style.display = 'flex';
@@ -828,6 +1362,7 @@
 
                 prepareEmbeddedDocument(doc);
                 bindDocumentObservers(doc);
+                buildConceptToc(doc);
 
                 frameEl.dataset.ready = 'true';
                 frameEl.style.visibility = 'visible';
@@ -853,6 +1388,7 @@
             loadConcept(slug, false);
         });
 
+        bindDesktopConceptFilters();
         bindMobileConceptFilters();
 
         // Load initial concept
