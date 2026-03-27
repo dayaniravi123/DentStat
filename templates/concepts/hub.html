@@ -119,25 +119,224 @@
             border-radius: 50%;
             animation: spin 0.6s linear infinite;
         }
+        .mobile-library-shell {
+            display: none;
+        }
+        .mobile-library-hero {
+            background: #ffffff;
+            border-bottom: 1px solid rgba(226,232,240,0.9);
+            padding: 28px 20px 24px;
+        }
+        .mobile-library-kicker {
+            color: #0f9f6e;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .mobile-library-title {
+            font-size: clamp(2rem, 8vw, 2.6rem);
+            line-height: 1.12;
+            letter-spacing: -0.04em;
+            color: #171717;
+            font-weight: 800;
+            margin: 0 0 14px;
+            max-width: 10ch;
+        }
+        .mobile-library-copy {
+            color: #666;
+            font-size: 0.98rem;
+            line-height: 1.7;
+            margin: 0;
+        }
+        .mobile-library-toolbar {
+            background: #ffffff;
+            border-bottom: 1px solid rgba(226,232,240,0.9);
+            padding: 16px 20px 0;
+        }
+        .mobile-search-wrap {
+            position: relative;
+            margin-bottom: 14px;
+        }
+        .mobile-search-wrap i,
+        .mobile-search-wrap svg {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b0b7c3;
+            width: 19px;
+            height: 19px;
+            pointer-events: none;
+        }
+        .mobile-search-input {
+            width: 100%;
+            border-radius: 18px;
+            border: 1px solid rgba(226,232,240,0.95);
+            background: #fff;
+            box-shadow: inset 0 1px 2px rgba(15,23,42,0.04);
+            padding: 15px 18px 15px 54px;
+            font-size: 1rem;
+            color: #111827;
+            outline: none;
+        }
+        .mobile-search-input::placeholder {
+            color: #a3a3a3;
+        }
+        .mobile-search-input:focus {
+            border-color: rgba(13,148,136,0.28);
+            box-shadow: 0 0 0 4px rgba(13,148,136,0.08);
+        }
+        .mobile-filter-tabs {
+            display: flex;
+            gap: 22px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            white-space: nowrap;
+        }
+        .mobile-filter-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        .mobile-filter-btn {
+            position: relative;
+            border: none;
+            background: transparent;
+            padding: 0 0 14px;
+            color: #8a8a8a;
+            font-size: 0.98rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .mobile-filter-btn.is-active {
+            color: #0f766e;
+        }
+        .mobile-filter-btn.is-active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -1px;
+            height: 3px;
+            border-radius: 999px;
+            background: #0f766e;
+        }
+        .mobile-library-groups {
+            background: #ffffff;
+            padding: 18px 20px 30px;
+        }
+        .mobile-library-group + .mobile-library-group {
+            margin-top: 18px;
+        }
+        .mobile-library-group-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .mobile-library-group-heading span {
+            color: #8a8a8a;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+        .mobile-library-group-heading::after {
+            content: '';
+            height: 1px;
+            flex: 1;
+            background: rgba(226,232,240,0.95);
+        }
+        .mobile-library-list {
+            display: grid;
+            gap: 14px;
+        }
+        .mobile-concept-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+            padding: 18px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(226,232,240,0.96);
+            background: #fff;
+            box-shadow: 0 6px 18px rgba(15,23,42,0.05);
+        }
+        .mobile-concept-card:active {
+            transform: scale(0.995);
+        }
+        .mobile-concept-icon {
+            flex: 0 0 62px;
+            width: 62px;
+            height: 62px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, #dcfce7, #d1fae5);
+            color: #0f766e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            text-align: center;
+            padding: 4px;
+        }
+        .mobile-concept-body {
+            min-width: 0;
+            flex: 1;
+        }
+        .mobile-concept-title {
+            display: block;
+            color: #111827;
+            font-size: 1.02rem;
+            font-weight: 800;
+            line-height: 1.25;
+            margin-bottom: 4px;
+        }
+        .mobile-concept-desc {
+            display: block;
+            color: #7a7a7a;
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+        .mobile-concept-arrow {
+            color: #c4c4c4;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+        .mobile-library-empty {
+            display: none;
+            border: 1px dashed rgba(148,163,184,0.4);
+            border-radius: 18px;
+            padding: 18px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.92rem;
+            margin-top: 6px;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 1024px) {
             .concepts-shell { grid-template-columns: 1fr; }
             .sidebar-card { position: static; max-height: min(48vh, 420px); }
         }
-        @media (max-width: 640px) {
-            .sidebar-card { padding: 16px; border-radius: 22px; }
-            .sidebar-head { padding: 16px; }
-            .sidebar-head h1 { font-size: 1.15rem; }
-            .reader-shell { border-radius: 22px; min-height: 460px; }
-            .reader-frame { min-height: 560px; }
+        @media (max-width: 768px) {
+            .desktop-concepts-hero,
+            .concepts-shell {
+                display: none;
+            }
+            .mobile-library-shell {
+                display: block;
+            }
         }
     </style>
 </head>
 <body class="smooth-scroll">
     {% include 'includes/site_nav.html' %}
 
-    <section class="relative overflow-hidden">
+    <section class="relative overflow-hidden desktop-concepts-hero">
         <div class="absolute inset-0 gradient-bg opacity-95"></div>
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16">
             <div class="max-w-4xl">
@@ -152,6 +351,119 @@
                     Browse all core concepts from one place. Use the left sidebar to move through dental statistics,
                     biostatistics, probability, hypothesis testing, regression, and other lessons without losing your place.
                 </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="mobile-library-shell">
+        <div class="mobile-library-hero">
+            <div class="mobile-library-kicker">Concepts Library</div>
+            <h1 class="mobile-library-title">Learn statistics like a docs site, not a scattered list</h1>
+            <p class="mobile-library-copy">
+                Browse all core concepts from one place — dental statistics, biostatistics, probability,
+                hypothesis testing, regression, and more.
+            </p>
+        </div>
+
+        <div class="mobile-library-toolbar">
+            <div class="mobile-search-wrap">
+                <i data-lucide="search"></i>
+                <input
+                    id="mobile-concept-search"
+                    class="mobile-search-input"
+                    type="search"
+                    placeholder="Search concepts..."
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="mobile-filter-tabs" aria-label="Concept level filters">
+                <button class="mobile-filter-btn is-active" type="button" data-filter="all">All</button>
+                <button class="mobile-filter-btn" type="button" data-filter="beginner">Beginner</button>
+                <button class="mobile-filter-btn" type="button" data-filter="intermediate">Intermediate</button>
+                <button class="mobile-filter-btn" type="button" data-filter="advanced">Advanced</button>
+            </div>
+        </div>
+
+        <div class="mobile-library-groups">
+            {% for group in concept_groups %}
+            {% if group.label == 'Beginner Concepts' %}
+                {% with group_key='beginner' short_label='Beginner' %}
+                <section class="mobile-library-group" data-group="{{ group_key }}">
+                    <div class="mobile-library-group-heading"><span>{{ short_label }}</span></div>
+                    <div class="mobile-library-list">
+                        {% for concept in group.concepts %}
+                        <a
+                            href="/concepts/{{ concept.slug }}"
+                            class="mobile-concept-card"
+                            data-group="{{ group_key }}"
+                            data-slug="{{ concept.slug }}"
+                            data-search="{{ concept.title|lower }} {{ concept.description|lower }}"
+                        >
+                            <div class="mobile-concept-icon" data-slug="{{ concept.slug }}"></div>
+                            <div class="mobile-concept-body">
+                                <span class="mobile-concept-title">{{ concept.title }}</span>
+                                <span class="mobile-concept-desc">{{ concept.description }}</span>
+                            </div>
+                            <span class="mobile-concept-arrow">›</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endwith %}
+            {% elif group.label == 'Intermediate Concepts' %}
+                {% with group_key='intermediate' short_label='Intermediate' %}
+                <section class="mobile-library-group" data-group="{{ group_key }}">
+                    <div class="mobile-library-group-heading"><span>{{ short_label }}</span></div>
+                    <div class="mobile-library-list">
+                        {% for concept in group.concepts %}
+                        <a
+                            href="/concepts/{{ concept.slug }}"
+                            class="mobile-concept-card"
+                            data-group="{{ group_key }}"
+                            data-slug="{{ concept.slug }}"
+                            data-search="{{ concept.title|lower }} {{ concept.description|lower }}"
+                        >
+                            <div class="mobile-concept-icon" data-slug="{{ concept.slug }}"></div>
+                            <div class="mobile-concept-body">
+                                <span class="mobile-concept-title">{{ concept.title }}</span>
+                                <span class="mobile-concept-desc">{{ concept.description }}</span>
+                            </div>
+                            <span class="mobile-concept-arrow">›</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endwith %}
+            {% else %}
+                {% with group_key='advanced' short_label='Advanced' %}
+                <section class="mobile-library-group" data-group="{{ group_key }}">
+                    <div class="mobile-library-group-heading"><span>{{ short_label }}</span></div>
+                    <div class="mobile-library-list">
+                        {% for concept in group.concepts %}
+                        <a
+                            href="/concepts/{{ concept.slug }}"
+                            class="mobile-concept-card"
+                            data-group="{{ group_key }}"
+                            data-slug="{{ concept.slug }}"
+                            data-search="{{ concept.title|lower }} {{ concept.description|lower }}"
+                        >
+                            <div class="mobile-concept-icon" data-slug="{{ concept.slug }}"></div>
+                            <div class="mobile-concept-body">
+                                <span class="mobile-concept-title">{{ concept.title }}</span>
+                                <span class="mobile-concept-desc">{{ concept.description }}</span>
+                            </div>
+                            <span class="mobile-concept-arrow">›</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endwith %}
+            {% endif %}
+            {% endfor %}
+
+            <div id="mobile-concept-empty" class="mobile-library-empty">
+                No concepts matched this search. Try a different keyword or switch the level filter.
             </div>
         </div>
     </section>
@@ -203,6 +515,11 @@
         const loaderEl = document.getElementById('reader-loader');
         const frameEl = document.getElementById('concept-frame');
         const conceptLinks = Array.from(document.querySelectorAll('.concept-link'));
+        const mobileSearchInput = document.getElementById('mobile-concept-search');
+        const mobileFilterButtons = Array.from(document.querySelectorAll('.mobile-filter-btn'));
+        const mobileGroups = Array.from(document.querySelectorAll('.mobile-library-group'));
+        const mobileConceptCards = Array.from(document.querySelectorAll('.mobile-concept-card'));
+        const mobileEmptyState = document.getElementById('mobile-concept-empty');
         const defaultLoaderMarkup = loaderEl.innerHTML;
         let currentSlug = null;
         let activeDoc = null;
@@ -210,10 +527,84 @@
         let mutationObserver = null;
         let pendingSlug = null;
         let resizeTimers = [];
+        let mobileFilter = 'all';
+
+        const mobileConceptSymbols = {
+            'central-tendency': 'Σ',
+            'standard-deviation': 'σ',
+            'basic-probability': 'P',
+            'two-by-two': '2×2',
+            'sample-size': 'n',
+            'confidence-intervals': 'CI',
+            'hypothesis-testing': 'H₀',
+            'pvalues-significance': 'p',
+            'chi-square': 'χ²',
+            'risk-measures': 'RR',
+            't-tests': 't',
+            'anova': 'F',
+            'multiple-regression': 'β',
+            'logistic-regression': 'logit',
+            'survival-analysis': 'S(t)',
+            'cox-regression': 'HR',
+            'roc-curves': 'ROC',
+            'meta-analysis': 'M'
+        };
 
         function getInitialSlug() {
             const params = new URLSearchParams(window.location.search);
             return params.get('topic') || 'central-tendency';
+        }
+
+        function initializeMobileConceptIcons() {
+            document.querySelectorAll('.mobile-concept-icon').forEach((iconEl) => {
+                const slug = iconEl.dataset.slug;
+                const fallback = slug ? slug.charAt(0).toUpperCase() : '?';
+                iconEl.textContent = mobileConceptSymbols[slug] || fallback;
+            });
+        }
+
+        function applyMobileConceptFilters() {
+            const query = (mobileSearchInput?.value || '').trim().toLowerCase();
+            let visibleCards = 0;
+
+            mobileGroups.forEach((groupEl) => {
+                const groupMatches = mobileFilter === 'all' || groupEl.dataset.group === mobileFilter;
+                let visibleInGroup = 0;
+
+                groupEl.querySelectorAll('.mobile-concept-card').forEach((card) => {
+                    const matchesQuery = !query || (card.dataset.search || '').includes(query);
+                    const shouldShow = groupMatches && matchesQuery;
+                    card.style.display = shouldShow ? 'flex' : 'none';
+                    if (shouldShow) {
+                        visibleCards += 1;
+                        visibleInGroup += 1;
+                    }
+                });
+
+                groupEl.style.display = visibleInGroup > 0 ? 'block' : 'none';
+            });
+
+            if (mobileEmptyState) {
+                mobileEmptyState.style.display = visibleCards === 0 ? 'block' : 'none';
+            }
+        }
+
+        function bindMobileConceptFilters() {
+            initializeMobileConceptIcons();
+
+            if (mobileSearchInput) {
+                mobileSearchInput.addEventListener('input', applyMobileConceptFilters);
+            }
+
+            mobileFilterButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    mobileFilter = button.dataset.filter || 'all';
+                    mobileFilterButtons.forEach((btn) => btn.classList.toggle('is-active', btn === button));
+                    applyMobileConceptFilters();
+                });
+            });
+
+            applyMobileConceptFilters();
         }
 
         function highlightSidebar(slug) {
@@ -461,6 +852,8 @@
             currentSlug = null; // Force reload
             loadConcept(slug, false);
         });
+
+        bindMobileConceptFilters();
 
         // Load initial concept
         loadConcept(getInitialSlug(), false);
