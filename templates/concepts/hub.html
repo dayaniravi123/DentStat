@@ -23,78 +23,111 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         body { font-family: 'Inter', sans-serif; background: linear-gradient(180deg, #f8fbff 0%, #eef7f5 100%); }
-        .concepts-shell { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 24px; align-items: start; }
-        .sidebar-card {
-            position: sticky; top: 96px;
-            border-radius: 28px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,250,252,0.98));
-            border: 1px solid rgba(148,163,184,0.18);
-            box-shadow: 0 24px 54px rgba(15,23,42,0.1);
-            padding: 22px;
+
+        /* ── Concept cards grid ── */
+        .concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
         }
-        .sidebar-head {
-            padding: 18px;
+        .concept-card {
+            display: block;
+            text-decoration: none;
+            padding: 22px 24px;
             border-radius: 22px;
-            background: linear-gradient(135deg, #0f172a 0%, #1d4f77 58%, #0f766e 100%);
-            color: white;
-            margin-bottom: 18px;
-        }
-        .sidebar-head h1 { font-size: 1.35rem; font-weight: 800; margin: 0 0 6px; }
-        .sidebar-head p { font-size: 0.9rem; color: rgba(226,232,240,0.88); margin: 0; line-height: 1.6; }
-        .sidebar-group + .sidebar-group { margin-top: 18px; }
-        .sidebar-group-title {
-            font-size: 0.72rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
-            color: #0f766e; margin-bottom: 10px; padding-left: 4px;
-        }
-        .concept-link {
-            width: 100%;
-            text-align: left;
-            padding: 14px 14px 13px;
-            border-radius: 18px;
             border: 1px solid rgba(226,232,240,0.9);
-            background: rgba(255,255,255,0.78);
-            transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
-            margin-bottom: 10px;
-            cursor: pointer;
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(6px);
+            transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+            position: relative;
+            overflow: hidden;
         }
-        .concept-link:hover, .concept-link:focus-visible {
-            transform: translateY(-2px);
+        .concept-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(15,118,110,0.06), rgba(94,234,212,0.08));
+            opacity: 0;
+            transition: opacity 200ms ease;
+        }
+        .concept-card:hover, .concept-card:focus-visible {
+            transform: translateY(-3px);
             border-color: rgba(15,118,110,0.22);
-            box-shadow: 0 14px 28px rgba(15,23,42,0.08);
+            box-shadow: 0 16px 40px rgba(15,23,42,0.1);
             outline: none;
         }
-        .concept-link.is-active {
-            background: linear-gradient(135deg, rgba(15,118,110,0.13), rgba(94,234,212,0.16));
-            border-color: rgba(15,118,110,0.24);
-            box-shadow: 0 16px 34px rgba(15,23,42,0.1);
+        .concept-card:hover::before { opacity: 1; }
+        .concept-card__num {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0d9488, #6366f1);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            flex-shrink: 0;
         }
-        .concept-link-title { display: block; color: #0f172a; font-size: 0.96rem; font-weight: 700; margin-bottom: 5px; }
-        .concept-link-desc { display: block; color: #64748b; font-size: 0.82rem; line-height: 1.45; }
-        .reader-shell {
-            border-radius: 30px;
-            overflow: hidden;
-            border: 1px solid rgba(148,163,184,0.18);
-            box-shadow: 0 28px 60px rgba(15,23,42,0.12);
-            background: rgba(255,255,255,0.94);
-        }
-        .reader-document {
-            background: white;
-        }
-        #concept-frame {
-            width: 100%;
-            min-height: 1200px;
-            border: 0;
+        .concept-card__title {
+            position: relative;
             display: block;
-            background: white;
+            color: #0f172a;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            line-height: 1.3;
         }
-        @media (max-width: 1024px) {
-            .concepts-shell { grid-template-columns: 1fr; }
-            .sidebar-card { position: static; }
-            #concept-frame { min-height: 960px; }
+        .concept-card__desc {
+            position: relative;
+            display: block;
+            color: #64748b;
+            font-size: 0.85rem;
+            line-height: 1.55;
         }
+        .concept-card__arrow {
+            position: absolute;
+            top: 22px;
+            right: 20px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(13,148,136,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateX(-4px);
+            transition: opacity 200ms ease, transform 200ms ease;
+        }
+        .concept-card__arrow svg {
+            width: 14px;
+            height: 14px;
+            color: #0d9488;
+        }
+        .concept-card:hover .concept-card__arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* ── Group sections ── */
+        .group-section + .group-section { margin-top: 40px; }
+        .group-title {
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #0f766e;
+            margin-bottom: 16px;
+            padding-left: 4px;
+        }
+
         @media (max-width: 640px) {
-            .sidebar-card { padding: 16px; border-radius: 22px; }
-            #concept-frame { min-height: 820px; }
+            .concepts-grid { grid-template-columns: 1fr; gap: 14px; }
+            .concept-card { padding: 18px 20px; }
         }
     </style>
 </head>
@@ -113,270 +146,33 @@
                     Learn statistics and biostatistics like a docs site, not a scattered list of pages
                 </h1>
                 <p class="text-lg text-slate-200 mt-4 max-w-3xl leading-relaxed">
-                    Browse all core concepts from one place. Use the left sidebar to move through dental statistics,
-                    biostatistics, probability, hypothesis testing, regression, and other lessons without losing your place.
+                    Browse all core concepts from one place. Click any topic to open its dedicated lesson page
+                    with theory, formulas, examples, and interactive simulations.
                 </p>
             </div>
         </div>
     </section>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10">
-        <div class="concepts-shell">
-            <aside class="sidebar-card">
-                <div class="sidebar-head">
-                    <h1>Concept Navigator</h1>
-                    <p>Pick any topic from the left and the reading panel will update in place, just like a documentation page.</p>
-                </div>
-
-                {% for group in concept_groups %}
-                <div class="sidebar-group">
-                    <div class="sidebar-group-title">{{ group.label }}</div>
-                    {% for concept in group.concepts %}
-                    <button
-                        type="button"
-                        class="concept-link{% if concept.slug == selected_slug %} is-active{% endif %}"
-                        data-slug="{{ concept.slug }}"
-                        data-title="{{ concept.title }}"
-                    >
-                        <span class="concept-link-title">{{ concept.title }}</span>
-                        <span class="concept-link-desc">{{ concept.description }}</span>
-                    </button>
-                    {% endfor %}
-                </div>
+        {% for group in concept_groups %}
+        <div class="group-section">
+            <div class="group-title">{{ group.label }}</div>
+            <div class="concepts-grid">
+                {% for concept in group.concepts %}
+                <a href="/concepts/{{ concept.slug }}" class="concept-card">
+                    <div class="concept-card__num">{{ forloop.counter }}</div>
+                    <div class="concept-card__arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </div>
+                    <span class="concept-card__title">{{ concept.title }}</span>
+                    <span class="concept-card__desc">{{ concept.description }}</span>
+                </a>
                 {% endfor %}
-            </aside>
-
-            <main class="reader-shell">
-                <div class="reader-document">
-                    <iframe
-                        id="concept-frame"
-                        title="DentalStats Concept Reader"
-                        src="/concepts/{{ selected_slug }}"
-                        loading="lazy"
-                    ></iframe>
-                </div>
-            </main>
+            </div>
         </div>
+        {% endfor %}
     </div>
 
-    {{ concept_lookup|json_script:"concept-map" }}
-
-    <script>
-        lucide.createIcons();
-
-        const conceptMap = JSON.parse(document.getElementById('concept-map').textContent);
-        const frame = document.getElementById('concept-frame');
-        const conceptButtons = Array.from(document.querySelectorAll('.concept-link'));
-        let embeddedInteractionCleanup = null;
-
-        function sanitizeSlug(slug) {
-            const clean = (slug || '').replace('.html', '');
-            return conceptMap[clean] ? clean : '{{ selected_slug }}';
-        }
-
-        function applyEmbeddedStyles(doc) {
-            const path = frame.contentWindow.location.pathname || '';
-            let styleEl = doc.getElementById('concept-hub-embed-style');
-            if (!styleEl) {
-                styleEl = doc.createElement('style');
-                styleEl.id = 'concept-hub-embed-style';
-                doc.head.appendChild(styleEl);
-            }
-
-            let css = `
-                nav, footer, #mobileMenuBtn, .dot-nav { display: none !important; }
-                body {
-                    margin: 0 !important;
-                    padding-top: 0 !important;
-                    overflow-x: hidden !important;
-                    background: #ffffff !important;
-                }
-                html {
-                    overflow-x: hidden !important;
-                    background: #ffffff !important;
-                }
-            `;
-
-            styleEl.textContent = css;
-        }
-
-        function rebindEmbeddedObservers(doc) {
-            const path = frame.contentWindow.location.pathname || '';
-            const win = frame.contentWindow;
-            if (!path.includes('/concepts/basic-probability')) return;
-            if (!win || typeof win.setActiveSection !== 'function' || typeof win.IntersectionObserver !== 'function') return;
-
-            if (win.__conceptHubObserver) {
-                win.__conceptHubObserver.disconnect();
-            }
-
-            const sections = doc.querySelectorAll('.section');
-            const observer = new win.IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        win.setActiveSection(Number(entry.target.dataset.section));
-                    }
-                });
-            }, { root: null, threshold: 0.45 });
-
-            sections.forEach((section) => observer.observe(section));
-            win.__conceptHubObserver = observer;
-        }
-
-        function clearEmbeddedInteractionBindings() {
-            try {
-                if (typeof embeddedInteractionCleanup === 'function') {
-                    embeddedInteractionCleanup();
-                    embeddedInteractionCleanup = null;
-                }
-                const win = frame.contentWindow;
-                if (!win) return;
-                if (win.__conceptHubResizeObserver) {
-                    win.__conceptHubResizeObserver.disconnect();
-                    win.__conceptHubResizeObserver = null;
-                }
-                if (win.__conceptHubMutationObserver) {
-                    win.__conceptHubMutationObserver.disconnect();
-                    win.__conceptHubMutationObserver = null;
-                }
-            } catch (error) {
-                console.warn('Could not clear embedded concept bindings:', error);
-            }
-        }
-
-        function scheduleEmbeddedResize() {
-            resizeEmbeddedConcept();
-            requestAnimationFrame(resizeEmbeddedConcept);
-            [140, 320, 650, 1100, 1700].forEach((delay) => {
-                window.setTimeout(resizeEmbeddedConcept, delay);
-            });
-        }
-
-        function bindEmbeddedInteractions(doc) {
-            clearEmbeddedInteractionBindings();
-
-            const win = frame.contentWindow;
-            if (!win) return;
-
-            const events = ['click', 'input', 'change', 'transitionend', 'animationend'];
-            const handler = () => scheduleEmbeddedResize();
-            events.forEach((eventName) => doc.addEventListener(eventName, handler, true));
-
-            if (typeof win.ResizeObserver === 'function') {
-                const resizeObserver = new win.ResizeObserver(() => scheduleEmbeddedResize());
-                if (doc.body) resizeObserver.observe(doc.body);
-                if (doc.documentElement) resizeObserver.observe(doc.documentElement);
-                doc.querySelectorAll('main, section, [id$="steps"], [class*="step"], [class*="panel"]').forEach((el) => {
-                    resizeObserver.observe(el);
-                });
-                win.__conceptHubResizeObserver = resizeObserver;
-            }
-
-            if (typeof win.MutationObserver === 'function') {
-                const mutationObserver = new win.MutationObserver(() => scheduleEmbeddedResize());
-                mutationObserver.observe(doc.body || doc.documentElement, {
-                    subtree: true,
-                    childList: true,
-                    attributes: true,
-                    characterData: false,
-                    attributeFilter: ['class', 'style', 'hidden', 'open', 'aria-expanded']
-                });
-                win.__conceptHubMutationObserver = mutationObserver;
-            }
-
-            embeddedInteractionCleanup = () => {
-                events.forEach((eventName) => doc.removeEventListener(eventName, handler, true));
-            };
-        }
-
-        function resizeEmbeddedConcept() {
-            try {
-                const doc = frame.contentDocument || frame.contentWindow.document;
-                if (!doc) return;
-                const body = doc.body;
-                const html = doc.documentElement;
-                const height = Math.max(
-                    body ? body.scrollHeight : 0,
-                    body ? body.offsetHeight : 0,
-                    html ? html.clientHeight : 0,
-                    html ? html.scrollHeight : 0,
-                    html ? html.offsetHeight : 0
-                );
-                if (height) {
-                    frame.style.height = `${height + 8}px`;
-                }
-            } catch (error) {
-                console.warn('Could not resize embedded concept view:', error);
-            }
-        }
-
-        function cleanEmbeddedConcept() {
-            try {
-                const doc = frame.contentDocument || frame.contentWindow.document;
-                if (!doc) return;
-
-                applyEmbeddedStyles(doc);
-
-                doc.querySelectorAll('a, button').forEach((el) => {
-                    const text = (el.textContent || '').trim().toLowerCase();
-                    const href = (el.getAttribute('href') || '').toLowerCase();
-                    if (/(^|\\b)back(\\b|$)/.test(text) || href.includes('#concepts') || href.includes('/index.html#concepts')) {
-                        el.style.display = 'none';
-                    }
-                });
-
-                doc.body.style.margin = '0';
-                doc.body.style.paddingTop = '0';
-                doc.body.style.background = '#ffffff';
-                rebindEmbeddedObservers(doc);
-                bindEmbeddedInteractions(doc);
-                resizeEmbeddedConcept();
-
-                setTimeout(resizeEmbeddedConcept, 120);
-                setTimeout(resizeEmbeddedConcept, 500);
-            } catch (error) {
-                console.warn('Could not normalize embedded concept view:', error);
-            }
-        }
-
-        function activateConcept(rawSlug, pushState = true) {
-            const slug = sanitizeSlug(rawSlug);
-            const data = conceptMap[slug];
-            if (!data) return;
-
-            conceptButtons.forEach((button) => {
-                const active = button.dataset.slug === slug;
-                button.classList.toggle('is-active', active);
-                button.setAttribute('aria-pressed', active ? 'true' : 'false');
-            });
-
-            const nextSrc = `/concepts/${slug}`;
-            if (frame.getAttribute('src') !== nextSrc) {
-                frame.setAttribute('src', nextSrc);
-            }
-
-            if (pushState) {
-                const nextUrl = new URL(window.location.href);
-                nextUrl.searchParams.set('topic', slug);
-                window.history.pushState({ slug }, '', nextUrl);
-            }
-        }
-
-        conceptButtons.forEach((button) => {
-            button.addEventListener('click', () => activateConcept(button.dataset.slug, true));
-        });
-
-        frame.addEventListener('load', cleanEmbeddedConcept);
-        activateConcept('{{ selected_slug }}', false);
-        if (frame.contentDocument && frame.contentDocument.readyState === 'complete') {
-            cleanEmbeddedConcept();
-        }
-        window.addEventListener('resize', resizeEmbeddedConcept);
-
-        window.addEventListener('popstate', () => {
-            const url = new URL(window.location.href);
-            activateConcept(url.searchParams.get('topic') || '{{ selected_slug }}', false);
-        });
-    </script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>

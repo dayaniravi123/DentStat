@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.http import Http404, JsonResponse
 from django.template import TemplateDoesNotExist
 from django.views.decorators.http import require_http_methods
-from django.views.decorators.clickjacking import xframe_options_sameorigin
 from datetime import date
 import json
 import math
@@ -118,24 +117,12 @@ def sitemap_xml(request):
 
 
 def concepts_hub(request):
-	default_slug = 'central-tendency'
-	selected_slug = request.GET.get('topic', default_slug).replace('.html', '')
-	if selected_slug not in CONCEPT_LOOKUP:
-		selected_slug = default_slug
-
-	selected = CONCEPT_LOOKUP[selected_slug]
 	context = {
 		'concept_groups': CONCEPT_GROUPS,
-		'selected_slug': selected_slug,
-		'selected_title': selected['title'],
-		'selected_description': selected['description'],
-		'selected_group': selected['group'],
-		'concept_lookup': CONCEPT_LOOKUP,
 	}
 	return render(request, 'concepts/hub.html', context)
 
 
-@xframe_options_sameorigin
 def concept_page(request, page):
 	if not page.endswith('.html'):
 		tpl_name = f'concepts/{page}.html'
