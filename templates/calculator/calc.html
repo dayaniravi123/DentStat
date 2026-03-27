@@ -18,6 +18,7 @@
   <meta name="twitter:description" content="Free statistics calculator with dental research examples, descriptive stats, probability, intervals, and tests.">
   <title>Statistics Calculator for Dental Research | DentalStats</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -466,6 +467,236 @@
       min-height: 2rem;
     }
 
+    .guided-track-shell {
+      padding: 28px;
+      margin-bottom: 32px;
+      background:
+        radial-gradient(circle at top right, rgba(13, 148, 136, 0.08), transparent 28%),
+        linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.94));
+    }
+
+    .guided-track-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .guided-track-heading {
+      font-size: clamp(1.75rem, 3vw, 2.35rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 10px;
+      color: var(--text);
+      max-width: 760px;
+    }
+
+    .guided-track-copy {
+      max-width: 760px;
+      color: #64748b;
+      font-size: 0.98rem;
+      line-height: 1.7;
+    }
+
+    .guided-track-actions {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
+    }
+
+    .guided-track-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 18px;
+      background: transparent;
+      color: #64748b;
+      font-size: 0.83rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .guided-track-btn:hover {
+      transform: translateY(-1px);
+      color: var(--text);
+    }
+
+    .guided-track-btn.is-active {
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.14);
+    }
+
+    .guided-track-btn[data-level="beginner"].is-active {
+      background: linear-gradient(135deg, #0d9488, #10b981);
+    }
+
+    .guided-track-btn[data-level="intermediate"].is-active {
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+    }
+
+    .guided-track-btn[data-level="advanced"].is-active {
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    }
+
+    .guided-track-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: linear-gradient(90deg, rgba(13,148,136,0.07), rgba(255,255,255,0.98));
+      margin-bottom: 22px;
+    }
+
+    .guided-track-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+    }
+
+    .guided-track-badge-beginner {
+      background: rgba(16,185,129,0.12);
+      color: #047857;
+      border: 1px solid rgba(16,185,129,0.2);
+    }
+
+    .guided-track-badge-intermediate {
+      background: rgba(245,158,11,0.12);
+      color: #b45309;
+      border: 1px solid rgba(245,158,11,0.22);
+    }
+
+    .guided-track-badge-advanced {
+      background: rgba(124,58,237,0.12);
+      color: #6d28d9;
+      border: 1px solid rgba(124,58,237,0.2);
+    }
+
+    .guided-track-banner p {
+      color: #475569;
+      line-height: 1.7;
+      font-size: 0.93rem;
+      max-width: 740px;
+    }
+
+    .guided-track-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .guided-track-card {
+      position: relative;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
+      overflow: hidden;
+    }
+
+    .guided-track-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--guided-accent, var(--accent));
+    }
+
+    .guided-track-card[data-level="beginner"] {
+      --guided-accent: linear-gradient(90deg, #0d9488, #10b981);
+    }
+
+    .guided-track-card[data-level="intermediate"] {
+      --guided-accent: linear-gradient(90deg, #d97706, #f59e0b);
+    }
+
+    .guided-track-card[data-level="advanced"] {
+      --guided-accent: linear-gradient(90deg, #7c3aed, #4f46e5);
+    }
+
+    .guided-card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .guided-card-copy {
+      color: #475569;
+      line-height: 1.7;
+      margin-bottom: 16px;
+      min-height: 3.4rem;
+    }
+
+    .guided-card-helper {
+      font-size: 0.78rem;
+      color: #64748b;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .guided-track-card.is-hidden {
+      display: none;
+    }
+
+    .guided-ci-scale {
+      position: relative;
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.18);
+      overflow: hidden;
+    }
+
+    .guided-ci-bar {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f59e0b, #f97316);
+      box-shadow: 0 8px 20px rgba(249, 115, 22, 0.22);
+    }
+
+    .guided-ci-label-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.76rem;
+      color: #64748b;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .guided-survival-chart {
+      position: relative;
+      height: 220px;
+      margin-top: 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,252,0.92));
+      padding: 14px;
+    }
+
     /* Chart area */
     .chart-area {
       height: 200px;
@@ -791,6 +1022,17 @@
       .calc-hero h1 {
         font-size: 1.7rem !important;
       }
+      .guided-track-shell {
+        padding: 20px;
+      }
+      .guided-track-header,
+      .guided-track-banner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .guided-track-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 640px) {
@@ -835,6 +1077,301 @@
 </div>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" style="margin-top:-8px;">
+
+  <section id="guided-calculators">
+    <div class="card guided-track-shell">
+      <div class="guided-track-header">
+        <div>
+          <div class="card-title" style="margin-bottom:10px;">Difficulty-Based Calculators</div>
+          <h2 class="guided-track-heading">Practice the homepage calculators here in one dedicated workspace</h2>
+          <p class="guided-track-copy">Use the level switcher to reveal the same clinical planning tools from the homepage, organized into beginner, intermediate, and advanced tracks without disturbing the existing calculator tabs below.</p>
+        </div>
+        <div class="guided-track-actions" aria-label="Calculator difficulty filter">
+          <button class="guided-track-btn is-active" data-level="beginner" onclick="setGuidedDifficulty('beginner', this)">Beginner</button>
+          <button class="guided-track-btn" data-level="intermediate" onclick="setGuidedDifficulty('intermediate', this)">Intermediate</button>
+          <button class="guided-track-btn" data-level="advanced" onclick="setGuidedDifficulty('advanced', this)">Advanced</button>
+        </div>
+      </div>
+
+      <div class="guided-track-banner">
+        <div id="guided-track-badge" class="guided-track-badge guided-track-badge-beginner">Beginner Track</div>
+        <p id="guided-track-description">Start with study planning and diagnostic accuracy. This level focuses on tools that help you estimate sample size and judge how well a clinical test performs before moving into deeper inference.</p>
+      </div>
+
+      <div class="guided-track-grid">
+        <div class="guided-track-card" data-level="beginner">
+          <div class="guided-card-header">
+            <div class="flex items-start gap-3">
+              <span class="w-11 h-11 rounded-2xl flex items-center justify-center shadow-sm bg-gradient-to-br from-teal-100 to-emerald-100">
+                <i data-lucide="users" class="w-5 h-5 text-teal-700"></i>
+              </span>
+              <div>
+                <div class="text-[0.72rem] font-bold uppercase tracking-[0.18em] text-teal-700">Beginner Track</div>
+                <h3 class="text-xl font-bold text-slate-900">Sample Size Planner</h3>
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-100">Clinical Trials</span>
+          </div>
+          <p class="guided-card-copy">Estimate how many patients you need per group when comparing two proportions, such as treatment versus control success rates.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Control Event Rate (%)</label>
+              <input type="number" id="track-ss-p1" class="stat-input w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2" placeholder="e.g., 20">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Treatment Event Rate (%)</label>
+              <input type="number" id="track-ss-p2" class="stat-input w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2" placeholder="e.g., 10">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Alpha (a)</label>
+              <select id="track-ss-alpha" class="stat-input w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2">
+                <option value="0.05">0.05 (95% CI)</option>
+                <option value="0.01">0.01 (99% CI)</option>
+                <option value="0.10">0.10 (90% CI)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Power (1-b)</label>
+              <select id="track-ss-power" class="stat-input w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2">
+                <option value="0.80">0.80</option>
+                <option value="0.90" selected>0.90</option>
+                <option value="0.95">0.95</option>
+              </select>
+            </div>
+          </div>
+          <button onclick="calculateTrackSampleSize()" class="btn btn-primary" style="margin-top:16px;width:100%;">Calculate Sample Size</button>
+          <div id="track-ss-result" class="hidden bg-teal-50 border border-teal-200 rounded-lg p-4 mt-4">
+            <p class="text-sm text-gray-600 mb-1">Required sample size per group</p>
+            <p class="text-3xl font-bold text-teal-700" id="track-ss-value">0</p>
+            <p class="text-xs text-gray-500 mt-2">Total participants: <span id="track-ss-total">0</span></p>
+          </div>
+        </div>
+
+        <div class="guided-track-card" data-level="beginner">
+          <div class="guided-card-header">
+            <div class="flex items-start gap-3">
+              <span class="w-11 h-11 rounded-2xl flex items-center justify-center shadow-sm bg-gradient-to-br from-blue-100 to-cyan-100">
+                <i data-lucide="stethoscope" class="w-5 h-5 text-blue-700"></i>
+              </span>
+              <div>
+                <div class="text-[0.72rem] font-bold uppercase tracking-[0.18em] text-teal-700">Beginner Track</div>
+                <h3 class="text-xl font-bold text-slate-900">Diagnostic Test Accuracy</h3>
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">Epidemiology</span>
+          </div>
+          <p class="guided-card-copy">Calculate sensitivity, specificity, PPV, and NPV for tools like caries screening tests or chairside diagnostic methods.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div class="text-center">
+              <label class="block text-xs font-medium text-gray-600 mb-1">True Positive</label>
+              <input type="number" id="track-dt-tp" class="stat-input w-full px-3 py-2 border rounded-lg text-center" value="85">
+            </div>
+            <div class="text-center">
+              <label class="block text-xs font-medium text-gray-600 mb-1">False Positive</label>
+              <input type="number" id="track-dt-fp" class="stat-input w-full px-3 py-2 border rounded-lg text-center" value="15">
+            </div>
+            <div class="text-center">
+              <label class="block text-xs font-medium text-gray-600 mb-1">False Negative</label>
+              <input type="number" id="track-dt-fn" class="stat-input w-full px-3 py-2 border rounded-lg text-center" value="10">
+            </div>
+            <div class="text-center">
+              <label class="block text-xs font-medium text-gray-600 mb-1">True Negative</label>
+              <input type="number" id="track-dt-tn" class="stat-input w-full px-3 py-2 border rounded-lg text-center" value="90">
+            </div>
+          </div>
+          <button onclick="calculateTrackDiagnosticTest()" class="btn btn-primary" style="width:100%;background:#2563eb;">Calculate Metrics</button>
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <div class="bg-blue-50 rounded-lg p-3 text-center">
+              <p class="text-xs text-gray-600">Sensitivity</p>
+              <p class="text-xl font-bold text-blue-700" id="track-dt-sens">-%</p>
+            </div>
+            <div class="bg-blue-50 rounded-lg p-3 text-center">
+              <p class="text-xs text-gray-600">Specificity</p>
+              <p class="text-xl font-bold text-blue-700" id="track-dt-spec">-%</p>
+            </div>
+            <div class="bg-blue-50 rounded-lg p-3 text-center">
+              <p class="text-xs text-gray-600">PPV</p>
+              <p class="text-xl font-bold text-blue-700" id="track-dt-ppv">-%</p>
+            </div>
+            <div class="bg-blue-50 rounded-lg p-3 text-center">
+              <p class="text-xs text-gray-600">NPV</p>
+              <p class="text-xl font-bold text-blue-700" id="track-dt-npv">-%</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="guided-track-card" data-level="intermediate">
+          <div class="guided-card-header">
+            <div class="flex items-start gap-3">
+              <span class="w-11 h-11 rounded-2xl flex items-center justify-center shadow-sm bg-gradient-to-br from-amber-100 to-orange-100">
+                <i data-lucide="bar-chart-2" class="w-5 h-5 text-amber-700"></i>
+              </span>
+              <div>
+                <div class="text-[0.72rem] font-bold uppercase tracking-[0.18em] text-amber-700">Intermediate Track</div>
+                <h3 class="text-xl font-bold text-slate-900">Confidence Interval</h3>
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-100">Inference</span>
+          </div>
+          <p class="guided-card-copy">Estimate a 95% confidence interval for a proportion, such as prevalence of periodontal disease or implant failure in a cohort.</p>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Number of Events</label>
+              <input type="number" id="track-ci-events" class="stat-input w-full px-3 py-2 border rounded-lg" placeholder="e.g., 45">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Total Sample Size</label>
+              <input type="number" id="track-ci-total" class="stat-input w-full px-3 py-2 border rounded-lg" placeholder="e.g., 200">
+            </div>
+          </div>
+          <button onclick="calculateTrackCI()" class="btn btn-primary" style="margin-top:16px;width:100%;background:#d97706;">Calculate 95% CI</button>
+          <div id="track-ci-result" class="hidden bg-amber-50 border border-amber-200 rounded-lg p-4 mt-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-medium text-gray-700">Observed proportion</span>
+              <span class="text-xl font-bold text-amber-700" id="track-ci-prop">-</span>
+            </div>
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-sm font-medium text-gray-700">95% interval</span>
+              <span class="text-sm font-bold text-amber-700" id="track-ci-range">-</span>
+            </div>
+            <div class="guided-ci-scale">
+              <div id="track-ci-bar" class="guided-ci-bar"></div>
+            </div>
+            <div class="guided-ci-label-row">
+              <span id="track-ci-lower-label">0%</span>
+              <span id="track-ci-upper-label">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="guided-track-card" data-level="intermediate">
+          <div class="guided-card-header">
+            <div class="flex items-start gap-3">
+              <span class="w-11 h-11 rounded-2xl flex items-center justify-center shadow-sm bg-gradient-to-br from-purple-100 to-fuchsia-100">
+                <i data-lucide="scale" class="w-5 h-5 text-purple-700"></i>
+              </span>
+              <div>
+                <div class="text-[0.72rem] font-bold uppercase tracking-[0.18em] text-amber-700">Intermediate Track</div>
+                <h3 class="text-xl font-bold text-slate-900">Odds Ratio & Relative Risk</h3>
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-100">Association</span>
+          </div>
+          <p class="guided-card-copy">Use a 2x2 table to measure association strength in case-control or cohort studies, such as exposure and disease outcomes.</p>
+          <div class="mb-4">
+            <div class="grid grid-cols-3 gap-2 text-center text-sm font-medium mb-2">
+              <div></div>
+              <div class="bg-gray-100 rounded p-1">Outcome +</div>
+              <div class="bg-gray-100 rounded p-1">Outcome -</div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mb-2">
+              <div class="flex items-center justify-center text-sm font-medium bg-gray-100 rounded p-1">Exposed</div>
+              <input type="number" id="track-or-a" class="stat-input border rounded-lg p-2 text-center" placeholder="a">
+              <input type="number" id="track-or-b" class="stat-input border rounded-lg p-2 text-center" placeholder="b">
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <div class="flex items-center justify-center text-sm font-medium bg-gray-100 rounded p-1">Unexposed</div>
+              <input type="number" id="track-or-c" class="stat-input border rounded-lg p-2 text-center" placeholder="c">
+              <input type="number" id="track-or-d" class="stat-input border rounded-lg p-2 text-center" placeholder="d">
+            </div>
+          </div>
+          <button onclick="calculateTrackOR()" class="btn btn-primary" style="width:100%;background:#7c3aed;">Calculate Association</button>
+          <div class="grid grid-cols-1 gap-3 mt-4">
+            <div class="flex justify-between items-center bg-purple-50 rounded-lg p-3">
+              <span class="text-sm font-medium text-gray-700">Odds Ratio</span>
+              <span class="text-xl font-bold text-purple-700" id="track-or-value">-</span>
+            </div>
+            <div class="flex justify-between items-center bg-purple-50 rounded-lg p-3">
+              <span class="text-sm font-medium text-gray-700">Relative Risk</span>
+              <span class="text-xl font-bold text-purple-700" id="track-rr-value">-</span>
+            </div>
+            <p class="text-xs text-gray-500 italic" id="track-or-interpretation"></p>
+          </div>
+        </div>
+
+        <div class="guided-track-card" data-level="advanced">
+          <div class="guided-card-header">
+            <div class="flex items-start gap-3">
+              <span class="w-11 h-11 rounded-2xl flex items-center justify-center shadow-sm bg-gradient-to-br from-rose-100 to-red-100">
+                <i data-lucide="git-branch" class="w-5 h-5 text-red-700"></i>
+              </span>
+              <div>
+                <div class="text-[0.72rem] font-bold uppercase tracking-[0.18em] text-indigo-700">Advanced Track</div>
+                <h3 class="text-xl font-bold text-slate-900">Independent t-Test</h3>
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-100">Comparative</span>
+          </div>
+          <p class="guided-card-copy">Compare group means, such as plaque index or probing depth between treatment and control groups, using a quick independent t-test.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-gray-700 border-b-2 border-teal-500 pb-1">Group 1 (Treatment)</label>
+              <input type="number" id="track-t-mean1" class="stat-input w-full px-3 py-2 border rounded-lg" placeholder="Mean">
+              <input type="number" id="track-t-sd1" class="stat-input w-full px-3 py-2 border rounded-lg" placeholder="Std Dev">
+              <input type="number" id="track-t-n1" class="stat-input w-full px-3 py-2 border rounded-lg" placeholder="N">
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-gray-700 border-b-2 border-blue-500 pb-1">Group 2 (Control)</label>
+              <input type="number" id="track-t-mean2" class="stat-input w-full px-3 py-2 border rounded-lg" placeholder="Mean">
+              <input type="number" id="track-t-sd2" class="stat-input w-full px-3 py-2 border rounded-lg" placeholder="Std Dev">
+              <input type="number" id="track-t-n2" class="stat-input w-full px-3 py-2 border rounded-lg" placeholder="N">
+            </div>
+          </div>
+          <button onclick="calculateTrackTTest()" class="btn btn-primary" style="width:100%;background:#dc2626;">Calculate t-Statistic</button>
+          <div id="track-t-result" class="hidden bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm text-gray-600">t-statistic</span>
+              <span class="text-2xl font-bold text-red-700" id="track-t-stat">0.00</span>
+            </div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm text-gray-600">Approximate p-value</span>
+              <span class="text-lg font-bold text-red-700" id="track-t-pvalue">0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600">df</span>
+              <span class="text-lg font-bold text-gray-800" id="track-t-df">0</span>
+            </div>
+            <div id="track-t-conclusion" class="mt-3 p-2 rounded text-center text-sm font-medium"></div>
+          </div>
+        </div>
+
+        <div class="guided-track-card" data-level="advanced">
+          <div class="guided-card-header">
+            <div class="flex items-start gap-3">
+              <span class="w-11 h-11 rounded-2xl flex items-center justify-center shadow-sm bg-gradient-to-br from-indigo-100 to-blue-100">
+                <i data-lucide="clock-3" class="w-5 h-5 text-indigo-700"></i>
+              </span>
+              <div>
+                <div class="text-[0.72rem] font-bold uppercase tracking-[0.18em] text-indigo-700">Advanced Track</div>
+                <h3 class="text-xl font-bold text-slate-900">Survival Analysis</h3>
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">Time-to-Event</span>
+          </div>
+          <p class="guided-card-copy">Build a quick Kaplan-Meier style survival curve for outcomes like implant survival across follow-up intervals.</p>
+          <div class="space-y-3">
+            <div class="flex items-center space-x-2">
+              <span class="text-sm font-medium text-gray-700 w-20">Time (mo)</span>
+              <input type="text" id="track-sf-time" class="stat-input flex-1 px-3 py-2 border rounded-lg text-sm" placeholder="0, 6, 12, 24, 36">
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-sm font-medium text-gray-700 w-20">At Risk</span>
+              <input type="text" id="track-sf-risk" class="stat-input flex-1 px-3 py-2 border rounded-lg text-sm" placeholder="100, 95, 88, 80, 75">
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-sm font-medium text-gray-700 w-20">Events</span>
+              <input type="text" id="track-sf-events" class="stat-input flex-1 px-3 py-2 border rounded-lg text-sm" placeholder="0, 5, 7, 8, 5">
+            </div>
+          </div>
+          <button onclick="calculateTrackSurvival()" class="btn btn-primary" style="margin-top:16px;width:100%;background:#4f46e5;">Generate Survival Curve</button>
+          <div class="guided-survival-chart">
+            <canvas id="track-survivalChart"></canvas>
+          </div>
+          <div id="track-survival-summary" class="mt-3 text-sm text-gray-600 text-center">Enter follow-up time, at-risk counts, and events to generate the curve.</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- Tab Navigation -->
   <div class="tab-nav">
@@ -1126,6 +1663,26 @@
   // ═══════════════════════════════════════════
   let dataSet = [];
   let history = [];
+  let guidedDifficulty = 'beginner';
+  let guidedSurvivalChartInstance = null;
+
+  const GUIDED_DIFFICULTY_META = {
+    beginner: {
+      badge: 'Beginner Track',
+      badgeClass: 'guided-track-badge guided-track-badge-beginner',
+      description: 'Start with study planning and diagnostic accuracy. This level focuses on tools that help you estimate sample size and judge how well a clinical test performs before moving into deeper inference.'
+    },
+    intermediate: {
+      badge: 'Intermediate Track',
+      badgeClass: 'guided-track-badge guided-track-badge-intermediate',
+      description: 'Now add estimation and association measures. These calculators help you summarize uncertainty and quantify how exposure or treatment relates to outcomes.'
+    },
+    advanced: {
+      badge: 'Advanced Track',
+      badgeClass: 'guided-track-badge guided-track-badge-advanced',
+      description: 'Unlock the full set of calculators, including group comparison and time-to-event analysis, for more advanced dental biostatistics workflows.'
+    }
+  };
 
   const COLORS = ['#00e5ff','#a78bfa','#34d399','#ff6b6b','#fbbf24','#f472b6','#60a5fa','#fb923c'];
 
@@ -1137,6 +1694,34 @@
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(`tab-${name}`).classList.add('active');
     event.currentTarget.classList.add('active');
+  }
+
+  function setGuidedDifficulty(level, trigger = null) {
+    guidedDifficulty = level;
+    const rankMap = { beginner: 1, intermediate: 2, advanced: 3 };
+    const activeRank = rankMap[level];
+
+    document.querySelectorAll('.guided-track-btn').forEach(btn => {
+      const isActive = btn.dataset.level === level;
+      btn.classList.toggle('is-active', isActive);
+      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+
+    document.querySelectorAll('.guided-track-card').forEach(card => {
+      const cardRank = rankMap[card.dataset.level] || 1;
+      card.classList.toggle('is-hidden', cardRank > activeRank);
+    });
+
+    const meta = GUIDED_DIFFICULTY_META[level];
+    const badge = document.getElementById('guided-track-badge');
+    const description = document.getElementById('guided-track-description');
+    if (badge && meta) {
+      badge.className = meta.badgeClass;
+      badge.textContent = meta.badge;
+    }
+    if (description && meta) {
+      description.textContent = meta.description;
+    }
   }
 
   // ═══════════════════════════════════════════
@@ -1396,6 +1981,209 @@
   }
 
   // ═══════════════════════════════════════════
+  // Guided Difficulty Calculators
+  // ═══════════════════════════════════════════
+  function calculateTrackSampleSize() {
+    const p1Raw = parseFloat(document.getElementById('track-ss-p1').value);
+    const p2Raw = parseFloat(document.getElementById('track-ss-p2').value);
+    const alpha = parseFloat(document.getElementById('track-ss-alpha').value);
+    const power = parseFloat(document.getElementById('track-ss-power').value);
+
+    if ([p1Raw, p2Raw].some(Number.isNaN)) {
+      return showToast('Enter both event rates to estimate sample size');
+    }
+
+    const p1 = p1Raw / 100;
+    const p2 = p2Raw / 100;
+    if (p1 <= 0 || p1 >= 1 || p2 <= 0 || p2 >= 1 || p1 === p2) {
+      return showToast('Use two different percentages between 0 and 100');
+    }
+
+    const zAlpha = alpha === 0.05 ? 1.96 : alpha === 0.01 ? 2.576 : 1.645;
+    const zBeta = power === 0.8 ? 0.84 : power === 0.9 ? 1.28 : 1.645;
+    const pooled = (p1 + p2) / 2;
+    const n = Math.ceil((2 * pooled * (1 - pooled) * Math.pow(zAlpha + zBeta, 2)) / Math.pow(p1 - p2, 2));
+
+    document.getElementById('track-ss-result').classList.remove('hidden');
+    document.getElementById('track-ss-value').textContent = n;
+    document.getElementById('track-ss-total').textContent = n * 2;
+    showToast('Sample size estimate ready');
+  }
+
+  function calculateTrackDiagnosticTest() {
+    const tp = parseFloat(document.getElementById('track-dt-tp').value) || 0;
+    const fp = parseFloat(document.getElementById('track-dt-fp').value) || 0;
+    const fn = parseFloat(document.getElementById('track-dt-fn').value) || 0;
+    const tn = parseFloat(document.getElementById('track-dt-tn').value) || 0;
+
+    const metric = (num, den) => den > 0 ? `${((num / den) * 100).toFixed(1)}%` : '—';
+    document.getElementById('track-dt-sens').textContent = metric(tp, tp + fn);
+    document.getElementById('track-dt-spec').textContent = metric(tn, tn + fp);
+    document.getElementById('track-dt-ppv').textContent = metric(tp, tp + fp);
+    document.getElementById('track-dt-npv').textContent = metric(tn, tn + fn);
+    showToast('Diagnostic metrics updated');
+  }
+
+  function calculateTrackCI() {
+    const events = parseFloat(document.getElementById('track-ci-events').value);
+    const total = parseFloat(document.getElementById('track-ci-total').value);
+
+    if ([events, total].some(Number.isNaN) || total <= 0 || events < 0 || events > total) {
+      return showToast('Enter valid event and sample counts');
+    }
+
+    const p = events / total;
+    const se = Math.sqrt((p * (1 - p)) / total);
+    const z = 1.96;
+    const lower = Math.max(0, p - z * se);
+    const upper = Math.min(1, p + z * se);
+
+    document.getElementById('track-ci-result').classList.remove('hidden');
+    document.getElementById('track-ci-prop').textContent = `${(p * 100).toFixed(1)}%`;
+    document.getElementById('track-ci-range').textContent = `${(lower * 100).toFixed(1)}% - ${(upper * 100).toFixed(1)}%`;
+    document.getElementById('track-ci-lower-label').textContent = `${(lower * 100).toFixed(1)}%`;
+    document.getElementById('track-ci-upper-label').textContent = `${(upper * 100).toFixed(1)}%`;
+
+    const bar = document.getElementById('track-ci-bar');
+    bar.style.left = `${lower * 100}%`;
+    bar.style.width = `${(upper - lower) * 100}%`;
+    showToast('Confidence interval calculated');
+  }
+
+  function calculateTrackOR() {
+    const a = parseFloat(document.getElementById('track-or-a').value) || 0;
+    const b = parseFloat(document.getElementById('track-or-b').value) || 0;
+    const c = parseFloat(document.getElementById('track-or-c').value) || 0;
+    const d = parseFloat(document.getElementById('track-or-d').value) || 0;
+
+    if ([a, b, c, d].some(v => v <= 0)) {
+      return showToast('Fill all 2x2 table cells with values greater than zero');
+    }
+
+    const or = (a * d) / (b * c);
+    const rr = (a / (a + b)) / (c / (c + d));
+    let interpretation = 'No association between exposure and outcome';
+    if (or > 1) {
+      interpretation = `Exposure is associated with ${or.toFixed(2)}x higher odds of the outcome.`;
+    } else if (or < 1) {
+      interpretation = `Exposure is associated with ${(1 / or).toFixed(2)}x lower odds of the outcome.`;
+    }
+
+    document.getElementById('track-or-value').textContent = or.toFixed(2);
+    document.getElementById('track-rr-value').textContent = rr.toFixed(2);
+    document.getElementById('track-or-interpretation').textContent = interpretation;
+    showToast('Association measures calculated');
+  }
+
+  function calculateTrackTTest() {
+    const mean1 = parseFloat(document.getElementById('track-t-mean1').value);
+    const sd1 = parseFloat(document.getElementById('track-t-sd1').value);
+    const n1 = parseFloat(document.getElementById('track-t-n1').value);
+    const mean2 = parseFloat(document.getElementById('track-t-mean2').value);
+    const sd2 = parseFloat(document.getElementById('track-t-sd2').value);
+    const n2 = parseFloat(document.getElementById('track-t-n2').value);
+
+    if ([mean1, sd1, n1, mean2, sd2, n2].some(Number.isNaN) || [sd1, sd2, n1, n2].some(v => v <= 0)) {
+      return showToast('Enter means, standard deviations, and sample sizes for both groups');
+    }
+
+    const se = Math.sqrt(((sd1 * sd1) / n1) + ((sd2 * sd2) / n2));
+    if (se === 0) {
+      return showToast('Standard error is zero — please adjust the inputs');
+    }
+
+    const t = (mean1 - mean2) / se;
+    const df = n1 + n2 - 2;
+    const pLabel = Math.abs(t) > 2.58 ? '<0.01' : Math.abs(t) > 1.96 ? '<0.05' : '>=0.05';
+    const conclusion = document.getElementById('track-t-conclusion');
+
+    document.getElementById('track-t-result').classList.remove('hidden');
+    document.getElementById('track-t-stat').textContent = t.toFixed(3);
+    document.getElementById('track-t-pvalue').textContent = pLabel;
+    document.getElementById('track-t-df').textContent = df;
+
+    if (Math.abs(t) > 1.96) {
+      conclusion.className = 'mt-3 p-2 rounded text-center text-sm font-medium bg-green-100 text-green-800';
+      conclusion.textContent = 'Statistically significant difference detected between the groups.';
+    } else {
+      conclusion.className = 'mt-3 p-2 rounded text-center text-sm font-medium bg-gray-100 text-gray-700';
+      conclusion.textContent = 'No statistically significant difference detected with this quick estimate.';
+    }
+
+    showToast('t-test summary ready');
+  }
+
+  function calculateTrackSurvival() {
+    const timeStr = document.getElementById('track-sf-time').value;
+    const riskStr = document.getElementById('track-sf-risk').value;
+    const eventsStr = document.getElementById('track-sf-events').value;
+
+    if (!timeStr || !riskStr || !eventsStr) {
+      return showToast('Enter time, at-risk, and event values');
+    }
+
+    const times = timeStr.split(',').map(s => parseFloat(s.trim()));
+    const risk = riskStr.split(',').map(s => parseFloat(s.trim()));
+    const events = eventsStr.split(',').map(s => parseFloat(s.trim()));
+
+    const invalid = [times, risk, events].some(arr => arr.some(Number.isNaN));
+    if (invalid || times.length !== risk.length || times.length !== events.length) {
+      return showToast('Use comma-separated lists of equal length');
+    }
+
+    const survival = [];
+    let current = 1;
+    for (let i = 0; i < times.length; i++) {
+      if (risk[i] <= 0 || events[i] < 0 || events[i] > risk[i]) {
+        return showToast('Each event count must be between 0 and the number at risk');
+      }
+      current = current * (1 - (events[i] / risk[i]));
+      survival.push(current * 100);
+    }
+
+    const ctx = document.getElementById('track-survivalChart').getContext('2d');
+    if (guidedSurvivalChartInstance) {
+      guidedSurvivalChartInstance.destroy();
+    }
+
+    guidedSurvivalChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: times.map(t => `${t} mo`),
+        datasets: [{
+          label: 'Survival Probability (%)',
+          data: survival,
+          borderColor: '#4f46e5',
+          backgroundColor: 'rgba(79, 70, 229, 0.12)',
+          stepped: true,
+          fill: true,
+          tension: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            title: { display: true, text: 'Survival %' }
+          },
+          x: {
+            title: { display: true, text: 'Follow-up time' }
+          }
+        },
+        plugins: {
+          legend: { display: true }
+        }
+      }
+    });
+
+    document.getElementById('track-survival-summary').innerHTML = `Survival at ${times[times.length - 1]} months: <strong>${survival[survival.length - 1].toFixed(1)}%</strong>`;
+    showToast('Survival curve generated');
+  }
+
+  // ═══════════════════════════════════════════
   // Converter
   // ═══════════════════════════════════════════
   function convertVal(type) {
@@ -1472,6 +2260,8 @@
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2500);
   }
+
+  setGuidedDifficulty('beginner');
 </script>
 
 <!-- Footer -->
