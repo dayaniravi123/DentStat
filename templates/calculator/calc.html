@@ -1077,25 +1077,24 @@
 </div>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" style="margin-top:-8px;">
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('interactive', this)">🧮 Interactive Calculators</button>
+    <button class="tab-btn" onclick="switchTab('descriptive', this)">📊 Descriptive</button>
+    <button class="tab-btn" onclick="switchTab('probability', this)">🎲 Probability</button>
+    <button class="tab-btn" onclick="switchTab('converter', this)">🔁 Converter</button>
+    <button class="tab-btn" onclick="switchTab('history', this)">🕘 History</button>
+    <button class="tab-btn" onclick="switchTab('formulas', this)">📐 Formulas</button>
+  </div>
 
-  <section id="guided-calculators">
+  <div id="tab-interactive" class="tab-panel active">
     <div class="card guided-track-shell">
       <div class="guided-track-header">
         <div>
-          <div class="card-title" style="margin-bottom:10px;">Difficulty-Based Calculators</div>
-          <h2 class="guided-track-heading">Practice the homepage calculators here in one dedicated workspace</h2>
-          <p class="guided-track-copy">Use the level switcher to reveal the same clinical planning tools from the homepage, organized into beginner, intermediate, and advanced tracks without disturbing the existing calculator tabs below.</p>
+          <div class="card-title" style="margin-bottom:10px;">Interactive Calculators</div>
+          <h2 class="guided-track-heading">All guided calculators in one calculator tab</h2>
+          <p class="guided-track-copy">The homepage calculators now live here together. Use this tab for sample size planning, diagnostic accuracy, confidence intervals, association measures, t-tests, and survival analysis without switching difficulty buttons first.</p>
         </div>
-        <div class="guided-track-actions" aria-label="Calculator difficulty filter">
-          <button class="guided-track-btn is-active" data-level="beginner" onclick="setGuidedDifficulty('beginner', this)">Beginner</button>
-          <button class="guided-track-btn" data-level="intermediate" onclick="setGuidedDifficulty('intermediate', this)">Intermediate</button>
-          <button class="guided-track-btn" data-level="advanced" onclick="setGuidedDifficulty('advanced', this)">Advanced</button>
-        </div>
-      </div>
-
-      <div class="guided-track-banner">
-        <div id="guided-track-badge" class="guided-track-badge guided-track-badge-beginner">Beginner Track</div>
-        <p id="guided-track-description">Start with study planning and diagnostic accuracy. This level focuses on tools that help you estimate sample size and judge how well a clinical test performs before moving into deeper inference.</p>
       </div>
 
       <div class="guided-track-grid">
@@ -1371,19 +1370,10 @@
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- Tab Navigation -->
-  <div class="tab-nav">
-    <button class="tab-btn active" onclick="switchTab('descriptive')">📊 Descriptive</button>
-    <button class="tab-btn" onclick="switchTab('probability')">🎲 Probability</button>
-    <button class="tab-btn" onclick="switchTab('converter')">🔁 Converter</button>
-    <button class="tab-btn" onclick="switchTab('history')">🕘 History</button>
-    <button class="tab-btn" onclick="switchTab('formulas')">📐 Formulas</button>
   </div>
 
   <!-- ======= DESCRIPTIVE TAB ======= -->
-  <div id="tab-descriptive" class="tab-panel active">
+  <div id="tab-descriptive" class="tab-panel">
     <div class="main-grid">
 
       <!-- Data Input Card -->
@@ -1663,65 +1653,18 @@
   // ═══════════════════════════════════════════
   let dataSet = [];
   let history = [];
-  let guidedDifficulty = 'beginner';
   let guidedSurvivalChartInstance = null;
-
-  const GUIDED_DIFFICULTY_META = {
-    beginner: {
-      badge: 'Beginner Track',
-      badgeClass: 'guided-track-badge guided-track-badge-beginner',
-      description: 'Start with study planning and diagnostic accuracy. This level focuses on tools that help you estimate sample size and judge how well a clinical test performs before moving into deeper inference.'
-    },
-    intermediate: {
-      badge: 'Intermediate Track',
-      badgeClass: 'guided-track-badge guided-track-badge-intermediate',
-      description: 'Now add estimation and association measures. These calculators help you summarize uncertainty and quantify how exposure or treatment relates to outcomes.'
-    },
-    advanced: {
-      badge: 'Advanced Track',
-      badgeClass: 'guided-track-badge guided-track-badge-advanced',
-      description: 'Unlock the full set of calculators, including group comparison and time-to-event analysis, for more advanced dental biostatistics workflows.'
-    }
-  };
 
   const COLORS = ['#00e5ff','#a78bfa','#34d399','#ff6b6b','#fbbf24','#f472b6','#60a5fa','#fb923c'];
 
   // ═══════════════════════════════════════════
   // Tabs
   // ═══════════════════════════════════════════
-  function switchTab(name) {
+  function switchTab(name, trigger) {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(`tab-${name}`).classList.add('active');
-    event.currentTarget.classList.add('active');
-  }
-
-  function setGuidedDifficulty(level, trigger = null) {
-    guidedDifficulty = level;
-    const rankMap = { beginner: 1, intermediate: 2, advanced: 3 };
-    const activeRank = rankMap[level];
-
-    document.querySelectorAll('.guided-track-btn').forEach(btn => {
-      const isActive = btn.dataset.level === level;
-      btn.classList.toggle('is-active', isActive);
-      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-    });
-
-    document.querySelectorAll('.guided-track-card').forEach(card => {
-      const cardRank = rankMap[card.dataset.level] || 1;
-      card.classList.toggle('is-hidden', cardRank > activeRank);
-    });
-
-    const meta = GUIDED_DIFFICULTY_META[level];
-    const badge = document.getElementById('guided-track-badge');
-    const description = document.getElementById('guided-track-description');
-    if (badge && meta) {
-      badge.className = meta.badgeClass;
-      badge.textContent = meta.badge;
-    }
-    if (description && meta) {
-      description.textContent = meta.description;
-    }
+    if (trigger) trigger.classList.add('active');
   }
 
   // ═══════════════════════════════════════════
@@ -2260,8 +2203,6 @@
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2500);
   }
-
-  setGuidedDifficulty('beginner');
 </script>
 
 <!-- Footer -->
