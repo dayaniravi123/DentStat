@@ -284,10 +284,22 @@
                     }
                     body {
                         margin: 0 !important;
+                        padding-top: 0 !important;
                     }
                     .dot-nav,
                     #mobileMenuBtn {
                         display: none !important;
+                    }
+                    .page-wrapper,
+                    .text-panel,
+                    main {
+                        margin-top: 0 !important;
+                        padding-top: 0 !important;
+                    }
+                    .chapter-hero:first-child,
+                    header:first-child,
+                    section:first-child {
+                        margin-top: 0 !important;
                     }
                 `;
                 doc.head.appendChild(embedStyle);
