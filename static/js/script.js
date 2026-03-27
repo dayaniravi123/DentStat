@@ -1855,6 +1855,19 @@ function closeModal() {
     document.getElementById('info-modal').classList.add('hidden');
 }
 
+function initSeoFlipCards() {
+    document.querySelectorAll('.seo-flip-card').forEach((card) => {
+        if (card.dataset.flipBound === 'true') return;
+
+        card.dataset.flipBound = 'true';
+        card.addEventListener('click', () => {
+            const nextState = !card.classList.contains('is-flipped');
+            card.classList.toggle('is-flipped', nextState);
+            card.setAttribute('aria-pressed', nextState ? 'true' : 'false');
+        });
+    });
+}
+
 // Close modal on outside click
 document.getElementById('info-modal').addEventListener('click', function(e) {
     if (e.target === this) {
@@ -1873,6 +1886,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initCLTCanvas();
         updateCLTNote();
         initLLNChart();
+        initSeoFlipCards();
     } catch (err) {
         // If some elements are missing, fail silently during partial renders
         // console.warn('Initialization partial:', err);
