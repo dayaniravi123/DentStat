@@ -24,7 +24,10 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(180deg, #f8f7f1 0%, #fdfcf8 45%, #f6faf7 100%);
+            background:
+                radial-gradient(circle at top left, rgba(94, 234, 212, 0.12), transparent 26%),
+                radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 24%),
+                linear-gradient(180deg, #f8f7f1 0%, #fdfcf8 45%, #f6faf7 100%);
             color: #171717;
         }
         .concepts-shell {
@@ -60,10 +63,66 @@
             position: sticky;
             top: 0;
             z-index: 4;
-            padding: 20px 20px 18px;
+            padding: 22px 20px 18px;
             background: rgba(255, 252, 246, 0.98);
             border-bottom: 1px solid rgba(221, 216, 203, 0.92);
             backdrop-filter: blur(12px);
+        }
+        .sidebar-library-meta {
+            margin-bottom: 16px;
+        }
+        .sidebar-library-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(225, 249, 243, 0.92);
+            color: #0f6d56;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+        .sidebar-library-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: currentColor;
+            box-shadow: 0 0 0 6px rgba(15, 109, 86, 0.08);
+        }
+        .sidebar-library-title {
+            color: #1d2424;
+            font-size: 1.45rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin: 14px 0 8px;
+        }
+        .sidebar-library-copy {
+            color: #7a7a73;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            margin: 0 0 14px;
+        }
+        .sidebar-library-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .sidebar-library-stat {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(221, 216, 203, 0.94);
+            background: rgba(255, 255, 255, 0.82);
+            color: #6c675f;
+            font-size: 0.8rem;
+            font-weight: 700;
         }
         .sidebar-search-box {
             position: relative;
@@ -117,12 +176,23 @@
         .sidebar-group-title {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             font-size: 0.72rem;
             font-weight: 800;
             letter-spacing: 0.16em;
             text-transform: uppercase;
             margin-bottom: 12px;
+        }
+        .sidebar-group-title-text {
+            white-space: nowrap;
+        }
+        .sidebar-group-count {
+            flex: 0 0 auto;
+            margin-left: auto;
+            color: #a79f93;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
         }
         .sidebar-group-title::before {
             content: '';
@@ -142,7 +212,7 @@
             border-radius: 18px;
             border: 1px solid transparent;
             background: transparent;
-            transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+            transition: background 180ms ease, border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
             margin-bottom: 10px;
             cursor: pointer;
             text-decoration: none;
@@ -152,11 +222,13 @@
             transform: translateX(2px);
             background: rgba(246, 244, 237, 0.92);
             border-color: rgba(221, 216, 203, 0.88);
+            box-shadow: 0 14px 26px rgba(15, 23, 42, 0.05);
             outline: none;
         }
         .concept-link.is-active {
             background: linear-gradient(135deg, rgba(225, 249, 243, 0.96), rgba(236, 250, 247, 0.94));
             border-color: rgba(177, 229, 214, 0.95);
+            box-shadow: 0 18px 32px rgba(15, 109, 86, 0.08);
         }
         .concept-icon {
             flex: 0 0 54px;
@@ -209,15 +281,34 @@
             line-height: 1.45;
             margin-top: 4px;
         }
+        .concept-link-arrow {
+            color: #beb5a8;
+            font-size: 1.3rem;
+            font-weight: 700;
+            line-height: 1;
+            transition: transform 180ms ease, color 180ms ease;
+        }
+        .concept-link:hover .concept-link-arrow,
+        .concept-link.is-active .concept-link-arrow {
+            color: #0f6d56;
+            transform: translateX(2px);
+        }
 
         .reader-shell {
             border-right: 1px solid rgba(221, 216, 203, 0.92);
-            background: rgba(255, 252, 246, 0.96);
+            background:
+                radial-gradient(circle at top right, rgba(94, 234, 212, 0.1), transparent 28%),
+                linear-gradient(180deg, rgba(255, 252, 246, 0.98), rgba(251, 249, 243, 0.94));
+            padding: 18px;
         }
         #concept-content {
             position: relative;
-            background: rgba(255, 252, 246, 0.96);
+            background: rgba(255, 255, 255, 0.88);
             min-height: calc(100vh - 118px);
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1px solid rgba(221, 216, 203, 0.88);
+            box-shadow: 0 24px 44px rgba(15, 23, 42, 0.07);
         }
         .reader-frame {
             display: block;
@@ -254,6 +345,13 @@
             align-self: start;
             padding: 28px 22px;
         }
+        .outline-card {
+            border-radius: 24px;
+            border: 1px solid rgba(221, 216, 203, 0.92);
+            background: rgba(255, 255, 255, 0.74);
+            padding: 18px;
+            box-shadow: 0 16px 32px rgba(15, 23, 42, 0.05);
+        }
         .outline-heading {
             font-size: 0.76rem;
             font-weight: 800;
@@ -262,11 +360,36 @@
             color: #9f9789;
             margin: 0 0 16px;
         }
+        .outline-topic {
+            margin-bottom: 16px;
+            padding: 14px 14px 12px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(247, 251, 252, 0.95), rgba(238, 249, 246, 0.92));
+            border: 1px solid rgba(219, 244, 236, 0.95);
+        }
+        .outline-topic-level {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(15, 109, 86, 0.1);
+            color: #0f6d56;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+        .outline-topic-title {
+            color: #202421;
+            font-size: 1rem;
+            font-weight: 800;
+            line-height: 1.35;
+            letter-spacing: -0.02em;
+            margin: 10px 0 0;
+        }
         .toc-list {
             display: grid;
             gap: 6px;
-            padding-bottom: 22px;
-            border-bottom: 1px solid rgba(221, 216, 203, 0.92);
         }
         .toc-link {
             position: relative;
@@ -319,11 +442,10 @@
             color: #9a9488;
             font-size: 0.92rem;
             line-height: 1.6;
-            padding: 4px 2px 22px;
-            border-bottom: 1px solid rgba(221, 216, 203, 0.92);
+            padding: 4px 2px 0;
         }
         .progress-card {
-            margin-top: 22px;
+            margin-top: 18px;
             border-radius: 22px;
             border: 1px solid rgba(221, 216, 203, 0.92);
             background: rgba(255, 255, 255, 0.75);
@@ -590,6 +712,7 @@
             }
             .reader-shell {
                 border-right: none;
+                padding: 16px;
             }
         }
         @media (max-width: 1024px) {
@@ -605,6 +728,9 @@
                 max-height: none;
                 border-right: none;
                 border-bottom: 1px solid rgba(221, 216, 203, 0.92);
+            }
+            .reader-shell {
+                padding: 14px;
             }
         }
         @media (max-width: 768px) {
@@ -737,6 +863,18 @@
         <div class="concepts-shell">
             <aside class="sidebar-card">
                 <div class="sidebar-search-wrap">
+                    <div class="sidebar-library-meta">
+                        <span class="sidebar-library-badge">Concepts Library</span>
+                        <h1 class="sidebar-library-title">Study statistics in one flow</h1>
+                        <p class="sidebar-library-copy">
+                            Move through dental biostatistics like a docs site, with guided topics, in-page reading,
+                            and a live outline that keeps your place.
+                        </p>
+                        <div class="sidebar-library-stats">
+                            <span class="sidebar-library-stat">18 topics</span>
+                            <span class="sidebar-library-stat">3 difficulty levels</span>
+                        </div>
+                    </div>
                     <div class="sidebar-search-box">
                         <i data-lucide="search"></i>
                         <input
@@ -754,7 +892,10 @@
                 {% if group.label == 'Beginner Concepts' %}
                 {% with group_key='beginner' %}
                 <div class="sidebar-group" data-group="{{ group_key }}">
-                    <div class="sidebar-group-title">{{ group.label }}</div>
+                    <div class="sidebar-group-title">
+                        <span class="sidebar-group-title-text">{{ group.label }}</span>
+                        <span class="sidebar-group-count">{{ group.concepts|length }}</span>
+                    </div>
                     {% for concept in group.concepts %}
                     <a
                         href="/concepts/?topic={{ concept.slug }}"
@@ -769,6 +910,7 @@
                             <span class="concept-link-title">{{ concept.title }}</span>
                             <span class="concept-link-desc">{{ concept.description }}</span>
                         </span>
+                        <span class="concept-link-arrow" aria-hidden="true">›</span>
                     </a>
                     {% endfor %}
                 </div>
@@ -776,7 +918,10 @@
                 {% elif group.label == 'Intermediate Concepts' %}
                 {% with group_key='intermediate' %}
                 <div class="sidebar-group" data-group="{{ group_key }}">
-                    <div class="sidebar-group-title">{{ group.label }}</div>
+                    <div class="sidebar-group-title">
+                        <span class="sidebar-group-title-text">{{ group.label }}</span>
+                        <span class="sidebar-group-count">{{ group.concepts|length }}</span>
+                    </div>
                     {% for concept in group.concepts %}
                     <a
                         href="/concepts/?topic={{ concept.slug }}"
@@ -791,6 +936,7 @@
                             <span class="concept-link-title">{{ concept.title }}</span>
                             <span class="concept-link-desc">{{ concept.description }}</span>
                         </span>
+                        <span class="concept-link-arrow" aria-hidden="true">›</span>
                     </a>
                     {% endfor %}
                 </div>
@@ -798,7 +944,10 @@
                 {% else %}
                 {% with group_key='advanced' %}
                 <div class="sidebar-group" data-group="{{ group_key }}">
-                    <div class="sidebar-group-title">{{ group.label }}</div>
+                    <div class="sidebar-group-title">
+                        <span class="sidebar-group-title-text">{{ group.label }}</span>
+                        <span class="sidebar-group-count">{{ group.concepts|length }}</span>
+                    </div>
                     {% for concept in group.concepts %}
                     <a
                         href="/concepts/?topic={{ concept.slug }}"
@@ -813,6 +962,7 @@
                             <span class="concept-link-title">{{ concept.title }}</span>
                             <span class="concept-link-desc">{{ concept.description }}</span>
                         </span>
+                        <span class="concept-link-arrow" aria-hidden="true">›</span>
                     </a>
                     {% endfor %}
                 </div>
@@ -837,10 +987,16 @@
             </main>
 
             <aside class="concepts-outline">
-                <div class="outline-heading">On This Page</div>
-                <nav id="concept-toc" class="toc-list" aria-label="On this page"></nav>
-                <div id="concept-toc-empty" class="toc-empty" hidden>
-                    This concept is a shorter overview, so there are not many sub-sections to jump between.
+                <div class="outline-card">
+                    <div class="outline-heading">On This Page</div>
+                    <div class="outline-topic">
+                        <span id="outline-topic-level" class="outline-topic-level">Beginner Concepts</span>
+                        <p id="outline-topic-title" class="outline-topic-title">Measures of Central Tendency</p>
+                    </div>
+                    <nav id="concept-toc" class="toc-list" aria-label="On this page"></nav>
+                    <div id="concept-toc-empty" class="toc-empty" hidden>
+                        This concept is a shorter overview, so there are not many sub-sections to jump between.
+                    </div>
                 </div>
 
                 <div class="progress-card">
@@ -873,6 +1029,8 @@
         const mobileEmptyState = document.getElementById('mobile-concept-empty');
         const tocEl = document.getElementById('concept-toc');
         const tocEmptyEl = document.getElementById('concept-toc-empty');
+        const outlineTopicTitleEl = document.getElementById('outline-topic-title');
+        const outlineTopicLevelEl = document.getElementById('outline-topic-level');
         const progressFillEl = document.getElementById('concept-progress-fill');
         const progressCountEl = document.getElementById('concept-progress-count');
         const progressPercentEl = document.getElementById('concept-progress-percent');
@@ -1170,6 +1328,16 @@
 
             if (progressLevelEl && activeLink) {
                 progressLevelEl.textContent = activeLink.dataset.groupLabel || 'Concept Library';
+            }
+
+            if (outlineTopicTitleEl && activeLink) {
+                const activeTitle = activeLink.querySelector('.concept-link-title');
+                outlineTopicTitleEl.textContent = activeTitle ? activeTitle.textContent.trim() : 'Concept Library';
+            }
+
+            if (outlineTopicLevelEl && activeLink) {
+                const groupLabel = activeLink.dataset.groupLabel || 'Concept Library';
+                outlineTopicLevelEl.textContent = groupLabel.replace(' Concepts', '');
             }
         }
 
