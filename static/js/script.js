@@ -1869,15 +1869,19 @@ function initSeoFlipCards() {
 }
 
 // Close modal on outside click
-document.getElementById('info-modal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeModal();
-    }
-});
+const infoModal = document.getElementById('info-modal');
+if (infoModal) {
+    infoModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+}
 
 // DOM ready initialization (was inline in index.html)
 document.addEventListener('DOMContentLoaded', () => {
     if (window.lucide && lucide.createIcons) lucide.createIcons();
+    initSeoFlipCards();
 
     // Initialize with beginner level
     try {
@@ -1886,7 +1890,6 @@ document.addEventListener('DOMContentLoaded', () => {
         initCLTCanvas();
         updateCLTNote();
         initLLNChart();
-        initSeoFlipCards();
     } catch (err) {
         // If some elements are missing, fail silently during partial renders
         // console.warn('Initialization partial:', err);
