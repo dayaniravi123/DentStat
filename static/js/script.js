@@ -341,6 +341,12 @@ const storyCopyData = {
     }
 };
 
+const mobileDifficultyCopy = {
+    beginner: "Start with visual simulations and guided intuition builders. Perfect for dental students who are new to statistics and want concepts to feel concrete before formulas get heavier.",
+    intermediate: "Build confidence with hypothesis testing, confidence intervals, and study interpretation. This level is great when you want to read papers more critically and connect results to real clinical questions.",
+    advanced: "Dive into regression, survival analysis, and multivariable thinking. Use this level when you are ready to work through deeper dental research methods and publication-style analysis."
+};
+
 // Calculator Functions
 function calculateSampleSize() {
     const p1 = parseFloat(document.getElementById('ss-p1').value) / 100;
@@ -557,35 +563,50 @@ function calculateSurvival() {
 function setDifficulty(level) {
     currentDifficulty = level;
    
-    // Update buttons
-    document.querySelectorAll('.difficulty-btn').forEach(btn => {
-        btn.classList.remove('bg-white', 'text-teal-900', 'scale-105');
-        btn.classList.add('bg-white/20', 'text-white');
+    // Update all difficulty buttons across desktop and mobile layouts
+    document.querySelectorAll('.difficulty-btn[data-difficulty-level]').forEach(btn => {
+        const isActive = btn.getAttribute('data-difficulty-level') === level;
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+
+        if (btn.classList.contains('home-hero-difficulty-btn')) {
+            btn.classList.toggle('bg-white', isActive);
+            btn.classList.toggle('text-teal-900', isActive);
+            btn.classList.toggle('scale-105', isActive);
+            btn.classList.toggle('bg-white/20', !isActive);
+            btn.classList.toggle('text-white', !isActive);
+        }
+
+        if (btn.classList.contains('home-mobile-level-tab')) {
+            btn.classList.toggle('is-active', isActive);
+        }
     });
-   
-    const activeBtn = document.getElementById(`btn-${level}`);
-    activeBtn.classList.remove('bg-white/20', 'text-white');
-    activeBtn.classList.add('bg-white', 'text-teal-900', 'scale-105');
    
     // Update banner
     const banner = document.getElementById('difficulty-banner');
     const badge = document.getElementById('level-badge');
    
-    badge.className = `difficulty-badge-${level} text-white px-6 py-3 rounded-full font-bold text-lg shadow-lg`;
-    badge.textContent = level.toUpperCase();
+    if (badge) {
+        badge.className = `difficulty-badge-${level} text-white px-6 py-3 rounded-full font-bold text-lg shadow-lg`;
+        badge.textContent = level.toUpperCase();
+    }
    
-    if (level === 'beginner') {
-        banner.style.borderLeftColor = '#10b981';
-        document.getElementById('visual-playground').style.display = 'block';
-    } else if (level === 'intermediate') {
-        banner.style.borderLeftColor = '#f59e0b';
-        document.getElementById('visual-playground').style.display = 'block';
-    } else {
-        banner.style.borderLeftColor = '#ef4444';
-        document.getElementById('visual-playground').style.display = 'block';
+    if (banner) {
+        if (level === 'beginner') {
+            banner.style.borderLeftColor = '#10b981';
+        } else if (level === 'intermediate') {
+            banner.style.borderLeftColor = '#f59e0b';
+        } else {
+            banner.style.borderLeftColor = '#ef4444';
+        }
+    }
+
+    const visualPlayground = document.getElementById('visual-playground');
+    if (visualPlayground) {
+        visualPlayground.style.display = 'block';
     }
 
     renderStoryFocus();
+    renderMobileDifficultyPanel();
    
     // Update concepts grid
     updateConceptsGrid();
@@ -726,6 +747,13 @@ function renderStoryFocus() {
         trigger.classList.toggle('is-active', isActive);
         trigger.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     });
+}
+
+function renderMobileDifficultyPanel() {
+    const desc = document.getElementById('mobile-level-desc');
+    if (!desc) return;
+
+    desc.textContent = mobileDifficultyCopy[currentDifficulty] || mobileDifficultyCopy.beginner;
 }
 
 function setStoryFocus(type) {

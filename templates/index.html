@@ -51,7 +51,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body class="bg-gray-50 smooth-scroll">
+<body class="bg-gray-50 smooth-scroll home-page">
 
     <!-- Navigation -->
     {% include 'includes/site_nav.html' %}
@@ -61,15 +61,16 @@
         <div class="absolute inset-0 gradient-bg"></div>
         <canvas id="hero-canvas"></canvas>
 
-        <div class="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-            <div class="flex flex-col md:flex-row items-center gap-8 md:gap-4">
+        <div class="hero-content home-hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+            <div class="flex flex-col md:flex-row items-center gap-8 md:gap-4 home-hero-grid">
                 <!-- Left: Force-Directed Graph -->
-                <div class="w-full md:w-5/12 flex justify-center" style="min-height:340px;">
+                <div class="w-full md:w-5/12 flex justify-center hero-visual-column" style="min-height:340px;">
                     <canvas id="force-graph-canvas" width="460" height="380" style="border-radius:16px;"></canvas>
                 </div>
 
                 <!-- Right: Text Content -->
-                <div class="w-full md:w-7/12 text-center md:text-left">
+                <div class="w-full md:w-7/12 text-center md:text-left hero-copy-column">
+                    <div class="home-mobile-hero-kicker">Interactive Platform</div>
                     <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 hero-title" style="text-shadow: 0 2px 20px rgba(0,0,0,0.3);">
                         Master Dental <span class="text-teal-300 hero-highlight" style="text-shadow: 0 0 30px rgba(45,212,191,0.4);">Biostatistics</span>
                     </h1>
@@ -78,21 +79,45 @@
                         concept lessons, and visual simulations built for dental students, clinicians, and researchers.
                     </p>
 
+                    <div class="home-mobile-hero-actions">
+                        <a href="/concepts/" class="home-mobile-hero-btn home-mobile-hero-btn-primary">
+                            Explore Concepts <span aria-hidden="true">→</span>
+                        </a>
+                        <a href="/calculator" class="home-mobile-hero-btn home-mobile-hero-btn-secondary">
+                            Try Calculators
+                        </a>
+                    </div>
+
+                    <div class="home-mobile-hero-stats" aria-label="Platform summary">
+                        <div class="home-mobile-stat-card">
+                            <span class="home-mobile-stat-number">18</span>
+                            <span class="home-mobile-stat-label">Concept Lessons</span>
+                        </div>
+                        <div class="home-mobile-stat-card">
+                            <span class="home-mobile-stat-number">6+</span>
+                            <span class="home-mobile-stat-label">Calculators</span>
+                        </div>
+                        <div class="home-mobile-stat-card">
+                            <span class="home-mobile-stat-number">3</span>
+                            <span class="home-mobile-stat-label">Skill Levels</span>
+                        </div>
+                    </div>
+
                     <!-- Difficulty Selector -->
-                    <div class="flex flex-wrap justify-center md:justify-start gap-3 mb-8">
-                        <button onclick="setDifficulty('beginner')" id="btn-beginner" class="difficulty-btn btn-ripple px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 bg-white/20 text-white border-2 border-white/30">
+                    <div class="flex flex-wrap justify-center md:justify-start gap-3 mb-8 home-hero-difficulty-picker">
+                        <button onclick="setDifficulty('beginner')" id="btn-beginner" data-difficulty-level="beginner" aria-pressed="true" class="difficulty-btn home-hero-difficulty-btn btn-ripple px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 bg-white/20 text-white border-2 border-white/30">
                             <i data-lucide="book-open" class="w-4 h-4 inline mr-2"></i>Beginner
                         </button>
-                        <button onclick="setDifficulty('intermediate')" id="btn-intermediate" class="difficulty-btn btn-ripple px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 bg-white/20 text-white border-2 border-white/30">
+                        <button onclick="setDifficulty('intermediate')" id="btn-intermediate" data-difficulty-level="intermediate" aria-pressed="false" class="difficulty-btn home-hero-difficulty-btn btn-ripple px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 bg-white/20 text-white border-2 border-white/30">
                             <i data-lucide="brain" class="w-4 h-4 inline mr-2"></i>Intermediate
                         </button>
-                        <button onclick="setDifficulty('advanced')" id="btn-advanced" class="difficulty-btn btn-ripple px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 bg-white/20 text-white border-2 border-white/30">
+                        <button onclick="setDifficulty('advanced')" id="btn-advanced" data-difficulty-level="advanced" aria-pressed="false" class="difficulty-btn home-hero-difficulty-btn btn-ripple px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105 bg-white/20 text-white border-2 border-white/30">
                             <i data-lucide="microscope" class="w-4 h-4 inline mr-2"></i>Advanced
                         </button>
                     </div>
 
                     <!-- Scroll indicator -->
-                    <div class="animate-bounce mt-4 md:ml-4">
+                    <div class="animate-bounce mt-4 md:ml-4 hero-scroll-indicator">
                         <i data-lucide="chevrons-down" class="w-6 h-6 text-teal-300/60 mx-auto md:mx-0"></i>
                     </div>
                 </div>
@@ -100,8 +125,22 @@
         </div>
     </div>
 
+    <section class="home-mobile-level-shell">
+        <div class="home-mobile-level-inner">
+            <p class="home-mobile-level-kicker">Your Current Level</p>
+            <div class="home-mobile-level-tabs" role="tablist" aria-label="Difficulty levels">
+                <button type="button" role="tab" onclick="setDifficulty('beginner')" data-difficulty-level="beginner" aria-pressed="true" class="difficulty-btn home-mobile-level-tab is-active">Beginner</button>
+                <button type="button" role="tab" onclick="setDifficulty('intermediate')" data-difficulty-level="intermediate" aria-pressed="false" class="difficulty-btn home-mobile-level-tab">Intermediate</button>
+                <button type="button" role="tab" onclick="setDifficulty('advanced')" data-difficulty-level="advanced" aria-pressed="false" class="difficulty-btn home-mobile-level-tab">Advanced</button>
+            </div>
+            <div class="home-mobile-level-card">
+                <p id="mobile-level-desc" class="home-mobile-level-copy">Start with visual simulations — watch probability in action through interactive experiments. Perfect for dental students new to statistics.</p>
+            </div>
+        </div>
+    </section>
+
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-8 home-main-shell">
 
         <section class="mb-10 reveal">
             <div class="bg-white rounded-[32px] border border-slate-200 shadow-[0_24px_54px_rgba(15,23,42,0.08)] p-7 md:p-10">
