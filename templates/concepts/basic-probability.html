@@ -691,8 +691,8 @@
     .sim-modal__dialog {
       position: relative;
       width: min(1660px, calc(100vw - 0.5rem));
-      height: min(94vh, 980px);
-      max-height: min(94vh, 980px);
+      height: auto;
+      max-height: min(80vh, 720px);
       overflow: auto;
       border-radius: 32px;
       background: #ffffff;
@@ -700,7 +700,7 @@
       z-index: 1;
     }
     .sim-modal__header {
-      padding: 1.35rem 1.55rem 1rem;
+      padding: 0.8rem 1.55rem 0.6rem;
       background:
         radial-gradient(circle at top right, rgba(94,234,212,0.18), transparent 30%),
         linear-gradient(135deg, #0f172a 0%, #1d4f77 60%, #0f766e 100%);
@@ -720,8 +720,8 @@
       text-transform: uppercase;
     }
     .sim-modal__header h2 {
-      margin-top: 0.9rem;
-      font-size: 2rem;
+      margin-top: 0.5rem;
+      font-size: 1.5rem;
       color: white;
     }
     .sim-modal__header p {
@@ -747,9 +747,9 @@
     }
     .sim-modal__body {
       display: grid;
-      grid-template-columns: minmax(390px, 460px) minmax(760px, 1fr);
+      grid-template-columns: minmax(340px, 400px) minmax(760px, 1fr);
       gap: 1rem;
-      padding: 1.3rem 1.45rem 1.45rem;
+      padding: 0.8rem 1.2rem 1rem;
       align-items: start;
       background: linear-gradient(180deg, #f8fbfe 0%, #eef6f7 100%);
     }
@@ -767,7 +767,7 @@
     }
     .sim-modal__visual {
       min-width: 0;
-      min-height: 720px;
+      min-height: 480px;
       display: flex;
       position: sticky;
       top: 0;
@@ -779,7 +779,7 @@
       opacity: 1;
       pointer-events: all;
       display: none;
-      min-height: 720px;
+      min-height: 480px;
       width: 100%;
       padding: 1.35rem;
       border-radius: 24px;
@@ -838,12 +838,12 @@
         grid-template-columns: 1fr;
       }
       .sim-modal__dialog {
-        max-height: 92vh;
+        max-height: 90vh;
         height: auto;
       }
       .sim-modal__visual,
       .sim-modal__visual .viz-section {
-        min-height: 520px;
+        min-height: 400px;
       }
       .sim-modal__visual {
         position: relative;
