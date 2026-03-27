@@ -765,6 +765,45 @@
     @media (max-width: 768px) {
       #mobile-menu-btn { display: block !important; }
       .hidden.md\\:flex { display: none !important; }
+      .container { padding: 0 16px; }
+      .card { padding: 18px; }
+      .data-entry-row { flex-direction: column; }
+      .input-controls {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      .input-controls .btn {
+        flex: 1 1 110px;
+      }
+      .chart-area {
+        height: 180px;
+        padding: 0 10px 10px;
+      }
+      .toast {
+        right: 12px;
+        left: 12px;
+        bottom: 12px;
+      }
+      .calc-hero {
+        padding: 28px 16px 24px;
+      }
+      .calc-hero h1 {
+        font-size: 1.7rem !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .tab-btn {
+        min-width: 96px;
+        padding: 10px 14px;
+      }
+      .card-title {
+        flex-wrap: wrap;
+      }
+      .prob-card {
+        padding: 16px;
+      }
     }
   </style>
 </head>
@@ -773,7 +812,7 @@
 {% include 'includes/site_nav.html' %}
 
 <!-- Hero Banner -->
-<div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 55%,#0f766e 100%);color:white;padding:40px 24px 36px;margin-bottom:0;">
+<div class="calc-hero" style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 55%,#0f766e 100%);color:white;padding:40px 24px 36px;margin-bottom:0;">
   <div style="max-width:1400px;margin:0 auto;">
     <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.6;margin-bottom:8px;">Interactive Tool</div>
     <h1 style="font-size:2.2rem;font-weight:800;margin-bottom:10px;letter-spacing:-0.02em;">🧮 Statistical Calculator</h1>

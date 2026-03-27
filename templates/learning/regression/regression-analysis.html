@@ -320,6 +320,31 @@
     .summary-card:hover { transform: translateY(-3px); }
     .summary-card h4 { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0 0 6px; }
     .summary-card p { font-size: 0.8rem; color: #64748b; margin: 0; line-height: 1.5; }
+
+    @media (max-width: 768px) {
+      .hero-banner { padding: 28px 20px; }
+      .stat-card { padding: 22px 16px; }
+      .sim-panel { padding: 18px; }
+      .modal-box { max-width: calc(100vw - 20px); }
+      .modal-header { padding: 22px 20px 18px; }
+      .modal-body { padding: 18px 16px 22px; }
+      .modal-header h2 { font-size: 1.25rem; }
+      .modal-header p { max-width: 100%; }
+      .or-bar-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .or-bar-label {
+        width: auto;
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .section-title { font-size: 1.05rem; }
+      .info-pill { padding: 14px; }
+      .report-table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
   </style>
 </head>
 <body>
@@ -401,7 +426,7 @@
   <!-- Grid Cards -->
   <div class="section-title"><span class="dot"></span> Core Regression Concepts</div>
   <p class="text-gray-500 text-sm mb-5">Click a card to learn and try it.</p>
-  <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
     <div class="stat-card card-linear" onclick="openModal('linear')">
       <div class="icon">📉</div>
       <div class="label">Linear Regression</div>
@@ -421,7 +446,7 @@
       <div class="try-hint">Tap to try &rarr;</div>
     </div>
   </div>
-  <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10">
     <div class="stat-card card-odds" onclick="openModal('odds')">
       <div class="icon">⚖️</div>
       <div class="label">Odds Ratio</div>
@@ -537,7 +562,7 @@
         <p><strong>Model Summary</strong><br>Report: R², Adjusted R², F-stat<br><span class="text-xs text-gray-400">e.g. R²=0.42, F(3,96)=23.1, p&lt;0.001</span></p>
       </div>
     </div>
-    <div class="sim-panel p-0 overflow-hidden">
+    <div class="sim-panel p-0 overflow-x-auto">
       <table class="report-table">
         <thead><tr><th>Model Type</th><th>Coefficient</th><th>95% CI</th><th>p-value</th><th>Interpretation</th></tr></thead>
         <tbody>

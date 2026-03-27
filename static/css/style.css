@@ -65,6 +65,7 @@ html {
 
 /* Styles previously inline in index.html */
 body { font-family: 'Inter', sans-serif; }
+body { overflow-x: hidden; }
 .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f766e 100%); }
 .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
 .difficulty-badge-beginner { background: linear-gradient(135deg, #10b981, #059669); }
@@ -165,6 +166,15 @@ body { font-family: 'Inter', sans-serif; }
 .story-copy-shell {
     max-width: 660px;
     min-height: 230px;
+}
+
+.site-nav-brand-copy {
+    min-width: 0;
+}
+
+.site-nav-brand-title,
+.site-nav-brand-subtitle {
+    white-space: nowrap;
 }
 
 .seo-flip-card {
@@ -280,6 +290,25 @@ body { font-family: 'Inter', sans-serif; }
 .seo-flip-card-amber .seo-flip-card__title { color: #b45309; }
 
 @media (max-width: 640px) {
+    .site-nav-brand-logo {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 1rem;
+    }
+
+    .site-nav-brand-title {
+        font-size: 1rem;
+        line-height: 1.1;
+    }
+
+    .site-nav-brand-subtitle {
+        display: none;
+    }
+
+    .site-nav-mobile-menu {
+        width: min(17rem, calc(100vw - 1.5rem));
+    }
+
     .seo-flip-card,
     .seo-flip-card__inner {
         min-height: 196px;
@@ -463,6 +492,10 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
     .story-copy-shell { min-height: auto; max-width: 100%; }
     .story-scene { min-height: 280px; }
     .story-badge-wrap { position: relative; top: auto; right: auto; text-align: left; padding: 20px 20px 0; }
+    .story-node { padding: 16px; }
+    .story-node-label { font-size: 0.7rem; letter-spacing: 0.12em; }
+    .hero-title { font-size: clamp(2.3rem, 11vw, 3.5rem); }
+    .hero-subtitle { font-size: 1rem; }
 }
 
 /* ===== SEEING-THEORY INSPIRED ANIMATIONS ===== */
