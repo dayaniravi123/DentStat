@@ -1109,13 +1109,78 @@ function updateCLTDistribution() {
     drawPopulationDistribution();
     resetCLT();
     updateCLTNote();
+    syncMobileCLTControls();
 }
 
 function updateCLTParams() {
-    const n = document.getElementById('clt-n').value;
-    document.getElementById('clt-n-val').textContent = `n=${n}`;
+    const slider = document.getElementById('clt-n');
+    const nLabel = document.getElementById('clt-n-val');
+    if (!slider) return;
+    const n = slider.value;
+    if (nLabel) nLabel.textContent = `n=${n}`;
     simState.centralLimit.sampleSize = parseInt(n);
     updateCLTNote();
+    syncMobileCLTControls();
+}
+
+function updateCLTSpeedIndicator() {
+    const speedSlider = document.getElementById('clt-speed');
+    const indicator = document.getElementById('clt-speed-indicator');
+    if (!speedSlider || !indicator) return;
+    indicator.textContent = `×${speedSlider.value}`;
+}
+
+function syncMobileCLTControls() {
+    const distributionSelect = document.getElementById('clt-distribution');
+    const sampleSlider = document.getElementById('clt-n');
+    if (!distributionSelect || !sampleSlider) return;
+
+    document.querySelectorAll('[data-clt-dist]').forEach((button) => {
+        const isActive = button.dataset.cltDist === distributionSelect.value;
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+
+    const currentSampleSize = parseInt(sampleSlider.value, 10);
+    const presetValues = [1, 30, 100];
+    const activePreset = presetValues.reduce((closest, value) => {
+        return Math.abs(value - currentSampleSize) < Math.abs(closest - currentSampleSize) ? value : closest;
+    }, presetValues[0]);
+
+    document.querySelectorAll('[data-clt-n]').forEach((button) => {
+        const isActive = parseInt(button.dataset.cltN, 10) === activePreset;
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+}
+
+function initHomeMobileSimulationControls() {
+    const distributionSelect = document.getElementById('clt-distribution');
+    const sampleSlider = document.getElementById('clt-n');
+
+    document.querySelectorAll('[data-clt-dist]').forEach((button) => {
+        if (button.dataset.boundMobileClt === 'true') return;
+        button.dataset.boundMobileClt = 'true';
+        button.addEventListener('click', () => {
+            if (!distributionSelect) return;
+            distributionSelect.value = button.dataset.cltDist;
+            updateCLTDistribution();
+        });
+    });
+
+    document.querySelectorAll('[data-clt-n]').forEach((button) => {
+        if (button.dataset.boundMobileClt === 'true') return;
+        button.dataset.boundMobileClt = 'true';
+        button.addEventListener('click', () => {
+            if (!sampleSlider) return;
+            sampleSlider.value = button.dataset.cltN;
+            updateCLTParams();
+            resetCLT();
+        });
+    });
+
+    syncMobileCLTControls();
+    updateCLTSpeedIndicator();
 }
 
 function updateCLTNote() {
@@ -1512,6 +1577,7 @@ function resetCLT() {
     }
 
     updateCLTNote();
+    syncMobileCLTControls();
     lucide.createIcons();
 }
 
@@ -1916,6 +1982,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setDifficulty('beginner');
         initializeCharts();
         initCLTCanvas();
+        initHomeMobileSimulationControls();
         updateCLTNote();
         initLLNChart();
     } catch (err) {
@@ -1926,6 +1993,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle window resize for canvas
     window.addEventListener('resize', () => {
         initCLTCanvas();
+        syncMobileCLTControls();
         if (simState.probability.chart) {
             simState.probability.chart.resize();
         }

@@ -735,6 +735,39 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
     50% { box-shadow: 0 0 40px rgba(13, 148, 136, 0.18); }
 }
 
+.sim-mobile-pill,
+.clt-mobile-chip-row,
+.clt-mobile-sample-presets,
+.clt-mobile-chart-label,
+.ci-mobile-summary {
+    display: none;
+}
+
+.clt-mobile-chip-btn,
+.clt-mobile-n-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid rgba(214, 211, 209, 0.9);
+    background: #ffffff;
+    color: #57534e;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1;
+    min-height: 44px;
+    padding: 0.82rem 1rem;
+    text-align: center;
+    transition: background 180ms ease, color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.clt-mobile-chip-btn.is-active,
+.clt-mobile-n-btn.is-active {
+    background: #11694f;
+    border-color: #11694f;
+    color: #ffffff;
+    box-shadow: 0 10px 24px rgba(17, 105, 79, 0.18);
+}
+
 /* Stat card hover lift */
 .stat-card {
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
@@ -1085,6 +1118,359 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
     .home-page .home-main-shell {
         margin-top: 0 !important;
         padding-top: 1.6rem;
+    }
+
+    .home-page .home-visual-playground {
+        margin-bottom: 3rem;
+    }
+
+    .home-page .home-visual-playground-title {
+        display: block;
+        margin-bottom: 1rem;
+        color: #a79f93;
+        font-size: 0.92rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        line-height: 1.2;
+        text-transform: uppercase;
+    }
+
+    .home-page .home-visual-playground-title svg,
+    .home-page .home-visual-playground-title::after,
+    .home-page .home-visual-playground-copy {
+        display: none !important;
+    }
+
+    .home-page .home-mobile-sim-card {
+        padding: 0 !important;
+        overflow: hidden;
+        border-radius: 1.95rem;
+        border: 1px solid rgba(226, 217, 200, 0.96);
+        background: linear-gradient(180deg, #fffdfa 0%, #fffaf3 100%);
+        box-shadow: 0 20px 48px rgba(15, 23, 42, 0.08);
+    }
+
+    .home-page .home-mobile-sim-card.sim-panel::before {
+        display: none;
+    }
+
+    .home-page .home-mobile-sim-card:hover {
+        transform: none;
+        box-shadow: 0 20px 48px rgba(15, 23, 42, 0.08);
+    }
+
+    .home-page .sim-card-header {
+        margin-bottom: 0 !important;
+        padding: 1.25rem 1rem 1rem;
+        border-bottom: 1px solid rgba(231, 223, 209, 0.9);
+        gap: 1rem;
+    }
+
+    .home-page .sim-card-intro {
+        width: 100%;
+    }
+
+    .home-page .sim-card-title-row {
+        margin: 0;
+        align-items: flex-start;
+        font-size: 1.05rem;
+        line-height: 1.2;
+    }
+
+    .home-page .sim-card-icon {
+        width: 4.5rem;
+        height: 4.5rem;
+        min-width: 4.5rem;
+        margin-right: 0.95rem;
+        border-radius: 1.2rem;
+        box-shadow: 0 14px 32px rgba(15, 23, 42, 0.14);
+    }
+
+    .home-page .sim-card-icon svg {
+        width: 1.7rem;
+        height: 1.7rem;
+    }
+
+    .home-page .sim-card-icon-violet {
+        background: linear-gradient(180deg, #2f63ae 0%, #285fa8 100%) !important;
+    }
+
+    .home-page .sim-mobile-pill {
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 0.65rem;
+        padding: 0.34rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        line-height: 1;
+        text-transform: uppercase;
+    }
+
+    .home-page .sim-mobile-pill-teal {
+        background: #e7f5ef;
+        color: #11694f;
+    }
+
+    .home-page .sim-mobile-pill-blue {
+        background: #e7eefb;
+        color: #2c65b3;
+    }
+
+    .home-page .sim-card-subtitle {
+        margin: 0.55rem 0 0 5.45rem !important;
+        color: #7d7365 !important;
+        font-size: 0.98rem;
+        line-height: 1.55;
+    }
+
+    .home-page .sim-card-actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+        gap: 0.85rem;
+        width: 100%;
+        margin: 0 !important;
+    }
+
+    .home-page .sim-card-actions button {
+        min-height: 4.3rem;
+        border-radius: 1.15rem;
+        justify-content: center;
+        font-size: 0.98rem;
+        font-weight: 700;
+        box-shadow: none !important;
+    }
+
+    .home-page .home-mobile-clt-card .sim-card-actions button:last-child {
+        background: linear-gradient(180deg, #faf6ed 0%, #f7f1e6 100%) !important;
+        color: #6f675d !important;
+        border: 1px solid rgba(231, 223, 209, 0.92);
+    }
+
+    .home-page .clt-mobile-layout {
+        gap: 0;
+    }
+
+    .home-page .clt-mobile-controls {
+        padding: 1rem;
+    }
+
+    .home-page .clt-control-card {
+        padding: 0;
+        border: none;
+        background: transparent;
+    }
+
+    .home-page .sim-control-label {
+        color: #a79f93;
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+    }
+
+    .home-page .clt-mobile-chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+        margin-bottom: 1rem;
+    }
+
+    .home-page .clt-mobile-chip-btn {
+        min-width: calc(50% - 0.3rem);
+    }
+
+    .home-page .clt-desktop-select,
+    .home-page .clt-slider-wrap {
+        display: none;
+    }
+
+    .home-page .clt-population-preview {
+        padding: 0.95rem;
+        border-radius: 1.28rem;
+        border: 1px solid rgba(230, 221, 207, 0.95);
+        background: #fffefb;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    }
+
+    .home-page .clt-mobile-chart-label {
+        display: block;
+        margin-bottom: 0.7rem;
+        color: #a79f93;
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .home-page #populationCanvas {
+        height: 8.8rem !important;
+        border-radius: 1rem;
+        background: #ffffff;
+    }
+
+    .home-page #clt-panel .clt-control-card > p,
+    .home-page #clt-panel .clt-mobile-results > p {
+        display: none;
+    }
+
+    .home-page .clt-mobile-sample-group {
+        margin-top: 1.1rem;
+    }
+
+    .home-page .clt-mobile-sample-presets {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.65rem;
+    }
+
+    .home-page .clt-mobile-n-btn {
+        border-radius: 1rem;
+        min-height: 3.5rem;
+        padding-inline: 0.65rem;
+        font-size: 0.95rem;
+    }
+
+    .home-page .clt-mobile-speed-row {
+        margin-top: 1rem;
+    }
+
+    .home-page .clt-mobile-speed-indicator {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.8rem;
+        min-height: 2rem;
+        border-radius: 999px;
+        background: rgba(17, 105, 79, 0.1);
+        color: #11694f;
+        font-size: 0.98rem;
+        font-weight: 800;
+    }
+
+    .home-page .clt-mobile-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.85rem;
+        margin-top: 1rem;
+    }
+
+    .home-page #clt-panel .stat-card {
+        min-height: 7rem;
+        justify-content: center;
+        background: linear-gradient(180deg, #faf6ed 0%, #f7f1e6 100%) !important;
+        border-color: rgba(231, 223, 209, 0.92) !important;
+        box-shadow: none;
+    }
+
+    .home-page #clt-panel .stat-card p:first-child {
+        color: #a79f93 !important;
+        font-size: 0.8rem !important;
+        letter-spacing: 0.08em;
+    }
+
+    .home-page #clt-count,
+    .home-page #clt-grand-mean {
+        color: #231f1a !important;
+        font-size: 2rem !important;
+    }
+
+    .home-page .clt-mobile-results {
+        padding: 0 1rem 1rem;
+    }
+
+    .home-page .clt-mobile-chart-shell {
+        height: auto;
+        min-height: 12.8rem;
+        padding: 0.95rem;
+        border-radius: 1.28rem;
+        border-color: rgba(230, 221, 207, 0.95);
+        background: #fffefb;
+    }
+
+    .home-page .clt-mobile-chart-label-main {
+        margin-bottom: 0.35rem;
+    }
+
+    .home-page #cltCanvas {
+        height: 11.2rem !important;
+    }
+
+    .home-page #clt-overlay {
+        inset: 0.95rem;
+        border-radius: 1rem;
+    }
+
+    .home-page .clt-mobile-note {
+        margin-top: 0.9rem;
+        border-radius: 1.2rem;
+        border-color: rgba(201, 237, 227, 0.9);
+        background: linear-gradient(180deg, #effaf6 0%, #e9f6f2 100%);
+        color: #1f5f4b;
+        font-size: 0.96rem;
+        line-height: 1.65;
+    }
+
+    .home-page .home-mobile-ci-card .sim-card-actions button:first-child {
+        background: #11694f !important;
+        color: #ffffff !important;
+    }
+
+    .home-page .home-mobile-ci-card .sim-card-actions button:last-child {
+        background: linear-gradient(180deg, #faf6ed 0%, #f7f1e6 100%) !important;
+        color: #6f675d !important;
+        border: 1px solid rgba(231, 223, 209, 0.92);
+    }
+
+    .home-page .ci-mobile-canvas-shell {
+        margin: 0 1rem;
+        padding: 0.75rem;
+        border-radius: 1.28rem;
+        border-color: rgba(230, 221, 207, 0.95);
+        background: #fffefb;
+    }
+
+    .home-page #ciDanceCanvas {
+        height: 17.8rem !important;
+    }
+
+    .home-page .ci-mobile-stat-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.8rem;
+        padding: 0 1rem;
+    }
+
+    .home-page #ci-panel .stat-card {
+        min-height: 6.3rem;
+        background: linear-gradient(180deg, #faf6ed 0%, #f7f1e6 100%) !important;
+        border-color: rgba(231, 223, 209, 0.92) !important;
+        box-shadow: none;
+    }
+
+    .home-page #ci-panel .stat-card p:first-child {
+        color: #a79f93 !important;
+        font-size: 0.78rem !important;
+        letter-spacing: 0.08em;
+    }
+
+    .home-page #ci-total-count {
+        color: #231f1a !important;
+    }
+
+    .home-page #ci-capture-count,
+    .home-page #ci-percentage {
+        color: #11694f !important;
+    }
+
+    .home-page .ci-mobile-summary {
+        display: block;
+        margin: 1rem 1rem 0;
+        padding: 1rem 1.05rem;
+        border-radius: 1.2rem;
+        background: linear-gradient(180deg, #e8f7f2 0%, #def3ec 100%);
+        color: #16624c;
+        font-size: 1rem;
+        line-height: 1.55;
+        font-weight: 600;
     }
 
     .home-page .home-mobile-level-shell {
