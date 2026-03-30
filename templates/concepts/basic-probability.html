@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Learn basic probability concepts for dental research — chance events, expected value, and variance explained with dental examples.">
+  <meta name="description" content="Learn basic probability for dental research — events, conditional probability, multiplication rules, independence, expected value, variance, and binomial thinking.">
   <meta property="og:title" content="Basic Probability — DentalStats">
-  <meta property="og:description" content="Learn basic probability concepts for dental research — chance events, expected value, and variance explained with dental examples.">
+  <meta property="og:description" content="Learn basic probability for dental research — events, conditional probability, multiplication rules, independence, expected value, variance, and binomial thinking.">
   <meta property="og:type" content="website">
   <title>Basic Probability — DentalStats</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet">
@@ -171,6 +171,88 @@
       color: var(--text); margin-bottom: 0.9rem;
     }
     .section p:last-of-type { margin-bottom: 0; }
+    .section h3 {
+      margin: 1.1rem 0 0.7rem;
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.4;
+    }
+    .section h3:first-of-type {
+      margin-top: 0.3rem;
+    }
+    .topic-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 1.1rem;
+    }
+    .topic-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(13,148,136,0.08), rgba(99,102,241,0.08));
+      border: 1px solid rgba(13,148,136,0.12);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+    .topic-chip::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), var(--indigo));
+    }
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+    .concept-card {
+      padding: 1rem 1.05rem;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(15,23,42,0.025), rgba(13,148,136,0.04));
+      border: 1px solid rgba(148,163,184,0.18);
+    }
+    .concept-card h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.45rem;
+    }
+    .concept-card p {
+      font-size: 0.88rem;
+      line-height: 1.65;
+      margin: 0;
+      color: var(--muted);
+    }
+    .inline-example-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-top: 1rem;
+      padding: 0.78rem 1rem;
+      border-radius: 14px;
+      background: rgba(13,148,136,0.08);
+      color: var(--teal);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 700;
+      border: 1px solid rgba(13,148,136,0.14);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .inline-example-link:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(13,148,136,0.14);
+    }
+    .inline-example-link svg {
+      width: 16px;
+      height: 16px;
+    }
 
     /* ── FORMULA BOX ── */
     .formula {
@@ -412,6 +494,7 @@
       .nav-breadcrumb { display: none; }
       .section { padding: 2rem 1.5rem; }
       .chapter-hero { padding: 2rem 1.5rem; }
+      .concept-grid { grid-template-columns: 1fr; }
       .examples-cta__inner {
         flex-direction: column;
         text-align: center;
@@ -463,29 +546,46 @@
       <span class="chapter-hero__badge">Chapter 1 &middot; Basic Probability</span>
       <h1 class="chapter-hero__title">Basic Probability</h1>
       <p class="chapter-hero__lead">
-        Probability tells us how likely an event is to happen. In dental research, it helps us reason
-        about implant success, DMFT outcomes, and patient satisfaction with clearer intuition before
-        moving into more advanced statistical ideas.
+        This lesson turns the most useful ideas from the probability chapter into a student-friendly path:
+        events, conditional probability, multiplication, independence, random variables, expectation,
+        variance, and binomial thinking. The goal is to help you read research logic first, then jump
+        into the interactive dental examples at the bottom.
       </p>
+      <div class="topic-chip-row" aria-label="Lesson topics">
+        <span class="topic-chip">Conditional probability</span>
+        <span class="topic-chip">Multiplication rule</span>
+        <span class="topic-chip">Independent events</span>
+        <span class="topic-chip">Expected value</span>
+        <span class="topic-chip">Variance</span>
+        <span class="topic-chip">Binomial models</span>
+      </div>
     </section>
 
-    <!-- SECTION 1: CHANCE EVENTS -->
+    <!-- SECTION 1: EVENTS -->
     <div class="section" id="s1">
       <div class="section-badge">
         <div class="section-num">1</div>
-        <span class="section-label">Chance Events</span>
+        <span class="section-label">Foundations</span>
       </div>
-      <h2>Understanding Probability</h2>
+      <h2>Events, Outcomes, and Complements</h2>
+      <h3>Sample space and events</h3>
       <p>
-        Probability is a number between <strong>0</strong> and <strong>1</strong> indicating how
-        likely an event will occur. In dentistry, implant procedures, root canals, and fillings
-        each carry specific success rates backed by clinical research.
+        Probability begins with a <strong>sample space</strong>: the full set of outcomes a random experiment
+        can produce. An <strong>event</strong> is any subset of that sample space. If you toss three fair coins,
+        the sample space contains eight outcomes such as <code>HHH</code>, <code>HHT</code>, and <code>TTT</code>.
+        If you care about “at least two heads”, you only collect the outcomes that match that question.
       </p>
       <p>
-        Will this implant integrate successfully? Will a root canal relieve the patient's pain?
-        These are questions of probability. By simulating many outcomes, we observe the
-        <strong>Law of Large Numbers</strong> in action &mdash; observed frequencies converge to
-        the true probability as the number of trials grows.
+        In dental research, the same thinking appears when we define events like “implant survives one year”,
+        “DMFT score is at least 3”, or “a patient reports high satisfaction”. The event is the question;
+        the probability tells us how often it should happen in the long run.
+      </p>
+      <h3>Complements simplify many questions</h3>
+      <p>
+        A complement is the event that something <em>does not</em> happen. This is often the quickest route to
+        an answer. If an implant succeeds with probability <code>0.95</code>, then failure has probability
+        <code>0.05</code>. Many “at least one” questions are easier to solve by first finding the probability
+        of “none”.
       </p>
       <div class="formula">
         <span class="sym">0 &le; P(A) &le; 1</span>
@@ -494,96 +594,252 @@
       </div>
 
       <ul class="key-points">
-        <li><strong>P(A) = 0</strong> means the event is impossible; <strong>P(A) = 1</strong> means it is certain.</li>
-        <li>The complement rule: if an implant has a 95% success rate, the failure rate is <code>1 &minus; 0.95 = 0.05</code>.</li>
-        <li>The <strong>Law of Large Numbers</strong> guarantees that observed proportions converge to the true probability as sample size increases.</li>
-        <li>Clinical success rates (e.g., implant: 95%, filling: 90%) are derived from large-scale studies using this principle.</li>
+        <li><strong>P(A)=0</strong> means impossible; <strong>P(A)=1</strong> means certain.</li>
+        <li>The sample space changes with the experiment, but every event always lives inside that space.</li>
+        <li>Complements are especially useful for failure probabilities, dropout probabilities, and “at least one” situations.</li>
+        <li>The Law of Large Numbers explains why observed proportions get steadier as data accumulates.</li>
       </ul>
 
       <div class="example-box">
-        <div class="example-box__label">Dental Example</div>
+        <div class="example-box__label">Useful Example from the Chapter</div>
         <p>
-          A dental implant has a success rate of <code>P = 0.95</code>. If a clinic places 200 implants,
-          the expected number of successful outcomes is <code>200 &times; 0.95 = 190</code>. The probability
-          of failure per implant is <code>1 &minus; 0.95 = 0.05</code>, so roughly 10 failures are expected.
+          In the chapter’s three-coin experiment, the event “at least two heads” is not a single outcome;
+          it is a collection of outcomes. That is the core shift in probability: we rarely care about one
+          raw result in isolation, we care about sets of results that answer a question.
         </p>
       </div>
     </div>
 
-    <!-- SECTION 2: EXPECTATION -->
+    <!-- SECTION 2: CONDITIONAL -->
     <div class="section" id="s2">
       <div class="section-badge">
         <div class="section-num">2</div>
-        <span class="section-label">Expectation</span>
+        <span class="section-label">Conditioning</span>
       </div>
-      <h2>Expected Value</h2>
+      <h2>Conditional Probability</h2>
+      <h3>What changes when new information arrives?</h3>
       <p>
-        The <strong>expected value</strong> (mean) is the long-run average of outcomes, weighted
-        by their probabilities. The DMFT index tracks Decayed, Missing, and Filled Teeth &mdash;
-        a key measure in dental epidemiology.
+        Conditional probability asks: <em>how does the probability of one event change once we already know
+        another event has happened?</em> The important idea is that the sample space shrinks. Once new
+        information arrives, you stop counting impossible cases and focus only on the cases still compatible
+        with that information.
       </p>
       <p>
-        Different populations show different DMFT distributions. A healthy group clusters near 0,
-        while a high-risk group skews toward higher scores. The expected value tells us the
-        &ldquo;center of gravity&rdquo; of the distribution.
+        This is why conditional probability is so useful in screening, diagnosis, and research interpretation.
+        “What is the chance of disease?” is different from “what is the chance of disease <strong>given</strong>
+        a positive test?” The second question is always about a filtered set of patients.
       </p>
       <div class="formula">
-        <span class="sym">E[X] = &Sigma; x &middot; P(x)</span>
+        <span class="sym">P(E|F) = P(E &cap; F) / P(F)</span>
       </div>
 
       <ul class="key-points">
-        <li>Expected value is a <strong>weighted average</strong> &mdash; outcomes that are more likely contribute more.</li>
-        <li>It does not have to be a value that is actually observable. For example, E[DMFT] = 3.2 even though no patient has exactly 3.2 teeth affected.</li>
-        <li>The <strong>sample mean</strong> converges to E[X] as more observations are collected.</li>
-        <li>Comparing expected values across populations helps identify high-risk groups for targeted intervention.</li>
+        <li>Conditioning does not create new outcomes; it removes outcomes that no longer fit the information you have.</li>
+        <li>The denominator is the event you are conditioning on, so it must have nonzero probability.</li>
+        <li>This idea is the doorway to <strong>Bayes’ theorem</strong>, where you reverse the direction of a condition.</li>
+        <li>Students often improve fastest when they redraw the problem with the smaller sample space first.</li>
       </ul>
 
       <div class="example-box">
-        <div class="example-box__label">Dental Example</div>
+        <div class="example-box__label">Useful Example from the Chapter</div>
         <p>
-          In a community screening, suppose DMFT scores of 0, 1, 2, 3, 4, 5 occur with probabilities
-          0.30, 0.25, 0.20, 0.12, 0.08, 0.05. The expected DMFT is
-          <code>0(0.30) + 1(0.25) + 2(0.20) + 3(0.12) + 4(0.08) + 5(0.05) = 1.58</code>.
-          This tells us the average disease burden in the population.
+          Ten cards numbered 1 to 10 are mixed, and you are told the drawn card is greater than 3.
+          The probability that it is even is not based on all ten cards anymore. You now work only with
+          <code>{4,5,6,7,8,9,10}</code>, so the answer becomes <code>4/7</code>.
+        </p>
+      </div>
+      <div class="concept-grid">
+        <div class="concept-card">
+          <h4>Why it matters in research</h4>
+          <p>Conditional thinking sits behind diagnostic reasoning, follow-up analyses, subgroup reporting, and Bayesian updates.</p>
+        </div>
+        <div class="concept-card">
+          <h4>Good student habit</h4>
+          <p>Write “given that …” as a new mini-sample-space before touching the formula. It prevents most denominator mistakes.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: MULTIPLICATION -->
+    <div class="section" id="s3">
+      <div class="section-badge">
+        <div class="section-num">3</div>
+        <span class="section-label">Sequences</span>
+      </div>
+      <h2>Multiplication Rule and Tree Thinking</h2>
+      <h3>Chaining probabilities across steps</h3>
+      <p>
+        When you need the probability that <strong>two events happen together</strong>, conditional probability
+        naturally leads to the multiplication rule. This is the rule you use for multi-step procedures,
+        sequential card draws, repeated screening stages, or any process where one step changes the next.
+      </p>
+      <p>
+        Tree diagrams are especially helpful here because they force you to read paths one branch at a time.
+        The chapter uses a nice example where a coin is tossed and, depending on the result, you either toss again
+        or throw a die. Tree thinking makes the conditional structure visible before you calculate anything.
+      </p>
+      <div class="formula">
+        <span class="sym">P(E &cap; F) = P(E) &middot; P(F|E)</span>
+      </div>
+
+      <ul class="key-points">
+        <li>Without replacement, the second step often depends on the first, so conditional probability is essential.</li>
+        <li>With replacement, the next step may keep the same probabilities, which often simplifies the calculation.</li>
+        <li>For three or more stages, keep multiplying by the next conditional probability on the path you care about.</li>
+        <li>Tree diagrams are often the clearest way to avoid mixing up branches and totals.</li>
+      </ul>
+
+      <div class="example-box">
+        <div class="example-box__label">Useful Example from the Chapter</div>
+        <p>
+          An urn has 10 black and 5 white balls. If two balls are drawn without replacement, the
+          probability that both are black is <code>(10/15) &times; (9/14) = 3/7</code>. The second fraction
+          changes because the first draw changed the urn.
         </p>
       </div>
     </div>
 
-    <!-- SECTION 3: VARIANCE -->
-    <div class="section" id="s3">
+    <!-- SECTION 4: INDEPENDENCE -->
+    <div class="section" id="s4">
       <div class="section-badge">
-        <div class="section-num">3</div>
-        <span class="section-label">Variance</span>
+        <div class="section-num">4</div>
+        <span class="section-label">Independence</span>
       </div>
-      <h2>Variance &amp; Spread</h2>
+      <h2>Independent Events</h2>
+      <h3>When one event does not change the other</h3>
       <p>
-        <strong>Variance</strong> measures how spread out outcomes are from the expected value.
-        In dentistry, patient satisfaction varies widely &mdash; some patients report excellent outcomes,
-        others experience complications.
-      </p>
-      <p>
-        A low variance means consistent satisfaction; high variance signals unpredictable results.
-        Understanding this spread is crucial for <strong>informed consent</strong> and treatment planning.
+        Two events are independent when learning that one happened does not alter the probability of the other.
+        This is a probability idea, not just a logic idea. In symbols, independence means the overlap behaves
+        exactly like the product of the separate probabilities.
       </p>
       <div class="formula">
-        <span class="sym">Var(X) = E[(X &minus; E[X])&sup2;]</span>
+        <span class="sym">P(E &cap; F) = P(E) &middot; P(F)</span>
       </div>
-
       <ul class="key-points">
-        <li>Variance is always <strong>non-negative</strong>. A variance of 0 means every outcome is identical.</li>
-        <li><strong>Standard deviation</strong> (&sigma;) is the square root of variance &mdash; it is in the same units as the data, making it easier to interpret.</li>
-        <li>When comparing treatments, a procedure with the same average outcome but <em>lower variance</em> is generally more predictable and preferred.</li>
-        <li>High variance in satisfaction scores may indicate that patient experience depends on factors not captured in the average.</li>
+        <li>Independence is different from being mutually exclusive.</li>
+        <li>If two nonzero-probability events are mutually exclusive, they cannot be independent.</li>
+        <li>Repeated fair die throws and fair coin tosses are classic independent trials.</li>
+        <li>Many students test independence fastest by checking whether <code>P(E ∩ F)</code> equals <code>P(E)P(F)</code>.</li>
       </ul>
-
       <div class="example-box">
-        <div class="example-box__label">Dental Example</div>
+        <div class="example-box__label">Useful Example from the Chapter</div>
         <p>
-          Clinic A reports patient satisfaction scores of {8, 8, 9, 8, 9} (low variance),
-          while Clinic B reports {3, 10, 5, 9, 8} (high variance). Both have similar averages
-          (~8.4 vs 7.0), but Clinic A delivers more consistent experiences. Variance captures
-          this difference that the mean alone cannot.
+          On one die throw, let <code>E</code> be “multiple of 3” and <code>F</code> be “even”.
+          Then <code>E = {3,6}</code>, <code>F = {2,4,6}</code>, and <code>E ∩ F = {6}</code>.
+          Since <code>P(E)=1/3</code>, <code>P(F)=1/2</code>, and <code>P(E ∩ F)=1/6</code>,
+          the product rule matches exactly, so the events are independent.
         </p>
+      </div>
+      <div class="concept-grid">
+        <div class="concept-card">
+          <h4>Research translation</h4>
+          <p>Independence assumptions appear constantly in repeated trials, random sampling, and many standard probability models.</p>
+        </div>
+        <div class="concept-card">
+          <h4>What to watch for</h4>
+          <p>If one step changes the pool, the dosage, or the group you are sampling from, independence usually disappears.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 5: RANDOM VARIABLES -->
+    <div class="section" id="s5">
+      <div class="section-badge">
+        <div class="section-num">5</div>
+        <span class="section-label">Distributions</span>
+      </div>
+      <h2>Random Variables, Expectation, and Variance</h2>
+      <h3>From outcomes to numbers</h3>
+      <p>
+        A <strong>random variable</strong> assigns a numerical value to each outcome in the sample space. Once outcomes are
+        converted into numbers, you can build a <strong>probability distribution</strong>, which tells you which values are possible
+        and how much probability each one gets.
+      </p>
+      <h3>Expected value</h3>
+      <p>
+        The expected value is the probability-weighted average of those values. It tells you the long-run centre of the distribution,
+        even if no single patient ever lands exactly on that average.
+      </p>
+      <div class="formula">
+        <span class="sym">E(X) = &Sigma; xP(x)</span>
+      </div>
+      <h3>Variance</h3>
+      <p>
+        The mean tells you where the distribution is centred; variance tells you how widely it spreads around that centre.
+        This is why two treatments can have similar averages but very different predictability.
+      </p>
+      <div class="formula">
+        <span class="sym">Var(X) = E[(X - &mu;)<sup>2</sup>] = E(X<sup>2</sup>) - [E(X)]<sup>2</sup></span>
+      </div>
+      <ul class="key-points">
+        <li>Expected value is a weighted average, not just an arithmetic average.</li>
+        <li>Variance is always non-negative; standard deviation is its square root.</li>
+        <li>DMFT distributions, prevalence scores, and rating scales all fit naturally into this framework.</li>
+        <li>Mean answers “where is the centre?”; variance answers “how stable is the outcome?”.</li>
+      </ul>
+      <div class="example-box">
+        <div class="example-box__label">Dental Translation</div>
+        <p>
+          If DMFT scores of 0, 1, 2, 3, 4, 5 occur with probabilities 0.30, 0.25, 0.20, 0.12, 0.08, and 0.05,
+          the expected DMFT is the weighted sum of those scores. A second community could have a similar expected value
+          but a much larger variance, meaning disease burden is less predictable from patient to patient.
+        </p>
+      </div>
+      <a href="/concepts/basic-probability-examples" class="inline-example-link">
+        Open the examples lab for the expectation and variance simulators
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
+    <!-- SECTION 6: BERNOULLI / BINOMIAL -->
+    <div class="section" id="s6">
+      <div class="section-badge">
+        <div class="section-num">6</div>
+        <span class="section-label">Repeated Trials</span>
+      </div>
+      <h2>Bernoulli Trials and Binomial Distribution</h2>
+      <h3>When the same success/failure trial repeats</h3>
+      <p>
+        Bernoulli trials are repeated experiments with exactly two outcomes, usually labelled success and failure,
+        where each trial stays independent and the probability of success remains constant. This makes them perfect
+        for thinking about repeated yes/no outcomes.
+      </p>
+      <ul class="key-points">
+        <li>Finite number of trials.</li>
+        <li>Exactly two outcomes on each trial.</li>
+        <li>Trials are independent.</li>
+        <li>The probability of success stays the same each time.</li>
+      </ul>
+      <h3>Binomial thinking</h3>
+      <p>
+        If <code>X</code> counts the number of successes in <code>n</code> Bernoulli trials, then <code>X</code> follows a
+        binomial distribution. The chapter uses this to count exact numbers of heads, defective items, or other repeated outcomes.
+      </p>
+      <div class="formula">
+        <span class="sym">P(X = x) = <sup>n</sup>C<sub>x</sub> p<sup>x</sup> q<sup>n-x</sup></span>
+        &nbsp; where &nbsp;
+        <span class="sym">q = 1 - p</span>
+      </div>
+      <div class="example-box">
+        <div class="example-box__label">Student-Friendly Dental Version</div>
+        <p>
+          If each implant has a 95% success probability and you observe 10 independent implants, then the chance of
+          <strong>at least one failure</strong> is easier to find by complement:
+          <code>1 - (0.95)<sup>10</sup></code>. This is exactly the same logic as the chapter’s “at least one defective item”
+          binomial example.
+        </p>
+      </div>
+      <div class="concept-grid">
+        <div class="concept-card">
+          <h4>Use this model when</h4>
+          <p>You are counting how many successes happen across repeated identical yes/no trials.</p>
+        </div>
+        <div class="concept-card">
+          <h4>Do not use it when</h4>
+          <p>The success probability changes between trials or one outcome changes the pool for the next draw.</p>
+        </div>
       </div>
     </div>
 
@@ -598,22 +854,23 @@
         <div class="examples-cta__content">
           <span class="examples-cta__eyebrow">
             <span class="dot"></span>
-            3 Interactive Simulations
+            Probability Practice Footer
           </span>
-          <div class="examples-cta__title">Ready to see it in action?</div>
+          <div class="examples-cta__title">Ready to move from theory to examples?</div>
           <p class="examples-cta__desc">
-            Put these concepts to the test with hands-on simulations. Flip implants, roll DMFT scores,
-            and draw satisfaction ratings &mdash; watch the math come alive with real dental scenarios.
+            The main lesson above now gives you the chapter logic. This practice footer takes you to the
+            interactive examples page, where the earlier intuition-first content lives as animated dental
+            simulations for probability, expectation, and variance.
           </p>
           <div class="examples-cta__sims">
-            <span class="examples-cta__sim-tag"><span class="tag-dot" style="background:#10b981"></span> Implant Success</span>
-            <span class="examples-cta__sim-tag"><span class="tag-dot" style="background:#0d9488"></span> DMFT Expected Value</span>
-            <span class="examples-cta__sim-tag"><span class="tag-dot" style="background:#6366f1"></span> Satisfaction Variance</span>
+            <span class="examples-cta__sim-tag"><span class="tag-dot" style="background:#10b981"></span> Chance events</span>
+            <span class="examples-cta__sim-tag"><span class="tag-dot" style="background:#0d9488"></span> Expected value</span>
+            <span class="examples-cta__sim-tag"><span class="tag-dot" style="background:#6366f1"></span> Variance</span>
           </div>
         </div>
         <div class="examples-cta__actions">
           <a href="/concepts/basic-probability-examples" class="examples-cta__btn">
-            Explore Examples
+            Open Examples Page
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>

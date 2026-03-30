@@ -605,6 +605,91 @@
       font-size: 1.08rem;
       line-height: 1.75;
     }
+    .hero-link-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 1.2rem;
+    }
+    .hero-link-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.6rem 0.95rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.12);
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+    .hero-link-chip:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.16);
+    }
+    .refresher-panel {
+      margin: 0 auto 1.5rem;
+      padding: 1.45rem;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240,249,255,0.92));
+      border: 1px solid rgba(13,148,136,0.12);
+      box-shadow: 0 18px 36px rgba(15,23,42,0.08);
+    }
+    .refresher-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 0.75rem;
+    }
+    .refresher-kicker::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), var(--indigo));
+    }
+    .refresher-panel h2 {
+      font-size: 1.25rem;
+      color: var(--navy);
+      margin-bottom: 0.45rem;
+    }
+    .refresher-panel p {
+      font-size: 0.92rem;
+      line-height: 1.7;
+      color: var(--muted);
+      margin: 0;
+    }
+    .refresher-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin-top: 1rem;
+    }
+    .refresher-card {
+      padding: 1rem 1.05rem;
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.16);
+      background: linear-gradient(135deg, rgba(13,148,136,0.05), rgba(99,102,241,0.05));
+    }
+    .refresher-card h3 {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.45rem;
+    }
+    .refresher-card p {
+      font-size: 0.86rem;
+      line-height: 1.65;
+      color: var(--muted);
+      margin: 0;
+    }
     .section {
       min-height: auto;
       justify-content: flex-start;
@@ -825,6 +910,9 @@
       .chapter-hero {
         padding: 1.9rem 1.55rem;
       }
+      .refresher-grid {
+        grid-template-columns: 1fr;
+      }
       .sim-launch-card {
         flex-direction: column;
         align-items: flex-start;
@@ -910,10 +998,37 @@
       <span class="chapter-hero__badge">Chapter 1 · Interactive Examples</span>
       <h1 class="chapter-hero__title">Basic Probability Examples</h1>
       <p class="chapter-hero__lead">
-        Put probability concepts into practice with three hands-on simulations. Flip implant outcomes,
-        roll DMFT scores, and draw satisfaction ratings — watch the math come alive with real dental scenarios.
+        This is the practice lab for the main probability lesson. The theory page now carries the chapter logic,
+        while this page keeps the intuition-first explanations and animated dental simulations that make the ideas easier to feel.
       </p>
+      <div class="hero-link-row">
+        <a href="/concepts/basic-probability" class="hero-link-chip">Back to main lesson</a>
+        <a href="#s1" class="hero-link-chip">Jump to first simulator</a>
+      </div>
     </section>
+
+    <div class="refresher-panel" aria-label="Quick refresher before the simulations">
+      <div class="refresher-kicker">Quick refresher</div>
+      <h2>The earlier intuition-first content now lives here</h2>
+      <p>
+        Before you simulate, use these three ideas as your mental map. Then scroll into the dental examples and
+        watch each concept update live with animation.
+      </p>
+      <div class="refresher-grid">
+        <div class="refresher-card">
+          <h3>Chance events</h3>
+          <p>Probability runs from 0 to 1. As more implant outcomes are simulated, the observed success rate settles near the true value.</p>
+        </div>
+        <div class="refresher-card">
+          <h3>Expected value</h3>
+          <p>The expected value is a weighted average. In the DMFT example, it acts like the long-run center of the score distribution.</p>
+        </div>
+        <div class="refresher-card">
+          <h3>Variance</h3>
+          <p>Variance describes spread. Two clinics can have similar averages but very different consistency, which matters for interpretation.</p>
+        </div>
+      </div>
+    </div>
 
     <!-- SECTION 1: CHANCE EVENTS -->
     <div class="section" id="s1" data-section="0">
