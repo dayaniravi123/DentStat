@@ -1154,6 +1154,21 @@ function syncMobileCLTControls() {
     });
 }
 
+function selectMobileCLTDistribution(type) {
+    const distributionSelect = document.getElementById('clt-distribution');
+    if (!distributionSelect) return;
+    distributionSelect.value = type;
+    updateCLTDistribution();
+}
+
+function selectMobileCLTSampleSize(n) {
+    const sampleSlider = document.getElementById('clt-n');
+    if (!sampleSlider) return;
+    sampleSlider.value = String(n);
+    updateCLTParams();
+    resetCLT();
+}
+
 function initHomeMobileSimulationControls() {
     const distributionSelect = document.getElementById('clt-distribution');
     const sampleSlider = document.getElementById('clt-n');
@@ -1935,7 +1950,10 @@ function resetCIDance() {
 }
 
 // Initialize all
-window.addEventListener('resize', initCLTCanvas);
+window.addEventListener('resize', () => {
+    initCLTCanvas();
+    initCICanvas();
+});
 
 function openModal(type) {
     const data = modalData[type];
@@ -1977,26 +1995,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.lucide && lucide.createIcons) lucide.createIcons();
     initSeoFlipCards();
 
+    const safeInit = (fn) => {
+        try {
+            fn();
+        } catch (err) {
+            // Individual homepage widgets should not block each other.
+        }
+    };
+
     // Initialize with beginner level
-    try {
-        setDifficulty('beginner');
-        initializeCharts();
-        initCLTCanvas();
-        initHomeMobileSimulationControls();
-        updateCLTNote();
-        initLLNChart();
-    } catch (err) {
-        // If some elements are missing, fail silently during partial renders
-        // console.warn('Initialization partial:', err);
-    }
+    safeInit(() => setDifficulty('beginner'));
+    safeInit(() => initializeCharts());
+    safeInit(() => initCLTCanvas());
+    safeInit(() => initHomeMobileSimulationControls());
+    safeInit(() => updateCLTNote());
+    safeInit(() => initCICanvas());
+    safeInit(() => initLLNChart());
 
     // Handle window resize for canvas
     window.addEventListener('resize', () => {
-        initCLTCanvas();
-        syncMobileCLTControls();
-        if (simState.probability.chart) {
-            simState.probability.chart.resize();
-        }
+        safeInit(() => initCLTCanvas());
+        safeInit(() => initCICanvas());
+        safeInit(() => syncMobileCLTControls());
+        safeInit(() => {
+            if (simState.probability.chart) {
+                simState.probability.chart.resize();
+            }
+        });
     });
 
     // Mobile menu toggle

@@ -1231,6 +1231,8 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
         gap: 0.85rem;
         width: 100%;
         margin: 0 !important;
+        position: relative;
+        z-index: 4;
     }
 
     .home-page .sim-card-actions button {
@@ -1240,6 +1242,11 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
         font-size: 0.98rem;
         font-weight: 700;
         box-shadow: none !important;
+        position: relative;
+        z-index: 5;
+        pointer-events: auto;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
     }
 
     .home-page .home-mobile-clt-card .sim-card-actions button:last-child {
@@ -1274,10 +1281,17 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
         flex-wrap: wrap;
         gap: 0.55rem;
         margin-bottom: 1rem;
+        position: relative;
+        z-index: 4;
     }
 
     .home-page .clt-mobile-chip-btn {
         min-width: calc(50% - 0.3rem);
+        position: relative;
+        z-index: 5;
+        pointer-events: auto;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
     }
 
     .home-page .clt-desktop-select,
@@ -1322,6 +1336,8 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 0.65rem;
+        position: relative;
+        z-index: 4;
     }
 
     .home-page .clt-mobile-n-btn {
@@ -1329,10 +1345,24 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
         min-height: 3.5rem;
         padding-inline: 0.65rem;
         font-size: 0.95rem;
+        position: relative;
+        z-index: 5;
+        pointer-events: auto;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
     }
 
     .home-page .clt-mobile-speed-row {
         margin-top: 1rem;
+        position: relative;
+        z-index: 4;
+    }
+
+    .home-page .clt-mobile-speed-row input[type="range"] {
+        position: relative;
+        z-index: 5;
+        pointer-events: auto;
+        touch-action: manipulation;
     }
 
     .home-page .clt-mobile-speed-indicator {
@@ -1376,6 +1406,8 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
 
     .home-page .clt-mobile-results {
         padding: 0 1rem 1rem;
+        position: relative;
+        z-index: 1;
     }
 
     .home-page .clt-mobile-chart-shell {
@@ -1398,6 +1430,10 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
     .home-page #clt-overlay {
         inset: 0.95rem;
         border-radius: 1rem;
+    }
+
+    .home-page #clt-overlay.hidden {
+        display: none !important;
     }
 
     .home-page .clt-mobile-note {
@@ -1427,6 +1463,8 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
         border-radius: 1.28rem;
         border-color: rgba(230, 221, 207, 0.95);
         background: #fffefb;
+        position: relative;
+        z-index: 1;
     }
 
     .home-page #ciDanceCanvas {

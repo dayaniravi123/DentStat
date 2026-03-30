@@ -353,10 +353,10 @@
                         <p class="text-sm text-gray-500 mt-1 ml-10 sim-card-subtitle">Watch sample means converge to a normal distribution — regardless of the population shape</p>
                     </div>
                     <div class="flex space-x-2 ml-10 sm:ml-0 sim-card-actions sim-card-actions-top">
-                        <button onclick="startCLTSimulation()" id="clt-start" class="btn-ripple px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-xl hover:shadow-lg hover:shadow-teal-500/20 transition-all flex items-center text-sm font-semibold">
+                        <button type="button" onclick="startCLTSimulation()" id="clt-start" class="btn-ripple px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-xl hover:shadow-lg hover:shadow-teal-500/20 transition-all flex items-center text-sm font-semibold">
                             <i data-lucide="play" class="w-4 h-4 mr-1.5"></i> Start
                         </button>
-                        <button onclick="resetCLT()" class="btn-ripple px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-all flex items-center text-sm font-medium">
+                        <button type="button" onclick="resetCLT()" class="btn-ripple px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-all flex items-center text-sm font-medium">
                             <i data-lucide="rotate-ccw" class="w-4 h-4 mr-1"></i> Reset
                         </button>
                     </div>
@@ -368,10 +368,10 @@
                         <div class="bg-gradient-to-b from-gray-50 to-white rounded-xl p-4 border border-gray-100 clt-control-card">
                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 sim-control-label">Population Shape</label>
                             <div class="clt-mobile-chip-row" role="tablist" aria-label="Population shape presets">
-                                <button type="button" class="clt-mobile-chip-btn is-active" data-clt-dist="uniform" aria-pressed="true">Uniform</button>
-                                <button type="button" class="clt-mobile-chip-btn" data-clt-dist="exponential" aria-pressed="false">Exponential</button>
-                                <button type="button" class="clt-mobile-chip-btn" data-clt-dist="bimodal" aria-pressed="false">Bimodal</button>
-                                <button type="button" class="clt-mobile-chip-btn" data-clt-dist="dental" aria-pressed="false">DMFT</button>
+                                <button type="button" onclick="selectMobileCLTDistribution('uniform')" class="clt-mobile-chip-btn is-active" data-clt-dist="uniform" aria-pressed="true">Uniform</button>
+                                <button type="button" onclick="selectMobileCLTDistribution('exponential')" class="clt-mobile-chip-btn" data-clt-dist="exponential" aria-pressed="false">Exponential</button>
+                                <button type="button" onclick="selectMobileCLTDistribution('bimodal')" class="clt-mobile-chip-btn" data-clt-dist="bimodal" aria-pressed="false">Bimodal</button>
+                                <button type="button" onclick="selectMobileCLTDistribution('dental')" class="clt-mobile-chip-btn" data-clt-dist="dental" aria-pressed="false">DMFT</button>
                             </div>
                             <select id="clt-distribution" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 mb-3 text-sm font-medium bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition clt-desktop-select" onchange="updateCLTDistribution()">
                                 <option value="uniform">Uniform (Flat)</option>
@@ -390,9 +390,9 @@
                             <div class="clt-mobile-sample-group">
                                 <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 sim-control-label">Sample Size (n)</label>
                                 <div class="clt-mobile-sample-presets" role="tablist" aria-label="Sample size presets">
-                                    <button type="button" class="clt-mobile-n-btn" data-clt-n="1" aria-pressed="false">n=1</button>
-                                    <button type="button" class="clt-mobile-n-btn is-active" data-clt-n="30" aria-pressed="true">n=30</button>
-                                    <button type="button" class="clt-mobile-n-btn" data-clt-n="100" aria-pressed="false">n=100</button>
+                                    <button type="button" onclick="selectMobileCLTSampleSize(1)" class="clt-mobile-n-btn" data-clt-n="1" aria-pressed="false">n=1</button>
+                                    <button type="button" onclick="selectMobileCLTSampleSize(30)" class="clt-mobile-n-btn is-active" data-clt-n="30" aria-pressed="true">n=30</button>
+                                    <button type="button" onclick="selectMobileCLTSampleSize(100)" class="clt-mobile-n-btn" data-clt-n="100" aria-pressed="false">n=100</button>
                                 </div>
                                 <div class="clt-slider-wrap">
                                     <input type="range" id="clt-n" min="1" max="100" value="30" class="w-full accent-teal-600 clt-sample-slider" oninput="updateCLTParams()">
@@ -526,8 +526,8 @@
                         <p class="text-sm text-gray-500 mt-1 ml-10 sim-card-subtitle">See why 95% of intervals capture the true mean.</p>
                     </div>
                     <div class="flex space-x-2 ml-10 sm:ml-0 sim-card-actions">
-                        <button onclick="startCIDance()" id="ci-dance-start" class="btn-ripple px-5 py-2.5 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all text-sm font-semibold">Run 100 Samples</button>
-                        <button onclick="resetCIDance()" class="btn-ripple px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-all text-sm font-medium">Clear</button>
+                        <button type="button" onclick="startCIDance()" id="ci-dance-start" class="btn-ripple px-5 py-2.5 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all text-sm font-semibold">Run 100 Samples</button>
+                        <button type="button" onclick="resetCIDance()" class="btn-ripple px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-all text-sm font-medium">Clear</button>
                     </div>
                 </div>
 
