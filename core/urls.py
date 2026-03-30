@@ -7,6 +7,7 @@ urlpatterns = [
     path('robots.txt', views.robots_txt, name='robots_txt'),
     path('sitemap.xml', views.sitemap_xml, name='sitemap_xml'),
     path('concepts/', views.concepts_hub, name='concepts_hub'),
+    path('examples/basic-probability/', views.basic_probability_examples_page, name='basic_probability_examples_page'),
     path('concepts/<path:page>', views.concept_page, name='concept_page'),
     path('learning/<path:page>', views.learning_page, name='learning_page'),
     path('visualization/<path:page>', views.visualization_page, name='visualization_page'),

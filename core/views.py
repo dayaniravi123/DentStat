@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import Http404, JsonResponse
 from django.template import TemplateDoesNotExist
 from django.views.decorators.http import require_http_methods
@@ -67,6 +67,7 @@ LEARNING_SITEMAP_PAGES = [
 PRIMARY_SITEMAP_PAGES = [
 	{'path': '/', 'changefreq': 'weekly', 'priority': '1.0'},
 	{'path': '/concepts/', 'changefreq': 'weekly', 'priority': '0.95'},
+	{'path': '/examples/basic-probability/', 'changefreq': 'monthly', 'priority': '0.82'},
 	{'path': '/calculator/', 'changefreq': 'weekly', 'priority': '0.90'},
 	{'path': '/visualization/live-graph', 'changefreq': 'weekly', 'priority': '0.90'},
 	{'path': '/about/', 'changefreq': 'monthly', 'priority': '0.70'},
@@ -126,6 +127,8 @@ def concepts_hub(request):
 
 @xframe_options_sameorigin
 def concept_page(request, page):
+	if page in {'basic-probability-examples', 'basic-probability-examples.html'}:
+		return redirect('basic_probability_examples_page')
 	if not page.endswith('.html'):
 		tpl_name = f'concepts/{page}.html'
 	else:
@@ -163,6 +166,10 @@ def calculator_page(request):
 		return render(request, 'calculator/calc.html')
 	except TemplateDoesNotExist:
 		raise Http404('Calculator page not found')
+
+
+def basic_probability_examples_page(request):
+	return render(request, 'concepts/basic-probability-examples.html')
 
 
 def about_page(request):
