@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Learn basic probability for dental research — events, conditional probability, multiplication rules, independence, expected value, variance, and binomial thinking.">
+  <meta name="description" content="Learn basic probability — conditional probability, multiplication theorem, independent events, Bayes' theorem, random variables, expectation, variance, and binomial distribution.">
   <meta property="og:title" content="Basic Probability — DentalStats">
-  <meta property="og:description" content="Learn basic probability for dental research — events, conditional probability, multiplication rules, independence, expected value, variance, and binomial thinking.">
+  <meta property="og:description" content="Learn basic probability — conditional probability, multiplication theorem, independent events, Bayes' theorem, random variables, expectation, variance, and binomial distribution.">
   <meta property="og:type" content="website">
   <title>Basic Probability — DentalStats</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet">
@@ -375,299 +375,310 @@
       <span class="chapter-hero__badge">Chapter 1 &middot; Basic Probability</span>
       <h1 class="chapter-hero__title">Basic Probability</h1>
       <p class="chapter-hero__lead">
-        This lesson turns the most useful ideas from the probability chapter into a student-friendly path:
-        events, conditional probability, multiplication, independence, random variables, expectation,
-        variance, and binomial thinking. The goal is to help you read research logic first, then jump
-        into the interactive dental examples at the bottom.
+        This page now follows the attached probability chapter much more closely. It moves from conditional
+        probability and multiplication rules into independence, Bayes’ theorem, random variables, expectation,
+        variance, Bernoulli trials, and binomial distribution.
       </p>
       <div class="topic-chip-row" aria-label="Lesson topics">
         <span class="topic-chip">Conditional probability</span>
-        <span class="topic-chip">Multiplication rule</span>
+        <span class="topic-chip">Multiplication theorem</span>
         <span class="topic-chip">Independent events</span>
-        <span class="topic-chip">Expected value</span>
-        <span class="topic-chip">Variance</span>
-        <span class="topic-chip">Binomial models</span>
+        <span class="topic-chip">Bayes’ theorem</span>
+        <span class="topic-chip">Random variables</span>
+        <span class="topic-chip">Binomial distribution</span>
       </div>
     </section>
 
-    <!-- SECTION 1: EVENTS -->
     <div class="section" id="s1">
       <div class="section-badge">
         <div class="section-num">1</div>
-        <span class="section-label">Foundations</span>
+        <span class="section-label">Conditional Probability</span>
       </div>
-      <h2>Events, Outcomes, and Complements</h2>
-      <h3>Sample space and events</h3>
+      <h2>What changes when one event is already known?</h2>
       <p>
-        Probability begins with a <strong>sample space</strong>: the full set of outcomes a random experiment
-        can produce. An <strong>event</strong> is any subset of that sample space. If you toss three fair coins,
-        the sample space contains eight outcomes such as <code>HHH</code>, <code>HHT</code>, and <code>TTT</code>.
-        If you care about “at least two heads”, you only collect the outcomes that match that question.
+        The key idea of this chapter is that the probability of an event can change once you know another event
+        has already occurred. When that happens, you no longer work with the original sample space. You work with
+        a reduced sample space containing only the outcomes compatible with the known event.
       </p>
       <p>
-        In dental research, the same thinking appears when we define events like “implant survives one year”,
-        “DMFT score is at least 3”, or “a patient reports high satisfaction”. The event is the question;
-        the probability tells us how often it should happen in the long run.
-      </p>
-      <h3>Complements simplify many questions</h3>
-      <p>
-        A complement is the event that something <em>does not</em> happen. This is often the quickest route to
-        an answer. If an implant succeeds with probability <code>0.95</code>, then failure has probability
-        <code>0.05</code>. Many “at least one” questions are easier to solve by first finding the probability
-        of “none”.
-      </p>
-      <div class="formula">
-        <span class="sym">0 &le; P(A) &le; 1</span>
-        &nbsp;&nbsp;&middot;&nbsp;&nbsp;
-        <span class="sym">P(A&#x1d9c;) = 1 &minus; P(A)</span>
-      </div>
-
-      <ul class="key-points">
-        <li><strong>P(A)=0</strong> means impossible; <strong>P(A)=1</strong> means certain.</li>
-        <li>The sample space changes with the experiment, but every event always lives inside that space.</li>
-        <li>Complements are especially useful for failure probabilities, dropout probabilities, and “at least one” situations.</li>
-        <li>The Law of Large Numbers explains why observed proportions get steadier as data accumulates.</li>
-      </ul>
-
-      <div class="example-box">
-        <div class="example-box__label">Useful Example from the Chapter</div>
-        <p>
-          In the chapter’s three-coin experiment, the event “at least two heads” is not a single outcome;
-          it is a collection of outcomes. That is the core shift in probability: we rarely care about one
-          raw result in isolation, we care about sets of results that answer a question.
-        </p>
-      </div>
-    </div>
-
-    <!-- SECTION 2: CONDITIONAL -->
-    <div class="section" id="s2">
-      <div class="section-badge">
-        <div class="section-num">2</div>
-        <span class="section-label">Conditioning</span>
-      </div>
-      <h2>Conditional Probability</h2>
-      <h3>What changes when new information arrives?</h3>
-      <p>
-        Conditional probability asks: <em>how does the probability of one event change once we already know
-        another event has happened?</em> The important idea is that the sample space shrinks. Once new
-        information arrives, you stop counting impossible cases and focus only on the cases still compatible
-        with that information.
-      </p>
-      <p>
-        This is why conditional probability is so useful in screening, diagnosis, and research interpretation.
-        “What is the chance of disease?” is different from “what is the chance of disease <strong>given</strong>
-        a positive test?” The second question is always about a filtered set of patients.
+        In the chapter’s opening example, three fair coins are tossed. If you are told that the first coin is a
+        tail, then all outcomes beginning with head are immediately removed. The probability question is the same,
+        but the space you count inside has changed.
       </p>
       <div class="formula">
         <span class="sym">P(E|F) = P(E &cap; F) / P(F)</span>
       </div>
-
       <ul class="key-points">
-        <li>Conditioning does not create new outcomes; it removes outcomes that no longer fit the information you have.</li>
-        <li>The denominator is the event you are conditioning on, so it must have nonzero probability.</li>
-        <li>This idea is the doorway to <strong>Bayes’ theorem</strong>, where you reverse the direction of a condition.</li>
-        <li>Students often improve fastest when they redraw the problem with the smaller sample space first.</li>
+        <li>The denominator is always the event you are conditioning on.</li>
+        <li>Conditional probability only makes sense when <code>P(F) &ne; 0</code>.</li>
+        <li>The event <code>E &cap; F</code> counts the outcomes that satisfy both conditions together.</li>
+        <li>Many textbook and research questions become easier once you explicitly redraw the reduced sample space.</li>
       </ul>
-
       <div class="example-box">
-        <div class="example-box__label">Useful Example from the Chapter</div>
+        <div class="example-box__label">Useful Example from the PDF</div>
         <p>
-          Ten cards numbered 1 to 10 are mixed, and you are told the drawn card is greater than 3.
-          The probability that it is even is not based on all ten cards anymore. You now work only with
-          <code>{4,5,6,7,8,9,10}</code>, so the answer becomes <code>4/7</code>.
+          A family has two children. Given that at least one child is a boy, the sample space becomes
+          <code>{(b,b), (b,g), (g,b)}</code>. Only one of these three outcomes has two boys, so the conditional
+          probability is <code>1/3</code>.
+        </p>
+      </div>
+      <div class="example-box">
+        <div class="example-box__label">Another Short Example</div>
+        <p>
+          If a card numbered 1 to 10 is drawn and you are told the number is greater than 3, the reduced sample
+          space is <code>{4,5,6,7,8,9,10}</code>. The even outcomes are <code>{4,6,8,10}</code>, so the
+          conditional probability is <code>4/7</code>.
+        </p>
+      </div>
+    </div>
+
+    <div class="section" id="s2">
+      <div class="section-badge">
+        <div class="section-num">2</div>
+        <span class="section-label">Multiplication Rule</span>
+      </div>
+      <h2>How do we calculate the probability of events happening together?</h2>
+      <p>
+        The multiplication theorem grows directly out of conditional probability. If you want the probability that
+        two events occur together, first take one event, then multiply by the conditional probability of the second
+        event given the first.
+      </p>
+      <div class="formula">
+        <span class="sym">P(E &cap; F) = P(E)P(F|E) = P(F)P(E|F)</span>
+      </div>
+      <p>
+        This rule is especially useful in multi-stage experiments such as drawing cards without replacement, drawing
+        balls from an urn, or following a branching process with a tree diagram.
+      </p>
+      <ul class="key-points">
+        <li>For three events, keep extending the chain with the next conditional probability.</li>
+        <li>Without replacement, the later probability often changes because the first draw changes the pool.</li>
+        <li>Tree diagrams make the multiplication rule easier to visualize.</li>
+      </ul>
+      <div class="example-box">
+        <div class="example-box__label">Useful Example from the PDF</div>
+        <p>
+          An urn contains 10 black and 5 white balls. If two balls are drawn without replacement, then
+          <code>P(first black) = 10/15</code> and <code>P(second black | first black) = 9/14</code>. So the
+          probability that both are black is <code>(10/15)(9/14) = 3/7</code>.
         </p>
       </div>
       <div class="concept-grid">
         <div class="concept-card">
-          <h4>Why it matters in research</h4>
-          <p>Conditional thinking sits behind diagnostic reasoning, follow-up analyses, subgroup reporting, and Bayesian updates.</p>
+          <h4>Sequential card example</h4>
+          <p>For three cards drawn without replacement, the chapter uses the event “first two are kings and the third is an ace” and multiplies one stage at a time.</p>
         </div>
         <div class="concept-card">
-          <h4>Good student habit</h4>
-          <p>Write “given that …” as a new mini-sample-space before touching the formula. It prevents most denominator mistakes.</p>
+          <h4>Why this matters</h4>
+          <p>The theorem gives a clean way to move from “given that” language into multi-step probability calculations.</p>
         </div>
       </div>
     </div>
 
-    <!-- SECTION 3: MULTIPLICATION -->
     <div class="section" id="s3">
       <div class="section-badge">
         <div class="section-num">3</div>
-        <span class="section-label">Sequences</span>
+        <span class="section-label">Independence</span>
       </div>
-      <h2>Multiplication Rule and Tree Thinking</h2>
-      <h3>Chaining probabilities across steps</h3>
+      <h2>Independent Events</h2>
       <p>
-        When you need the probability that <strong>two events happen together</strong>, conditional probability
-        naturally leads to the multiplication rule. This is the rule you use for multi-step procedures,
-        sequential card draws, repeated screening stages, or any process where one step changes the next.
-      </p>
-      <p>
-        Tree diagrams are especially helpful here because they force you to read paths one branch at a time.
-        The chapter uses a nice example where a coin is tossed and, depending on the result, you either toss again
-        or throw a die. Tree thinking makes the conditional structure visible before you calculate anything.
+        Two events are independent when the occurrence of one does not affect the probability of the other.
+        The chapter expresses this in two equivalent ways: either conditioning does not change the probability,
+        or the probability of the intersection equals the product of the probabilities.
       </p>
       <div class="formula">
-        <span class="sym">P(E &cap; F) = P(E) &middot; P(F|E)</span>
+        <span class="sym">P(E|F) = P(E)</span>
+        &nbsp;&nbsp;or&nbsp;&nbsp;
+        <span class="sym">P(E &cap; F) = P(E)P(F)</span>
       </div>
-
       <ul class="key-points">
-        <li>Without replacement, the second step often depends on the first, so conditional probability is essential.</li>
-        <li>With replacement, the next step may keep the same probabilities, which often simplifies the calculation.</li>
-        <li>For three or more stages, keep multiplying by the next conditional probability on the path you care about.</li>
-        <li>Tree diagrams are often the clearest way to avoid mixing up branches and totals.</li>
+        <li>Independent events are not the same as mutually exclusive events.</li>
+        <li>Mutually exclusive events with nonzero probability cannot be independent.</li>
+        <li>Repeated throws of a fair die or repeated tosses of a fair coin are standard independent experiments.</li>
       </ul>
-
       <div class="example-box">
-        <div class="example-box__label">Useful Example from the Chapter</div>
+        <div class="example-box__label">Useful Example from the PDF</div>
         <p>
-          An urn has 10 black and 5 white balls. If two balls are drawn without replacement, the
-          probability that both are black is <code>(10/15) &times; (9/14) = 3/7</code>. The second fraction
-          changes because the first draw changed the urn.
+          Let <code>E</code> be “the card drawn is a spade” and <code>F</code> be “the card drawn is an ace”.
+          Then <code>P(E)=1/4</code>, <code>P(F)=1/13</code>, and <code>P(E &cap; F)=1/52</code>. Since
+          <code>(1/4)(1/13)=1/52</code>, the two events are independent.
+        </p>
+      </div>
+      <div class="example-box">
+        <div class="example-box__label">Another Short Example</div>
+        <p>
+          For one die throw, let <code>E</code> be “multiple of 3” and <code>F</code> be “even”.
+          Then <code>E={3,6}</code>, <code>F={2,4,6}</code>, and <code>E &cap; F={6}</code>. Again,
+          <code>P(E &cap; F)=1/6=(1/3)(1/2)</code>, so the events are independent.
         </p>
       </div>
     </div>
 
-    <!-- SECTION 4: INDEPENDENCE -->
     <div class="section" id="s4">
       <div class="section-badge">
         <div class="section-num">4</div>
-        <span class="section-label">Independence</span>
+        <span class="section-label">Total Probability &amp; Bayes</span>
       </div>
-      <h2>Independent Events</h2>
-      <h3>When one event does not change the other</h3>
+      <h2>How do we reverse a probability question?</h2>
       <p>
-        Two events are independent when learning that one happened does not alter the probability of the other.
-        This is a probability idea, not just a logic idea. In symbols, independence means the overlap behaves
-        exactly like the product of the separate probabilities.
+        Once a sample space is split into disjoint cases, the theorem of total probability lets you rebuild the
+        probability of an event by adding the contribution from each case. Bayes’ theorem then turns this around:
+        it tells you how to update the probability of a hidden cause after observing an outcome.
       </p>
       <div class="formula">
-        <span class="sym">P(E &cap; F) = P(E) &middot; P(F)</span>
+        <span class="sym">P(A) = &Sigma; P(E<sub>i</sub>)P(A|E<sub>i</sub>)</span>
+      </div>
+      <div class="formula">
+        <span class="sym">P(E<sub>i</sub>|A) = P(E<sub>i</sub>)P(A|E<sub>i</sub>) / &Sigma; P(E<sub>j</sub>)P(A|E<sub>j</sub>)</span>
       </div>
       <ul class="key-points">
-        <li>Independence is different from being mutually exclusive.</li>
-        <li>If two nonzero-probability events are mutually exclusive, they cannot be independent.</li>
-        <li>Repeated fair die throws and fair coin tosses are classic independent trials.</li>
-        <li>Many students test independence fastest by checking whether <code>P(E ∩ F)</code> equals <code>P(E)P(F)</code>.</li>
+        <li>Total probability needs a partition of the sample space.</li>
+        <li>Bayes’ theorem updates the probability of a cause after an outcome is observed.</li>
+        <li>This is one of the most important bridges from descriptive counting to probabilistic inference.</li>
       </ul>
       <div class="example-box">
-        <div class="example-box__label">Useful Example from the Chapter</div>
+        <div class="example-box__label">Useful Example from the PDF</div>
         <p>
-          On one die throw, let <code>E</code> be “multiple of 3” and <code>F</code> be “even”.
-          Then <code>E = {3,6}</code>, <code>F = {2,4,6}</code>, and <code>E ∩ F = {6}</code>.
-          Since <code>P(E)=1/3</code>, <code>P(F)=1/2</code>, and <code>P(E ∩ F)=1/6</code>,
-          the product rule matches exactly, so the events are independent.
+          One of four boxes is selected at random and then a ball is drawn. If the ball is black, Bayes’ theorem
+          can be used to find the probability that it came from box III. The chapter uses exactly this structure to
+          show how evidence changes the probability of the original source.
         </p>
       </div>
       <div class="concept-grid">
         <div class="concept-card">
-          <h4>Research translation</h4>
-          <p>Independence assumptions appear constantly in repeated trials, random sampling, and many standard probability models.</p>
+          <h4>Machine setup example</h4>
+          <p>The chapter also uses a production example: after two acceptable items are observed, Bayes’ theorem updates the probability that the machine was correctly set up.</p>
         </div>
         <div class="concept-card">
-          <h4>What to watch for</h4>
-          <p>If one step changes the pool, the dosage, or the group you are sampling from, independence usually disappears.</p>
+          <h4>What students should notice</h4>
+          <p>Bayes does not create information; it reorganizes prior probabilities and observed evidence into an updated answer.</p>
         </div>
       </div>
     </div>
 
-    <!-- SECTION 5: RANDOM VARIABLES -->
     <div class="section" id="s5">
       <div class="section-badge">
         <div class="section-num">5</div>
-        <span class="section-label">Distributions</span>
+        <span class="section-label">Random Variables</span>
       </div>
-      <h2>Random Variables, Expectation, and Variance</h2>
-      <h3>From outcomes to numbers</h3>
+      <h2>From outcomes to numbers</h2>
       <p>
-        A <strong>random variable</strong> assigns a numerical value to each outcome in the sample space. Once outcomes are
-        converted into numbers, you can build a <strong>probability distribution</strong>, which tells you which values are possible
-        and how much probability each one gets.
+        A random variable is a real-valued function defined on the sample space of a random experiment. Instead of
+        keeping track of raw outcomes like <code>HHT</code> or <code>FFF</code>, we assign a number that represents
+        the feature we want to study.
       </p>
-      <h3>Expected value</h3>
       <p>
-        The expected value is the probability-weighted average of those values. It tells you the long-run centre of the distribution,
-        even if no single patient ever lands exactly on that average.
+        For example, if three Bernoulli trials are performed, the random variable might count the number of successes.
+        This produces a probability distribution showing which values are possible and how likely each one is.
+      </p>
+      <div class="formula">
+        <span class="sym">X : x<sub>1</sub>, x<sub>2</sub>, ... , x<sub>n</sub></span>
+        &nbsp;&nbsp;with&nbsp;&nbsp;
+        <span class="sym">P(X=x<sub>i</sub>) = p<sub>i</sub></span>
+      </div>
+      <ul class="key-points">
+        <li>A random variable converts a probability problem into a numerical distribution.</li>
+        <li>The probabilities in a distribution are all non-negative and add up to 1.</li>
+        <li>Once the distribution is known, you can calculate the mean and variance of the random variable.</li>
+      </ul>
+      <div class="example-box">
+        <div class="example-box__label">Useful Example from the PDF</div>
+        <p>
+          In three Bernoulli trials, let <code>X</code> be the number of successes. Then <code>X</code> can take
+          the values 0, 1, 2, or 3. The probability distribution of <code>X</code> comes directly from counting the
+          ways each number of successes can happen.
+        </p>
+      </div>
+    </div>
+
+    <div class="section" id="s6">
+      <div class="section-badge">
+        <div class="section-num">6</div>
+        <span class="section-label">Expectation &amp; Variance</span>
+      </div>
+      <h2>Mean and Variance of a Probability Distribution</h2>
+      <p>
+        Once a probability distribution is known, two of the most important summaries are the mean and the variance.
+        The mean, also called the expectation, gives the long-run average value of the random variable. The variance
+        measures how far values typically spread around that mean.
       </p>
       <div class="formula">
         <span class="sym">E(X) = &Sigma; xP(x)</span>
       </div>
-      <h3>Variance</h3>
-      <p>
-        The mean tells you where the distribution is centred; variance tells you how widely it spreads around that centre.
-        This is why two treatments can have similar averages but very different predictability.
-      </p>
       <div class="formula">
         <span class="sym">Var(X) = E[(X - &mu;)<sup>2</sup>] = E(X<sup>2</sup>) - [E(X)]<sup>2</sup></span>
       </div>
       <ul class="key-points">
-        <li>Expected value is a weighted average, not just an arithmetic average.</li>
-        <li>Variance is always non-negative; standard deviation is its square root.</li>
-        <li>DMFT distributions, prevalence scores, and rating scales all fit naturally into this framework.</li>
-        <li>Mean answers “where is the centre?”; variance answers “how stable is the outcome?”.</li>
+        <li>The mean is a weighted average using probabilities as weights.</li>
+        <li>Variance is always non-negative.</li>
+        <li>The standard deviation is the positive square root of the variance.</li>
+        <li>Mean describes centre; variance describes spread.</li>
       </ul>
       <div class="example-box">
-        <div class="example-box__label">Dental Translation</div>
+        <div class="example-box__label">Useful Example from the PDF</div>
         <p>
-          If DMFT scores of 0, 1, 2, 3, 4, 5 occur with probabilities 0.30, 0.25, 0.20, 0.12, 0.08, and 0.05,
-          the expected DMFT is the weighted sum of those scores. A second community could have a similar expected value
-          but a much larger variance, meaning disease burden is less predictable from patient to patient.
+          The chapter finds the mean of a binomial distribution <code>B(4, 1/3)</code>. The full table is written
+          out first, and then each value of <code>x</code> is multiplied by its probability and added to obtain the mean.
         </p>
       </div>
       <a href="/examples/basic-probability/" class="inline-example-link">
-        Open the examples lab for the expectation and variance simulators
+        Open the examples lab for simpler interactive intuition
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 12h14M12 5l7 7-7 7"/>
         </svg>
       </a>
     </div>
 
-    <!-- SECTION 6: BERNOULLI / BINOMIAL -->
-    <div class="section" id="s6">
+    <div class="section" id="s7">
       <div class="section-badge">
-        <div class="section-num">6</div>
-        <span class="section-label">Repeated Trials</span>
+        <div class="section-num">7</div>
+        <span class="section-label">Binomial Distribution</span>
       </div>
       <h2>Bernoulli Trials and Binomial Distribution</h2>
-      <h3>When the same success/failure trial repeats</h3>
+      <h3>When is a trial Bernoulli?</h3>
       <p>
-        Bernoulli trials are repeated experiments with exactly two outcomes, usually labelled success and failure,
-        where each trial stays independent and the probability of success remains constant. This makes them perfect
-        for thinking about repeated yes/no outcomes.
+        The chapter defines Bernoulli trials very carefully. A sequence of trials is Bernoulli when the number of
+        trials is finite, each trial has exactly two outcomes, the trials are independent, and the probability of
+        success remains the same each time.
       </p>
       <ul class="key-points">
-        <li>Finite number of trials.</li>
-        <li>Exactly two outcomes on each trial.</li>
-        <li>Trials are independent.</li>
-        <li>The probability of success stays the same each time.</li>
+        <li>Success and failure are labels; they do not mean “good” and “bad”.</li>
+        <li>Drawing with replacement can give Bernoulli trials because the success probability stays constant.</li>
+        <li>Drawing without replacement usually breaks the Bernoulli condition because the probability changes after each draw.</li>
       </ul>
-      <h3>Binomial thinking</h3>
+      <h3>The binomial model</h3>
       <p>
-        If <code>X</code> counts the number of successes in <code>n</code> Bernoulli trials, then <code>X</code> follows a
-        binomial distribution. The chapter uses this to count exact numbers of heads, defective items, or other repeated outcomes.
+        If <code>X</code> counts the number of successes in <code>n</code> Bernoulli trials, then
+        <code>X</code> has a binomial distribution. The probability of exactly <code>x</code> successes is:
       </p>
       <div class="formula">
-        <span class="sym">P(X = x) = <sup>n</sup>C<sub>x</sub> p<sup>x</sup> q<sup>n-x</sup></span>
-        &nbsp; where &nbsp;
+        <span class="sym">P(X=x) = <sup>n</sup>C<sub>x</sub> q<sup>n-x</sup> p<sup>x</sup></span>
+        &nbsp;&nbsp;where&nbsp;&nbsp;
         <span class="sym">q = 1 - p</span>
       </div>
       <div class="example-box">
-        <div class="example-box__label">Student-Friendly Dental Version</div>
+        <div class="example-box__label">Useful Example from the PDF</div>
         <p>
-          If each implant has a 95% success probability and you observe 10 independent implants, then the chance of
-          <strong>at least one failure</strong> is easier to find by complement:
-          <code>1 - (0.95)<sup>10</sup></code>. This is exactly the same logic as the chapter’s “at least one defective item”
-          binomial example.
+          If a fair coin is tossed 10 times, the chapter asks for the probability of exactly six heads, at least
+          six heads, and at most six heads. All three are direct applications of the binomial formula.
+        </p>
+      </div>
+      <div class="example-box">
+        <div class="example-box__label">Another Useful Example</div>
+        <p>
+          If 10% of eggs are defective and 10 eggs are drawn with replacement, the probability of at least one
+          defective egg is found by complement:
+          <code>1 - P(X=0) = 1 - (9/10)<sup>10</sup></code>.
         </p>
       </div>
       <div class="concept-grid">
         <div class="concept-card">
-          <h4>Use this model when</h4>
-          <p>You are counting how many successes happen across repeated identical yes/no trials.</p>
+          <h4>Use a binomial model when</h4>
+          <p>You are counting how many successes occur across repeated independent trials with the same success probability.</p>
         </div>
         <div class="concept-card">
           <h4>Do not use it when</h4>
-          <p>The success probability changes between trials or one outcome changes the pool for the next draw.</p>
+          <p>The probability changes between trials, such as most without-replacement settings.</p>
         </div>
       </div>
     </div>
