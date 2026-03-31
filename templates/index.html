@@ -425,22 +425,31 @@
                     <!-- Right: Histogram canvas -->
                     <div class="lg:col-span-2 clt-mobile-results">
                         <div class="relative h-80 bg-gradient-to-b from-white to-gray-50/50 rounded-xl border border-gray-200 p-2 shadow-inner clt-mobile-chart-shell">
-                            <div class="clt-mobile-chart-label clt-mobile-chart-label-main">Sample Means</div>
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2 clt-chart-toolbar">
+                                <div>
+                                    <div class="clt-mobile-chart-label clt-mobile-chart-label-main mb-1">Right Chart</div>
+                                    <p id="clt-chart-mode-title" class="text-sm font-semibold text-slate-700">Population Values</p>
+                                </div>
+                                <div class="inline-flex flex-wrap gap-2 rounded-full border border-slate-200 bg-slate-50 p-1 self-start sm:self-auto">
+                                    <button type="button" id="clt-view-population" onclick="setCLTViewMode('population')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-teal-600 text-white shadow-sm transition">Population Values</button>
+                                    <button type="button" id="clt-view-means" onclick="setCLTViewMode('means')" class="px-3 py-1.5 rounded-full text-xs font-semibold text-slate-600 transition">Sample Means</button>
+                                </div>
+                            </div>
                             <canvas id="cltCanvas" class="w-full h-full"></canvas>
                             <div id="clt-overlay" class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm rounded-xl">
                                 <div class="text-center">
                                     <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-teal-500/20">
                                         <i data-lucide="play" class="w-8 h-8 text-white"></i>
                                     </div>
-                                    <p class="text-gray-700 font-semibold text-base">Click Start to Begin</p>
-                                    <p class="text-gray-400 text-xs mt-1">Watch the Central Limit Theorem in action</p>
+                                    <p id="clt-overlay-title" class="text-gray-700 font-semibold text-base">Click Start to Begin</p>
+                                    <p id="clt-overlay-copy" class="text-gray-400 text-xs mt-1">Draw population values, or switch to sample means to watch the Central Limit Theorem in action.</p>
                                 </div>
                             </div>
                         </div>
                         <div id="clt-sampling-note" class="mt-3 rounded-xl border border-sky-100 bg-sky-50/80 px-4 py-3 text-sm leading-relaxed text-slate-600 clt-mobile-note">
-                            The right chart shows the <span class="font-semibold text-slate-700">sampling distribution of sample means</span>, not the raw population values.
+                            The right chart is currently showing <span class="font-semibold text-slate-700">raw population values</span> so it matches the selected population shape.
                         </div>
-                        <p class="text-xs text-gray-400 mt-2 text-center italic">Sample means gradually form a bell curve — the heart of the Central Limit Theorem</p>
+                        <p id="clt-chart-footer-copy" class="text-xs text-gray-400 mt-2 text-center italic">Switch to Sample Means anytime to watch the bell curve emerge through the Central Limit Theorem.</p>
                     </div>
                 </div>
             </div>

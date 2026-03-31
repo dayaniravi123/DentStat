@@ -14,6 +14,8 @@ const simState = {
         sampleSize: 30,
         draws: 0,
         means: [],
+        rawValues: [],
+        viewMode: 'population',
         data: []
     },
     probability: {
@@ -1106,9 +1108,11 @@ function drawPopulationDistribution() {
 }
 
 function updateCLTDistribution() {
+    simState.centralLimit.viewMode = 'population';
     drawPopulationDistribution();
     resetCLT();
     updateCLTNote();
+    syncCLTViewControls();
     syncMobileCLTControls();
 }
 
@@ -1119,6 +1123,7 @@ function updateCLTParams() {
     const n = slider.value;
     if (nLabel) nLabel.textContent = `n=${n}`;
     simState.centralLimit.sampleSize = parseInt(n);
+    resetCLT();
     updateCLTNote();
     syncMobileCLTControls();
 }
@@ -1154,6 +1159,57 @@ function syncMobileCLTControls() {
     });
 }
 
+function syncCLTViewControls() {
+    const populationBtn = document.getElementById('clt-view-population');
+    const meansBtn = document.getElementById('clt-view-means');
+    const title = document.getElementById('clt-chart-mode-title');
+    const overlayTitle = document.getElementById('clt-overlay-title');
+    const overlayCopy = document.getElementById('clt-overlay-copy');
+    const footerCopy = document.getElementById('clt-chart-footer-copy');
+    const mode = simState.centralLimit.viewMode || 'population';
+    const populationActive = mode === 'population';
+
+    const applyState = (button, isActive) => {
+        if (!button) return;
+        button.classList.toggle('bg-teal-600', isActive);
+        button.classList.toggle('text-white', isActive);
+        button.classList.toggle('shadow-sm', isActive);
+        button.classList.toggle('bg-white', !isActive);
+        button.classList.toggle('text-slate-600', !isActive);
+        button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    };
+
+    applyState(populationBtn, populationActive);
+    applyState(meansBtn, !populationActive);
+
+    if (title) {
+        title.textContent = populationActive ? 'Population Values' : 'Sample Means';
+    }
+
+    if (overlayTitle) {
+        overlayTitle.textContent = populationActive ? 'Click Start to Draw Values' : 'Click Start to Build Sample Means';
+    }
+
+    if (overlayCopy) {
+        overlayCopy.textContent = populationActive
+            ? 'The right chart will show raw simulated values from the selected population.'
+            : 'Watch sample means gradually settle into the Central Limit Theorem pattern.';
+    }
+
+    if (footerCopy) {
+        footerCopy.textContent = populationActive
+            ? 'This view shows raw simulated population values. Switch to Sample Means to study the CLT effect.'
+            : 'Sample means gradually form a bell curve — the heart of the Central Limit Theorem.';
+    }
+}
+
+function setCLTViewMode(mode) {
+    simState.centralLimit.viewMode = mode === 'means' ? 'means' : 'population';
+    syncCLTViewControls();
+    updateCLTNote();
+    drawCLTHistogram();
+}
+
 function selectMobileCLTDistribution(type) {
     const distributionSelect = document.getElementById('clt-distribution');
     if (!distributionSelect) return;
@@ -1166,36 +1222,12 @@ function selectMobileCLTSampleSize(n) {
     if (!sampleSlider) return;
     sampleSlider.value = String(n);
     updateCLTParams();
-    resetCLT();
 }
 
 function initHomeMobileSimulationControls() {
-    const distributionSelect = document.getElementById('clt-distribution');
-    const sampleSlider = document.getElementById('clt-n');
-
-    document.querySelectorAll('[data-clt-dist]').forEach((button) => {
-        if (button.dataset.boundMobileClt === 'true') return;
-        button.dataset.boundMobileClt = 'true';
-        button.addEventListener('click', () => {
-            if (!distributionSelect) return;
-            distributionSelect.value = button.dataset.cltDist;
-            updateCLTDistribution();
-        });
-    });
-
-    document.querySelectorAll('[data-clt-n]').forEach((button) => {
-        if (button.dataset.boundMobileClt === 'true') return;
-        button.dataset.boundMobileClt = 'true';
-        button.addEventListener('click', () => {
-            if (!sampleSlider) return;
-            sampleSlider.value = button.dataset.cltN;
-            updateCLTParams();
-            resetCLT();
-        });
-    });
-
     syncMobileCLTControls();
     updateCLTSpeedIndicator();
+    syncCLTViewControls();
 }
 
 function updateCLTNote() {
@@ -1206,6 +1238,7 @@ function updateCLTNote() {
 
     const type = distributionSelect.value;
     const n = parseInt(sampleSlider.value, 10);
+    const mode = simState.centralLimit.viewMode || 'population';
     const labels = {
         uniform: 'Uniform',
         exponential: 'Exponential',
@@ -1213,6 +1246,16 @@ function updateCLTNote() {
         dental: 'Dental DMFT'
     };
     const selectedLabel = labels[type] || 'Selected';
+
+    if (mode === 'population') {
+        note.innerHTML = `
+            <span class="font-semibold text-slate-700">Selected population:</span> ${selectedLabel}.
+            The right chart is currently showing <span class="font-semibold text-slate-700">raw simulated population values</span>,
+            so its shape should resemble the preview on the left.
+            <span class="block mt-1 text-sky-700 font-medium">Switch to Sample Means anytime if you want to study the actual Central Limit Theorem effect.</span>
+        `;
+        return;
+    }
 
     let detail;
     if (n <= 3) {
@@ -1254,6 +1297,16 @@ function generateCLTValue(type) {
     } else { // dental
         return Math.pow(Math.random(), 2) * 0.8;
     }
+}
+
+function getCLTPopulationRange(type) {
+    const populationRanges = {
+        uniform: { min: 0, max: 1 },
+        exponential: { min: 0, max: 2.5 },
+        bimodal: { min: 0, max: 1 },
+        dental: { min: 0, max: 0.85 }
+    };
+    return populationRanges[type] || populationRanges.uniform;
 }
 
 // Get a stable expected range for each distribution type so the axis doesn't jump
@@ -1303,14 +1356,25 @@ function drawOneSample() {
     const n = parseInt(document.getElementById('clt-n').value);
     const type = document.getElementById('clt-distribution').value;
     let sum = 0;
+    const rawSample = [];
 
     for (let i = 0; i < n; i++) {
-        sum += generateCLTValue(type);
+        const value = generateCLTValue(type);
+        rawSample.push(value);
+        sum += value;
     }
 
     const mean = sum / n;
     simState.centralLimit.means.push(mean);
+    simState.centralLimit.rawValues.push(...rawSample);
     simState.centralLimit.draws++;
+
+    if (simState.centralLimit.means.length > 4000) {
+        simState.centralLimit.means.splice(0, simState.centralLimit.means.length - 4000);
+    }
+    if (simState.centralLimit.rawValues.length > 6000) {
+        simState.centralLimit.rawValues.splice(0, simState.centralLimit.rawValues.length - 6000);
+    }
 
     // Animated falling dot
     cltFallingDots.push({ x: mean, y: 0, vy: 0, age: 0 });
@@ -1348,28 +1412,33 @@ function drawCLTHistogram() {
     ctx.clearRect(0, 0, w, h);
 
     const means = simState.centralLimit.means;
-    if (means.length === 0) { ctx.restore(); return; }
-
-    // Stable range based on distribution type & sample size (no axis jumping)
+    const rawValues = simState.centralLimit.rawValues;
     const type = document.getElementById('clt-distribution').value;
     const sampleSize = parseInt(document.getElementById('clt-n').value);
-    const expectedRange = getCLTExpectedRange(type, sampleSize);
+    const viewMode = simState.centralLimit.viewMode || 'population';
+    const dataSeries = viewMode === 'population' ? rawValues : means;
+    if (dataSeries.length === 0) { ctx.restore(); return; }
+
+    // Stable range based on chosen view mode
+    const expectedRange = viewMode === 'population'
+        ? getCLTPopulationRange(type)
+        : getCLTExpectedRange(type, sampleSize);
     let rangeMin = expectedRange.min;
     let rangeMax = expectedRange.max;
 
     // Expand if any data falls outside
-    for (let i = 0; i < means.length; i++) {
-        if (means[i] < rangeMin) rangeMin = means[i] - 0.02;
-        if (means[i] > rangeMax) rangeMax = means[i] + 0.02;
+    for (let i = 0; i < dataSeries.length; i++) {
+        if (dataSeries[i] < rangeMin) rangeMin = dataSeries[i] - 0.02;
+        if (dataSeries[i] > rangeMax) rangeMax = dataSeries[i] + 0.02;
     }
     const dataRange = rangeMax - rangeMin;
 
     // Build histogram — adaptive bin count based on sample size
-    const bins = Math.max(8, Math.min(40, Math.ceil(Math.sqrt(means.length))));
+    const bins = Math.max(8, Math.min(40, Math.ceil(Math.sqrt(dataSeries.length))));
     const counts = new Array(bins).fill(0);
     const binWidth = dataRange / bins;
-    means.forEach(m => {
-        const bin = Math.min(Math.max(Math.floor((m - rangeMin) / binWidth), 0), bins - 1);
+    dataSeries.forEach(value => {
+        const bin = Math.min(Math.max(Math.floor((value - rangeMin) / binWidth), 0), bins - 1);
         counts[bin]++;
     });
     const maxCount = Math.max(...counts, 1);
@@ -1455,7 +1524,7 @@ function drawCLTHistogram() {
     ctx.fillStyle = '#374151';
     ctx.font = '11px Inter,system-ui,sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Sample Mean (\u0078\u0304)', PAD.left + pw / 2, h - 4);
+    ctx.fillText(viewMode === 'population' ? 'Population Value' : 'Sample Mean (\u0078\u0304)', PAD.left + pw / 2, h - 4);
     ctx.save();
     ctx.translate(12, PAD.top + ph / 2);
     ctx.rotate(-Math.PI / 2);
@@ -1468,26 +1537,28 @@ function drawCLTHistogram() {
     const std = Math.sqrt(variance);
 
     // Falling dots animation (subtle)
-    cltFallingDots.forEach(dot => {
-        dot.vy += 1.2;
-        dot.y += dot.vy;
-        dot.age++;
-        const xPos = PAD.left + ((dot.x - rangeMin) / dataRange) * pw;
-        const targetY = PAD.top + ph;
-        const drawY = Math.min(PAD.top + dot.y, targetY);
+    if (viewMode === 'means') {
+        cltFallingDots.forEach(dot => {
+            dot.vy += 1.2;
+            dot.y += dot.vy;
+            dot.age++;
+            const xPos = PAD.left + ((dot.x - rangeMin) / dataRange) * pw;
+            const targetY = PAD.top + ph;
+            const drawY = Math.min(PAD.top + dot.y, targetY);
 
-        if (xPos >= PAD.left && xPos <= PAD.left + pw) {
-            const alpha = Math.max(0, 1 - dot.age / 30);
-            ctx.beginPath();
-            ctx.arc(xPos, drawY, 2.5, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(239,68,68,${alpha * 0.7})`;
-            ctx.fill();
-        }
-    });
-    cltFallingDots = cltFallingDots.filter(d => d.age < 30);
+            if (xPos >= PAD.left && xPos <= PAD.left + pw) {
+                const alpha = Math.max(0, 1 - dot.age / 30);
+                ctx.beginPath();
+                ctx.arc(xPos, drawY, 2.5, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(239,68,68,${alpha * 0.7})`;
+                ctx.fill();
+            }
+        });
+        cltFallingDots = cltFallingDots.filter(d => d.age < 30);
+    }
 
     // Normal curve overlay (after 15 samples)
-    if (means.length >= 15 && std > 0) {
+    if (viewMode === 'means' && means.length >= 15 && std > 0) {
         const totalArea = means.length * binWidth;
         ctx.strokeStyle = '#ef4444';
         ctx.lineWidth = 2;
@@ -1576,6 +1647,7 @@ function drawCLTHistogram() {
 function resetCLT() {
     simState.centralLimit.running = false;
     simState.centralLimit.means = [];
+    simState.centralLimit.rawValues = [];
     simState.centralLimit.draws = 0;
     clearInterval(simState.centralLimit.intervalId);
     cltFallingDots = [];
@@ -1592,6 +1664,7 @@ function resetCLT() {
     }
 
     updateCLTNote();
+    syncCLTViewControls();
     syncMobileCLTControls();
     lucide.createIcons();
 }
