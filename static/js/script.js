@@ -1192,13 +1192,13 @@ function syncCLTViewControls() {
 
     if (overlayCopy) {
         overlayCopy.textContent = populationActive
-            ? 'The right chart will show raw simulated values from the selected population, with mean, median, and mode guides.'
+            ? 'The right chart will show raw simulated values from the selected population.'
             : 'Watch sample means gradually settle into the Central Limit Theorem pattern.';
     }
 
     if (footerCopy) {
         footerCopy.textContent = populationActive
-            ? 'This view shows raw simulated population values with mean, median, and mode reference guides.'
+            ? 'This view shows raw simulated population values. Switch to Sample Means to study the CLT effect.'
             : 'Sample means gradually form a bell curve — the heart of the Central Limit Theorem.';
     }
 }
@@ -1251,7 +1251,7 @@ function updateCLTNote() {
         note.innerHTML = `
             <span class="font-semibold text-slate-700">Selected population:</span> ${selectedLabel}.
             The right chart is currently showing <span class="font-semibold text-slate-700">raw simulated population values</span>,
-            so its shape should resemble the preview on the left, including the <span class="font-semibold text-slate-700">mean, median, and mode guide lines</span>.
+            so its shape should resemble the preview on the left.
             <span class="block mt-1 text-sky-700 font-medium">Switch to Sample Means anytime if you want to study the actual Central Limit Theorem effect.</span>
         `;
         return;
@@ -1307,56 +1307,6 @@ function getCLTPopulationRange(type) {
         dental: { min: 0, max: 0.85 }
     };
     return populationRanges[type] || populationRanges.uniform;
-}
-
-function getMedianValue(values) {
-    if (!values.length) return 0;
-    const sorted = [...values].sort((a, b) => a - b);
-    const mid = Math.floor(sorted.length / 2);
-    return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-}
-
-function getCLTPopulationReferenceStats(type, values, counts, rangeMin, binWidth) {
-    if (type === 'uniform') {
-        return [
-            { value: 0.5, color: '#6b7280', dash: [4, 4], label: 'Mean = Median = Mode', labelY: 20, legend: 'Mean = Median = Mode: 0.500' }
-        ];
-    }
-
-    if (type === 'bimodal') {
-        return [
-            { value: 0.3, color: '#8b5cf6', dash: [4, 4], label: 'Mode₁', labelY: 16, legend: 'Mode₁: 0.300' },
-            { value: 0.5, color: '#ef4444', dash: [4, 4], label: 'Mean', labelY: 16, legend: 'Mean: 0.500' },
-            { value: 0.5, color: '#f59e0b', dash: [7, 4], label: 'Median', labelY: 30, legend: 'Median: 0.500' },
-            { value: 0.7, color: '#8b5cf6', dash: [4, 4], label: 'Mode₂', labelY: 16, legend: 'Mode₂: 0.700' }
-        ];
-    }
-
-    if (type === 'exponential') {
-        return [
-            { value: 0, color: '#8b5cf6', dash: [4, 4], label: 'Mode', labelY: 16, legend: 'Mode: 0.000' },
-            { value: Math.log(2) / 2, color: '#f59e0b', dash: [7, 4], label: 'Median', labelY: 30, legend: `Median: ${(Math.log(2) / 2).toFixed(3)}` },
-            { value: 0.5, color: '#ef4444', dash: [4, 4], label: 'Mean', labelY: 16, legend: 'Mean: 0.500' }
-        ];
-    }
-
-    if (type === 'dental') {
-        return [
-            { value: 0.0, color: '#8b5cf6', dash: [4, 4], label: 'Mode', labelY: 16, legend: 'Mode: 0.000' },
-            { value: 0.2, color: '#f59e0b', dash: [7, 4], label: 'Median', labelY: 30, legend: 'Median: 0.200' },
-            { value: 0.8 / 3, color: '#ef4444', dash: [4, 4], label: 'Mean', labelY: 16, legend: `Mean: ${(0.8 / 3).toFixed(3)}` }
-        ];
-    }
-
-    const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
-    const median = getMedianValue(values);
-    const maxBin = counts.indexOf(Math.max(...counts));
-    const mode = rangeMin + (maxBin + 0.5) * binWidth;
-    return [
-        { value: mode, color: '#8b5cf6', dash: [4, 4], label: 'Mode', labelY: 16, legend: `Mode: ${mode.toFixed(3)}` },
-        { value: median, color: '#f59e0b', dash: [7, 4], label: 'Median', labelY: 30, legend: `Median: ${median.toFixed(3)}` },
-        { value: mean, color: '#ef4444', dash: [4, 4], label: 'Mean', labelY: 16, legend: `Mean: ${mean.toFixed(3)}` }
-    ];
 }
 
 // Get a stable expected range for each distribution type so the axis doesn't jump
@@ -1455,7 +1405,7 @@ function drawCLTHistogram() {
     ctx.save();
     ctx.scale(dpr, dpr);
     const w = dw, h = dh;
-    const PAD = { top: 36, right: 16, bottom: 58, left: 48 };
+    const PAD = { top: 24, right: 16, bottom: 44, left: 48 };
     const pw = w - PAD.left - PAD.right;
     const ph = h - PAD.top - PAD.bottom;
 
@@ -1574,69 +1524,17 @@ function drawCLTHistogram() {
     ctx.fillStyle = '#374151';
     ctx.font = '11px Inter,system-ui,sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(viewMode === 'population' ? 'Population Value' : 'Sample Mean (\u0078\u0304)', PAD.left + pw / 2, PAD.top + ph + 38);
+    ctx.fillText(viewMode === 'population' ? 'Population Value' : 'Sample Mean (\u0078\u0304)', PAD.left + pw / 2, h - 4);
     ctx.save();
     ctx.translate(12, PAD.top + ph / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.fillText('Frequency', 0, 0);
     ctx.restore();
 
-    const seriesMean = dataSeries.reduce((sum, value) => sum + value, 0) / dataSeries.length;
-    const seriesMedian = getMedianValue(dataSeries);
-    const grandMean = means.length ? means.reduce((a, b) => a + b, 0) / means.length : seriesMean;
-    const variance = means.length ? means.reduce((s, v) => s + (v - grandMean) ** 2, 0) / means.length : 0;
+    // Compute statistics
+    const grandMean = means.reduce((a, b) => a + b, 0) / means.length;
+    const variance = means.reduce((s, v) => s + (v - grandMean) ** 2, 0) / means.length;
     const std = Math.sqrt(variance);
-    const drawReferenceLabel = (xPos, text, color, yPos) => {
-        const clampedX = Math.min(Math.max(xPos, PAD.left + 36), PAD.left + pw - 36);
-        ctx.save();
-        ctx.font = 'bold 10px Inter,system-ui,sans-serif';
-        ctx.textAlign = 'center';
-        const textWidth = ctx.measureText(text).width;
-        ctx.fillStyle = 'rgba(255,255,255,0.94)';
-        ctx.fillRect(clampedX - textWidth / 2 - 5, yPos - 11, textWidth + 10, 14);
-        ctx.fillStyle = color;
-        ctx.fillText(text, clampedX, yPos);
-        ctx.restore();
-    };
-
-    if (viewMode === 'population') {
-        const referenceStats = getCLTPopulationReferenceStats(type, dataSeries, counts, rangeMin, binWidth);
-
-        referenceStats.forEach(({ value, color, dash, label, labelY }) => {
-            const xPos = PAD.left + ((value - rangeMin) / dataRange) * pw;
-            if (xPos < PAD.left || xPos > PAD.left + pw) return;
-
-            ctx.strokeStyle = color;
-            ctx.lineWidth = color === '#f59e0b' ? 1.9 : 1.6;
-            ctx.setLineDash(dash || [4, 4]);
-            ctx.beginPath();
-            ctx.moveTo(xPos, PAD.top);
-            ctx.lineTo(xPos, PAD.top + ph);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            if (label) {
-                drawReferenceLabel(xPos, label, color, PAD.top - 10 + (labelY || 16));
-            }
-        });
-
-        const statsText = `Values=${dataSeries.length}`;
-        ctx.font = '9px Inter,system-ui,sans-serif';
-        const statsWidth = ctx.measureText(statsText).width + 16;
-        const statsX = PAD.left + pw - statsWidth - 6;
-        const statsY = PAD.top + 8;
-        ctx.fillStyle = 'rgba(255,255,255,0.92)';
-        ctx.fillRect(statsX, statsY, statsWidth, 22);
-        ctx.strokeStyle = 'rgba(0,0,0,0.08)';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(statsX, statsY, statsWidth, 22);
-        ctx.fillStyle = '#374151';
-        ctx.textAlign = 'left';
-        ctx.fillText(statsText, statsX + 8, statsY + 14);
-
-        ctx.restore();
-        return;
-    }
 
     // Falling dots animation (subtle)
     if (viewMode === 'means') {
@@ -1678,6 +1576,11 @@ function drawCLTHistogram() {
         }
         ctx.stroke();
 
+        // Compute median
+        const sorted = [...means].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        const median = sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+
         // Mode: center of the tallest bin
         const maxBin = counts.indexOf(Math.max(...counts));
         const mode = rangeMin + (maxBin + 0.5) * binWidth;
@@ -1685,7 +1588,7 @@ function drawCLTHistogram() {
         // Dashed vertical stat lines
         const statLines = [
             { val: mode,      color: '#8b5cf6', dash: [3, 3] },
-            { val: seriesMedian, color: '#f59e0b', dash: [6, 3] },
+            { val: median,    color: '#f59e0b', dash: [6, 3] },
             { val: grandMean, color: '#ef4444', dash: [4, 4] },
         ];
         statLines.forEach(({ val, color, dash }) => {
@@ -1716,7 +1619,7 @@ function drawCLTHistogram() {
         const legendItems = [
             { color: '#ef4444', label: '\u2501 Normal curve' },
             { color: '#ef4444', label: '\u250A Mean: ' + grandMean.toFixed(3) },
-            { color: '#f59e0b', label: '\u250A Median: ' + seriesMedian.toFixed(3) },
+            { color: '#f59e0b', label: '\u250A Median: ' + median.toFixed(3) },
             { color: '#8b5cf6', label: '\u250A Mode: ' + mode.toFixed(3) },
         ];
         legendItems.forEach(({ color, label }, i) => {
