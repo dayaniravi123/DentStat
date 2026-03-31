@@ -107,6 +107,84 @@
             letter-spacing: 0.06em;
             text-transform: uppercase;
         }
+        .stats-sidebar-methods {
+            max-height: calc(100vh - 210px);
+            overflow-y: auto;
+            padding-right: 4px;
+            margin-top: 18px;
+        }
+        .stats-sidebar-methods::-webkit-scrollbar {
+            width: 6px;
+        }
+        .stats-sidebar-methods::-webkit-scrollbar-thumb {
+            background: rgba(203, 213, 225, 0.95);
+            border-radius: 999px;
+        }
+        .stats-sidebar-group + .stats-sidebar-group {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(226, 232, 240, 0.9);
+        }
+        .stats-sidebar-group-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #0f766e;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+        .stats-sidebar-group-count {
+            color: #94a3b8;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+        }
+        .stats-method-link-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .stats-method-link {
+            width: 100%;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 12px 14px;
+            border-radius: 16px;
+            border: 1px solid rgba(226, 232, 240, 0.94);
+            background: rgba(255, 255, 255, 0.88);
+            color: #334155;
+            font-size: 0.93rem;
+            font-weight: 700;
+            line-height: 1.45;
+            transition: border-color 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+        }
+        .stats-method-link:hover {
+            transform: translateX(2px);
+            border-color: rgba(45, 212, 191, 0.5);
+            background: rgba(240, 253, 250, 0.96);
+            color: #0f766e;
+        }
+        .stats-method-link.is-active {
+            border-color: rgba(45, 212, 191, 0.58);
+            background: linear-gradient(135deg, rgba(236, 253, 245, 0.98), rgba(240, 249, 255, 0.96));
+            color: #0f766e;
+            box-shadow: 0 14px 28px rgba(15, 23, 42, 0.05);
+        }
+        .stats-method-link::after {
+            content: "›";
+            flex: 0 0 auto;
+            color: inherit;
+            font-size: 1.1rem;
+            font-weight: 800;
+            opacity: 0.72;
+        }
         .stats-jump-links {
             display: flex;
             flex-direction: column;
@@ -152,6 +230,90 @@
             display: flex;
             flex-direction: column;
             gap: 22px;
+        }
+        .stats-detail-card {
+            padding: 30px;
+        }
+        .stats-detail-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(236, 253, 245, 0.96);
+            color: #0f766e;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+        .stats-detail-kicker::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: currentColor;
+        }
+        .stats-detail-title {
+            margin-top: 16px;
+            color: #111827;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            line-height: 1.02;
+            letter-spacing: -0.05em;
+        }
+        .stats-detail-summary {
+            margin-top: 18px;
+            max-width: 54rem;
+            color: #64748b;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        .stats-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .stats-detail-block {
+            border-radius: 22px;
+            padding: 18px 18px 20px;
+        }
+        .stats-detail-block--family {
+            background: linear-gradient(180deg, rgba(255, 251, 235, 0.98), rgba(255, 247, 219, 0.82));
+            border: 1px solid rgba(252, 211, 77, 0.4);
+        }
+        .stats-detail-block--theory {
+            background: linear-gradient(180deg, rgba(239, 246, 255, 0.98), rgba(244, 248, 255, 0.92));
+            border: 1px solid rgba(147, 197, 253, 0.42);
+        }
+        .stats-detail-block--example {
+            background: linear-gradient(180deg, rgba(240, 253, 250, 0.98), rgba(244, 255, 250, 0.92));
+            border: 1px solid rgba(110, 231, 183, 0.4);
+        }
+        .stats-detail-block-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            color: #475569;
+            font-size: 0.73rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+        .stats-detail-block-label::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: currentColor;
+        }
+        .stats-detail-block p {
+            margin: 0;
+            color: #334155;
+            font-size: 0.95rem;
+            line-height: 1.78;
         }
         .stats-search-card {
             padding: 22px;
@@ -339,9 +501,12 @@
             .stats-sidebar {
                 position: static;
             }
-            .stats-jump-links {
+            .stats-sidebar-methods {
                 max-height: none;
                 overflow: visible;
+            }
+            .stats-detail-grid {
+                grid-template-columns: 1fr;
             }
         }
         @media (max-width: 768px) {
@@ -349,32 +514,30 @@
                 padding-top: 64px;
                 padding-bottom: 56px;
             }
-            .stats-methods-grid {
-                grid-template-columns: 1fr;
-            }
             .stats-search-card,
-            .stats-method-card,
+            .stats-detail-card,
             .stats-sidebar-card {
                 padding: 18px;
             }
-            .stats-method-title {
-                font-size: 1.08rem;
+            .stats-detail-title {
+                font-size: 1.8rem;
             }
-            .stats-method-summary {
-                font-size: 0.92rem;
+            .stats-detail-summary {
+                font-size: 0.96rem;
             }
-            .stats-method-item summary {
-                padding: 14px;
-                font-size: 0.93rem;
+            .stats-method-link {
+                padding: 11px 12px;
+                font-size: 0.89rem;
             }
-            .stats-method-body {
-                padding: 14px;
+            .stats-detail-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
             }
-            .stats-method-block {
-                padding: 12px 12px 13px;
+            .stats-detail-block {
+                padding: 15px 15px 16px;
             }
-            .stats-method-block p {
-                font-size: 0.88rem;
+            .stats-detail-block p {
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -411,81 +574,72 @@
         <div class="stats-shell">
             <aside class="stats-sidebar">
                 <div class="stats-panel stats-sidebar-card">
-                    <span class="stats-sidebar-kicker">Directory Snapshot</span>
-                    <h2 class="mt-4 text-2xl font-extrabold tracking-tight text-slate-900">One place to scan the methods landscape</h2>
+                    <span class="stats-sidebar-kicker">Method Library</span>
+                    <h2 class="mt-4 text-2xl font-extrabold tracking-tight text-slate-900">Browse categories and pick one method</h2>
                     <p class="mt-3 text-sm leading-7 text-slate-500">
-                        Use this library to spot the families of procedures most relevant to biostatistics, clinical research,
-                        quality control, and applied statistical analysis.
+                        Select a method from the left to read a short theory note and a practical dental example on the right.
                     </p>
-                    <div class="stats-summary-grid">
-                        <div class="stats-summary-tile">
-                            <span class="stats-summary-value">{{ method_group_count }}</span>
-                            <span class="stats-summary-label">Groups</span>
-                        </div>
-                        <div class="stats-summary-tile">
-                            <span class="stats-summary-value">{{ total_methods }}</span>
-                            <span class="stats-summary-label">Methods</span>
-                        </div>
+                    <div class="stats-search-box mt-4">
+                        <i data-lucide="search"></i>
+                        <input id="stats-method-search" type="search" class="stats-search-input" placeholder="Search methods or categories...">
                     </div>
-                </div>
-
-                <div class="stats-panel stats-sidebar-card">
-                    <h3 class="text-sm font-extrabold uppercase tracking-[0.16em] text-slate-500">Jump to a category</h3>
-                    <div class="stats-jump-links">
+                    <div class="stats-sidebar-methods" id="stats-sidebar-methods">
                         {% for group in method_groups %}
-                            <a class="stats-jump-link" href="#{{ group.slug }}">{{ group.title }}</a>
+                            <section class="stats-sidebar-group" data-group-title="{{ group.title }}" data-group-summary="{{ group.summary }}">
+                                <div class="stats-sidebar-group-title">
+                                    <span>{{ group.title }}</span>
+                                    <span class="stats-sidebar-group-count">{{ group.methods|length }}</span>
+                                </div>
+                                <div class="stats-method-link-list">
+                                    {% for method in group.methods %}
+                                        <button
+                                            type="button"
+                                            class="stats-method-link{% if forloop.parentloop.first and forloop.first %} is-active{% endif %}"
+                                            data-method-name="{{ method.name|escape }}"
+                                            data-method-theory="{{ method.theory|escape }}"
+                                            data-method-example="{{ method.example|escape }}"
+                                            data-group-title="{{ group.title|escape }}"
+                                            data-group-summary="{{ group.summary|escape }}"
+                                        >
+                                            {{ method.name }}
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                            </section>
                         {% endfor %}
                     </div>
                 </div>
             </aside>
 
             <section class="stats-main">
-                <div class="stats-panel stats-search-card">
-                    <div class="stats-search-box">
-                        <i data-lucide="search"></i>
-                        <input id="stats-method-search" type="search" class="stats-search-input" placeholder="Search methods, procedures, or categories...">
-                    </div>
-                    <p class="stats-search-note">
-                        Search for a procedure name like <strong>Kaplan-Meier</strong>, <strong>Logistic Regression</strong>,
-                        <strong>ROC Curves</strong>, or <strong>One-Way ANOVA</strong> to narrow the directory instantly.
-                    </p>
-                </div>
-
                 <div id="stats-methods-empty" class="stats-panel stats-empty">
                     No methods matched your search. Try a broader keyword like <strong>regression</strong>, <strong>ANOVA</strong>,
                     <strong>survival</strong>, or <strong>diagnostic</strong>.
                 </div>
 
-                <div id="stats-methods-grid" class="stats-methods-grid">
-                    {% for group in method_groups %}
-                        <article id="{{ group.slug }}" class="stats-panel stats-method-card stats-method-section" data-search-text="{{ group.title }} {{ group.summary }} {% for method in group.methods %}{{ method.name }} {{ method.theory }} {{ method.example }} {% endfor %}">
-                            <div class="stats-method-header">
-                                <div>
-                                    <h2 class="stats-method-title">{{ group.title }}</h2>
-                                    <p class="stats-method-summary">{{ group.summary }}</p>
-                                </div>
-                                <span class="stats-method-count">{{ group.methods|length }}</span>
-                            </div>
-                            <div class="stats-method-list">
-                                {% for method in group.methods %}
-                                    <details class="stats-method-item">
-                                        <summary>{{ method.name }}</summary>
-                                        <div class="stats-method-body">
-                                            <div class="stats-method-block stats-method-block--theory">
-                                                <span class="stats-method-block-label">Theory</span>
-                                                <p>{{ method.theory }}</p>
-                                            </div>
-                                            <div class="stats-method-block stats-method-block--example">
-                                                <span class="stats-method-block-label">Dental Example</span>
-                                                <p>{{ method.example }}</p>
-                                            </div>
-                                        </div>
-                                    </details>
-                                {% endfor %}
-                            </div>
-                        </article>
-                    {% endfor %}
-                </div>
+                {% with first_group=method_groups.0 first_method=method_groups.0.methods.0 %}
+                <article id="stats-method-detail" class="stats-panel stats-detail-card">
+                    <span id="stats-detail-group" class="stats-detail-kicker">{{ first_group.title }}</span>
+                    <h2 id="stats-detail-title" class="stats-detail-title">{{ first_method.name }}</h2>
+                    <p id="stats-detail-summary" class="stats-detail-summary">
+                        {{ first_method.theory }} Use it when your question fits the {{ first_group.title|lower }} family and you need a focused method rather than a general summary.
+                    </p>
+                    <div class="stats-detail-grid">
+                        <div class="stats-detail-block stats-detail-block--family">
+                            <span class="stats-detail-block-label">Method Family</span>
+                            <p id="stats-detail-family">{{ first_group.summary }}</p>
+                        </div>
+                        <div class="stats-detail-block stats-detail-block--theory">
+                            <span class="stats-detail-block-label">Theory</span>
+                            <p id="stats-detail-theory">{{ first_method.theory }}</p>
+                        </div>
+                        <div class="stats-detail-block stats-detail-block--example">
+                            <span class="stats-detail-block-label">Dental Example</span>
+                            <p id="stats-detail-example">{{ first_method.example }}</p>
+                        </div>
+                    </div>
+                </article>
+                {% endwith %}
             </section>
         </div>
     </main>
@@ -495,23 +649,83 @@
 
         (function () {
             const input = document.getElementById('stats-method-search');
-            const sections = Array.from(document.querySelectorAll('.stats-method-section'));
+            const methodButtons = Array.from(document.querySelectorAll('.stats-method-link'));
+            const groups = Array.from(document.querySelectorAll('.stats-sidebar-group'));
             const emptyState = document.getElementById('stats-methods-empty');
+            const detailCard = document.getElementById('stats-method-detail');
+            const detailGroup = document.getElementById('stats-detail-group');
+            const detailTitle = document.getElementById('stats-detail-title');
+            const detailSummary = document.getElementById('stats-detail-summary');
+            const detailFamily = document.getElementById('stats-detail-family');
+            const detailTheory = document.getElementById('stats-detail-theory');
+            const detailExample = document.getElementById('stats-detail-example');
 
-            if (!input) return;
+            if (!input || !methodButtons.length) return;
+
+            function selectMethod(button) {
+                methodButtons.forEach((item) => item.classList.toggle('is-active', item === button));
+                const name = button.getAttribute('data-method-name') || '';
+                const theory = button.getAttribute('data-method-theory') || '';
+                const example = button.getAttribute('data-method-example') || '';
+                const groupTitle = button.getAttribute('data-group-title') || '';
+                const groupSummary = button.getAttribute('data-group-summary') || '';
+
+                detailGroup.textContent = groupTitle;
+                detailTitle.textContent = name;
+                detailSummary.textContent = theory + ' Use it when your question fits the ' + groupTitle.toLowerCase() + ' family and you need a focused method rather than a general summary.';
+                detailFamily.textContent = groupSummary;
+                detailTheory.textContent = theory;
+                detailExample.textContent = example;
+                detailCard.style.display = '';
+                emptyState.classList.remove('is-visible');
+            }
+
+            methodButtons.forEach((button) => {
+                button.addEventListener('click', function () {
+                    selectMethod(button);
+                });
+            });
 
             input.addEventListener('input', function () {
                 const term = input.value.trim().toLowerCase();
-                let visibleCount = 0;
+                let visibleButtons = 0;
 
-                sections.forEach((section) => {
-                    const haystack = (section.getAttribute('data-search-text') || '').toLowerCase();
-                    const matches = !term || haystack.includes(term);
-                    section.style.display = matches ? '' : 'none';
-                    if (matches) visibleCount += 1;
+                groups.forEach((group) => {
+                    let groupVisible = 0;
+                    group.querySelectorAll('.stats-method-link').forEach((button) => {
+                        const haystack = [
+                            button.getAttribute('data-method-name') || '',
+                            button.getAttribute('data-method-theory') || '',
+                            button.getAttribute('data-method-example') || '',
+                            button.getAttribute('data-group-title') || '',
+                            button.getAttribute('data-group-summary') || ''
+                        ].join(' ').toLowerCase();
+                        const matches = !term || haystack.includes(term);
+                        button.style.display = matches ? '' : 'none';
+                        if (matches) {
+                            visibleButtons += 1;
+                            groupVisible += 1;
+                        }
+                    });
+                    group.style.display = groupVisible ? '' : 'none';
                 });
 
-                emptyState.classList.toggle('is-visible', visibleCount === 0);
+                if (visibleButtons === 0) {
+                    emptyState.classList.add('is-visible');
+                    detailCard.style.display = 'none';
+                    return;
+                }
+
+                emptyState.classList.remove('is-visible');
+                detailCard.style.display = '';
+
+                const activeVisible = document.querySelector('.stats-method-link.is-active:not([style*="display: none"])');
+                if (activeVisible) return;
+
+                const firstVisible = methodButtons.find((button) => button.style.display !== 'none');
+                if (firstVisible) {
+                    selectMethod(firstVisible);
+                }
             });
         })();
     </script>
