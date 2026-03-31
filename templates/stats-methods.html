@@ -231,23 +231,95 @@
             font-size: 0.95rem;
             font-weight: 800;
         }
-        .stats-pill-list {
+        .stats-method-list {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            flex-direction: column;
+            gap: 12px;
         }
-        .stats-pill {
+        .stats-method-item {
+            border-radius: 18px;
+            border: 1px solid rgba(226, 232, 240, 0.94);
+            background: rgba(255, 255, 255, 0.96);
+            overflow: hidden;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+        }
+        .stats-method-item summary {
+            list-style: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 15px 16px;
+            color: #1f2937;
+            font-size: 0.97rem;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+        .stats-method-item summary::-webkit-details-marker {
+            display: none;
+        }
+        .stats-method-item summary::after {
+            content: "+";
+            flex: 0 0 auto;
+            width: 30px;
+            height: 30px;
+            border-radius: 999px;
             display: inline-flex;
             align-items: center;
-            min-height: 38px;
-            padding: 8px 12px;
+            justify-content: center;
+            background: rgba(236, 253, 245, 0.95);
+            color: #0f766e;
+            font-size: 1.15rem;
+            font-weight: 800;
+        }
+        .stats-method-item[open] summary::after {
+            content: "−";
+        }
+        .stats-method-item[open] summary {
+            border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+            background: linear-gradient(180deg, rgba(250, 255, 252, 0.95), rgba(246, 251, 249, 0.95));
+        }
+        .stats-method-body {
+            padding: 16px;
+            display: grid;
+            gap: 14px;
+        }
+        .stats-method-block {
+            border-radius: 16px;
+            padding: 14px 14px 15px;
+        }
+        .stats-method-block--theory {
+            background: linear-gradient(180deg, rgba(240, 249, 255, 0.92), rgba(248, 250, 252, 0.96));
+            border: 1px solid rgba(191, 219, 254, 0.68);
+        }
+        .stats-method-block--example {
+            background: linear-gradient(180deg, rgba(240, 253, 250, 0.96), rgba(247, 254, 252, 0.98));
+            border: 1px solid rgba(167, 243, 208, 0.7);
+        }
+        .stats-method-block-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: #475569;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+        .stats-method-block-label::before {
+            content: "";
+            width: 8px;
+            height: 8px;
             border-radius: 999px;
-            border: 1px solid rgba(226, 232, 240, 0.9);
-            background: rgba(255, 255, 255, 0.94);
+            background: currentColor;
+        }
+        .stats-method-block p {
             color: #334155;
-            font-size: 0.88rem;
-            font-weight: 600;
-            line-height: 1.4;
+            font-size: 0.92rem;
+            line-height: 1.72;
+            margin: 0;
         }
         .stats-empty {
             display: none;
@@ -291,10 +363,18 @@
             .stats-method-summary {
                 font-size: 0.92rem;
             }
-            .stats-pill {
-                width: 100%;
-                justify-content: flex-start;
-                border-radius: 16px;
+            .stats-method-item summary {
+                padding: 14px;
+                font-size: 0.93rem;
+            }
+            .stats-method-body {
+                padding: 14px;
+            }
+            .stats-method-block {
+                padding: 12px 12px 13px;
+            }
+            .stats-method-block p {
+                font-size: 0.88rem;
             }
         }
     </style>
@@ -378,7 +458,7 @@
 
                 <div id="stats-methods-grid" class="stats-methods-grid">
                     {% for group in method_groups %}
-                        <article id="{{ group.slug }}" class="stats-panel stats-method-card stats-method-section" data-search-text="{{ group.title }} {{ group.summary }} {% for method in group.methods %}{{ method }} {% endfor %}">
+                        <article id="{{ group.slug }}" class="stats-panel stats-method-card stats-method-section" data-search-text="{{ group.title }} {{ group.summary }} {% for method in group.methods %}{{ method.name }} {{ method.theory }} {{ method.example }} {% endfor %}">
                             <div class="stats-method-header">
                                 <div>
                                     <h2 class="stats-method-title">{{ group.title }}</h2>
@@ -386,9 +466,21 @@
                                 </div>
                                 <span class="stats-method-count">{{ group.methods|length }}</span>
                             </div>
-                            <div class="stats-pill-list">
+                            <div class="stats-method-list">
                                 {% for method in group.methods %}
-                                    <span class="stats-pill">{{ method }}</span>
+                                    <details class="stats-method-item">
+                                        <summary>{{ method.name }}</summary>
+                                        <div class="stats-method-body">
+                                            <div class="stats-method-block stats-method-block--theory">
+                                                <span class="stats-method-block-label">Theory</span>
+                                                <p>{{ method.theory }}</p>
+                                            </div>
+                                            <div class="stats-method-block stats-method-block--example">
+                                                <span class="stats-method-block-label">Dental Example</span>
+                                                <p>{{ method.example }}</p>
+                                            </div>
+                                        </div>
+                                    </details>
                                 {% endfor %}
                             </div>
                         </article>

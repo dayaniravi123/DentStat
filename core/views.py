@@ -6,7 +6,7 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin
 from datetime import date
 import json
 import math
-from .stats_methods import STAT_METHOD_GROUPS
+from .stats_methods import STAT_METHOD_GROUPS, build_stats_method_groups
 try:
 	from scipy import stats as scipy_stats
 except Exception:
@@ -128,10 +128,11 @@ def concepts_hub(request):
 
 
 def stats_methods_page(request):
-	total_methods = sum(len(group['methods']) for group in STAT_METHOD_GROUPS)
+	method_groups = build_stats_method_groups()
+	total_methods = sum(len(group['methods']) for group in method_groups)
 	context = {
-		'method_groups': STAT_METHOD_GROUPS,
-		'method_group_count': len(STAT_METHOD_GROUPS),
+		'method_groups': method_groups,
+		'method_group_count': len(method_groups),
 		'total_methods': total_methods,
 	}
 	return render(request, 'stats-methods.html', context)
