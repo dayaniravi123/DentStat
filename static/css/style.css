@@ -847,6 +847,49 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
         display: none !important;
     }
 
+    .home-page .home-seo-intro {
+        margin-bottom: 1.2rem !important;
+    }
+
+    .home-page .home-seo-intro-card {
+        padding: 1.45rem 1.3rem !important;
+        border-radius: 1.85rem !important;
+        box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+    }
+
+    .home-page .home-seo-intro-grid {
+        gap: 1.15rem;
+    }
+
+    .home-page .home-seo-intro-kicker {
+        margin-bottom: 0.8rem !important;
+        font-size: 0.72rem !important;
+        letter-spacing: 0.18em !important;
+    }
+
+    .home-page .home-seo-intro-title {
+        font-size: clamp(1.85rem, 8.1vw, 2.35rem) !important;
+        line-height: 1.06 !important;
+        letter-spacing: -0.04em;
+        text-wrap: balance;
+    }
+
+    .home-page .home-seo-intro-body {
+        margin-top: 1rem !important;
+        max-width: none !important;
+        color: #49566f !important;
+        font-size: 0.98rem !important;
+        line-height: 1.82 !important;
+        text-align: justify;
+        text-justify: inter-word;
+        hyphens: auto;
+        -webkit-hyphens: auto;
+    }
+
+    .home-page .home-seo-flip-grid {
+        gap: 0.85rem;
+    }
+
     .home-page .learning-resources-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 0.7rem;
