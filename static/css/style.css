@@ -893,7 +893,7 @@ footer { border-top: 1px solid rgba(255,255,255,0.03); }
 
     .home-page .home-seo-flip-grid .seo-flip-card,
     .home-page .home-seo-flip-grid .seo-flip-card__inner {
-        min-height: 10.65rem;
+        min-height: 12rem;
     }
 
     .home-page .home-seo-flip-grid .seo-flip-card__face {
