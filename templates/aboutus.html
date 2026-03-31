@@ -17,6 +17,46 @@
     <meta name="twitter:title" content="About DentalStats | Biostatistics for Dental Research">
     <meta name="twitter:description" content="Learn how DentalStats was built to make statistics and biostatistics easier for dental education and research.">
     <title>About DentalStats | Biostatistics for Dental Research</title>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is DentalStats and who is it for?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "DentalStats is an interactive learning platform for statistics, biostatistics, probability, and dental research methods. It is designed for dental students, clinicians, postgraduate learners, and researchers who want to understand statistics more clearly."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can beginners use DentalStats to learn statistics and basic probability?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. DentalStats includes beginner-friendly concept lessons, visual probability tools, and step-by-step explanations that help users learn statistics and basic probability without getting lost in abstract formulas."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does DentalStats help with biostatistics and dental statistics?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "DentalStats teaches biostatistics and dental statistics through real examples such as DMFT scores, confidence intervals, prevalence studies, diagnostic accuracy, regression, and survival analysis for dental research."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does DentalStats include statistics calculators and interactive probability tools?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The platform includes statistics calculators, interactive visualizations, and concept pages covering probability, confidence intervals, p-values, sample size, and more."
+          }
+        }
+      ]
+    }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -60,10 +100,68 @@
             object-position: center top;
             margin: 0 auto 1rem;
         }
+        .faq-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            padding: 0 22px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+        }
+        .faq-item + .faq-item {
+            margin-top: 16px;
+        }
+        .faq-item summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 1.05rem;
+        }
+        .faq-item summary::-webkit-details-marker {
+            display: none;
+        }
+        .faq-item summary::after {
+            content: "+";
+            flex: 0 0 auto;
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #ecfeff;
+            color: #0d9488;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+        .faq-item[open] summary::after {
+            content: "−";
+        }
+        .faq-answer {
+            padding: 0 0 20px;
+            color: #4b5563;
+            line-height: 1.75;
+            font-size: 0.98rem;
+        }
         @media (max-width: 768px) {
             .team-photo {
                 width: 132px;
                 height: 132px;
+            }
+            .faq-item {
+                padding: 0 18px;
+            }
+            .faq-item summary {
+                font-size: 0.98rem;
+                padding: 18px 0;
+            }
+            .faq-answer {
+                font-size: 0.94rem;
             }
         }
     </style>
@@ -150,7 +248,8 @@
 
         <!-- Team -->
         <section>
-            <p class="text-xs font-bold uppercase tracking-widest text-teal-600 mb-2 text-center">Meet Team</p>
+            <p class="text-xs font-bold uppercase tracking-widest text-teal-600 mb-2 text-center">Our Team</p>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-10 text-center">Meet Team</h2>
             <div class="grid md:grid-cols-3 gap-8">
 
                 <!-- Ridham -->
@@ -194,6 +293,59 @@
                         <p class="text-sm text-teal-600 font-semibold mt-1 mb-3">Lead Developer</p>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section>
+            <p class="text-xs font-bold uppercase tracking-widest text-teal-600 mb-2 text-center">FAQ</p>
+            <h2 class="text-3xl font-bold text-gray-800 mb-4 text-center">Frequently Asked Questions About Statistics and Probability</h2>
+            <p class="text-gray-500 max-w-3xl mx-auto text-center mb-10">
+                Quick answers for visitors searching for statistics, learn statistics, basic probability, biostatistics, dental statistics, dental stats, and practical research interpretation.
+            </p>
+
+            <div class="max-w-4xl mx-auto">
+                <details class="faq-item" open>
+                    <summary>What is DentalStats and why is it useful for learning statistics online?</summary>
+                    <div class="faq-answer">
+                        DentalStats is built as a visual place to learn statistics online through interactive explanations, live charts, and clinical examples. Instead of only reading formulas, users can explore statistics, probability, and biostatistics in a way that feels more practical for dental research and evidence-based learning.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can beginners use DentalStats to learn statistics and basic probability?</summary>
+                    <div class="faq-answer">
+                        Yes. DentalStats is designed so beginners can start with basic probability, distributions, confidence intervals, and sample size ideas before moving into more advanced topics. The goal is to help students learn statistics step by step with intuitive examples instead of memorizing isolated formulas.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How does DentalStats help with biostatistics and dental statistics?</summary>
+                    <div class="faq-answer">
+                        DentalStats focuses on biostatistics and dental statistics using examples such as DMFT scores, prevalence studies, diagnostic tests, regression, and survival analysis. That means learners can connect general statistical ideas directly to dental public health, clinical research, and treatment outcomes.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Does DentalStats include probability lessons, statistics calculators, and visual tools?</summary>
+                    <div class="faq-answer">
+                        Yes. The platform combines concept lessons, probability visualizations, and statistics calculators in one place. Users can study topics like basic probability, confidence intervals, p-values, and sample size while also using tools that make the underlying ideas easier to interpret.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Who should use DentalStats: students, clinicians, or researchers?</summary>
+                    <div class="faq-answer">
+                        DentalStats is meant for dental students, clinicians, postgraduate learners, and researchers who want a clearer path into statistics and biostatistics. It is especially helpful for anyone who wants to understand dental research methods without feeling overwhelmed by technical language from the start.
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Why does DentalStats talk so much about probability, confidence intervals, and research interpretation?</summary>
+                    <div class="faq-answer">
+                        Probability, confidence intervals, and related statistical ideas appear constantly in journal articles and clinical studies. DentalStats emphasizes these topics so users can move from simply reading numbers to actually understanding what the results mean in real dental research and decision-making.
+                    </div>
+                </details>
             </div>
         </section>
 
