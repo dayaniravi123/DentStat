@@ -1161,50 +1161,35 @@ function syncMobileCLTControls() {
 
 function syncCLTViewControls() {
     const populationBtn = document.getElementById('clt-view-population');
-    const meansBtn = document.getElementById('clt-view-means');
     const title = document.getElementById('clt-chart-mode-title');
     const overlayTitle = document.getElementById('clt-overlay-title');
     const overlayCopy = document.getElementById('clt-overlay-copy');
     const footerCopy = document.getElementById('clt-chart-footer-copy');
-    const mode = simState.centralLimit.viewMode || 'population';
-    const populationActive = mode === 'population';
-
-    const applyState = (button, isActive) => {
-        if (!button) return;
-        button.classList.toggle('bg-teal-600', isActive);
-        button.classList.toggle('text-white', isActive);
-        button.classList.toggle('shadow-sm', isActive);
-        button.classList.toggle('bg-white', !isActive);
-        button.classList.toggle('text-slate-600', !isActive);
-        button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-    };
-
-    applyState(populationBtn, populationActive);
-    applyState(meansBtn, !populationActive);
+    simState.centralLimit.viewMode = 'population';
 
     if (title) {
-        title.textContent = populationActive ? 'Population Values' : 'Sample Means';
+        title.textContent = 'Population Values';
     }
 
     if (overlayTitle) {
-        overlayTitle.textContent = populationActive ? 'Click Start to Draw Values' : 'Click Start to Build Sample Means';
+        overlayTitle.textContent = 'Click Start to Draw Values';
     }
 
     if (overlayCopy) {
-        overlayCopy.textContent = populationActive
-            ? 'The right chart will show raw simulated values from the selected population.'
-            : 'Watch sample means gradually settle into the Central Limit Theorem pattern.';
+        overlayCopy.textContent = 'The right chart will show raw simulated values from the selected population, with mean, median, and mode guides.';
     }
 
     if (footerCopy) {
-        footerCopy.textContent = populationActive
-            ? 'This view shows raw simulated population values. Switch to Sample Means to study the CLT effect.'
-            : 'Sample means gradually form a bell curve — the heart of the Central Limit Theorem.';
+        footerCopy.textContent = 'This view shows raw simulated population values with mean, median, and mode reference guides.';
+    }
+
+    if (populationBtn) {
+        populationBtn.setAttribute('aria-pressed', 'true');
     }
 }
 
-function setCLTViewMode(mode) {
-    simState.centralLimit.viewMode = mode === 'means' ? 'means' : 'population';
+function setCLTViewMode() {
+    simState.centralLimit.viewMode = 'population';
     syncCLTViewControls();
     updateCLTNote();
     drawCLTHistogram();
@@ -1238,7 +1223,6 @@ function updateCLTNote() {
 
     const type = distributionSelect.value;
     const n = parseInt(sampleSlider.value, 10);
-    const mode = simState.centralLimit.viewMode || 'population';
     const labels = {
         uniform: 'Uniform',
         exponential: 'Exponential',
@@ -1247,32 +1231,11 @@ function updateCLTNote() {
     };
     const selectedLabel = labels[type] || 'Selected';
 
-    if (mode === 'population') {
-        note.innerHTML = `
-            <span class="font-semibold text-slate-700">Selected population:</span> ${selectedLabel}.
-            The right chart is currently showing <span class="font-semibold text-slate-700">raw simulated population values</span>,
-            so its shape should resemble the preview on the left.
-            <span class="block mt-1 text-sky-700 font-medium">Switch to Sample Means anytime if you want to study the actual Central Limit Theorem effect.</span>
-        `;
-        return;
-    }
-
-    let detail;
-    if (n <= 3) {
-        detail = `With n=${n}, the right chart still keeps a lot of the ${selectedLabel.toLowerCase()} shape.`;
-    } else if (n <= 15) {
-        detail = `With n=${n}, the right chart starts smoothing out, but you can still see the influence of the ${selectedLabel.toLowerCase()} population.`;
-    } else if (n <= 40) {
-        detail = `With n=${n}, the sample means are already getting noticeably bell-shaped.`;
-    } else {
-        detail = `With n=${n}, it is expected to look close to a bell curve even when the original population is ${selectedLabel.toLowerCase()}.`;
-    }
-
     note.innerHTML = `
         <span class="font-semibold text-slate-700">Selected population:</span> ${selectedLabel}.
-        The right chart shows the <span class="font-semibold text-slate-700">sampling distribution of sample means</span>, not the raw population values.
-        ${detail}
-        <span class="block mt-1 text-sky-700 font-medium">If you want the right chart to look more skewed, lower sample size toward n=1 to n=5.</span>
+        The right chart is currently showing <span class="font-semibold text-slate-700">raw simulated population values</span>,
+        so its shape should resemble the preview on the left, including the <span class="font-semibold text-slate-700">mean, median, and mode guide lines</span>.
+        <span class="block mt-1 text-sky-700 font-medium">Use Start to keep drawing values from the selected population and watch the raw shape fill in.</span>
     `;
 }
 
@@ -1307,6 +1270,56 @@ function getCLTPopulationRange(type) {
         dental: { min: 0, max: 0.85 }
     };
     return populationRanges[type] || populationRanges.uniform;
+}
+
+function getMedianValue(values) {
+    if (!values.length) return 0;
+    const sorted = [...values].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+}
+
+function getCLTPopulationReferenceStats(type, values, counts, rangeMin, binWidth) {
+    if (type === 'uniform') {
+        return [
+            { value: 0.5, color: '#6b7280', dash: [4, 4], label: 'Mean = Median = Mode', labelY: 18 }
+        ];
+    }
+
+    if (type === 'bimodal') {
+        return [
+            { value: 0.3, color: '#8b5cf6', dash: [4, 4], label: 'Mode₁', labelY: 16 },
+            { value: 0.5, color: '#ef4444', dash: [4, 4], label: 'Mean', labelY: 16 },
+            { value: 0.5, color: '#f59e0b', dash: [7, 4], label: 'Median', labelY: 30 },
+            { value: 0.7, color: '#8b5cf6', dash: [4, 4], label: 'Mode₂', labelY: 16 }
+        ];
+    }
+
+    if (type === 'exponential') {
+        return [
+            { value: 0.0, color: '#8b5cf6', dash: [4, 4], label: 'Mode', labelY: 16 },
+            { value: Math.log(2) / 2, color: '#f59e0b', dash: [7, 4], label: 'Median', labelY: 30 },
+            { value: 0.5, color: '#ef4444', dash: [4, 4], label: 'Mean', labelY: 16 }
+        ];
+    }
+
+    if (type === 'dental') {
+        return [
+            { value: 0.0, color: '#8b5cf6', dash: [4, 4], label: 'Mode', labelY: 16 },
+            { value: 0.2, color: '#f59e0b', dash: [7, 4], label: 'Median', labelY: 30 },
+            { value: 0.8 / 3, color: '#ef4444', dash: [4, 4], label: 'Mean', labelY: 16 }
+        ];
+    }
+
+    const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+    const median = getMedianValue(values);
+    const maxBin = counts.indexOf(Math.max(...counts));
+    const mode = rangeMin + (maxBin + 0.5) * binWidth;
+    return [
+        { value: mode, color: '#8b5cf6', dash: [4, 4], label: 'Mode', labelY: 16 },
+        { value: median, color: '#f59e0b', dash: [7, 4], label: 'Median', labelY: 30 },
+        { value: mean, color: '#ef4444', dash: [4, 4], label: 'Mean', labelY: 16 }
+    ];
 }
 
 // Get a stable expected range for each distribution type so the axis doesn't jump
@@ -1405,7 +1418,7 @@ function drawCLTHistogram() {
     ctx.save();
     ctx.scale(dpr, dpr);
     const w = dw, h = dh;
-    const PAD = { top: 24, right: 16, bottom: 44, left: 48 };
+    const PAD = { top: 36, right: 16, bottom: 52, left: 48 };
     const pw = w - PAD.left - PAD.right;
     const ph = h - PAD.top - PAD.bottom;
 
@@ -1524,122 +1537,44 @@ function drawCLTHistogram() {
     ctx.fillStyle = '#374151';
     ctx.font = '11px Inter,system-ui,sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(viewMode === 'population' ? 'Population Value' : 'Sample Mean (\u0078\u0304)', PAD.left + pw / 2, h - 4);
+    ctx.fillText('Population Value', PAD.left + pw / 2, PAD.top + ph + 34);
     ctx.save();
     ctx.translate(12, PAD.top + ph / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.fillText('Frequency', 0, 0);
     ctx.restore();
 
-    // Compute statistics
-    const grandMean = means.reduce((a, b) => a + b, 0) / means.length;
-    const variance = means.reduce((s, v) => s + (v - grandMean) ** 2, 0) / means.length;
-    const std = Math.sqrt(variance);
+    const drawReferenceLabel = (xPos, text, color, yPos) => {
+        const clampedX = Math.min(Math.max(xPos, PAD.left + 40), PAD.left + pw - 40);
+        ctx.save();
+        ctx.font = 'bold 10px Inter,system-ui,sans-serif';
+        ctx.textAlign = 'center';
+        const textWidth = ctx.measureText(text).width;
+        ctx.fillStyle = 'rgba(255,255,255,0.94)';
+        ctx.fillRect(clampedX - textWidth / 2 - 5, yPos - 11, textWidth + 10, 14);
+        ctx.fillStyle = color;
+        ctx.fillText(text, clampedX, yPos);
+        ctx.restore();
+    };
 
-    // Falling dots animation (subtle)
-    if (viewMode === 'means') {
-        cltFallingDots.forEach(dot => {
-            dot.vy += 1.2;
-            dot.y += dot.vy;
-            dot.age++;
-            const xPos = PAD.left + ((dot.x - rangeMin) / dataRange) * pw;
-            const targetY = PAD.top + ph;
-            const drawY = Math.min(PAD.top + dot.y, targetY);
+    const referenceStats = getCLTPopulationReferenceStats(type, dataSeries, counts, rangeMin, binWidth);
+    referenceStats.forEach(({ value, color, dash, label, labelY }) => {
+        const xPos = PAD.left + ((value - rangeMin) / dataRange) * pw;
+        if (xPos < PAD.left || xPos > PAD.left + pw) return;
 
-            if (xPos >= PAD.left && xPos <= PAD.left + pw) {
-                const alpha = Math.max(0, 1 - dot.age / 30);
-                ctx.beginPath();
-                ctx.arc(xPos, drawY, 2.5, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(239,68,68,${alpha * 0.7})`;
-                ctx.fill();
-            }
-        });
-        cltFallingDots = cltFallingDots.filter(d => d.age < 30);
-    }
-
-    // Normal curve overlay (after 15 samples)
-    if (viewMode === 'means' && means.length >= 15 && std > 0) {
-        const totalArea = means.length * binWidth;
-        ctx.strokeStyle = '#ef4444';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([]);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = color === '#f59e0b' ? 1.8 : 1.5;
+        ctx.setLineDash(dash || [4, 4]);
         ctx.beginPath();
-        let first = true;
-        for (let px = 0; px <= pw; px += 1.5) {
-            const val = rangeMin + (px / pw) * dataRange;
-            const z = (val - grandMean) / std;
-            const y = Math.exp(-0.5 * z * z) / (std * Math.sqrt(2 * Math.PI));
-            const sy = PAD.top + ph - (y * totalArea / maxCount) * ph;
-            const clamped = Math.max(PAD.top, Math.min(PAD.top + ph, sy));
-            if (first) { ctx.moveTo(PAD.left + px, clamped); first = false; }
-            else ctx.lineTo(PAD.left + px, clamped);
-        }
+        ctx.moveTo(xPos, PAD.top);
+        ctx.lineTo(xPos, PAD.top + ph);
         ctx.stroke();
-
-        // Compute median
-        const sorted = [...means].sort((a, b) => a - b);
-        const mid = Math.floor(sorted.length / 2);
-        const median = sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-
-        // Mode: center of the tallest bin
-        const maxBin = counts.indexOf(Math.max(...counts));
-        const mode = rangeMin + (maxBin + 0.5) * binWidth;
-
-        // Dashed vertical stat lines
-        const statLines = [
-            { val: mode,      color: '#8b5cf6', dash: [3, 3] },
-            { val: median,    color: '#f59e0b', dash: [6, 3] },
-            { val: grandMean, color: '#ef4444', dash: [4, 4] },
-        ];
-        statLines.forEach(({ val, color, dash }) => {
-            const xPos = PAD.left + ((val - rangeMin) / dataRange) * pw;
-            if (xPos >= PAD.left && xPos <= PAD.left + pw) {
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 1.5;
-                ctx.setLineDash(dash);
-                ctx.beginPath();
-                ctx.moveTo(xPos, PAD.top);
-                ctx.lineTo(xPos, PAD.top + ph);
-                ctx.stroke();
-            }
-        });
         ctx.setLineDash([]);
 
-        // Legend box (top-left, semi-transparent)
-        const legendX = PAD.left + 6, legendY = PAD.top + 6;
-        const lw = 138, lh = 62;
-        ctx.fillStyle = 'rgba(255,255,255,0.9)';
-        ctx.fillRect(legendX, legendY, lw, lh);
-        ctx.strokeStyle = 'rgba(0,0,0,0.08)';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(legendX, legendY, lw, lh);
-
-        ctx.font = '9px Inter,system-ui,sans-serif';
-        ctx.textAlign = 'left';
-        const legendItems = [
-            { color: '#ef4444', label: '\u2501 Normal curve' },
-            { color: '#ef4444', label: '\u250A Mean: ' + grandMean.toFixed(3) },
-            { color: '#f59e0b', label: '\u250A Median: ' + median.toFixed(3) },
-            { color: '#8b5cf6', label: '\u250A Mode: ' + mode.toFixed(3) },
-        ];
-        legendItems.forEach(({ color, label }, i) => {
-            ctx.fillStyle = color;
-            ctx.fillText(label, legendX + 6, legendY + 14 + i * 13);
-        });
-
-        // Stats box (top-right)
-        const statsText = 'Samples=' + means.length + '  \u03C3=' + std.toFixed(4);
-        ctx.font = '9px Inter,system-ui,sans-serif';
-        const tw = ctx.measureText(statsText).width + 16;
-        const sx = PAD.left + pw - tw;
-        ctx.fillStyle = 'rgba(255,255,255,0.9)';
-        ctx.fillRect(sx, legendY, tw + 4, 20);
-        ctx.strokeStyle = 'rgba(0,0,0,0.08)';
-        ctx.strokeRect(sx, legendY, tw + 4, 20);
-        ctx.fillStyle = '#374151';
-        ctx.textAlign = 'right';
-        ctx.fillText(statsText, PAD.left + pw - 4, legendY + 14);
-    }
+        if (label) {
+            drawReferenceLabel(xPos, label, color, PAD.top - 10 + (labelY || 16));
+        }
+    });
 
     ctx.restore();
 }
