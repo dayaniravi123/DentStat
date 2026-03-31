@@ -1137,8 +1137,13 @@ function updateCLTSpeedIndicator() {
 
 function syncMobileCLTControls() {
     const distributionSelect = document.getElementById('clt-distribution');
+    const mobileDistributionSelect = document.getElementById('clt-distribution-mobile');
     const sampleSlider = document.getElementById('clt-n');
     if (!distributionSelect || !sampleSlider) return;
+
+    if (mobileDistributionSelect) {
+        mobileDistributionSelect.value = distributionSelect.value;
+    }
 
     document.querySelectorAll('[data-clt-dist]').forEach((button) => {
         const isActive = button.dataset.cltDist === distributionSelect.value;
@@ -1196,6 +1201,13 @@ function setCLTViewMode() {
 }
 
 function selectMobileCLTDistribution(type) {
+    const distributionSelect = document.getElementById('clt-distribution');
+    if (!distributionSelect) return;
+    distributionSelect.value = type;
+    updateCLTDistribution();
+}
+
+function selectMobileCLTDistributionFromDropdown(type) {
     const distributionSelect = document.getElementById('clt-distribution');
     if (!distributionSelect) return;
     distributionSelect.value = type;

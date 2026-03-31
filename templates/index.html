@@ -352,6 +352,15 @@
                             </span>
                         </h3>
                         <p class="text-sm text-gray-500 mt-1 ml-10 sim-card-subtitle">Watch sample means converge to a normal distribution — regardless of the population shape</p>
+                        <div class="clt-mobile-shape-select-wrap">
+                            <label for="clt-distribution-mobile" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 sim-control-label">Population Shape</label>
+                            <select id="clt-distribution-mobile" class="clt-mobile-shape-select" onchange="selectMobileCLTDistributionFromDropdown(this.value)">
+                                <option value="uniform">Uniform (Flat)</option>
+                                <option value="exponential">Exponential (Skewed)</option>
+                                <option value="bimodal">Bimodal (Two Peaks)</option>
+                                <option value="dental">Dental DMFT (Right-skewed)</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="flex space-x-2 ml-10 sm:ml-0 sim-card-actions sim-card-actions-top">
                         <button type="button" onclick="startCLTSimulation()" id="clt-start" class="btn-ripple px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-xl hover:shadow-lg hover:shadow-teal-500/20 transition-all flex items-center text-sm font-semibold">
@@ -389,7 +398,10 @@
 
                         <div class="space-y-3 px-1 clt-mobile-tuning">
                             <div class="clt-mobile-sample-group">
-                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 sim-control-label">Sample Size (n)</label>
+                                <div class="flex items-center justify-between mb-1.5 clt-mobile-sample-header">
+                                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider sim-control-label">Sample Size (n)</label>
+                                    <span id="clt-n-val" class="clt-mobile-speed-indicator">n=30</span>
+                                </div>
                                 <div class="clt-mobile-sample-presets" role="tablist" aria-label="Sample size presets">
                                     <button type="button" onclick="selectMobileCLTSampleSize(1)" class="clt-mobile-n-btn" data-clt-n="1" aria-pressed="false">n=1</button>
                                     <button type="button" onclick="selectMobileCLTSampleSize(30)" class="clt-mobile-n-btn is-active" data-clt-n="30" aria-pressed="true">n=30</button>
@@ -397,7 +409,7 @@
                                 </div>
                                 <div class="clt-slider-wrap">
                                     <input type="range" id="clt-n" min="1" max="100" value="30" class="w-full accent-teal-600 clt-sample-slider" oninput="updateCLTParams()">
-                                    <div class="flex justify-between text-xs text-gray-400 mt-0.5 clt-slider-scale"><span>n=1</span><span id="clt-n-val" class="font-semibold text-teal-700 text-sm">n=30</span><span>n=100</span></div>
+                                    <div class="flex justify-between text-xs text-gray-400 mt-0.5 clt-slider-scale"><span>n=1</span><span>n=100</span></div>
                                 </div>
                             </div>
                             <div class="clt-mobile-speed-row">
