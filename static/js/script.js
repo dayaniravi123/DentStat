@@ -1439,10 +1439,13 @@ function drawCLTHistogram() {
     let rangeMin = expectedRange.min;
     let rangeMax = expectedRange.max;
 
-    // Expand if any data falls outside
-    for (let i = 0; i < dataSeries.length; i++) {
-        if (dataSeries[i] < rangeMin) rangeMin = dataSeries[i] - 0.02;
-        if (dataSeries[i] > rangeMax) rangeMax = dataSeries[i] + 0.02;
+    // Keep population views on a stable theoretical range so long-tail outliers
+    // do not flatten the whole chart and make the preview feel mismatched.
+    if (viewMode !== 'population') {
+        for (let i = 0; i < dataSeries.length; i++) {
+            if (dataSeries[i] < rangeMin) rangeMin = dataSeries[i] - 0.02;
+            if (dataSeries[i] > rangeMax) rangeMax = dataSeries[i] + 0.02;
+        }
     }
     const dataRange = rangeMax - rangeMin;
 
