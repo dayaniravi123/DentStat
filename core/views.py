@@ -6,6 +6,7 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin
 from datetime import date
 import json
 import math
+from .stats_methods import STAT_METHOD_GROUPS
 try:
 	from scipy import stats as scipy_stats
 except Exception:
@@ -67,6 +68,7 @@ LEARNING_SITEMAP_PAGES = [
 PRIMARY_SITEMAP_PAGES = [
 	{'path': '/', 'changefreq': 'weekly', 'priority': '1.0'},
 	{'path': '/concepts/', 'changefreq': 'weekly', 'priority': '0.95'},
+	{'path': '/stats-methods/', 'changefreq': 'monthly', 'priority': '0.86'},
 	{'path': '/examples/basic-probability/', 'changefreq': 'monthly', 'priority': '0.82'},
 	{'path': '/calculator/', 'changefreq': 'weekly', 'priority': '0.90'},
 	{'path': '/visualization/live-graph', 'changefreq': 'weekly', 'priority': '0.90'},
@@ -123,6 +125,16 @@ def concepts_hub(request):
 		'concept_groups': CONCEPT_GROUPS,
 	}
 	return render(request, 'concepts/hub.html', context)
+
+
+def stats_methods_page(request):
+	total_methods = sum(len(group['methods']) for group in STAT_METHOD_GROUPS)
+	context = {
+		'method_groups': STAT_METHOD_GROUPS,
+		'method_group_count': len(STAT_METHOD_GROUPS),
+		'total_methods': total_methods,
+	}
+	return render(request, 'stats-methods.html', context)
 
 
 @xframe_options_sameorigin
