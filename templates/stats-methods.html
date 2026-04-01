@@ -107,83 +107,73 @@
             letter-spacing: 0.06em;
             text-transform: uppercase;
         }
-        .stats-sidebar-methods {
+        .stats-sidebar-topics {
             max-height: calc(100vh - 210px);
             overflow-y: auto;
             padding-right: 4px;
             margin-top: 18px;
         }
-        .stats-sidebar-methods::-webkit-scrollbar {
+        .stats-sidebar-topics::-webkit-scrollbar {
             width: 6px;
         }
-        .stats-sidebar-methods::-webkit-scrollbar-thumb {
+        .stats-sidebar-topics::-webkit-scrollbar-thumb {
             background: rgba(203, 213, 225, 0.95);
             border-radius: 999px;
         }
-        .stats-sidebar-group + .stats-sidebar-group {
-            margin-top: 18px;
-            padding-top: 18px;
-            border-top: 1px solid rgba(226, 232, 240, 0.9);
-        }
-        .stats-sidebar-group-title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 10px;
-            color: #0f766e;
-            font-size: 0.78rem;
-            font-weight: 800;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-        }
-        .stats-sidebar-group-count {
-            color: #94a3b8;
-            font-size: 0.72rem;
-            font-weight: 800;
-            letter-spacing: 0.1em;
-        }
-        .stats-method-link-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .stats-method-link {
+        .stats-topic-link {
             width: 100%;
             text-align: left;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 14px;
-            padding: 12px 14px;
-            border-radius: 16px;
+            display: grid;
+            gap: 10px;
+            padding: 16px 16px 15px;
+            border-radius: 20px;
             border: 1px solid rgba(226, 232, 240, 0.94);
             background: rgba(255, 255, 255, 0.88);
             color: #334155;
-            font-size: 0.93rem;
-            font-weight: 700;
             line-height: 1.45;
             transition: border-color 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
         }
-        .stats-method-link:hover {
+        .stats-topic-link:hover {
             transform: translateX(2px);
             border-color: rgba(45, 212, 191, 0.5);
             background: rgba(240, 253, 250, 0.96);
             color: #0f766e;
         }
-        .stats-method-link.is-active {
+        .stats-topic-link.is-active {
             border-color: rgba(45, 212, 191, 0.58);
             background: linear-gradient(135deg, rgba(236, 253, 245, 0.98), rgba(240, 249, 255, 0.96));
             color: #0f766e;
             box-shadow: 0 14px 28px rgba(15, 23, 42, 0.05);
         }
-        .stats-method-link::after {
-            content: "›";
-            flex: 0 0 auto;
-            color: inherit;
-            font-size: 1.1rem;
+        .stats-topic-link-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .stats-topic-link-title {
+            color: #0f172a;
+            font-size: 0.99rem;
             font-weight: 800;
-            opacity: 0.72;
+            line-height: 1.35;
+        }
+        .stats-topic-link:hover .stats-topic-link-title,
+        .stats-topic-link.is-active .stats-topic-link-title {
+            color: #0f766e;
+        }
+        .stats-topic-link-count {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            min-height: 34px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: rgba(236, 253, 245, 0.95);
+            color: #0f766e;
+            font-size: 0.84rem;
+            font-weight: 800;
         }
         .stats-jump-links {
             display: flex;
@@ -231,10 +221,18 @@
             flex-direction: column;
             gap: 22px;
         }
-        .stats-detail-card {
+        .stats-topic-section {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .stats-topic-section.is-active {
+            display: flex;
+        }
+        .stats-topic-hero {
             padding: 30px;
         }
-        .stats-detail-kicker {
+        .stats-topic-kicker {
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -247,14 +245,14 @@
             letter-spacing: 0.14em;
             text-transform: uppercase;
         }
-        .stats-detail-kicker::before {
+        .stats-topic-kicker::before {
             content: "";
             width: 8px;
             height: 8px;
             border-radius: 999px;
             background: currentColor;
         }
-        .stats-detail-title {
+        .stats-topic-title {
             margin-top: 16px;
             color: #111827;
             font-size: clamp(2rem, 4vw, 3rem);
@@ -262,58 +260,17 @@
             line-height: 1.02;
             letter-spacing: -0.05em;
         }
-        .stats-detail-summary {
+        .stats-topic-summary {
             margin-top: 18px;
             max-width: 54rem;
             color: #64748b;
             font-size: 1.1rem;
             line-height: 1.8;
         }
-        .stats-detail-grid {
+        .stats-topic-methods-grid {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 16px;
-            margin-top: 24px;
-        }
-        .stats-detail-block {
-            border-radius: 22px;
-            padding: 18px 18px 20px;
-        }
-        .stats-detail-block--family {
-            background: linear-gradient(180deg, rgba(255, 251, 235, 0.98), rgba(255, 247, 219, 0.82));
-            border: 1px solid rgba(252, 211, 77, 0.4);
-        }
-        .stats-detail-block--theory {
-            background: linear-gradient(180deg, rgba(239, 246, 255, 0.98), rgba(244, 248, 255, 0.92));
-            border: 1px solid rgba(147, 197, 253, 0.42);
-        }
-        .stats-detail-block--example {
-            background: linear-gradient(180deg, rgba(240, 253, 250, 0.98), rgba(244, 255, 250, 0.92));
-            border: 1px solid rgba(110, 231, 183, 0.4);
-        }
-        .stats-detail-block-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-            color: #475569;
-            font-size: 0.73rem;
-            font-weight: 800;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-        }
-        .stats-detail-block-label::before {
-            content: "";
-            width: 8px;
-            height: 8px;
-            border-radius: 999px;
-            background: currentColor;
-        }
-        .stats-detail-block p {
-            margin: 0;
-            color: #334155;
-            font-size: 0.95rem;
-            line-height: 1.78;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
         }
         .stats-search-card {
             padding: 22px;
@@ -393,60 +350,6 @@
             font-size: 0.95rem;
             font-weight: 800;
         }
-        .stats-method-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .stats-method-item {
-            border-radius: 18px;
-            border: 1px solid rgba(226, 232, 240, 0.94);
-            background: rgba(255, 255, 255, 0.96);
-            overflow: hidden;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
-        }
-        .stats-method-item summary {
-            list-style: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 14px;
-            padding: 15px 16px;
-            color: #1f2937;
-            font-size: 0.97rem;
-            font-weight: 700;
-            line-height: 1.45;
-        }
-        .stats-method-item summary::-webkit-details-marker {
-            display: none;
-        }
-        .stats-method-item summary::after {
-            content: "+";
-            flex: 0 0 auto;
-            width: 30px;
-            height: 30px;
-            border-radius: 999px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(236, 253, 245, 0.95);
-            color: #0f766e;
-            font-size: 1.15rem;
-            font-weight: 800;
-        }
-        .stats-method-item[open] summary::after {
-            content: "−";
-        }
-        .stats-method-item[open] summary {
-            border-bottom: 1px solid rgba(226, 232, 240, 0.9);
-            background: linear-gradient(180deg, rgba(250, 255, 252, 0.95), rgba(246, 251, 249, 0.95));
-        }
-        .stats-method-body {
-            padding: 16px;
-            display: grid;
-            gap: 14px;
-        }
         .stats-method-block {
             border-radius: 16px;
             padding: 14px 14px 15px;
@@ -501,11 +404,13 @@
             .stats-sidebar {
                 position: static;
             }
-            .stats-sidebar-methods {
+            .stats-sidebar-topics {
                 max-height: none;
                 overflow: visible;
             }
-            .stats-detail-grid {
+        }
+        @media (max-width: 900px) {
+            .stats-topic-methods-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -515,29 +420,31 @@
                 padding-bottom: 56px;
             }
             .stats-search-card,
-            .stats-detail-card,
+            .stats-topic-hero,
             .stats-sidebar-card {
                 padding: 18px;
             }
-            .stats-detail-title {
+            .stats-topic-title {
                 font-size: 1.8rem;
             }
-            .stats-detail-summary {
+            .stats-topic-summary {
                 font-size: 0.96rem;
             }
-            .stats-method-link {
-                padding: 11px 12px;
-                font-size: 0.89rem;
+            .stats-topic-link {
+                padding: 14px 14px 13px;
             }
-            .stats-detail-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
+            .stats-topic-link-title {
+                font-size: 0.94rem;
             }
-            .stats-detail-block {
-                padding: 15px 15px 16px;
-            }
-            .stats-detail-block p {
+            .stats-method-summary,
+            .stats-method-block p {
                 font-size: 0.9rem;
+            }
+            .stats-method-card {
+                padding: 18px;
+            }
+            .stats-method-title {
+                font-size: 1.06rem;
             }
         }
     </style>
@@ -575,37 +482,27 @@
             <aside class="stats-sidebar">
                 <div class="stats-panel stats-sidebar-card">
                     <span class="stats-sidebar-kicker">Method Library</span>
-                    <h2 class="mt-4 text-2xl font-extrabold tracking-tight text-slate-900">Browse categories and pick one method</h2>
+                    <h2 class="mt-4 text-2xl font-extrabold tracking-tight text-slate-900">Browse main topics</h2>
                     <p class="mt-3 text-sm leading-7 text-slate-500">
-                        Select a method from the left to read a short theory note and a practical dental example on the right.
+                        Choose a method family from the left. The main panel will show all methods in that topic with a short definition and a practical dental example.
                     </p>
                     <div class="stats-search-box mt-4">
                         <i data-lucide="search"></i>
-                        <input id="stats-method-search" type="search" class="stats-search-input" placeholder="Search methods or categories...">
+                        <input id="stats-method-search" type="search" class="stats-search-input" placeholder="Search topics...">
                     </div>
-                    <div class="stats-sidebar-methods" id="stats-sidebar-methods">
+                    <div class="stats-sidebar-topics" id="stats-sidebar-topics">
                         {% for group in method_groups %}
-                            <section class="stats-sidebar-group" data-group-title="{{ group.title }}" data-group-summary="{{ group.summary }}">
-                                <div class="stats-sidebar-group-title">
-                                    <span>{{ group.title }}</span>
-                                    <span class="stats-sidebar-group-count">{{ group.methods|length }}</span>
-                                </div>
-                                <div class="stats-method-link-list">
-                                    {% for method in group.methods %}
-                                        <button
-                                            type="button"
-                                            class="stats-method-link{% if forloop.parentloop.first and forloop.first %} is-active{% endif %}"
-                                            data-method-name="{{ method.name|escape }}"
-                                            data-method-theory="{{ method.theory|escape }}"
-                                            data-method-example="{{ method.example|escape }}"
-                                            data-group-title="{{ group.title|escape }}"
-                                            data-group-summary="{{ group.summary|escape }}"
-                                        >
-                                            {{ method.name }}
-                                        </button>
-                                    {% endfor %}
-                                </div>
-                            </section>
+                            <button
+                                type="button"
+                                class="stats-topic-link{% if forloop.first %} is-active{% endif %}"
+                                data-topic-slug="{{ group.slug }}"
+                                data-search-text="{{ group.title }} {{ group.summary }} {% for method in group.methods %}{{ method.name }} {% endfor %}"
+                            >
+                                <span class="stats-topic-link-head">
+                                    <span class="stats-topic-link-title">{{ group.title }}</span>
+                                    <span class="stats-topic-link-count">{{ group.methods|length }}</span>
+                                </span>
+                            </button>
                         {% endfor %}
                     </div>
                 </div>
@@ -613,33 +510,39 @@
 
             <section class="stats-main">
                 <div id="stats-methods-empty" class="stats-panel stats-empty">
-                    No methods matched your search. Try a broader keyword like <strong>regression</strong>, <strong>ANOVA</strong>,
+                    No main topic matched your search. Try a broader keyword like <strong>regression</strong>, <strong>ANOVA</strong>,
                     <strong>survival</strong>, or <strong>diagnostic</strong>.
                 </div>
 
-                {% with first_group=method_groups.0 first_method=method_groups.0.methods.0 %}
-                <article id="stats-method-detail" class="stats-panel stats-detail-card">
-                    <span id="stats-detail-group" class="stats-detail-kicker">{{ first_group.title }}</span>
-                    <h2 id="stats-detail-title" class="stats-detail-title">{{ first_method.name }}</h2>
-                    <p id="stats-detail-summary" class="stats-detail-summary">
-                        {{ first_method.theory }} Use it when your question fits the {{ first_group.title|lower }} family and you need a focused method rather than a general summary.
-                    </p>
-                    <div class="stats-detail-grid">
-                        <div class="stats-detail-block stats-detail-block--family">
-                            <span class="stats-detail-block-label">Method Family</span>
-                            <p id="stats-detail-family">{{ first_group.summary }}</p>
-                        </div>
-                        <div class="stats-detail-block stats-detail-block--theory">
-                            <span class="stats-detail-block-label">Theory</span>
-                            <p id="stats-detail-theory">{{ first_method.theory }}</p>
-                        </div>
-                        <div class="stats-detail-block stats-detail-block--example">
-                            <span class="stats-detail-block-label">Dental Example</span>
-                            <p id="stats-detail-example">{{ first_method.example }}</p>
-                        </div>
+                {% for group in method_groups %}
+                <article class="stats-topic-section{% if forloop.first %} is-active{% endif %}" data-topic-slug="{{ group.slug }}">
+                    <div class="stats-panel stats-topic-hero">
+                        <span class="stats-topic-kicker">Method Family</span>
+                        <h2 class="stats-topic-title">{{ group.title }}</h2>
+                        <p class="stats-topic-summary">
+                            {{ group.summary }} Explore the methods below to see what each one is used for and how it can appear in a dental research setting.
+                        </p>
+                    </div>
+
+                    <div class="stats-topic-methods-grid">
+                        {% for method in group.methods %}
+                        <article class="stats-panel stats-method-card">
+                            <div class="stats-method-header">
+                                <div>
+                                    <h3 class="stats-method-title">{{ method.name }}</h3>
+                                    <p class="stats-method-summary">{{ method.theory }}</p>
+                                </div>
+                                <span class="stats-method-count">{{ forloop.counter }}</span>
+                            </div>
+                            <div class="stats-method-block stats-method-block--example">
+                                <span class="stats-method-block-label">Dental Example</span>
+                                <p>{{ method.example }}</p>
+                            </div>
+                        </article>
+                        {% endfor %}
                     </div>
                 </article>
-                {% endwith %}
+                {% endfor %}
             </section>
         </div>
     </main>
@@ -649,82 +552,56 @@
 
         (function () {
             const input = document.getElementById('stats-method-search');
-            const methodButtons = Array.from(document.querySelectorAll('.stats-method-link'));
-            const groups = Array.from(document.querySelectorAll('.stats-sidebar-group'));
+            const topicButtons = Array.from(document.querySelectorAll('.stats-topic-link'));
+            const topicSections = Array.from(document.querySelectorAll('.stats-topic-section'));
             const emptyState = document.getElementById('stats-methods-empty');
-            const detailCard = document.getElementById('stats-method-detail');
-            const detailGroup = document.getElementById('stats-detail-group');
-            const detailTitle = document.getElementById('stats-detail-title');
-            const detailSummary = document.getElementById('stats-detail-summary');
-            const detailFamily = document.getElementById('stats-detail-family');
-            const detailTheory = document.getElementById('stats-detail-theory');
-            const detailExample = document.getElementById('stats-detail-example');
 
-            if (!input || !methodButtons.length) return;
+            if (!input || !topicButtons.length || !topicSections.length) return;
 
-            function selectMethod(button) {
-                methodButtons.forEach((item) => item.classList.toggle('is-active', item === button));
-                const name = button.getAttribute('data-method-name') || '';
-                const theory = button.getAttribute('data-method-theory') || '';
-                const example = button.getAttribute('data-method-example') || '';
-                const groupTitle = button.getAttribute('data-group-title') || '';
-                const groupSummary = button.getAttribute('data-group-summary') || '';
-
-                detailGroup.textContent = groupTitle;
-                detailTitle.textContent = name;
-                detailSummary.textContent = theory + ' Use it when your question fits the ' + groupTitle.toLowerCase() + ' family and you need a focused method rather than a general summary.';
-                detailFamily.textContent = groupSummary;
-                detailTheory.textContent = theory;
-                detailExample.textContent = example;
-                detailCard.style.display = '';
+            function selectTopic(button) {
+                const slug = button.getAttribute('data-topic-slug') || '';
+                topicButtons.forEach((item) => item.classList.toggle('is-active', item === button));
+                topicSections.forEach((section) => {
+                    section.classList.toggle('is-active', section.getAttribute('data-topic-slug') === slug);
+                });
                 emptyState.classList.remove('is-visible');
             }
 
-            methodButtons.forEach((button) => {
+            topicButtons.forEach((button) => {
                 button.addEventListener('click', function () {
-                    selectMethod(button);
+                    selectTopic(button);
                 });
             });
 
             input.addEventListener('input', function () {
                 const term = input.value.trim().toLowerCase();
-                let visibleButtons = 0;
+                let visibleTopics = 0;
 
-                groups.forEach((group) => {
-                    let groupVisible = 0;
-                    group.querySelectorAll('.stats-method-link').forEach((button) => {
-                        const haystack = [
-                            button.getAttribute('data-method-name') || '',
-                            button.getAttribute('data-method-theory') || '',
-                            button.getAttribute('data-method-example') || '',
-                            button.getAttribute('data-group-title') || '',
-                            button.getAttribute('data-group-summary') || ''
-                        ].join(' ').toLowerCase();
-                        const matches = !term || haystack.includes(term);
-                        button.style.display = matches ? '' : 'none';
-                        if (matches) {
-                            visibleButtons += 1;
-                            groupVisible += 1;
-                        }
-                    });
-                    group.style.display = groupVisible ? '' : 'none';
+                topicButtons.forEach((button) => {
+                    const haystack = (button.getAttribute('data-search-text') || '').toLowerCase();
+                    const matches = !term || haystack.includes(term);
+                    button.style.display = matches ? '' : 'none';
+                    if (matches) {
+                        visibleTopics += 1;
+                    }
                 });
 
-                if (visibleButtons === 0) {
+                if (visibleTopics === 0) {
                     emptyState.classList.add('is-visible');
-                    detailCard.style.display = 'none';
+                    topicSections.forEach((section) => section.classList.remove('is-active'));
                     return;
                 }
 
                 emptyState.classList.remove('is-visible');
-                detailCard.style.display = '';
+                const activeVisible = topicButtons.find((button) => button.classList.contains('is-active') && button.style.display !== 'none');
+                if (activeVisible) {
+                    selectTopic(activeVisible);
+                    return;
+                }
 
-                const activeVisible = document.querySelector('.stats-method-link.is-active:not([style*="display: none"])');
-                if (activeVisible) return;
-
-                const firstVisible = methodButtons.find((button) => button.style.display !== 'none');
+                const firstVisible = topicButtons.find((button) => button.style.display !== 'none');
                 if (firstVisible) {
-                    selectMethod(firstVisible);
+                    selectTopic(firstVisible);
                 }
             });
         })();
