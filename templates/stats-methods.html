@@ -520,7 +520,7 @@
                         <span class="stats-topic-kicker">Method Family</span>
                         <h2 class="stats-topic-title">{{ group.title }}</h2>
                         <p class="stats-topic-summary">
-                            {{ group.summary }} Explore the methods below to see what each one is used for and how it can appear in a dental research setting.
+                            {{ group.window_intro }}
                         </p>
                     </div>
 
@@ -530,9 +530,13 @@
                             <div class="stats-method-header">
                                 <div>
                                     <h3 class="stats-method-title">{{ method.name }}</h3>
-                                    <p class="stats-method-summary">{{ method.theory }}</p>
+                                    <p class="stats-method-summary">{{ method.window_note }}</p>
                                 </div>
                                 <span class="stats-method-count">{{ forloop.counter }}</span>
+                            </div>
+                            <div class="stats-method-block stats-method-block--theory">
+                                <span class="stats-method-block-label">Quick Idea</span>
+                                <p>{{ method.theory }}</p>
                             </div>
                             <div class="stats-method-block stats-method-block--example">
                                 <span class="stats-method-block-label">Dental Example</span>

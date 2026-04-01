@@ -316,6 +316,52 @@ STAT_METHOD_GROUPS = [
     },
 ]
 
+GROUP_WINDOW_COPY = {
+    "anova-mean-comparison": "This family is useful when the main research question is about differences in averages across treatment groups, follow-up visits, or structured study designs. It is often the next step after descriptive statistics when you want to move from describing data to formally comparing groups.",
+    "descriptive-statistics": "These methods help you understand the shape, center, spread, and quality of your dataset before making bigger analytical decisions. They are often the starting point for any good clinical or public-health analysis.",
+    "probability-proportions": "These tools are helpful when the outcome is a chance, rate, or proportion rather than a continuous measurement. They are especially common in screening studies, prevalence work, and binary clinical outcomes.",
+    "t-tests": "Use this family when the question is centered on one average or the difference between two averages. These methods are often chosen in small-to-medium clinical studies with straightforward comparison goals.",
+    "regression": "Regression methods are used when you want to explain, predict, or adjust an outcome using one or more predictors. They become especially valuable when several patient or treatment factors matter at the same time.",
+    "correlation-agreement": "This group is designed for questions about association, consistency, and whether two measures or methods tell a similar story. It is helpful for validation work, instrument comparison, and reproducibility checks.",
+    "diagnostic-roc": "These methods help you judge how well a test separates disease from non-disease and how different cutoffs change performance. They are essential when evaluating screening tools and diagnostic workflows.",
+    "survival-analysis": "This family focuses on time-to-event questions, such as how long a restoration lasts or when failure happens. It is useful whenever both timing and event occurrence matter together.",
+    "meta-analysis": "Meta-analysis methods combine evidence from multiple studies into one broader estimate. They are helpful when you want a stronger summary than any single paper can provide.",
+    "cluster-analysis": "These methods look for natural groupings in data without starting from a preset outcome variable. They are often used to discover patient profiles, behavior patterns, or hidden structure in complex datasets.",
+    "multivariate": "This family is useful when you need to study many variables together, reduce complexity, or understand how measurements move as a set. It can help uncover structure that is not obvious from one variable at a time.",
+    "nonparametric": "These methods are useful when the usual assumptions behind parametric tests are weak, questionable, or clearly violated. They often rely on ranks or order rather than raw numerical values.",
+    "distribution-fitting": "Use this group when the question is about which probability model best represents your data or whether observed values follow an expected distribution. It is often part of model checking and reliability work.",
+    "doe": "Design-of-experiments methods help plan studies so that you learn efficiently from the data you collect. They are especially valuable when resources are limited and study structure matters.",
+    "quality-control": "These tools are built for monitoring consistency, process stability, and operational quality over time. They fit well in laboratory workflows, manufacturing studies, and clinic process improvement.",
+    "time-series": "This family is helpful when observations arrive in time order and nearby measurements influence one another. It is commonly used for forecasting, tracking trends, and understanding serial patterns.",
+    "reference-intervals": "These methods estimate expected ranges or coverage intervals that are meaningful in applied measurement settings. They are often useful in laboratory, biomarker, and quality-assurance contexts.",
+    "item-survey": "This group supports questionnaires, surveys, and item-level assessment tools by showing how well items behave individually and together. It is especially relevant for patient-reported outcomes and educational instruments.",
+    "nondetects": "These methods are used when part of the data falls below a detection limit rather than being fully observed. They help prevent bias when low values are censored or only partly known.",
+    "operations-research": "Operations-research methods focus on optimization, routing, allocation, and decision-making under constraints. They are useful when the goal is to improve systems rather than compare patient outcomes directly.",
+}
+
+GROUP_METHOD_PURPOSE = {
+    "anova-mean-comparison": "compare averages across treatments, visits, or study arms",
+    "descriptive-statistics": "describe the dataset clearly before deeper analysis",
+    "probability-proportions": "work with chances, proportions, and yes-or-no outcomes",
+    "t-tests": "compare one mean or two means in a focused way",
+    "regression": "study how predictors relate to an outcome",
+    "correlation-agreement": "check whether measures move together or agree well",
+    "diagnostic-roc": "evaluate how well a test classifies patients",
+    "survival-analysis": "study when an event happens over follow-up time",
+    "meta-analysis": "combine evidence from several studies",
+    "cluster-analysis": "find hidden groupings within a dataset",
+    "multivariate": "analyze several related variables together",
+    "nonparametric": "answer a question without leaning heavily on strict distribution assumptions",
+    "distribution-fitting": "match observed data to an underlying probability model",
+    "doe": "plan or study efficient experimental designs",
+    "quality-control": "monitor whether a process stays stable and reliable",
+    "time-series": "analyze values that evolve over time",
+    "reference-intervals": "estimate meaningful expected ranges",
+    "item-survey": "evaluate survey items and questionnaire structure",
+    "nondetects": "work carefully with values below detection limits",
+    "operations-research": "optimize flow, allocation, or routing decisions",
+}
+
 
 METHOD_DETAILS = {
     "One-Way ANOVA": {
@@ -1011,6 +1057,29 @@ def get_method_details(method_name):
     }
 
 
+def get_group_window_copy(group):
+    return GROUP_WINDOW_COPY.get(
+        group["slug"],
+        f"{group['title']} collects methods that help researchers answer a shared type of statistical question in a more structured way."
+    )
+
+
+def build_method_window_note(method_name, group):
+    purpose = GROUP_METHOD_PURPOSE.get(group["slug"], "answer a focused statistical question")
+
+    if "Regression" in method_name:
+        return f"{method_name} is a model-based method used when you want to {purpose} while accounting for one or more predictors."
+    if "Test" in method_name or "Tests" in method_name:
+        return f"{method_name} is a decision-focused method used when you want to {purpose} and judge whether the observed pattern is strong enough to support a conclusion."
+    if "Curve" in method_name or "Curves" in method_name:
+        return f"{method_name} is a visual method used when you want to {purpose} and understand performance across a range of possible thresholds or times."
+    if "Analysis" in method_name:
+        return f"{method_name} is an analysis approach used when you want to {purpose} in a structured and interpretable way."
+    if "Intervals" in method_name or "Interval" in method_name:
+        return f"{method_name} is used when you want to {purpose} and express the result as a plausible range rather than a single value."
+    return f"{method_name} is a practical method used when you want to {purpose} in a clear, study-ready format."
+
+
 def build_stats_method_groups():
     groups = []
     for group in STAT_METHOD_GROUPS:
@@ -1022,11 +1091,13 @@ def build_stats_method_groups():
                     "name": method_name,
                     "theory": detail["theory"],
                     "example": detail["example"],
+                    "window_note": build_method_window_note(method_name, group),
                 }
             )
         groups.append(
             {
                 **group,
+                "window_intro": get_group_window_copy(group),
                 "methods": method_entries,
             }
         )
